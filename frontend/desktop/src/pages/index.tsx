@@ -1,6 +1,6 @@
-import DesktopContent from '@/components/desktop_content';
+import DesktopContent from '@/components/theme/desktop_content';
 import FloatButton from '@/components/floating_button';
-import MoreApps from '@/components/more_apps';
+import MoreApps from '@/components/theme/more_apps';
 import request from '@/services/request';
 import useAppStore from '@/stores/app';
 import { useGlobalStore } from '@/stores/global';

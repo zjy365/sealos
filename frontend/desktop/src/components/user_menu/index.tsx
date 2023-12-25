@@ -12,7 +12,7 @@ enum UserMenuKeys {
   Account
 }
 
-export default function Index(props: { userMenuStyleProps?: FlexProps }) {
+export default function Index(props: { userMenuStyleProps?: FlexProps; ButtonStyle?: FlexProps }) {
   const [notificationAmount, setNotificationAmount] = useState(0);
   const accountDisclosure = useDisclosure();
   const showDisclosure = useDisclosure();
@@ -27,7 +27,8 @@ export default function Index(props: { userMenuStyleProps?: FlexProps }) {
       right: '42px',
       cursor: 'pointer',
       gap: '16px'
-    }
+    },
+    ButtonStyle
   } = props;
 
   const buttonList: {
@@ -39,7 +40,12 @@ export default function Index(props: { userMenuStyleProps?: FlexProps }) {
     {
       key: UserMenuKeys.Notification,
       button: (
-        <Iconfont iconName="icon-notifications" width={20} height={20} color="#24282C"></Iconfont>
+        <Iconfont
+          iconName="icon-notifications"
+          width={20}
+          height={20}
+          color={ButtonStyle?.color ? (ButtonStyle?.color as string) : '#24282C'}
+        ></Iconfont>
       ),
       click: () => showDisclosure.onOpen(),
       content: (
@@ -73,6 +79,7 @@ export default function Index(props: { userMenuStyleProps?: FlexProps }) {
         h="36px"
         background={'rgba(244, 246, 248, 0.7)'}
         boxShadow={'0px 1.2px 2.3px rgba(0, 0, 0, 0.2)'}
+        {...ButtonStyle}
       />
       {buttonList.map((item) => (
         <Flex
@@ -85,6 +92,7 @@ export default function Index(props: { userMenuStyleProps?: FlexProps }) {
           alignItems={'center'}
           position={'relative'}
           boxShadow={'0px 1.2px 2.3px rgba(0, 0, 0, 0.2)'}
+          {...ButtonStyle}
         >
           <Box onClick={item.click} cursor={'pointer'}>
             {item.button}
