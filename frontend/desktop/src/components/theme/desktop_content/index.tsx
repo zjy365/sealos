@@ -189,9 +189,7 @@ export default function DesktopContent(props: any) {
                     fallbackSrc="/images/sealos.svg"
                     alt="user avator"
                     filter={
-                      item.key.startsWith('system')
-                        ? 'invert(100%) sepia(100%) saturate(1%) hue-rotate(182deg) brightness(108%) contrast(101%)'
-                        : ''
+                      'invert(100%) sepia(100%) saturate(1%) hue-rotate(182deg) brightness(108%) contrast(101%)'
                     }
                   />
                 </Box>
