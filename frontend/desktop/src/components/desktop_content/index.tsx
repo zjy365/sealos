@@ -15,6 +15,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getGlobalNotification } from '@/api/platform';
 import { useMessage } from '@sealos/ui';
 import { BackgroundImageUrl, ImageFallBackUrl } from '@/stores/config';
+import Banner from '../banner';
+
 const TimeComponent = dynamic(() => import('./time'), {
   ssr: false
 });
@@ -111,7 +113,8 @@ export default function DesktopContent(props: any) {
       backgroundRepeat={'no-repeat'}
       backgroundSize={'cover'}
     >
-      <Flex w="100%" h="100%" alignItems={'center'} flexDirection={'column'}>
+      <Banner />
+      <Flex w="100%" h="100%" alignItems={'center'} flexDirection={'column'} pt={'48px'}>
         <Box mt="12vh" minW={'508px'}>
           <TimeComponent />
         </Box>

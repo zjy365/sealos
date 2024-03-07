@@ -27,7 +27,7 @@ export default function Index(props: { userMenuStyleProps?: FlexProps }) {
     userMenuStyleProps = {
       alignItems: 'center',
       position: 'absolute',
-      top: '42px',
+      top: '68px',
       right: '42px',
       cursor: 'pointer',
       gap: '16px'
