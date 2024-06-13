@@ -329,6 +329,8 @@ export default function Form({
   const { data: systemRegion } = useQuery(['getCloudServerRegion'], getCloudServerRegion, {
     staleTime: 5 * 60 * 1000,
     onSuccess(data) {
+      console.log(data, 1);
+
       // set default form
       if (data?.[0]?.chargeType) {
         formHook.setValue('chargeType', data[0].chargeType);
