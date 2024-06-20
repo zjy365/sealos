@@ -13,7 +13,8 @@ export type ExportAppPayload = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const exportAppUrl = process.env.EXPORT_APP_URL || '';
+    const exportAppBaseUrl = process.env.EXPORT_APP_URL || '';
+    const generatePath = '/registry/v1alpha1/artifact/generate';
 
     await getK8s({
       kubeconfig: await authSession(req.headers)
@@ -22,23 +23,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const data = req.body as ExportAppPayload;
 
     const temp = await fetch(
-      `${exportAppUrl}?namespace=${data.namespace}&&appname=${data.appname}`,
+      `${exportAppBaseUrl}${generatePath}?namespace=${data.namespace}&&appname=${data.appname}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          yaml: data.yaml,
-          images: data.images
+          images: data.images,
+          appName: data.appname,
+          appNamespace: data.namespace,
+          manifests: data.yaml
         })
       }
     );
 
-    const result = await temp.json();
+    const result: {
+      artifact_id: string;
+      download_uri: string;
+      error: string;
+    } = await temp.json();
+
+    console.log(result);
 
     jsonRes(res, {
-      data: result
+      data: {
+        downloadPath: `${exportAppBaseUrl}${result.download_uri}`,
+        error: result.error
+      }
     });
   } catch (err: any) {
     jsonRes(res, {
