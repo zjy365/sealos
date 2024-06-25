@@ -8,8 +8,8 @@ import { useToast } from '@/hooks/useToast';
 import download from '@/utils/downloadFIle';
 import { serviceSideProps } from '@/utils/i18n';
 import { json2License } from '@/utils/json2Yaml';
-import { addHoursToTime, useCopyData } from '@/utils/tools';
-import { Box, Center, Flex, Image, Link, Text } from '@chakra-ui/react';
+import { addHoursToTime, formatTime, useCopyData } from '@/utils/tools';
+import { Box, Center, Divider, Flex, Image, Link, Text } from '@chakra-ui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { useTranslation } from 'next-i18next';
@@ -46,12 +46,12 @@ export default function LicenseApp() {
     }
   });
 
-  const { data: kubeSystem } = useQuery(['getClusterId'], () => getClusterId(), {
+  const { data: systemInfo } = useQuery(['getClusterId'], () => getClusterId(), {
     onSuccess(data) {
       getPlatformEnv()
         .then((res) => {
           const main = res.LICENSE_DOMAIN;
-          const link = `https://${main}/cluster?systemId=${data?.systemId}`;
+          const link = `https://${main}/cluster?systemId=${data?.systemId}&nodeCount=${data?.nodeCount}&totalCpu=${data?.totalCpu}&totalMemory=${data?.totalMemory}`;
           setPurchaseLink(link);
         })
         .catch((err) => {
@@ -112,7 +112,8 @@ export default function LicenseApp() {
             borderRadius={'16px'}
           />
           <Flex
-            alignItems={'center'}
+            bg={'rgba(255, 255, 255, 0.05)'}
+            borderRadius={'12px'}
             justifyContent={'center'}
             flexDirection={'column'}
             position={'absolute'}
@@ -120,38 +121,40 @@ export default function LicenseApp() {
             top="50%"
             left="50%"
             transform="translate(-50%, -50%)"
+            p={{ base: '20px', xl: '36px' }}
           >
-            <Text fontSize={'24px'} fontWeight={600}>
-              {t('Cluster ID', { id: kubeSystem?.systemId })}
+            <Text fontSize={'20px'} fontWeight={500} mb={'8px'}>
+              {t('cluster_info')}
             </Text>
-            <Box w="194px" h="54px" mt="50px" position={'relative'}>
-              <Center
-                position={'absolute'}
-                top={0}
-                left={0}
-                bg="rgba(255, 255, 255, 0.20)"
-                filter={'blur(4px)'}
-                w="194px"
-                h="54px"
-                borderRadius={'4px'}
-              ></Center>
-              <Center
-                cursor={'pointer'}
-                borderRadius={'4px'}
-                position={'absolute'}
-                bg={'#fff'}
-                color={'#000'}
-                w="184px"
-                h="42px"
-                top={'6px'}
-                left={'6px'}
-                fontWeight={600}
-                fontSize={'16px'}
-                onClick={() => window.open(purchaseLink)}
-              >
-                {t('Purchase Tip')}
-              </Center>
-            </Box>
+
+            <Text fontSize={'12px'}>
+              {t('expire_date')}: {'asdasdasdasdas'}
+            </Text>
+
+            <Divider my={'28px'} borderColor={'rgba(255, 255, 255, 0.05)'} />
+
+            <Flex fontSize={'14px'} fontWeight={'400'} flexWrap={'wrap'} gap={'18px'}>
+              <Text minW={'90px'}>ID: {systemInfo?.systemId}</Text>
+              <Text>Nodes: {systemInfo?.nodeCount}</Text>
+              <Text minW={'90px'}>CPU: {systemInfo?.totalCpu} Core</Text>
+              <Text>Memory: {systemInfo?.totalMemory} GB</Text>
+            </Flex>
+
+            <Divider my={'28px'} borderColor={'rgba(255, 255, 255, 0.05)'} />
+
+            <Center
+              w="100%"
+              h="42px"
+              cursor={'pointer'}
+              borderRadius={'8px'}
+              bg={'#fff'}
+              color={'#000'}
+              fontWeight={500}
+              fontSize={'14px'}
+              onClick={() => window.open(purchaseLink)}
+            >
+              {t('Purchase Tip')}
+            </Center>
           </Flex>
           <Flex position={'absolute'} bottom={'20px'} right={'48px'}>
             <Image alt="license" src="/icons/license-sealos.svg" />
@@ -168,7 +171,7 @@ export default function LicenseApp() {
           userSelect={'none'}
           ml={'auto'}
           mt="24px"
-          borderRadius={'4px'}
+          borderRadius={'6px'}
           bg={'#24282C'}
           width={'218px'}
           h="44px"
