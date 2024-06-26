@@ -55,3 +55,40 @@ export const contect: ServiceItem[] = [
   { label: '周一到周日，24h 内响应', icon: 'check' },
   ...baseServiceItem
 ];
+
+export const CpuSlideMarkList = [
+  { label: 8, value: 8 },
+  // { label: 16, value: 16 },
+  // { label: 24, value: 24 },
+  { label: 32, value: 32 },
+  { label: 64, value: 64 },
+  { label: 96, value: 96 },
+  { label: 128, value: 128 },
+  { label: 160, value: 160 },
+  { label: 192, value: 192 },
+  { label: 224, value: 224 },
+  { label: 256, value: 256 }
+];
+
+export const MemorySlideMarkList = [
+  { label: 16, value: 16 },
+  // { label: 32, value: 32 },
+  // { label: 64, value: 64 },
+  { label: 128, value: 128 },
+  { label: 256, value: 256 },
+  { label: 384, value: 384 },
+  { label: 512, value: 512 },
+  { label: 640, value: 640 },
+  { label: 768, value: 768 },
+  { label: 896, value: 896 },
+  { label: 1024, value: 1024 }
+];
+
+export const MonthMapList = [
+  // unit month
+  { label: '3个月', value: '3' },
+  { label: '6个月', value: '6' },
+  { label: '1年', value: '12' },
+  { label: '2年', value: '24' },
+  { label: '3年', value: '36' }
+];

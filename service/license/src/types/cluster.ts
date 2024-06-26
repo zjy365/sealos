@@ -72,3 +72,9 @@ export type CommandFormType = {
   certPath: string;
   certKeyPath: string;
 };
+
+export type ClusterFormType = {
+  cpu: number;
+  memory: number;
+  time: string;
+};

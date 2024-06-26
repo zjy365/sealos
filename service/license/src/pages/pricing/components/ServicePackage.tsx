@@ -17,7 +17,7 @@ export default function ServicePackage({ items, children }: ServicePackageProps)
       px="48px"
       pt="48px"
       flexDirection={'column'}
-      maxW="400px"
+      w="400px"
       minH={'676px'}
     >
       {children}

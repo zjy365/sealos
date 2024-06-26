@@ -2,7 +2,7 @@ import { createCluster } from '@/api/cluster';
 import { checkWechatPay, createPayment, handlePaymentResult } from '@/api/payment';
 import { getSystemEnv, uploadConvertData } from '@/api/system';
 import { StripeIcon, SuccessIcon } from '@/components/Icon';
-import { company, contect, standard } from '@/constant/product';
+import { company, contect } from '@/constant/product';
 import { useConfirm } from '@/hooks/useConfirm';
 import usePaymentDataStore from '@/stores/payment';
 import useRouteParamsStore from '@/stores/routeParams';
@@ -18,7 +18,6 @@ import {
   AbsoluteCenter,
   Box,
   Button,
-  Center,
   Divider,
   Flex,
   Modal,
@@ -38,6 +37,7 @@ import { useRouter } from 'next/router';
 import { QRCodeSVG } from 'qrcode.react';
 import { useCallback, useEffect, useState } from 'react';
 import ServicePackage from './ServicePackage';
+import Cost from './cost';
 
 export default function Product() {
   const { t } = useTranslation();
@@ -278,65 +278,12 @@ export default function Product() {
         gap={'36px'}
         px="24px"
       >
-        <ServicePackage items={standard}>
-          <Text color="#00A9A6" fontSize="18px" fontWeight="600">
-            标准版
-          </Text>
-          <Flex alignItems={'center'} mt="16px">
-            <Text color="#000" fontSize="40px" fontWeight="600">
-              ¥0
-            </Text>
-            <Center
-              h="34px"
-              px="16px"
-              ml="24px"
-              borderRadius={'15px 15px 15px 0px'}
-              bgColor={'#EBF7FD'}
-              color={'#00A9A6'}
-              fontWeight={500}
-              fontSize={'20px'}
-            >
-              赠 ¥299
-            </Center>
-          </Flex>
-          <Text mt="16px" color={'#24282C'} fontSize={'18px'} fontWeight={600}>
-            适合开发者测试，或 POC demo
-          </Text>
-          <Button
-            w="100%"
-            mt="28px"
-            bgColor={'#F4F6F8'}
-            fontSize={'16px'}
-            color={'#24282C'}
-            fontWeight={600}
-            onClick={() => handleProductByType(ClusterType.Standard)}
-          >
-            一键安装
-          </Button>
-        </ServicePackage>
         <ServicePackage items={company}>
           <Text color="#36ADEF" fontSize="18px" fontWeight="600">
-            企业版
+            标准版
           </Text>
-          <Flex alignItems={'center'} mt="16px">
-            <Text color="#000" fontSize="40px" fontWeight="600">
-              ¥599
-            </Text>
-            <Center
-              h="34px"
-              px="16px"
-              ml="24px"
-              borderRadius={'15px 15px 15px 0px'}
-              bgColor={'#EBF7FD'}
-              color={'#36ADEF'}
-              fontWeight={500}
-              fontSize={'20px'}
-            >
-              赠 ¥599
-            </Center>
-          </Flex>
-          <Text mt="16px" color={'#24282C'} fontSize={'18px'} fontWeight={600}>
-            适合企业生产环境
+          <Text mt="24px" color={'#24282C'} fontSize={'24px'} fontWeight={600}>
+            适合开发者测试， POC demo，企业生产环境
           </Text>
           <Button
             w="100%"
@@ -354,12 +301,12 @@ export default function Product() {
           <Text color="#00A9A6" fontSize="18px" fontWeight="600">
             定制版
           </Text>
-          <Text mt="32px" color={'#24282C'} fontSize={'24px'} fontWeight={600} w="200px">
+          <Text mt="24px" color={'#24282C'} fontSize={'24px'} fontWeight={600} w="200px">
             适合大规模集群与大型企业客户
           </Text>
           <Button
             w="100%"
-            mt="42px"
+            mt="32px"
             bgColor={'#F4F6F8'}
             fontSize={'16px'}
             color={'#24282C'}
@@ -369,6 +316,7 @@ export default function Product() {
             联系我们
           </Button>
         </ServicePackage>
+        <Cost />
       </Flex>
       <Modal isOpen={isOpen} onClose={onClosePayment} closeOnOverlayClick={false}>
         <ModalOverlay />

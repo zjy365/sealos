@@ -148,6 +148,13 @@ const Switch = SwitchHelper.defineMultiStyleConfig({
 export const theme = extendTheme({
   initialColorMode: 'light',
   colors: ThemeColors,
+  styles: {
+    global: {
+      'html, body': {
+        fontFamily: 'PingFang SC'
+      }
+    }
+  },
   components: {
     Button,
     Input,
