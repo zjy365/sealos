@@ -1,13 +1,14 @@
 import { createCluster } from '@/api/cluster';
 import { checkWechatPay, createPayment, handlePaymentResult } from '@/api/payment';
 import { getSystemEnv, uploadConvertData } from '@/api/system';
-import { StripeIcon, SuccessIcon } from '@/components/Icon';
-import { company, contect } from '@/constant/product';
+import { StripeIcon, SuccessIcon, WechatIcon } from '@/components/Icon';
+import { company, contect, defaulClustertForm, freeClusterForm } from '@/constant/product';
 import { useConfirm } from '@/hooks/useConfirm';
 import usePaymentDataStore from '@/stores/payment';
 import useRouteParamsStore from '@/stores/routeParams';
 import useSessionStore from '@/stores/session';
 import {
+  ClusterFormType,
   ClusterType,
   CreateClusterParams,
   PaymentStatus,
@@ -37,7 +38,8 @@ import { useRouter } from 'next/router';
 import { QRCodeSVG } from 'qrcode.react';
 import { useCallback, useEffect, useState } from 'react';
 import ServicePackage from './ServicePackage';
-import Cost from './cost';
+import Cost, { calculatePrice } from './cost';
+import { useForm } from 'react-hook-form';
 
 export default function Product() {
   const { t } = useTranslation();
@@ -59,6 +61,14 @@ export default function Product() {
   // Used to detect missing WeChat payment results
   const { paymentData, setPaymentData, deletePaymentData, isExpired } = usePaymentDataStore();
 
+  const formHook = useForm<ClusterFormType>({
+    defaultValues: defaulClustertForm
+  });
+
+  const formHook2 = useForm<ClusterFormType>({
+    defaultValues: defaulClustertForm
+  });
+
   const onClosePayment = useCallback(() => {
     setOrderID('');
     setComplete(0);
@@ -66,9 +76,9 @@ export default function Product() {
   }, [onClose]);
 
   const openPayModal = () => {
-    setComplete(1);
-    setPayType('wechat');
-    paymentMutation.mutate((599 * 100).toString());
+    // setComplete(1);
+    // setPayType('wechat');
+    // paymentMutation.mutate((599 * 100).toString());
     onOpen();
   };
 
@@ -76,6 +86,41 @@ export default function Product() {
     setComplete(1);
     setPayType('stripe');
     paymentMutation.mutate((599 * 100).toString());
+  };
+
+  const handleWeChatPay = () => {};
+
+  const handleSubmit = (payType: TPayMethod) => {
+    console.log(payType);
+    formHook2.handleSubmit(
+      (data) => {
+        console.log(data);
+        const price = calculatePrice(data, freeClusterForm);
+        if (price === 0) {
+          console.log(1231231);
+          return;
+        }
+        setComplete(1);
+        setPayType(payType);
+        paymentMutation.mutate(price.toString());
+      },
+      (err) => {
+        const deepSearch = (obj: any): string => {
+          if (!obj || typeof obj !== 'object') return 'Submit Error';
+          if (!!obj.message) {
+            return obj.message;
+          }
+          return deepSearch(Object.values(obj)[0]);
+        };
+        toast({
+          title: deepSearch(err),
+          status: 'error',
+          position: 'top',
+          duration: 3000,
+          isClosable: true
+        });
+      }
+    )();
   };
 
   const handleProductByType = (type: ClusterType) => {
@@ -93,6 +138,11 @@ export default function Product() {
     if (type === ClusterType.Enterprise) {
       openPayModal();
     }
+
+    if (type === ClusterType.StandardV1) {
+      openPayModal();
+    }
+
     if (type === ClusterType.Contact) {
       window.open(
         'https://fael3z0zfze.feishu.cn/share/base/form/shrcnesSfEK65JZaAf2W6Fwz6Ad',
@@ -279,7 +329,7 @@ export default function Product() {
         px="24px"
       >
         <ServicePackage items={company}>
-          <Text color="#36ADEF" fontSize="18px" fontWeight="600">
+          <Text color="#0884DD" fontSize="18px" fontWeight="600">
             标准版
           </Text>
           <Text mt="24px" color={'#24282C'} fontSize={'24px'} fontWeight={600}>
@@ -289,12 +339,12 @@ export default function Product() {
             w="100%"
             mt="28px"
             bgColor={'#AFDEF9'}
-            fontSize={'16px'}
+            fontSize={'14px'}
             color={'#24282C'}
-            fontWeight={600}
-            onClick={() => handleProductByType(ClusterType.Enterprise)}
+            fontWeight={500}
+            onClick={() => handleProductByType(ClusterType.StandardV1)}
           >
-            购买
+            获取
           </Button>
         </ServicePackage>
         <ServicePackage items={contect}>
@@ -316,14 +366,62 @@ export default function Product() {
             联系我们
           </Button>
         </ServicePackage>
-        <Cost />
+        <Cost formHook={formHook} />
       </Flex>
       <Modal isOpen={isOpen} onClose={onClosePayment} closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader></ModalHeader>
+        <ModalContent maxW={'735px'}>
+          <ModalHeader
+            height={'56px'}
+            borderTopRadius={'12px'}
+            fontSize={'18px'}
+            fontWeight={500}
+            bg={'#FBFBFC'}
+            py={'14px'}
+            borderBottom={'1px solid #F4F4F7'}
+          >
+            新建集群
+          </ModalHeader>
+          {complete === 0 && (
+            <Box px={'20px'}>
+              <Cost formHook={formHook2} priceMode={false} />
+              <Flex justifyContent={'center'} mb={'50px'}>
+                <Flex gap={'16px'} width={'426px'} h={'44px'}>
+                  {platformEnv?.stripeEnabled && (
+                    <Button
+                      size="primary"
+                      variant="primary"
+                      w="full"
+                      h="auto"
+                      py="14px"
+                      px="34px"
+                      onClick={() => handleSubmit('stripe')}
+                    >
+                      <StripeIcon />
+                      <Text ml="12px">{t('pay with stripe')}</Text>
+                    </Button>
+                  )}
+
+                  {platformEnv?.wechatEnabledRecharge && (
+                    <Button
+                      size="primary"
+                      variant="primary"
+                      w="full"
+                      h="auto"
+                      py="14px"
+                      px="34px"
+                      onClick={() => handleSubmit('wechat')}
+                    >
+                      <WechatIcon fill={'#33BABB'} />
+                      <Text ml="12px">{t('pay with wechat')}</Text>
+                    </Button>
+                  )}
+                </Flex>
+              </Flex>
+            </Box>
+          )}
           {complete !== 3 && <ModalCloseButton />}
-          {complete === 3 ? (
+          {/* {complete === 3 ? (
             <Flex
               flexDirection={'column'}
               px="37px"
@@ -403,7 +501,7 @@ export default function Product() {
                 <Text ml="12px">{t('pay with stripe')}</Text>
               </Button>
             </Flex>
-          )}
+          )} */}
         </ModalContent>
       </Modal>
       <ConfirmChild />

@@ -22,11 +22,11 @@ const Button = defineStyleConfig({
   },
   variants: {
     primary: {
-      bg: '#3E3B3B',
+      bg: '#111824',
       _hover: {
-        bg: '#3E3B3B',
+        bg: '#111824',
         _disabled: {
-          bg: '#3E3B3B'
+          bg: '#111824'
         }
       },
       color: '#FEFEFE'

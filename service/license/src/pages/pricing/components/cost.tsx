@@ -3,12 +3,21 @@ import { ArrowUp } from '@/components/Icon/ArrowUp';
 import { CpuIcon } from '@/components/Icon/CpuIcon';
 import { MemoryIcon } from '@/components/Icon/MemoryIcon';
 import MySelect from '@/components/Select';
-import { CpuSlideMarkList, MemorySlideMarkList, MonthMapList } from '@/constant/product';
+import {
+  CpuSlideMarkList,
+  MemorySlideMarkList,
+  MonthMapList,
+  cpuPriceMonth,
+  defaulClustertForm,
+  freeClusterForm,
+  memoryPriceMonth
+} from '@/constant/product';
 import { ClusterFormType } from '@/types';
 import {
   Box,
   Divider,
   Flex,
+  Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -21,54 +30,45 @@ import {
   SliderTrack,
   Text
 } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
-const defaultValues = {
-  cpu: 8,
-  memory: 16,
-  time: '3' // month
+export const calculatePrice = (form: ClusterFormType, freeValues: ClusterFormType): number => {
+  const { cpu, memory, time } = form;
+
+  const cpuTotalPrice = cpuPriceMonth * cpu;
+  const memoryTotalPrice = memoryPriceMonth * memory;
+
+  const totalPrice = (cpuTotalPrice + memoryTotalPrice) * parseInt(time);
+
+  if (cpu === freeValues.cpu && memory === freeValues.memory && time === freeValues.time) {
+    return 0;
+  } else {
+    return totalPrice;
+  }
 };
 
-const freeValues = {
-  cpu: 8,
-  memory: 8,
-  time: '3' // month
-};
-
-export default function Cost() {
+export default function Cost({
+  formHook,
+  priceMode = true
+}: {
+  priceMode?: boolean;
+  formHook: UseFormReturn<ClusterFormType, any, undefined>;
+}) {
   const [forceUpdate, setForceUpdate] = useState(false);
   const [price, setPrice] = useState(0);
-  const cpuPriceMonth = 6;
-  const memoryPriceMonth = 3;
 
-  // form
-  const formHook = useForm<ClusterFormType>({
-    defaultValues: defaultValues
-  });
-
-  const { setValue, getValues, watch, control } = formHook;
-
-  const calculatePrice = (form: ClusterFormType): number => {
-    const { cpu, memory, time } = form;
-
-    const cpuTotalPrice = cpuPriceMonth * cpu;
-    const memoryTotalPrice = memoryPriceMonth * memory;
-
-    const totalPrice = (cpuTotalPrice + memoryTotalPrice) * parseInt(time);
-
-    return totalPrice;
-  };
+  const { setValue, getValues, register, control } = formHook;
 
   formHook.watch((data) => {
     setForceUpdate(!forceUpdate);
     if (!data) return;
-    const price = calculatePrice(data as ClusterFormType);
+    const price = calculatePrice(data as ClusterFormType, freeClusterForm);
     setPrice(price);
   });
 
   useEffect(() => {
-    const price = calculatePrice(defaultValues);
+    const price = calculatePrice(defaulClustertForm, freeClusterForm);
     setPrice(price);
   }, []);
 
@@ -91,54 +91,73 @@ export default function Cost() {
     }
   ];
 
-  const cPrice = useMemo(() => {
-    const { cpu, memory, time } = getValues();
-    if (cpu === freeValues.cpu && memory === freeValues.memory && time === freeValues.time) {
-      return 0;
-    } else {
-      return price;
-    }
-  }, [getValues, price]);
-
   return (
     <Box minW={'500px'}>
-      <Text mt={'40px'} textAlign={'center'} fontSize={'24px'} fontWeight={500}>
-        计价方案
-      </Text>
-      <Box mt={'24px'} borderRadius={'8px'} bg={'white'} px={'32px'}>
-        <Flex
-          color={'#667085'}
-          fontSize={'12px'}
-          alignItems={'center'}
-          fontWeight={500}
-          py={'16px'}
-        >
-          <Text color={'#485264'}>单价</Text>
-          <Flex gap={'4px'} ml={'auto'}>
-            <CpuIcon />
-            <Text>CPU: {cpuPriceMonth * 12} 元/核心/年</Text>
+      {priceMode && (
+        <Text mt={'40px'} textAlign={'center'} fontSize={'24px'} fontWeight={500}>
+          计价方案
+        </Text>
+      )}
+      <Box mt={priceMode ? '24px' : ''} borderRadius={'8px'} bg={'white'} px={'32px'}>
+        {priceMode && (
+          <>
+            <Flex
+              color={'#667085'}
+              fontSize={'12px'}
+              alignItems={'center'}
+              fontWeight={500}
+              py={'16px'}
+            >
+              <Text color={'#485264'}>单价</Text>
+              <Flex gap={'4px'} ml={'auto'}>
+                <CpuIcon />
+                <Text>CPU: {cpuPriceMonth * 12} 元/核心/年</Text>
+              </Flex>
+              <Flex gap={'4px'} ml={'24px'}>
+                <MemoryIcon />
+                <Text>内存: {memoryPriceMonth * 12} 元/G/年</Text>
+              </Flex>
+            </Flex>
+            <Divider borderColor={'#E8EBF0'} />
+          </>
+        )}
+
+        {!priceMode && (
+          <Flex alignItems={'center'} pt={'32px'}>
+            <Box fontSize={'14px'} fontWeight={500} minW={'88px'}>
+              集群名
+            </Box>
+            <Input
+              flex={1}
+              borderRadius={'6px'}
+              placeholder={'集群名'}
+              {...register('name', {
+                required: '集群名称不能为空'
+              })}
+            />
           </Flex>
-          <Flex gap={'4px'} ml={'24px'}>
-            <MemoryIcon />
-            <Text>内存: {memoryPriceMonth * 12} 元/G/年</Text>
-          </Flex>
-        </Flex>
-        <Divider borderColor={'#E8EBF0'} />
+        )}
 
         {formArr.map((item) => {
           const list = item.sliderList;
           return (
-            <Box key={item.value}>
-              <Box fontWeight={500} fontSize={'12px'} mt={'24px'}>
+            <Flex
+              key={item.value}
+              flexDirection={priceMode ? 'column' : 'row'}
+              mt={priceMode ? '20px' : '32px'}
+            >
+              <Box minW={'88px'} fontWeight={500} fontSize={priceMode ? '12px' : '14px'}>
                 {item.label}
               </Box>
-              <Flex alignItems={'center'} gap={'20px'}>
+              <Flex alignItems={'center'} gap={'20px'} flex={1} mt={priceMode ? '12px' : ''}>
                 <Controller
                   control={control}
                   name={item.value}
                   render={({ field }) => (
                     <Slider
+                      alignSelf={'self-start'}
                       {...field}
+                      mt={'4px'}
                       focusThumbOnChange={false}
                       aria-label="slider-ex-1"
                       min={item.min}
@@ -148,7 +167,7 @@ export default function Cost() {
                         <SliderMark
                           key={n.value}
                           value={n.value}
-                          mt={3}
+                          mt={'6px'}
                           fontSize={'11px'}
                           transform={'translateX(-50%)'}
                           whiteSpace={'nowrap'}
@@ -176,7 +195,13 @@ export default function Cost() {
                   control={control}
                   name={item.value}
                   render={({ field }) => (
-                    <NumberInput position={'relative'} max={item.max} min={item.min} {...field}>
+                    <NumberInput
+                      ml={'10px'}
+                      position={'relative'}
+                      max={item.max}
+                      min={item.min}
+                      {...field}
+                    >
                       <NumberInputField
                         width={'89px'}
                         height={'32px'}
@@ -223,41 +248,55 @@ export default function Cost() {
                   )}
                 />
               </Flex>
-            </Box>
+            </Flex>
           );
         })}
 
-        <Box fontWeight={500} fontSize={'12px'} mt={'36px'}>
-          时间
-        </Box>
-        <MySelect
-          textAlign={'left'}
-          mt={'12px'}
-          width={'200px'}
-          value={getValues('time')}
-          list={MonthMapList}
-          onchange={(val: any) => setValue('time', val)}
-        />
-        <Text
-          cursor={'pointer'}
+        <Flex flexDirection={priceMode ? 'column' : 'row'} mt={'32px'}>
+          <Box fontWeight={500} fontSize={priceMode ? '12px' : '14px'} minW={'88px'}>
+            时间
+          </Box>
+          <MySelect
+            textAlign={'left'}
+            mt={priceMode ? '12px' : ''}
+            width={'200px'}
+            value={getValues('time')}
+            list={MonthMapList}
+            onchange={(val: any) => setValue('time', val)}
+          />
+        </Flex>
+
+        <Flex
+          justifyContent={'end'}
           textAlign={'right'}
           color={'#0884DD'}
           fontSize={'12px'}
           fontWeight={500}
-          mt={'24px'}
-          onClick={() => {
-            formHook.reset(freeValues);
-          }}
+          mt={priceMode ? '24px' : '4px'}
         >
-          免费规模
-        </Text>
-        <Divider mt={'8px'} borderColor={'#E8EBF0'} />
-        <Flex alignItems={'center'} justifyContent={'center'} py={'16px'}>
-          <Text fontSize={'11px'} fontWeight={500}>
-            价格:
+          <Text
+            px={'8px'}
+            cursor={'pointer'}
+            onClick={() => {
+              formHook.reset(freeClusterForm);
+            }}
+          >
+            免费规模
           </Text>
-          <Text ml={'12px'} color={'#0884DD'} fontSize={'20px'} fontWeight={500}>
-            ¥ {cPrice}
+        </Flex>
+        <Divider mt={priceMode ? '8px' : '4px'} borderColor={'#E8EBF0'} />
+
+        <Flex alignItems={'center'} justifyContent={'center'} py={'16px'}>
+          <Text color={'#667085'} fontSize={'11px'} fontWeight={500}>
+            {priceMode ? '价格:' : '需支付:'}
+          </Text>
+          <Text
+            ml={'12px'}
+            color={'#0884DD'}
+            fontSize={priceMode ? '20px' : '28px'}
+            fontWeight={500}
+          >
+            ¥ {price}
           </Text>
         </Flex>
       </Box>

@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 export enum ClusterType {
   Standard = 'Standard',
   Enterprise = 'Enterprise',
+  StandardV1 = 'StandardV1',
   Contact = 'Contact'
 }
 
@@ -77,4 +78,5 @@ export type ClusterFormType = {
   cpu: number;
   memory: number;
   time: string;
+  name: string;
 };

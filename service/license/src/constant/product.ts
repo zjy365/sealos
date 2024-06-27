@@ -1,3 +1,5 @@
+import { ClusterFormType } from '@/types';
+
 export type ServiceItem = { label: string; icon: 'check' | 'star' };
 
 const baseServiceItem: ServiceItem[] = [
@@ -92,3 +94,21 @@ export const MonthMapList = [
   { label: '2年', value: '24' },
   { label: '3年', value: '36' }
 ];
+
+export const defaulClustertForm: ClusterFormType = {
+  cpu: 8,
+  memory: 16,
+  time: '3', // month
+  name: ''
+};
+
+export const freeClusterForm: ClusterFormType = {
+  cpu: 8,
+  memory: 8,
+  time: '3', // month
+  name: 'default'
+};
+
+export const cpuPriceMonth = 6; // ¥
+
+export const memoryPriceMonth = 3; // ¥
