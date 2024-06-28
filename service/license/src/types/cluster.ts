@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 
 export enum ClusterType {
-  Standard = 'Standard',
-  Enterprise = 'Enterprise',
-  StandardV1 = 'StandardV1',
+  // Standard = 'Standard',
+  // Enterprise = 'Enterprise',
+  ScaledStandard = 'ScaledStandard',
   Contact = 'Contact'
 }
 
@@ -21,33 +21,22 @@ export type ClusterDB = {
   kubeSystemID?: string; // bind kube-system id
   kubeSystemUpdateAt?: Date;
   isDeleted?: boolean;
+  // v1.1
+  cpu?: number;
+  memory?: number;
+  months?: string;
 };
 
 export type ClusterRecordPayload = {
   uid: string; // user ID
   orderID?: string; // order ID
   type: ClusterType; // cluster type
-};
+} & ClusterFormType;
 
 export type CreateClusterParams = {
   orderID?: string; // order ID
   type: ClusterType; // license type
-};
-
-export type ClusterResult = {
-  clusterId: string; // cluster ID 唯一
-  uid: string; // user ID 唯一
-  orderID?: string; // order ID 唯一
-  licenseID?: ObjectId; // license ID
-  type: ClusterType; // license type
-  createdAt: Date;
-  updatedAt: Date;
-  // v1 new
-  displayName?: string;
-  kubeSystemID?: string;
-  kubeSystemUpdateAt?: Date;
-  isDeleted?: boolean;
-};
+} & ClusterFormType;
 
 export type CommandFormType = {
   cloudVersion: string;
@@ -77,6 +66,6 @@ export type CommandFormType = {
 export type ClusterFormType = {
   cpu: number;
   memory: number;
-  time: string;
-  name: string;
+  months: string;
+  name?: string;
 };

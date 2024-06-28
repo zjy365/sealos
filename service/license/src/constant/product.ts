@@ -98,15 +98,15 @@ export const MonthMapList = [
 export const defaulClustertForm: ClusterFormType = {
   cpu: 8,
   memory: 16,
-  time: '3', // month
+  months: '3',
   name: ''
 };
 
 export const freeClusterForm: ClusterFormType = {
   cpu: 8,
   memory: 8,
-  time: '3', // month
-  name: 'default'
+  months: '3',
+  name: ''
 };
 
 export const cpuPriceMonth = 6; // ¥

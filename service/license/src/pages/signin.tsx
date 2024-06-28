@@ -14,7 +14,6 @@ export default function SigninPage() {
 
   useEffect(() => {
     const { clusterType, external } = router.query;
-    console.log(clusterType, external, '--------');
     if (external && clusterType) {
       setRouteParams(external as string, clusterType as ClusterType);
     }

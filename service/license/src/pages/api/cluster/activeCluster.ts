@@ -9,7 +9,6 @@ import { generateLicenseToken, hasIssuedLicense } from '@/services/backend/db/li
 import { getPaymentByID } from '@/services/backend/db/payment';
 import { jsonRes } from '@/services/backend/response';
 import { LicenseRecordPayload } from '@/types';
-import { result } from 'lodash';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export type ActiveClusterParams = {
