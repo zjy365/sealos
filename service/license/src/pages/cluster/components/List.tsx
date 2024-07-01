@@ -95,7 +95,6 @@ export default function ClusterRecord() {
                     <Text>内存: {item?.memory} G</Text>
                   </Flex>
                 )}
-                <Flex>{item.type}</Flex>
               </Flex>
               <Flex justifyContent={'center'} alignItems={'center'} ml="auto" flexShrink={0}>
                 {item?.kubeSystemID ? (

@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const price = calculatePrice({ cpu, months, memory }, freeClusterForm);
 
     if (payment.amount !== price) {
-      return jsonRes(res, { code: 400, message: 'Mismatch between order and cluster size' });
+      return jsonRes(res, { code: 400, message: 'mismatch between order and cluster size' });
     }
 
     const issuedLicense = await hasIssuedLicense({ uid: userInfo.uid, orderID: orderID });

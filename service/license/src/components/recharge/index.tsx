@@ -77,6 +77,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
     setOrderID('');
     setComplete(0);
     setDetail(false);
+    setIsAgree(false);
     onClose();
   }, [formHook, onClose]);
 
@@ -137,7 +138,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
         }
         setDetail(true);
         setComplete(1);
-        paymentMutation.mutate({ amount: deFormatMoney(price).toString() });
+        paymentMutation.mutate({ amount: deFormatMoney(0.01).toString() });
       },
       (err) => {
         const deepSearch = (obj: any): string => {
@@ -242,7 +243,9 @@ const RechargeComponent = forwardRef(function RechargeComponent(
         isClosable: true,
         position: 'top'
       });
+      setOrderID('');
       setComplete(0);
+      setDetail(false);
     }
   });
 
@@ -267,7 +270,9 @@ const RechargeComponent = forwardRef(function RechargeComponent(
         isClosable: true,
         position: 'top'
       });
+      setOrderID('');
       setComplete(0);
+      setDetail(false);
     }
   });
 
@@ -332,7 +337,9 @@ const RechargeComponent = forwardRef(function RechargeComponent(
         isClosable: true,
         position: 'top'
       });
+      setOrderID('');
       setComplete(0);
+      setDetail(false);
     }
   });
 

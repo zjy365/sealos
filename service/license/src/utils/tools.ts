@@ -10,7 +10,7 @@ export const calculatePrice = (form: ClusterFormType, freeValues: ClusterFormTyp
 
   const totalPrice = (cpuTotalPrice + memoryTotalPrice) * parseInt(months);
 
-  if (cpu === freeValues.cpu && memory === freeValues.memory && months === freeValues.months) {
+  if (cpu <= freeValues.cpu && memory <= freeValues.memory && months === freeValues.months) {
     return 0;
   } else {
     return totalPrice;

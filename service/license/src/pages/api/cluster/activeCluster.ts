@@ -9,6 +9,7 @@ import { ExpiredTime, generateLicenseToken, hasIssuedLicense } from '@/services/
 import { getPaymentByID } from '@/services/backend/db/payment';
 import { jsonRes } from '@/services/backend/response';
 import { LicenseRecordPayload } from '@/types';
+import { calculatePrice } from '@/utils/tools';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export type ActiveClusterParams = {
@@ -121,10 +122,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const record: LicenseRecordPayload = {
         uid: userInfo.uid,
-        amount: 299,
+        amount: 0,
         token: _token,
         orderID: '',
-        quota: 299,
+        quota: 0,
         payMethod: 'stripe',
         type: 'Cluster',
         clusterId: clusterId,

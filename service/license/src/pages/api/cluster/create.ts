@@ -1,8 +1,10 @@
+import { freeClusterForm } from '@/constant/product';
 import { authSession } from '@/services/backend/auth';
 import { createClusterRecord } from '@/services/backend/db/cluster';
 import { getPaymentByID } from '@/services/backend/db/payment';
 import { jsonRes } from '@/services/backend/response';
 import { ClusterType, CreateClusterParams, PaymentStatus } from '@/types';
+import { calculatePrice } from '@/utils/tools';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -31,6 +33,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           code: 400,
           message: 'Unpaid'
         });
+      }
+      const price = calculatePrice({ cpu, months, memory }, freeClusterForm);
+      if (payment.amount !== price) {
+        return jsonRes(res, { code: 400, message: 'mismatch between order and cluster size' });
       }
     }
 
