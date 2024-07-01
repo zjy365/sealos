@@ -74,7 +74,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return jsonRes(res, { code: 400, message: 'No order found' });
     }
     const price = calculatePrice({ cpu, months, memory }, freeClusterForm);
-    console.log(price, payment);
 
     if (payment.amount !== price) {
       return jsonRes(res, { code: 400, message: 'Mismatch between order and cluster size' });

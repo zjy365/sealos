@@ -9,8 +9,17 @@ type PaymentDataState = {
     cpu: number;
     memory: number;
     months: string;
+    clusterId?: string;
+    name?: string;
   };
-  setPaymentData: (data: { orderId: string; cpu: number; memory: number; months: string }) => void;
+  setPaymentData: (data: {
+    orderId: string;
+    cpu: number;
+    memory: number;
+    months: string;
+    clusterId?: string;
+    name?: string;
+  }) => void;
   deletePaymentData: () => void;
   isExpired: () => boolean;
 };

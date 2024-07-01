@@ -64,7 +64,6 @@ const RechargeComponent = forwardRef(function RechargeComponent(
   const [price, setPrice] = useState(0);
 
   const formHook = useForm<ClusterFormType>();
-  console.log(formHook.getValues());
 
   // price
   formHook.watch((data) => {
@@ -163,10 +162,10 @@ const RechargeComponent = forwardRef(function RechargeComponent(
     const payMethod = payType;
     const currency = 'CNY';
     const stripeSuccessCallBackUrl = isLicensePay
-      ? `/cluster?clusterId=${clusterDetail?.clusterId}&tab=license&stripeState=success`
+      ? `/cluster?tab=license&stripeState=success`
       : '/pricing?stripeState=success';
     const stripeErrorCallBackUrl = isLicensePay
-      ? `/cluster?clusterId=${clusterDetail?.clusterId}&tab=license&stripeState=error`
+      ? `/cluster?tab=license&stripeState=error`
       : '/pricing?stripeState=error';
 
     return createPayment({
@@ -180,7 +179,11 @@ const RechargeComponent = forwardRef(function RechargeComponent(
 
   const paymentMutation = useMutation(createPaymentMutation, {
     async onSuccess(data) {
-      setPaymentData({ orderId: data.orderID, ...formHook.getValues() });
+      setPaymentData({
+        orderId: data.orderID,
+        clusterId: clusterDetail?.clusterId || '',
+        ...formHook.getValues()
+      });
       if (payType === 'stripe' && platformEnv && data?.sessionID) {
         const stripe = await loadStripe(platformEnv?.stripePub);
         stripe?.redirectToCheckout({
@@ -246,18 +249,16 @@ const RechargeComponent = forwardRef(function RechargeComponent(
   // create cluster
   const clusterMutation = useMutation((payload: CreateClusterParams) => createCluster(payload), {
     onSuccess(data) {
-      console.log(data);
-      router.push('/cluster');
       getCluster(data.clusterId);
       toast({
         status: 'success',
-        title: '集群创建成功',
+        title: '集群创建成功, 请前往我的集群查看',
         isClosable: true,
         position: 'top'
       });
-      onClosePayment();
       queryClient.invalidateQueries(['getClusterList']);
       deletePaymentData();
+      onClosePayment();
     },
     onError(err: any) {
       toast({
@@ -276,21 +277,28 @@ const RechargeComponent = forwardRef(function RechargeComponent(
     cacheTime: 0,
     staleTime: 0,
     onSuccess(data) {
-      console.log(data, clusterDetail, paymentData, 'getPaymentResult');
       const cpu = paymentData?.cpu;
       const months = paymentData?.months;
       const memory = paymentData?.memory;
+      const clusterName = paymentData?.name;
 
-      if (!clusterDetail?.clusterId || !cpu || !memory || !months) {
+      if (!cpu || !memory || !months) {
         return toast({
           position: 'top',
           status: 'error',
-          title: '请联系管理员'
+          title: '缺少 cpu、memory、months 参数'
         });
       }
 
       if (data.status === PaymentStatus.PaymentSuccess) {
         if (isLicensePay) {
+          if (!clusterDetail?.clusterId) {
+            return toast({
+              position: 'top',
+              status: 'error',
+              title: '缺少 clusterId 参数'
+            });
+          }
           licenseMutation.mutate({
             orderID: data.orderID,
             clusterId: clusterDetail.clusterId,
@@ -304,7 +312,8 @@ const RechargeComponent = forwardRef(function RechargeComponent(
             type: ClusterType.ScaledStandard,
             cpu,
             memory,
-            months
+            months,
+            name: clusterName
           });
         }
         uploadConvertData([90])
@@ -372,19 +381,34 @@ const RechargeComponent = forwardRef(function RechargeComponent(
   };
 
   useEffect(() => {
-    const { stripeState, orderID, clusterId, tab } = router.query;
+    const { stripeState, tab } = router.query;
+    const orderID = paymentData?.orderId;
+    const clusterId = paymentData?.clusterId;
+    console.log(stripeState, orderID, clusterId, tab, isLicensePay, paymentData);
+
     const clearQuery = () => {
-      router.replace({
-        pathname: '/cluster',
-        query: { tab }
-      });
+      isLicensePay
+        ? router.replace({
+            pathname: '/cluster',
+            query: { tab }
+          })
+        : router.replace({
+            pathname: '/pricing',
+            query: { tab }
+          });
     };
 
     if (stripeState === 'success') {
+      toast({
+        status: 'success',
+        title: '正在检查支付结果，请耐心等待。',
+        isClosable: true,
+        position: 'top'
+      });
       clusterId ? getCluster(clusterId as string) : '';
       setComplete(2);
       setOrderID(orderID as string);
-      setTimeout(clearQuery, 0);
+      clearQuery();
     } else if (stripeState === 'error') {
       clusterId ? getCluster(clusterId as string) : '';
       toast({
@@ -395,7 +419,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
         position: 'top'
       });
       onClosePayment();
-      setTimeout(clearQuery, 0);
+      clearQuery();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -427,7 +451,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
             >
               <LeftIcon />
               <Text ml="8px" color={'#24282C'}>
-                {t('Purchase License')}
+                {isLicensePay ? '购买 License' : '新建集群'}
               </Text>
             </ModalHeader>
             {complete === 1 ? (
@@ -453,7 +477,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
               py={'14px'}
               borderBottom={'1px solid #F4F4F7'}
             >
-              购买 License
+              {isLicensePay ? '购买 License' : '新建集群'}
             </ModalHeader>
             <Box px={'20px'} pb="45px">
               <BillingMeter
@@ -474,7 +498,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
                     onClick={() => handleSubmit('wechat')}
                   >
                     <AddIcon fill={'white'} />
-                    <Text ml="12px">购买 License</Text>
+                    <Text ml="12px"> {isLicensePay ? '购买 License' : '新建集群'}</Text>
                   </Button>
                 ) : (
                   <Flex gap={'16px'} width={'426px'} h={'44px'}>
