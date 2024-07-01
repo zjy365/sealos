@@ -12,16 +12,16 @@ export default function SigninPage() {
   const { data: routeParams, setRouteParams, clearRouteParams } = useRouteParamsStore();
   const { isUserLogin } = useSessionStore();
 
-  useEffect(() => {
-    const { clusterType, external } = router.query;
-    if (external && clusterType) {
-      setRouteParams(external as string, clusterType as ClusterType);
-    }
-    if (isUserLogin()) {
-      router.push('/pricing');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   const { clusterType, external } = router.query;
+  //   if (external && clusterType) {
+  //     setRouteParams(external as string, clusterType as ClusterType);
+  //   }
+  //   if (isUserLogin()) {
+  //     router.push('/pricing');
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   // handle baidu id
   useEffect(() => {

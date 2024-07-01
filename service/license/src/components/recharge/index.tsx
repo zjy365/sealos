@@ -124,7 +124,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
           } else {
             return clusterMutation.mutate({
               orderID: '',
-              type: ClusterType.ScaledStandard,
+              type: ClusterType.Standard,
               ...data
             });
           }

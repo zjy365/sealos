@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 
 export enum ClusterType {
-  // Standard = 'Standard',
-  // Enterprise = 'Enterprise',
+  Standard = 'Standard',
+  Enterprise = 'Enterprise',
   ScaledStandard = 'ScaledStandard',
   Contact = 'Contact'
 }
@@ -22,9 +22,9 @@ export type ClusterDB = {
   kubeSystemUpdateAt?: Date;
   isDeleted?: boolean;
   // v1.1
-  cpu?: number;
-  memory?: number;
-  months?: string;
+  cpu: number;
+  memory: number;
+  months: string;
 };
 
 export type ClusterRecordPayload = {

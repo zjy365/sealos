@@ -6,7 +6,7 @@ import useClusterDetail from '@/stores/cluster';
 import { download } from '@/utils/downloadFIle';
 import { json2License } from '@/utils/json2Yaml';
 import { getRemainingTime } from '@/utils/tools';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useRef, useState } from 'react';
@@ -17,6 +17,7 @@ export default function License() {
   const [pageSize, setPageSize] = useState(10);
   const rechargeRef = useRef<{ onOpen: () => void }>();
   const { clusterDetail } = useClusterDetail();
+  const toast = useToast();
 
   const { data } = useQuery(
     ['getLicenseByClusterId', page, pageSize, clusterDetail?.clusterId],
@@ -56,6 +57,16 @@ export default function License() {
             w="140px"
             variant={'black'}
             onClick={() => {
+              if (!clusterDetail?.cpu && !clusterDetail?.memory) {
+                return toast({
+                  title: '注意：旧版本不再支持续费，请获取最新版本的集群',
+                  description:
+                    '如果您需要续费，请先升级到最新版本的集群。遇到其他问题，如需帮助，可以通过工单及时联系我们。',
+                  position: 'top',
+                  isClosable: true,
+                  status: 'warning'
+                });
+              }
               rechargeRef.current?.onOpen();
             }}
           >

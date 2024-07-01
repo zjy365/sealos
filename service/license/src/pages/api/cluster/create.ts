@@ -8,7 +8,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const {
-      type = ClusterType.ScaledStandard,
+      type = ClusterType.Standard,
       orderID,
       cpu,
       memory,

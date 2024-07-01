@@ -106,7 +106,7 @@ export async function getLicenseRecordsByUid({
   return result;
 }
 
-export function generateLicenseToken(payload: LicenseToken, time = ExpiredTime) {
+export function generateLicenseToken(payload: LicenseToken, time: number) {
   const privateKey = process.env.LICENSE_PRIVATE_KEY;
   if (!privateKey) {
     throw new Error('LICENSE PRIVATE KEY IS MISSING');

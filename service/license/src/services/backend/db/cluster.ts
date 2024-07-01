@@ -1,7 +1,6 @@
-import { ClusterDB, ClusterRecordPayload, ClusterType, LicenseRecordPayload } from '@/types';
+import { ClusterDB, ClusterRecordPayload, LicenseRecordPayload } from '@/types';
 import { v4 as uuid } from 'uuid';
 import { connectToDatabase } from './mongodb';
-import { getOssUrl } from './oss';
 import { createLicenseRecord } from './license';
 import { ObjectId } from 'mongodb';
 

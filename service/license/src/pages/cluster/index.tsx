@@ -111,23 +111,23 @@ export default function MyCluster({ ossFileUrl, customBasePatch }: TutorialProps
   }
 
   // The existence of systemId triggers cluster activation
-  useEffect(() => {
-    if (router.query?.systemId) {
-      const systemId = router.query.systemId as string;
-      isKubeSystemIDBound(systemId).then((res) => {
-        console.log(res);
-        if (!res.isBound) {
-          onOpen();
-        } else {
-          findClusterBySystemId({ systemId }).then((res) => {
-            console.log(res, 11);
-            setClusterDetail(res);
-          });
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (router.query?.systemId) {
+  //     const systemId = router.query.systemId as string;
+  //     isKubeSystemIDBound(systemId).then((res) => {
+  //       console.log(res);
+  //       if (!res.isBound) {
+  //         onOpen();
+  //       } else {
+  //         findClusterBySystemId({ systemId }).then((res) => {
+  //           console.log(res, 11);
+  //           setClusterDetail(res);
+  //         });
+  //       }
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   if (isSuccess && data?.total === 0) {
     return (
