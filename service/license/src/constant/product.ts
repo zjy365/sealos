@@ -60,30 +60,20 @@ export const contect: ServiceItem[] = [
 
 export const CpuSlideMarkList = [
   { label: 8, value: 8 },
-  // { label: 16, value: 16 },
-  // { label: 24, value: 24 },
-  { label: 32, value: 32 },
-  { label: 64, value: 64 },
-  { label: 96, value: 96 },
-  { label: 128, value: 128 },
-  { label: 160, value: 160 },
-  { label: 192, value: 192 },
-  { label: 224, value: 224 },
-  { label: 256, value: 256 }
+  { label: 1000, value: 1000 },
+  { label: 3000, value: 3000 },
+  { label: 5000, value: 5000 },
+  { label: 7000, value: 7000 },
+  { label: 9999, value: 9999 }
 ];
 
 export const MemorySlideMarkList = [
-  { label: 16, value: 16 },
-  // { label: 32, value: 32 },
-  // { label: 64, value: 64 },
-  { label: 128, value: 128 },
-  { label: 256, value: 256 },
-  { label: 384, value: 384 },
-  { label: 512, value: 512 },
-  { label: 640, value: 640 },
-  { label: 768, value: 768 },
-  { label: 896, value: 896 },
-  { label: 1024, value: 1024 }
+  { label: 8, value: 8 },
+  { label: 1000, value: 1000 },
+  { label: 3000, value: 3000 },
+  { label: 5000, value: 5000 },
+  { label: 7000, value: 7000 },
+  { label: 9999, value: 9999 }
 ];
 
 export const MonthMapList = [

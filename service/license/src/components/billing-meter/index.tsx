@@ -55,7 +55,7 @@ const BillingMeter = forwardRef(
         value: 'cpu' as 'cpu' | 'memory',
         label: 'CPU',
         min: 1,
-        max: 256,
+        max: 9999,
         sliderList: CpuSlideMarkList
       },
       {
@@ -63,7 +63,7 @@ const BillingMeter = forwardRef(
         value: 'memory' as 'cpu' | 'memory',
         label: '内存',
         min: 1,
-        max: 1024,
+        max: 9999,
         sliderList: MemorySlideMarkList
       }
     ];

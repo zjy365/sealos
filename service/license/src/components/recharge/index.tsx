@@ -138,7 +138,7 @@ const RechargeComponent = forwardRef(function RechargeComponent(
         }
         setDetail(true);
         setComplete(1);
-        paymentMutation.mutate({ amount: deFormatMoney(0.01).toString() });
+        paymentMutation.mutate({ amount: deFormatMoney(price).toString() });
       },
       (err) => {
         const deepSearch = (obj: any): string => {
