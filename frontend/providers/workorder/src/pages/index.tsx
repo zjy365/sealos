@@ -7,21 +7,9 @@ export default function Index() {
   const { authUser, delAppSession } = useSessionStore();
 
   useEffect(() => {
-    if (router?.query?.orderId) {
-      const orderId = router?.query?.orderId;
-      router.push({
-        pathname: '/workorder/detail',
-        query: {
-          orderId: orderId
-        }
-      });
-    } else {
-      router.push('/workorders');
-    }
-  }, [router]);
-
-  useEffect(() => {
+    if (!router.isReady) return;
     const token = router.query?.token;
+
     if (token) {
       authUser(token as string);
     } else {
@@ -31,7 +19,15 @@ export default function Index() {
         delAppSession();
       }
     }
-  }, []);
+
+    const path = router?.query?.orderId
+      ? `/workorder/detail?orderId=${router.query.orderId}`
+      : '/workorders';
+
+    if (router.asPath !== path) {
+      router.replace(path);
+    }
+  }, [authUser, delAppSession, router, router.isReady]);
 
   return <div></div>;
 }
