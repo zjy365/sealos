@@ -48,28 +48,28 @@ function App({ Component, pageProps }: AppProps) {
     content: '该应用不允许单独使用，点击确认前往 Sealos Desktop 使用。'
   });
 
-  useEffect(() => {
-    const response = createSealosApp();
+  // useEffect(() => {
+  //   const response = createSealosApp();
 
-    (async () => {
-      const { domain } = await initSystemEnv();
-      try {
-        const res = await sealosApp.getSession();
-        if (!res?.token) return;
-        authUser(res.token);
-      } catch (err) {
-        if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_USER) {
-          authUser(process.env.NEXT_PUBLIC_MOCK_USER);
-        } else {
-          delAppSession();
-          openConfirm(() => {
-            window.open(`https://${domain}`, '_self');
-          })();
-        }
-      }
-    })();
-    return response;
-  }, []);
+  //   (async () => {
+  //     const { domain } = await initSystemEnv();
+  //     try {
+  //       const res = await sealosApp.getSession();
+  //       if (!res?.token) return;
+  //       authUser(res.token);
+  //     } catch (err) {
+  //       if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_USER) {
+  //         authUser(process.env.NEXT_PUBLIC_MOCK_USER);
+  //       } else {
+  //         delAppSession();
+  //         openConfirm(() => {
+  //           window.open(`https://${domain}`, '_self');
+  //         })();
+  //       }
+  //     }
+  //   })();
+  //   return response;
+  // }, []);
 
   // add resize event
   useEffect(() => {

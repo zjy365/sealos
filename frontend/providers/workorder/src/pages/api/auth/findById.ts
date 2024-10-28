@@ -28,12 +28,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       orderId,
       userId: payload.userId
     });
-    const regionInfo = await getRegionById(result?.userInfo?.regionUid || '');
+    // const regionInfo = await getRegionById(result?.userInfo?.regionUid || '');
 
     jsonRes(res, {
       data: {
         user: result?.userInfo,
-        regionInfo: regionInfo,
+        // regionInfo: regionInfo,
         workorderLink: `https://hzh.sealos.run/?openapp=system-workorder?orderId=${orderId}`
       }
     });

@@ -114,7 +114,7 @@ const OrderList = ({
         render: (item: WorkOrderDB) => {
           return (
             <Box color={'myGray.900'} fontSize={'md'} fontWeight={'bold'}>
-              {item.type}
+              {t(item.type)}
             </Box>
           );
         }

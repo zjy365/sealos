@@ -71,15 +71,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!reader) return res.end();
 
     req.socket.on('close', () => {
+      reader.cancel();
       res.end();
     });
+
+    const textDecoder = new TextDecoder();
 
     while (true) {
       const { value, done } = await reader.read();
       if (done) {
         res.end();
+        break;
       }
-      res.write(value);
+      if (value) {
+        const text = textDecoder.decode(value);
+        if (text.trim()) {
+          res.write(text);
+        }
+      }
     }
   } catch (error) {
     console.log(error);

@@ -43,6 +43,10 @@ export enum WorkOrderType {
   FunctionServer = 'functionserver',
   FastGPT = 'fastgpt',
   AccountCenter = 'account_center',
+  //fastgpt
+  AccountAndFeeIssues = 'account_and_fee_issues',
+  Workspace = 'workspace',
+  KnowledgeBase = 'knowledge_base',
   Other = 'other'
 }
 

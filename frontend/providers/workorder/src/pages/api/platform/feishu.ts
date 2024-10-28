@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         message: "'token is invaild'"
       });
     }
-    const regionInfo = await getRegionById(payload.regionUid || '');
+    // const regionInfo = await getRegionById(payload.regionUid || '');
     const feishuUrl = process.env.ADMIN_FEISHU_URL;
     const feishuCallBackUrl = process.env.ADMIN_FEISHU_CALLBACK_URL;
     const title = switchToManual ? `工单：${orderId}，请求人工处理` : '有新的工单，请立即查看';
@@ -50,9 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         elements: [
           {
             tag: 'markdown',
-            content: `**用户ID:** ${payload.userId}\n**可用区ID:** ${
-              regionInfo?.sealosRegionUid ? regionInfo.sealosRegionDomain : payload.regionUid
-            }\n所属分类: ${type}\n描述信息: ${description}`
+            content: `**用户ID:** ${payload.userId}\n所属分类: ${type}\n描述信息: ${description}`
           },
           {
             tag: 'action',

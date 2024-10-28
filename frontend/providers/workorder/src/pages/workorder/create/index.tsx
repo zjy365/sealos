@@ -36,7 +36,7 @@ export default function EditOrder() {
   // form
   const formHook = useForm<WorkOrderEditForm>({
     defaultValues: {
-      type: WorkOrderType.AppLaunchpad,
+      type: WorkOrderType.AccountAndFeeIssues,
       description: ''
     }
   });

@@ -2,8 +2,8 @@ import { generateAccessToken, verifyDesktopToken } from '@/services/backend/auth
 import { jsonRes } from '@/services/backend/response';
 import { createUser, getUserById, updateUser } from '@/services/db/user';
 import { AppSession } from '@/types/user';
-import { NextApiRequest, NextApiResponse } from 'next';
 import { omit } from 'lodash';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -22,11 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (existingUser) {
       const temp = {
-        workspaceId: payload.workspaceId,
-        workspaceUid: payload.workspaceUid,
-        regionUid: payload.regionUid,
-        userCrUid: payload.userCrUid,
-        userCrName: payload.userCrName
+        metadata: payload.metadata
       };
       await updateUser(payload.userId, temp);
 

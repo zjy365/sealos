@@ -1,10 +1,5 @@
 export type DesktopTokenPayload = {
-  regionUid: string;
-  userCrUid: string;
-  userCrName: string;
-  workspaceUid: string;
-  workspaceId: string;
-  userUid: string;
+  metadata: string;
   userId: string; // only
   iat: number;
   exp: number;

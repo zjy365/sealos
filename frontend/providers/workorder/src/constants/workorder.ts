@@ -4,41 +4,53 @@ export const OrderTypeList: {
   id: WorkOrderType;
   label: string;
 }[] = [
+  // {
+  //   id: WorkOrderType.AppLaunchpad,
+  //   label: 'applaunchpad'
+  // },
+  // {
+  //   id: WorkOrderType.CostCenter,
+  //   label: 'costcenter'
+  // },
+  // {
+  //   id: WorkOrderType.Template,
+  //   label: 'template'
+  // },
+  // {
+  //   id: WorkOrderType.DBProvider,
+  //   label: 'dbprovider'
+  // },
+  // {
+  //   id: WorkOrderType.CronJob,
+  //   label: 'cronjob'
+  // },
+  // {
+  //   id: WorkOrderType.CloudServer,
+  //   label: 'cloudserver'
+  // },
+  // {
+  //   id: WorkOrderType.ObjectStorage,
+  //   label: 'objectstorage'
+  // },
+  // {
+  //   id: WorkOrderType.FunctionServer,
+  //   label: 'functionserver'
+  // },
+  // {
+  //   id: WorkOrderType.AccountCenter,
+  //   label: 'account_center'
+  // },
   {
-    id: WorkOrderType.AppLaunchpad,
-    label: 'applaunchpad'
+    id: WorkOrderType.AccountAndFeeIssues,
+    label: 'account_and_fee_issues'
   },
   {
-    id: WorkOrderType.CostCenter,
-    label: 'costcenter'
+    id: WorkOrderType.Workspace,
+    label: 'workspace'
   },
   {
-    id: WorkOrderType.Template,
-    label: 'template'
-  },
-  {
-    id: WorkOrderType.DBProvider,
-    label: 'dbprovider'
-  },
-  {
-    id: WorkOrderType.CronJob,
-    label: 'cronjob'
-  },
-  {
-    id: WorkOrderType.CloudServer,
-    label: 'cloudserver'
-  },
-  {
-    id: WorkOrderType.ObjectStorage,
-    label: 'objectstorage'
-  },
-  {
-    id: WorkOrderType.FunctionServer,
-    label: 'functionserver'
-  },
-  {
-    id: WorkOrderType.AccountCenter,
-    label: 'account_center'
+    id: WorkOrderType.KnowledgeBase,
+    label: 'knowledge_base'
   },
   {
     id: WorkOrderType.Other,

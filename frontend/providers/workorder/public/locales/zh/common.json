@@ -64,5 +64,8 @@
   "other": "其他",
   "fastgpt": "FastGPT",
   "account_center": "账号中心",
-  "input_placeholder": "在此输入消息，可粘贴图片直接上传"
+  "input_placeholder": "在此输入消息，可粘贴图片直接上传",
+  "account_and_fee_issues": "账号 & 费用问题",
+  "workspace": "工作台",
+  "knowledge_base": "知识库"
 }

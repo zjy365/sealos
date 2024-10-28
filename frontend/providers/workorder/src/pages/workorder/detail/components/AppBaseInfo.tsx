@@ -161,18 +161,12 @@ const AppBaseInfo = ({ app }: { app: WorkOrderDB }) => {
             <Box onClick={() => copyData(workorderInfo?.user?.userId || '')}>
               userID: {workorderInfo?.user?.userId}
             </Box>
-            <Box onClick={() => copyData(workorderInfo?.user?.userCrName || '')}>
-              userCrName: {workorderInfo?.user?.userCrName}
-            </Box>
-            <Box onClick={() => copyData(workorderInfo?.user?.workspaceId || '')}>
-              workspaceId: {workorderInfo?.user?.workspaceId}
-            </Box>
-            <Box onClick={() => copyData(workorderInfo?.regionInfo?.sealosRegionDomain || '')}>
-              region: {workorderInfo?.regionInfo?.sealosRegionDomain}
-            </Box>
-            <Box onClick={() => copyData(workorderInfo?.workorderLink || '')}>
-              workorderLink: {workorderInfo?.workorderLink}
-            </Box>
+            {workorderInfo?.user?.metadata &&
+              Object.entries(workorderInfo.user.metadata).map(([key, value]) => (
+                <Box key={key} onClick={() => copyData(String(value))}>
+                  {key}: {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                </Box>
+              ))}
           </Flex>
         </Box>
       )}

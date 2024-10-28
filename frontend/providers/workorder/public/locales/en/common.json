@@ -64,5 +64,8 @@
   "other": "other",
   "fastgpt": "FastGPT",
   "account_center": "Account Center",
-  "input_placeholder": "Enter your message here, you can paste the picture and upload it directly"
+  "input_placeholder": "Enter your message here, you can paste the picture and upload it directly",
+  "account_and_fee_issues": "account",
+  "workspace": "workbench",
+  "knowledge_base": "knowledge base"
 }
