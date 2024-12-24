@@ -64,6 +64,7 @@ const map = {
   empty: require('./icons/empty.svg').default,
   shutdown: require('./icons/shutdown.svg').default,
   windsurf: require('./icons/windsurf.svg').default,
+  gift: require('./icons/gift.svg').default,
   rocket: require('./icons/rocket.svg').default
 }
 
