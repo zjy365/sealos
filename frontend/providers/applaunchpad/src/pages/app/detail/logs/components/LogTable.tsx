@@ -110,7 +110,7 @@ export const LogTable = () => {
   );
 
   return (
-    <Flex flexDir={'column'} w={'100%'} gap={4}>
+    <Flex flexDir={'column'} w={'100%'}>
       <Flex pl={4} alignItems={'center'} gap={4} justifyContent={'space-between'}>
         <Flex alignItems={'center'} gap={4}>
           <Text
@@ -187,7 +187,7 @@ export const LogTable = () => {
           minW={'75px'}
           fontSize={'12px'}
           variant={'outline'}
-          h={'32px'}
+          h={'28px'}
           leftIcon={<MyIcon name="export" />}
         >
           {t('export_log')}
@@ -231,6 +231,7 @@ export const LogTable = () => {
           </CheckboxGroup>
         </Flex>
       </Collapse>
+      <Box mb={6}></Box>
       {/* table */}
       <AdvancedTable columns={columns} data={mockData} />
     </Flex>
