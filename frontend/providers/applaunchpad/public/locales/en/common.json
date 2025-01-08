@@ -301,5 +301,8 @@
   "value": "Value",
   "logNumber": "Log Counts",
   "contains": "contains",
-  "not_contains": "not contains"
+  "not_contains": "not contains",
+  "visible": "Visable",
+  "hidden": "Hidden",
+  "export_log": "Export"
 }
