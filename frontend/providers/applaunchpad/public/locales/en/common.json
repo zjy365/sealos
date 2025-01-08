@@ -299,5 +299,7 @@
   "greater_than": "Greater than",
   "less_than": "Less than",
   "value": "Value",
-  "logNumber": "Log Counts"
+  "logNumber": "Log Counts",
+  "contains": "contains",
+  "not_contains": "not contains"
 }

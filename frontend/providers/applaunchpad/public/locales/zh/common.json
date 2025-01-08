@@ -300,5 +300,7 @@
   "greater_than": "大于",
   "less_than": "小于",
   "value": "值",
-  "logNumber": "日志数量"
+  "logNumber": "日志数量",
+  "contains": "包含",
+  "not_contains": "不包含"
 }
