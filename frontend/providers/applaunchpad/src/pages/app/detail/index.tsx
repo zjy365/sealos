@@ -14,7 +14,6 @@ import Header from './components/Header';
 import Pods from './components/Pods';
 import DetailLayout from '@/components/layouts/DetailLayout';
 import AdvancedInfo from './components/AdvancedInfo';
-import Logs from './components/Logs';
 
 const AppMainInfo = dynamic(() => import('./components/AppMainInfo'), { ssr: false });
 
