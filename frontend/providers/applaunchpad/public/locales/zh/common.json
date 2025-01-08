@@ -300,5 +300,8 @@
   "greater_than": "大于",
   "less_than": "小于",
   "value": "值",
-  "logNumber": "日志数量"
+  "logNumber": "日志数量",
+  "monitor": "监控",
+  "overview": "概览",
+  "no_data_available": "暂无数据"
 }
