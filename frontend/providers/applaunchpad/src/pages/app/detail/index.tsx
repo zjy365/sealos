@@ -89,17 +89,6 @@ const AppDetail = ({ appName }: { appName: string }) => {
           <Box flex="1" bg={'white'} borderRadius={'8px'}>
             {appDetail ? <AppMainInfo app={appDetail} /> : <Loading loading={true} fixed={false} />}
           </Box>
-          <Box
-            bg={'white'}
-            border={theme.borders.base}
-            borderRadius={'lg'}
-            h={0}
-            flex={1}
-            minH={'300px'}
-          >
-            <Pods pods={appDetailPods} appName={appName} loading={!podsLoaded} />
-          </Box>
-          <Logs />
         </Flex>
         <Box bg={'white'} borderRadius={'8px'} mb={'6px'}>
           <AdvancedInfo app={appDetail} />
