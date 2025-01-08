@@ -276,5 +276,8 @@
     "add_configmap": "Add Configmaps",
     "storage_path_placeholder": "For Example: /data"
   },
-  "guide_deploy_button": "Complete creation"
+  "guide_deploy_button": "Complete creation",
+  "overview": "Overview",
+  "monitor": "Monitor",
+  "logs": "Logs"
 }

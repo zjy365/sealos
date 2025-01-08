@@ -277,5 +277,8 @@
     "add_configmap": "新增配置文件",
     "storage_path_placeholder": "如：/data"
   },
-  "guide_deploy_button": "完成创建"
+  "guide_deploy_button": "完成创建",
+  "overview": "概览",
+  "monitor": "监控",
+  "logs": "日志"
 }
