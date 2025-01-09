@@ -22,7 +22,7 @@ export const Filter = () => {
   return (
     <Flex p={'12px'} w={'100%'} flexDir={'column'}>
       {/* tab */}
-      <Box w={'fit-content'} mb={'18px'}>
+      {/* <Box w={'fit-content'} mb={'18px'}>
         <Tabs
           size={'sm'}
           list={[
@@ -32,7 +32,7 @@ export const Filter = () => {
           activeId={activeId}
           onChange={setActiveId}
         />
-      </Box>
+      </Box> */}
       {/* operator button */}
       <Flex gap={'18px'}>
         <Flex
