@@ -169,10 +169,15 @@ const AdvancedSelect = (
                 }}
                 sx={{
                   'span.chakra-checkbox__control[data-checked]': {
-                    background: '#f0f4ff ',
+                    background: '#f0f4ff',
                     border: '1px solid #219bf4 ',
                     boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)',
                     color: '#219bf4',
+                    borderRadius: '4px'
+                  },
+                  'span.chakra-checkbox__control': {
+                    background: 'white',
+                    border: '1px solid #E8EBF0',
                     borderRadius: '4px'
                   }
                 }}
@@ -222,6 +227,11 @@ const AdvancedSelect = (
                       border: '1px solid #219bf4 ',
                       boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)',
                       color: '#219bf4',
+                      borderRadius: '4px'
+                    },
+                    'span.chakra-checkbox__control': {
+                      background: 'white',
+                      border: '1px solid #E8EBF0',
                       borderRadius: '4px'
                     }
                   }}
