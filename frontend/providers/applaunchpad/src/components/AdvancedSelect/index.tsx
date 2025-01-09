@@ -147,11 +147,6 @@ const AdvancedSelect = (
         >
           {checkBoxMode && (
             <MenuItem
-              {...(list.every((item) => item.checked)
-                ? {
-                    color: 'brightBlue.600'
-                  }
-                : {})}
               borderRadius={'4px'}
               _hover={{
                 bg: 'rgba(17, 24, 36, 0.05)',
@@ -161,6 +156,7 @@ const AdvancedSelect = (
               w={'100%'}
             >
               <Checkbox
+                w={'100%'}
                 isChecked={list.every((item) => item.checked)}
                 onChange={() => {
                   if (onCheckboxChange) {
