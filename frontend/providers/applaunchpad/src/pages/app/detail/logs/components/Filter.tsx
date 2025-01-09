@@ -3,7 +3,7 @@ import { Box, Button, ButtonProps, Flex, Input, Switch, Text } from '@chakra-ui/
 import { useTranslation } from 'next-i18next';
 import { useState } from 'react';
 import MyIcon from '@/components/Icon';
-import MySelect from '@/components/MySelect';
+import { MySelect } from '@sealos/ui';
 
 interface JsonModeFormItem {
   jsonKey: string;

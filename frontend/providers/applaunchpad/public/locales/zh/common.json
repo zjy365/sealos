@@ -309,5 +309,6 @@
   "visible": "可见",
   "hidden": "隐藏",
   "piece": "个",
-  "export_log": "导出日志"
+  "export_log": "导出日志",
+  "all": "全部"
 }

@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useRef, forwardRef, useMemo } from 'react';
 import {
   Menu,
   Box,
@@ -10,26 +9,34 @@ import {
   useDisclosure,
   useOutsideClick,
   MenuButton,
-  Flex
+  Flex,
+  Checkbox
 } from '@chakra-ui/react';
-import type { BoxProps, ButtonProps } from '@chakra-ui/react';
+import { useTranslation } from 'next-i18next';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import React, { useRef, forwardRef, useMemo } from 'react';
+import type { BoxProps, ButtonProps } from '@chakra-ui/react';
+
+export interface ListItem {
+  label: string | React.ReactNode;
+  value: string;
+  checked?: boolean;
+}
 
 interface Props extends ButtonProps {
   width?: string;
   height?: string;
   value?: string;
   placeholder?: string;
-  list: {
-    label: string | React.ReactNode;
-    value: string;
-  }[];
+  list: ListItem[];
   onchange?: (val: string) => void;
+  onCheckboxChange?: (list: ListItem[]) => void;
   isInvalid?: boolean;
   boxStyle?: BoxProps;
+  checkBoxMode?: boolean;
 }
 
-const MySelect = (
+const AdvancedSelect = (
   {
     placeholder,
     leftIcon,
@@ -38,12 +45,16 @@ const MySelect = (
     height = '30px',
     list,
     onchange,
+    onCheckboxChange,
     isInvalid,
     boxStyle,
+    checkBoxMode = false,
     ...props
   }: Props,
   selectRef: any
 ) => {
+  const { t } = useTranslation();
+
   const ref = useRef<HTMLButtonElement>(null);
   const SelectRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -58,15 +69,14 @@ const MySelect = (
   const activeMenu = useMemo(() => list.find((item) => item.value === value), [list, value]);
 
   return (
-    <Menu autoSelect={false} isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-      <Box
-        ref={SelectRef}
-        position={'relative'}
-        onClick={() => {
-          isOpen ? onClose() : onOpen();
-        }}
-        {...boxStyle}
-      >
+    <Menu
+      autoSelect={false}
+      isOpen={isOpen}
+      onOpen={onOpen}
+      onClose={onClose}
+      closeOnSelect={false}
+    >
+      <Box ref={SelectRef} position={'relative'} {...boxStyle}>
         <MenuButton
           as={Button}
           leftIcon={leftIcon}
@@ -100,6 +110,9 @@ const MySelect = (
                 bg: '#F7F8FA',
                 borderColor: isInvalid ? 'red' : ''
               })}
+          onClick={() => {
+            isOpen ? onClose() : onOpen();
+          }}
           {...props}
         >
           <Flex
@@ -132,10 +145,51 @@ const MySelect = (
           overflow={'overlay'}
           maxH={'300px'}
         >
+          {checkBoxMode && (
+            <MenuItem
+              {...(list.every((item) => item.checked)
+                ? {
+                    color: 'brightBlue.600'
+                  }
+                : {})}
+              borderRadius={'4px'}
+              _hover={{
+                bg: 'rgba(17, 24, 36, 0.05)',
+                color: 'brightBlue.600'
+              }}
+              p={'6px'}
+              w={'100%'}
+            >
+              <Checkbox
+                isChecked={list.every((item) => item.checked)}
+                onChange={() => {
+                  if (onCheckboxChange) {
+                    const newList = list.map((item) => ({
+                      ...item,
+                      checked: !list.every((item) => item.checked)
+                    }));
+                    onCheckboxChange(newList);
+                  }
+                }}
+                sx={{
+                  'span.chakra-checkbox__control[data-checked]': {
+                    background: '#f0f4ff ',
+                    border: '1px solid #219bf4 ',
+                    boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)',
+                    color: '#219bf4',
+                    borderRadius: '4px'
+                  }
+                }}
+              >
+                {t('all')}
+              </Checkbox>
+            </MenuItem>
+          )}
+
           {list.map((item) => (
             <MenuItem
               key={item.value}
-              {...(value === item.value
+              {...(!checkBoxMode && value === item.value
                 ? {
                     color: 'brightBlue.600'
                   }
@@ -152,7 +206,35 @@ const MySelect = (
                 }
               }}
             >
-              <Box>{item.label}</Box>
+              {checkBoxMode ? (
+                <Checkbox
+                  isChecked={item.checked}
+                  key={item.value}
+                  onChange={() => {
+                    if (onCheckboxChange) {
+                      const newList = list.map((listItem) =>
+                        listItem.value === item.value
+                          ? { ...listItem, checked: !listItem.checked }
+                          : listItem
+                      );
+                      onCheckboxChange(newList);
+                    }
+                  }}
+                  sx={{
+                    'span.chakra-checkbox__control[data-checked]': {
+                      background: '#f0f4ff ',
+                      border: '1px solid #219bf4 ',
+                      boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)',
+                      color: '#219bf4',
+                      borderRadius: '4px'
+                    }
+                  }}
+                >
+                  {item.label}
+                </Checkbox>
+              ) : (
+                <Box>{item.label}</Box>
+              )}
             </MenuItem>
           ))}
         </MenuList>
@@ -161,4 +243,4 @@ const MySelect = (
   );
 };
 
-export default React.memo(forwardRef(MySelect));
+export default React.memo(forwardRef(AdvancedSelect));

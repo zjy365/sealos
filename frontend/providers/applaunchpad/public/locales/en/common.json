@@ -307,5 +307,6 @@
   "not_contains": "not contains",
   "visible": "Visable",
   "hidden": "Hidden",
-  "export_log": "Export"
+  "export_log": "Export",
+  "all": "All"
 }
