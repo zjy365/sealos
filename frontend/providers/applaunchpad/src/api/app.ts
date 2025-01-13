@@ -59,3 +59,6 @@ export const getAppMonitorData = (payload: {
   queryKey: keyof MonitorQueryKey;
   step: string;
 }) => GET<MonitorDataResult[]>(`/api/monitor/getMonitorData`, payload);
+
+export const getAppLogs = (payload: { appName: string; podName: string; containerName: string }) =>
+  GET<string[]>(`/api/log/getAppLogs`, payload);
