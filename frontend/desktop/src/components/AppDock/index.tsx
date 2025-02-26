@@ -4,7 +4,7 @@ import { useConfigStore } from '@/stores/config';
 import { useDesktopConfigStore } from '@/stores/desktopConfig';
 import { APPTYPE, TApp } from '@/types';
 import { I18nCommonKey } from '@/types/i18next';
-import { Box, Center, Flex, Image } from '@chakra-ui/react';
+import { Box, Center, Divider, Flex, Image, Spinner } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { MouseEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Menu, useContextMenu } from 'react-contexify';
@@ -37,11 +37,17 @@ export default function AppDock() {
   const { toggleShape } = useDesktopConfigStore();
   const normalApps = apps.filter((item: TApp) => item?.displayType === 'normal');
 
+  const templateApp = normalApps.find((app) => app.key === 'system-template');
+  const launchpadApp = normalApps.find((app) => app.key === 'system-applaunchpad');
+  const devboxApp = normalApps.find((app) => app.key === 'system-devbox');
+
+  console.log(templateApp, launchpadApp, devboxApp);
+
   const AppMenuLists = useMemo(() => {
     const initialApps: TApp[] = [
       {
         name: 'home',
-        icon: '/icons/home.svg',
+        icon: '/cc/home.svg',
         zIndex: 99999,
         isShow: false,
         pid: -9,
@@ -57,7 +63,10 @@ export default function AppDock() {
         },
         displayType: 'hidden'
       },
-      ...normalApps.slice(0, 5).map((app, index) => ({ ...app, pid: -2 }))
+      ...(devboxApp ? [devboxApp].map((app, index) => ({ ...app, pid: -2 })) : []),
+      ...(launchpadApp ? [launchpadApp].map((app, index) => ({ ...app, pid: -2 })) : []),
+      ...(templateApp ? [templateApp].map((app, index) => ({ ...app, pid: -2 })) : [])
+      // ...normalApps.slice(0, 3).map((app, index) => ({ ...app, pid: -2 }))
     ];
 
     const mergedApps = initialApps.map((app) => {
@@ -69,7 +78,7 @@ export default function AppDock() {
       ...mergedApps,
       ...runningInfo.filter((running) => !initialApps.some((app) => app.key === running.key))
     ];
-  }, [normalApps, runningInfo]);
+  }, [devboxApp, launchpadApp, runningInfo, templateApp]);
 
   // Handle icon click event
   const handleNavItem = (e: MouseEvent<HTMLDivElement>, item: AppInfo) => {
@@ -140,108 +149,86 @@ export default function AppDock() {
 
   return (
     <Flex
-      flexDirection={'column'}
       alignItems={'center'}
       position="absolute"
-      p={'16px'}
-      pb={'0px'}
-      left="50%"
-      bottom={'4px'}
+      left="12px"
+      top="50%"
+      bottom={'unset'}
       zIndex={'1000'}
       transition={getTransitionValue()}
-      transform={isNavbarVisible ? 'translate(-50%, 0)' : 'translate(-50%, 64px)'}
+      transform={isNavbarVisible ? 'translate(0, -50%)' : 'translate(-93px, -50%)'}
       will-change="transform, opacity"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {runningInfo.length > 0 && runningInfo.some((app) => app.size === 'maximize') && (
-        <Center
-          width={'48px'}
-          height={'16px'}
-          color={'white'}
-          transition={getTransitionValue()}
-          cursor={'pointer'}
-          bg="rgba(220, 220, 224, 0.3)"
-          backdropFilter="blur(80px) saturate(150%)"
-          boxShadow={
-            '0px 0px 20px -4px rgba(12, 26, 67, 0.25), 0px 0px 1px 0px rgba(24, 43, 100, 0.25)'
-          }
-          borderTopRadius={'4px'}
-          transform={isNavbarVisible ? 'translateY(0)' : 'translateY(-4px)'}
-          will-change="transform, opacity"
-          onClick={() => {
-            toggleNavbarVisibility();
-          }}
-        >
-          <ChevronDownIcon
-            transform={isNavbarVisible ? 'rotate(0deg)' : 'rotate(180deg)'}
-            transition="transform 200ms ease-in-out"
-          />
-        </Center>
-      )}
-
       <Flex
         onContextMenu={(e) => displayMenu(e)}
-        borderRadius="12px"
-        border={'1px solid rgba(255, 255, 255, 0.07)'}
-        bg="rgba(220, 220, 224, 0.3)"
-        backdropFilter="blur(80px) saturate(150%)"
-        boxShadow={
-          '0px 0px 20px -4px rgba(12, 26, 67, 0.25), 0px 0px 1px 0px rgba(24, 43, 100, 0.25)'
+        borderRadius="100px"
+        border={'0.5px solid var(--dock-str, #E5E5E5)'}
+        background={
+          'var(--dock-fill, linear-gradient(180deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.48) 100%))'
         }
-        minW={'326px'}
-        w={'auto'}
+        backdropFilter="blur(20px)"
+        boxShadow={'0px 4px 12px 0px rgba(0, 0, 0, 0.12)'}
+        minH={'326px'}
+        h={'auto'}
+        flexDirection={'column'}
         gap={'12px'}
         userSelect={'none'}
-        px={'12px'}
+        p={'12px'}
       >
         {AppMenuLists.map((item: AppInfo, index: number) => {
           return (
-            <CustomTooltip
-              placement="top"
+            <Flex
+              flexDirection={'column'}
+              alignItems={'center'}
+              cursor={'pointer'}
               key={item?.name}
-              label={
-                item?.i18n?.[i18n?.language]?.name
-                  ? item?.i18n?.[i18n?.language]?.name
-                  : t(item?.name as I18nCommonKey)
-              }
+              onClick={(e) => handleNavItem(e, item)}
             >
-              <Flex
-                flexDirection={'column'}
-                alignItems={'center'}
-                cursor={'pointer'}
-                key={item?.name}
-                pt={'6px'}
-                pb={'2px'}
-                onClick={(e) => handleNavItem(e, item)}
+              <Center
+                w="56px"
+                h="56px"
+                borderRadius={'50%'}
+                bg={'rgba(255, 255, 255, 0.85)'}
+                backdropFilter={'blur(25px)'}
+                boxShadow={
+                  '0px 0.875px 3.5px 0px rgba(0, 0, 0, 0.08), 0px 14px 35px 0px rgba(0, 0, 0, 0.06)'
+                }
               >
-                <Center
-                  w="40px"
-                  h="40px"
-                  borderRadius={'8px'}
-                  bg={'rgba(255, 255, 255, 0.85)'}
-                  backdropFilter={'blur(25px)'}
-                  boxShadow={'0px 1.167px 2.333px 0px rgba(0, 0, 0, 0.20)'}
+                <Image
+                  src={item?.icon}
+                  fallbackSrc={logo || '/logo.svg'}
+                  alt={item?.name}
+                  w="32px"
+                  h="32px"
+                  draggable={false}
+                />
+              </Center>
+              <Box
+                opacity={item?.isShow ? 1 : 0}
+                mt={'6px'}
+                width={'20px'}
+                height={'4px'}
+                borderRadius={'full'}
+                bg={'#686868'}
+              ></Box>
+              {index === 0 && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="45"
+                  height="2"
+                  viewBox="0 0 45 2"
+                  fill="none"
                 >
-                  <Image
-                    src={item?.icon}
-                    fallbackSrc={logo || '/logo.svg'}
-                    alt={item?.name}
-                    w="32px"
-                    h="32px"
-                    draggable={false}
+                  <path
+                    d="M1 0.5C0.723858 0.5 0.5 0.723858 0.5 1C0.5 1.27614 0.723858 1.5 1 1.5V0.5ZM1 1.5H45V0.5H1V1.5Z"
+                    fill="black"
+                    fillOpacity="0.2"
                   />
-                </Center>
-                <Box
-                  opacity={item?.isShow ? 1 : 0}
-                  mt={'6px'}
-                  width={'4px'}
-                  height={'4px'}
-                  borderRadius={'full'}
-                  bg={'rgba(7, 27, 65, 0.50)'}
-                ></Box>
-              </Flex>
-            </CustomTooltip>
+                </svg>
+              )}
+            </Flex>
           );
         })}
       </Flex>
@@ -262,6 +249,32 @@ export default function AppDock() {
           <div className={styles.arrow}></div>
         </>
       </Menu>
+
+      {runningInfo.length > 0 && runningInfo.some((app) => app.size === 'maximize') && (
+        <Center
+          width={'20px'}
+          height={'72px'}
+          color={'white'}
+          transition={getTransitionValue()}
+          cursor={'pointer'}
+          bg="rgba(220, 220, 224, 0.3)"
+          backdropFilter="blur(80px) saturate(150%)"
+          boxShadow={
+            '0px 0px 20px -4px rgba(12, 26, 67, 0.25), 0px 0px 1px 0px rgba(24, 43, 100, 0.25)'
+          }
+          borderRadius={'full'}
+          transform={isNavbarVisible ? 'translateX(0px)' : 'translateX(4px)'}
+          will-change="transform, opacity"
+          onClick={() => {
+            toggleNavbarVisibility();
+          }}
+        >
+          <ChevronDownIcon
+            transform={isNavbarVisible ? 'rotate(90deg)' : 'rotate(-90deg)'}
+            transition="transform 200ms ease-in-out"
+          />
+        </Center>
+      )}
     </Flex>
   );
 }

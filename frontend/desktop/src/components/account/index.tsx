@@ -3,7 +3,20 @@ import { useCopyData } from '@/hooks/useCopyData';
 import { useConfigStore } from '@/stores/config';
 import useSessionStore from '@/stores/session';
 import download from '@/utils/downloadFIle';
-import { Box, Center, Flex, IconButton, Image, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  IconButton,
+  Image,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+  useDisclosure
+} from '@chakra-ui/react';
 import { CopyIcon, DocsIcon, DownloadIcon, LogoutIcon, NotificationIcon } from '@sealos/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
@@ -14,7 +27,7 @@ import { blurBackgroundStyles } from '../desktop_content';
 import RegionToggle from '../region/RegionToggle';
 import WorkspaceToggle from '../team/WorkspaceToggle';
 import GithubComponent from './github';
-import { ArrowIcon } from '../icons';
+import { ArrowIcon, ChevronDownIcon } from '../icons';
 import useAppStore from '@/stores/app';
 import AccountCenter from './AccountCenter';
 import CustomTooltip from '../AppDock/CustomTooltip';
@@ -29,6 +42,133 @@ const baseItemStyle = {
     background: 'rgba(255, 255, 255, 0.15)'
   }
 };
+
+{
+  /* <Flex height={'68px'} px="32px" alignItems="center" justifyContent="space-between">
+        <Flex alignItems="center" gap="4">
+          <Box>
+            <img src="/logo.svg" alt="Logo" width="32" height="32" />
+          </Box>
+          <Flex alignItems="center" gap="1">
+            <Box fontWeight="medium">Hong Kong</Box>
+            <Box color="gray.500">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Box>
+          </Flex>
+          <Box mx="2" color="gray.300">
+            /
+          </Box>
+          <Flex alignItems="center" gap="1">
+            <Box fontWeight="medium">Workspace-1</Box>
+            <Box color="gray.500">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Box>
+          </Flex>
+        </Flex>
+
+        <Flex alignItems="center" gap="4">
+          <Flex
+            alignItems="center"
+            gap="1"
+            bg="blue.50"
+            color="blue.600"
+            px="3"
+            py="1.5"
+            borderRadius="md"
+          >
+            <Box as="span">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Box>
+            <Box fontWeight="medium">升级计划</Box>
+          </Flex>
+
+          <Box fontWeight="medium">Guide</Box>
+          <Box fontWeight="medium">Docs</Box>
+
+          <Box position="relative">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M13.73 21a2 2 0 0 1-3.46 0"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Box>
+
+          <Box
+            width="32px"
+            height="32px"
+            borderRadius="full"
+            overflow="hidden"
+            bg="orange.100"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            color="orange.600"
+            fontWeight="bold"
+          >
+            用户
+          </Box>
+        </Flex>
+      </Flex> */
+}
 
 export default function Account() {
   const { layoutConfig } = useConfigStore();
@@ -61,62 +201,8 @@ export default function Account() {
   };
 
   return (
-    <Box position={'relative'} flex={1}>
-      <Flex position={'relative'} zIndex={3} px={'16px'} pt={'20px'} flexDirection={'column'}>
-        <Flex alignItems={'center'}>
-          <Center width={'36px'} height={'36px'} bg={'white'} borderRadius="full" mr={'8px'}>
-            <Image
-              width={user?.avatar && user.avatar.trim() !== '' ? 'full' : '20px'}
-              height={user?.avatar && user.avatar.trim() !== '' ? 'full' : '20px'}
-              objectFit={'cover'}
-              borderRadius="full"
-              src={user?.avatar}
-              fallbackSrc={'/images/default-user.svg'}
-              alt="user avator"
-              draggable={'false'}
-            />
-          </Center>
-          <Box>
-            <Text lineHeight={'20px'} color={'white'} fontSize={'14px'} fontWeight={500}>
-              {user?.name}
-            </Text>
-            <Flex
-              cursor={'pointer'}
-              gap="2px"
-              fontSize={'11px'}
-              lineHeight={'16px'}
-              fontWeight={'500'}
-              color={'rgba(255, 255, 255, 0.70)'}
-              alignItems={'center'}
-            >
-              <Text onClick={() => setShowId((s) => !s)}>
-                {showId ? `ID:${user?.userId}` : `NS:${user?.nsid}`}
-              </Text>
-              <CopyIcon
-                onClick={() => {
-                  if (user?.userId && user.nsid) copyData(showId ? user?.userId : user?.nsid);
-                }}
-                boxSize={'12px'}
-                fill={'rgba(255, 255, 255, 0.70)'}
-              />
-            </Flex>
-          </Box>
-          <Center
-            p={'4px'}
-            h={'fit-content'}
-            borderRadius={'4px'}
-            ml={'auto'}
-            cursor={'pointer'}
-            _hover={{
-              background: 'rgba(255, 255, 255, 0.15)'
-            }}
-          >
-            <LogoutIcon boxSize={'14px'} fill={'white'} />
-            <Text ml="4px" color={'white'} fontSize={'12px'} fontWeight={500} onClick={logout}>
-              {t('common:log_out')}
-            </Text>
-          </Center>
-        </Flex>
+    <Box position={'relative'} flex={1} bg={'red'}>
+      <Flex position={'relative'} zIndex={3} height={'100%'} alignItems={'center'}>
         <Flex mt={'16px'} justifyContent={'space-between'} position={'relative'}>
           {layoutConfig?.common.docsUrl && (
             <CustomTooltip placement={'bottom'} label={t('common:doc')}>
@@ -169,6 +255,7 @@ export default function Account() {
             <AccountCenter variant={'white-bg-icon'} p="4px" />
           </Flex>
         )}
+
         {layoutConfig?.common.workorderEnabled && (
           <Flex
             borderBottom={'1px solid rgba(255, 255, 255, 0.05)'}
@@ -226,18 +313,93 @@ export default function Account() {
             />
           </Flex>
         </Flex>
+        <Flex alignItems={'center'}>
+          <Box>
+            <Text lineHeight={'20px'} color={'white'} fontSize={'14px'} fontWeight={500}>
+              {user?.name}
+            </Text>
+            <Flex
+              cursor={'pointer'}
+              gap="2px"
+              fontSize={'11px'}
+              lineHeight={'16px'}
+              fontWeight={'500'}
+              color={'rgba(255, 255, 255, 0.70)'}
+              alignItems={'center'}
+            >
+              <Text onClick={() => setShowId((s) => !s)}>
+                {showId ? `ID:${user?.userId}` : `NS:${user?.nsid}`}
+              </Text>
+              <CopyIcon
+                onClick={() => {
+                  if (user?.userId && user.nsid) copyData(showId ? user?.userId : user?.nsid);
+                }}
+                boxSize={'12px'}
+                fill={'rgba(255, 255, 255, 0.70)'}
+              />
+            </Flex>
+          </Box>
+          <Center
+            p={'4px'}
+            h={'fit-content'}
+            borderRadius={'4px'}
+            ml={'auto'}
+            cursor={'pointer'}
+            _hover={{
+              background: 'rgba(255, 255, 255, 0.15)'
+            }}
+          >
+            <LogoutIcon boxSize={'14px'} fill={'white'} />
+            <Text ml="4px" color={'white'} fontSize={'12px'} fontWeight={500} onClick={logout}>
+              {t('common:log_out')}
+            </Text>
+          </Center>
+        </Flex>
+
+        <Menu>
+          <MenuButton height={'40px'} width={'40px'}>
+            <Center width={'40px'} height={'40px'} bg={'#9FC0FF'} borderRadius="full" mr={'8px'}>
+              <Image
+                width={user?.avatar && user.avatar.trim() !== '' ? 'full' : '20px'}
+                height={user?.avatar && user.avatar.trim() !== '' ? 'full' : '20px'}
+                objectFit={'cover'}
+                borderRadius="full"
+                src={user?.avatar}
+                fallbackSrc={'/images/default-user.svg'}
+                alt="user avator"
+                draggable={'false'}
+              />
+            </Center>
+          </MenuButton>
+          <MenuList p="0" borderRadius="12px" overflow="hidden" boxShadow="lg" minW="280px">
+            <Box p="24px">
+              <Button
+                size="sm"
+                height="32px"
+                px="16px"
+                bg="#1677FF"
+                color="white"
+                borderRadius="32px"
+                fontSize="14px"
+                fontWeight="500"
+                mb="16px"
+                _hover={{ bg: '#1677FF' }}
+              >
+                FREE
+              </Button>
+              <Text fontSize="24px" fontWeight="600" lineHeight="32px" mb="8px">
+                {user?.name}
+              </Text>
+              <Text color="#666666" fontSize="14px" lineHeight="22px">
+                ID:{user?.userId}
+              </Text>
+              <Text color="#666666" fontSize="14px" lineHeight="22px">
+                NS:{user?.nsid}
+              </Text>
+            </Box>
+          </MenuList>
+        </Menu>
       </Flex>
-      <Box
-        id="blur-background"
-        zIndex={0}
-        position={'absolute'}
-        top={0}
-        left={0}
-        w={'full'}
-        h={'full'}
-        overflow={'hidden'}
-        {...blurBackgroundStyles}
-      ></Box>
     </Box>
   );
 }
