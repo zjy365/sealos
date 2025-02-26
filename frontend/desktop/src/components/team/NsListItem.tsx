@@ -1,5 +1,6 @@
 import { Box, Flex, FlexProps, HStack, Text, VStack } from '@chakra-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
+import { CheckIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 const NsListItem = ({
@@ -8,6 +9,7 @@ const NsListItem = ({
   displayPoint = false,
   teamName,
   selectedColor = 'white',
+  showCheck = false,
   ...flexprop
 }: {
   displayPoint: boolean;
@@ -15,54 +17,49 @@ const NsListItem = ({
   isPrivate: boolean;
   isSelected: boolean;
   selectedColor?: string;
+  showCheck?: boolean;
 } & FlexProps) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   return (
     <Flex
       align={'center'}
-      p="6px 4px"
-      mb="2px"
+      px={'8px'}
       position={'relative'}
-      borderRadius="4px"
       onClick={(e) => {
         e.preventDefault();
         queryClient.invalidateQueries({ queryKey: ['teamList'] });
       }}
       cursor={'pointer'}
       {...flexprop}
-      {...(isSelected
-        ? {
-            background: 'rgba(255, 244, 244, 0.10)'
-          }
-        : {
-            bgColor: 'unset'
-          })}
-      _hover={{
-        '> .namespace-option': {
-          display: 'flex'
-        },
-        bgColor: 'rgba(255, 244, 244, 0.10)'
-      }}
+      // {...(isSelected
+      //   ? {
+      //       background: 'rgba(255, 244, 244, 0.10)'
+      //     }
+      //   : {
+      //       bgColor: 'unset'
+      //     })}
+      // _hover={{
+      //   '> .namespace-option': {
+      //     display: 'flex'
+      //   },
+      //   bgColor: 'rgba(255, 244, 244, 0.10)'
+      // }}
     >
-      <HStack gap={'8px'} align={'center'} width={'full'}>
-        <Box
-          h="8px"
-          w={displayPoint ? '8px' : '0'}
-          m="4px"
-          borderRadius="50%"
-          bgColor={isSelected ? '#47C8BF' : '#9699B4'}
-        />
-        <Text
-          {...(isSelected
-            ? {
-                color: selectedColor
-              }
-            : {})}
-          textTransform={'capitalize'}
-        >
-          {isPrivate ? t('common:default_team') : teamName}
-        </Text>
+      <HStack
+        align={'center'}
+        width={'full'}
+        justifyContent={'space-between'}
+        px={'8px'}
+        borderRadius={'8px'}
+        p={'6px 8px'}
+        _hover={{
+          bg: '#F4F4F5'
+        }}
+      >
+        <Text textTransform={'capitalize'}>{isPrivate ? t('common:default_team') : teamName}</Text>
+
+        {isSelected && showCheck && <CheckIcon size={16} color={'#1C4EF5'} />}
       </HStack>
     </Flex>
   );

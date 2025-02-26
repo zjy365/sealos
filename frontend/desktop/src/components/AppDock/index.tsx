@@ -47,7 +47,7 @@ export default function AppDock() {
     const initialApps: TApp[] = [
       {
         name: 'home',
-        icon: '/cc/home.svg',
+        icon: '/home.svg',
         zIndex: 99999,
         isShow: false,
         pid: -9,

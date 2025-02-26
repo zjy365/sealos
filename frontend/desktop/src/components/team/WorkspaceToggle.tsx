@@ -6,12 +6,13 @@ import { NSType } from '@/types/team';
 import { AccessTokenPayload } from '@/types/token';
 import { sessionConfig } from '@/utils/sessionConfig';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
-import { Box, HStack, Text, VStack, useDisclosure } from '@chakra-ui/react';
+import { Box, Center, Divider, HStack, Text, VStack, useDisclosure } from '@chakra-ui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { CubeIcon, DesktopExchangeIcon } from '../icons';
+import { ChevronDown } from 'lucide-react';
 
 export default function WorkspaceToggle() {
   const disclosure = useDisclosure();
@@ -48,30 +49,28 @@ export default function WorkspaceToggle() {
   const namespace = namespaces.find((x) => x.uid === ns_uid);
 
   return (
-    <HStack position={'relative'} mt={'8px'}>
+    <HStack position={'relative'}>
       <HStack
         w={'234px'}
         height={'40px'}
-        borderRadius={'100px'}
-        p={'8px 12px'}
-        background={'rgba(255, 255, 255, 0.07)'}
-        _hover={{
-          background: 'rgba(255, 255, 255, 0.15)'
-        }}
-        fontSize={'12px'}
-        color={'white'}
-        fontWeight={'500'}
         onClick={() => {
           disclosure.onOpen();
         }}
         cursor={'pointer'}
         userSelect={'none'}
+        gap={'8px'}
       >
-        <CubeIcon />
-        <Text>
+        <Text color={'#0A0A0A'} fontSize={'14px'} fontWeight={'500'}>
           {namespace?.nstype === NSType.Private ? t('common:default_team') : namespace?.teamName}
         </Text>
-        <DesktopExchangeIcon ml={'auto'} />
+        <Center
+          bg={disclosure.isOpen ? '#FFF' : ''}
+          transform={disclosure.isOpen ? 'rotate(-90deg)' : 'rotate(0deg)'}
+          borderRadius={'4px'}
+          transition={'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'}
+        >
+          <ChevronDown size={16} color={'#525252'} />
+        </Center>
       </HStack>
       {disclosure.isOpen ? (
         <Box position={'absolute'} w={'full'}>
@@ -86,26 +85,24 @@ export default function WorkspaceToggle() {
           ></Box>
           <Box position={'absolute'} inset={0} zIndex={999} fontSize={'13px'}>
             <Box
-              color={'white'}
-              bg="rgba(220, 220, 224, 0.10)"
-              boxShadow={'0px 1.167px 2.333px 0px rgba(0, 0, 0, 0.20)'}
               position={'absolute'}
               top="24px"
               right={0}
               left={0}
               cursor={'initial'}
-              borderRadius={'8px'}
-              p="6px"
-              backdropFilter={'blur(50px)'}
               maxH={'300px'}
               overflow={'auto'}
+              borderRadius={'12px'}
+              py={'8px'}
+              border={'1px solid #E4E4E7'}
+              background={'#FFF'}
+              boxShadow={'0px 4px 12px 0px rgba(0, 0, 0, 0.08)'}
+              color={'#18181B'}
               style={{
                 scrollbarWidth: 'none'
               }}
             >
               <VStack gap={0} alignItems={'stretch'}>
-                <TeamCenter />
-                {/* <Divider bgColor={'rgba(0, 0, 0, 0.05)'} my={'4px'} h={'0px'} /> */}
                 {namespaces.map((ns) => {
                   return (
                     <NsListItem
@@ -119,9 +116,12 @@ export default function WorkspaceToggle() {
                       isPrivate={ns.nstype === NSType.Private}
                       isSelected={ns.uid === ns_uid}
                       teamName={ns.teamName}
+                      showCheck={true}
                     />
                   );
                 })}
+                <Divider my={'4px'} borderColor={'#F4F4F5'} />
+                <TeamCenter />
               </VStack>
             </Box>
           </Box>
