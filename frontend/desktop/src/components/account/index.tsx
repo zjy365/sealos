@@ -43,18 +43,14 @@ import {
   Bell,
   Sparkles
 } from 'lucide-react';
+import UpgradePlanModal from './UpgradePlanModal';
 
 const baseItemStyle = {
-  w: '40px',
+  minW: '40px',
   h: '40px',
   fontSize: '14px',
   fontWeight: '500',
-  // background: 'rgba(255, 255, 255, 0.07)',
-  color: '#262626',
-  borderRadius: 'full'
-  // _hover: {
-  //   background: '#FFF'
-  // }
+  color: '#262626'
 };
 
 export default function Account() {
@@ -72,6 +68,7 @@ export default function Account() {
   const { installedApps, openApp } = useAppStore();
   const accountCenterRef = useRef<AccountCenterRef>(null);
   const onAmount = useCallback((amount: number) => setNotificationAmount(amount), []);
+  const upgradePlanDisclosure = useDisclosure();
 
   const logout = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -151,6 +148,11 @@ export default function Account() {
             gap="6px"
             borderRadius="8px"
             background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
+            _hover={{
+              background:
+                'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
+            }}
+            onClick={upgradePlanDisclosure.onOpen}
           >
             <Sparkles size={16} color="#1C4EF5" />
             <Text color="#1C4EF5" fontWeight="medium">
@@ -161,6 +163,11 @@ export default function Account() {
           <Center
             cursor={'pointer'}
             {...baseItemStyle}
+            px={'8px'}
+            borderRadius={'8px'}
+            _hover={{
+              background: 'rgba(0, 0, 0, 0.05);'
+            }}
             onClick={() => window.open(layoutConfig?.common?.docsUrl)}
           >
             {t('cc:guide')}
@@ -170,6 +177,11 @@ export default function Account() {
             <Center
               cursor={'pointer'}
               {...baseItemStyle}
+              borderRadius={'8px'}
+              px={'8px'}
+              _hover={{
+                background: 'rgba(0, 0, 0, 0.05);'
+              }}
               onClick={() => window.open(layoutConfig?.common?.docsUrl)}
             >
               {t('common:doc')}
@@ -180,6 +192,7 @@ export default function Account() {
             <Center
               cursor={'pointer'}
               {...baseItemStyle}
+              borderRadius={'full'}
               _hover={{
                 background: '#FFF'
               }}
@@ -359,6 +372,11 @@ export default function Account() {
           </Menu>
         </Flex>
       </Flex>
+
+      <UpgradePlanModal
+        isOpen={upgradePlanDisclosure.isOpen}
+        onClose={upgradePlanDisclosure.onClose}
+      />
     </Box>
   );
 }

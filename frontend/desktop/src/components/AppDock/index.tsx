@@ -41,8 +41,6 @@ export default function AppDock() {
   const launchpadApp = normalApps.find((app) => app.key === 'system-applaunchpad');
   const devboxApp = normalApps.find((app) => app.key === 'system-devbox');
 
-  console.log(templateApp, launchpadApp, devboxApp);
-
   const AppMenuLists = useMemo(() => {
     const initialApps: TApp[] = [
       {

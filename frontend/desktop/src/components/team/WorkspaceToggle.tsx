@@ -6,13 +6,15 @@ import { NSType } from '@/types/team';
 import { AccessTokenPayload } from '@/types/token';
 import { sessionConfig } from '@/utils/sessionConfig';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
-import { Box, Center, Divider, HStack, Text, VStack, useDisclosure } from '@chakra-ui/react';
+import { Box, Center, Divider, Flex, HStack, Text, VStack, useDisclosure } from '@chakra-ui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { CubeIcon, DesktopExchangeIcon } from '../icons';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus } from 'lucide-react';
+import { useRef } from 'react';
+import CreateTeam from './CreateTeam';
 
 export default function WorkspaceToggle() {
   const disclosure = useDisclosure();
@@ -116,10 +118,27 @@ export default function WorkspaceToggle() {
                       isPrivate={ns.nstype === NSType.Private}
                       isSelected={ns.uid === ns_uid}
                       teamName={ns.teamName}
+                      teamAvatar={ns.id}
                       showCheck={true}
                     />
                   );
                 })}
+                <CreateTeam>
+                  <Flex
+                    alignItems={'center'}
+                    gap={'8px'}
+                    px={'16px'}
+                    py={'6px'}
+                    height={'40px'}
+                    cursor={'pointer'}
+                  >
+                    <Plus size={20} color="#737373" />
+                    <Text fontSize="14px" fontWeight="500" color="#18181B">
+                      {t('cc:create_workspace')}
+                    </Text>
+                  </Flex>
+                </CreateTeam>
+
                 <Divider my={'4px'} borderColor={'#F4F4F5'} />
                 <TeamCenter />
               </VStack>

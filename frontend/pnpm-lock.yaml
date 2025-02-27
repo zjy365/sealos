@@ -123,6 +123,9 @@ importers:
       axios:
         specifier: ^1.5.1
         version: 1.6.2
+      boring-avatars:
+        specifier: ^1.11.2
+        version: 1.11.2
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
@@ -11948,6 +11951,10 @@ packages:
     deprecated: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
     dependencies:
       hoek: 0.7.6
+    dev: false
+
+  /boring-avatars@1.11.2:
+    resolution: {integrity: sha512-3+wkwPeObwS4R37FGXMYViqc4iTrIRj5yzfX9Qy4mnpZ26sX41dGMhsAgmKks1r/uufY1pl4vpgzMWHYfJRb2A==}
     dev: false
 
   /bottleneck@2.19.5:

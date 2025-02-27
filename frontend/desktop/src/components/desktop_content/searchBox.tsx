@@ -65,7 +65,7 @@ export default function SearchBox() {
         <Input
           color={'#4D4D4D'}
           pl={'6px'}
-          mr={'16px'}
+          mr={searchTerm ? '0' : '16px'}
           ref={inputRef}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -88,6 +88,33 @@ export default function SearchBox() {
             boxShadow: 'none'
           }}
         />
+        {searchTerm && (
+          <Center
+            mr={'16px'}
+            cursor={'pointer'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSearchTerm('');
+              inputRef.current?.focus();
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <rect x="1" y="1" width="14" height="14" rx="7" fill="#A3A3A3" />
+              <path
+                d="M10 6L6 10M6 6L10 10"
+                stroke="white"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </Center>
+        )}
       </Flex>
       {searchTerm !== '' && (
         <Flex

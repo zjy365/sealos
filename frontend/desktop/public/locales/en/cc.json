@@ -1,10 +1,17 @@
 {
   "account_settings": "Account Settings",
   "copy_kubeconfig": "Copy Kubeconfig",
+  "create_workspace": "Create a workspace",
   "guide": "Guide",
   "kubeconfig": "Kubeconfig",
   "plan_and_billing": "Plan and Billing",
   "settings": "Settings",
   "upgrade_plan": "Upgrade Plan",
-  "usage_analysis": "Usage Analysis"
+  "usage_analysis": "Usage Analysis",
+  "get_started_from_recommended": "Get Started from recommended scenarios below",
+  "most_popular": "Most popular",
+  "plan_benefit_statement": "A short benefit statement that highlights the ideal user for this tier.",
+  "includes_credits": "Includes ${{credits}} credits",
+  "your_current_plan": "Your current plan",
+  "purchase_plan": "Purchase plan"
 }

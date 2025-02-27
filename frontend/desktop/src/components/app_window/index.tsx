@@ -7,6 +7,7 @@ import Draggable, { DraggableEventHandler } from 'react-draggable';
 import styles from './index.module.scss';
 import { useTranslation } from 'next-i18next';
 import { useConfigStore } from '@/stores/config';
+import { Minus, Square, SquareSquare } from 'lucide-react';
 
 export default function AppWindow(props: {
   style?: React.CSSProperties;
@@ -78,7 +79,7 @@ export default function AppWindow(props: {
       handle=".windowHeader"
       position={position}
     >
-      <div
+      <Box
         ref={dragDom}
         className={clsx(styles.windowContainer, dragging ? styles.notrans : '')}
         data-size={wnapp?.size}
@@ -87,14 +88,21 @@ export default function AppWindow(props: {
         style={{
           zIndex: wnapp?.zIndex
         }}
+        borderRadius="16px"
+        border="1px solid #B0CBFF"
+        bg="#FFF"
+        boxShadow="0px 4px 6px 0px rgba(0, 0, 0, 0.24)"
+        backdropFilter="blur(100px)"
       >
         {/* app window header */}
         <Flex
           cursor={'pointer'}
-          h="28px"
-          background={'grayModern.100'}
+          h="40px"
+          justifyContent={'center'}
+          borderBottom={'1px solid #E4E4E7'}
+          background={'#FFF'}
           className={'windowHeader'}
-          borderRadius={'6px 6px 0 0'}
+          borderRadius={'16px 16px 0 0'}
           onClick={() => {
             setToHighestLayerById(pid);
           }}
@@ -139,6 +147,9 @@ export default function AppWindow(props: {
           </Flex>
           <Flex ml={'auto'}>
             <Box
+              width={'54px'}
+              height={'40px'}
+              borderLeft={'1px solid #E4E4E7'}
               className={styles.uicon}
               onClick={(e) => {
                 e.stopPropagation();
@@ -150,15 +161,13 @@ export default function AppWindow(props: {
                 });
               }}
             >
-              <Image
-                src="/icons/minimize.png"
-                fallbackSrc={logo}
-                alt={wnapp?.name}
-                width={'12px'}
-                height={'12px'}
-              />
+              <Minus size={16} color={'#525252'} />
             </Box>
             <Box
+              width={'54px'}
+              height={'40px'}
+              borderLeft={'1px solid #E4E4E7'}
+              borderRight={'1px solid #E4E4E7'}
               className={styles.uicon}
               onClick={(e) => {
                 e.stopPropagation();
@@ -172,7 +181,7 @@ export default function AppWindow(props: {
               }}
             >
               <Image
-                src={wnapp.size === 'maximize' ? '/icons/maximize.png' : '/icons/maxmin.png'}
+                src={wnapp.size === 'maximize' ? '/icons/maximize.svg' : '/icons/maxmin.svg'}
                 fallbackSrc={logo}
                 alt={wnapp?.name}
                 width={'12px'}
@@ -180,6 +189,8 @@ export default function AppWindow(props: {
               />
             </Box>
             <Box
+              width={'54px'}
+              height={'40px'}
               className={clsx(styles.uicon)}
               data-type={'close'}
               onClick={(e) => {
@@ -193,11 +204,11 @@ export default function AppWindow(props: {
               }}
             >
               <Image
-                src={'/icons/close.png'}
+                src={'/icons/close.svg'}
                 fallbackSrc={logo}
                 alt={wnapp?.name}
-                width={'12px'}
-                height={'12px'}
+                width={'16px'}
+                height={'16px'}
               />
             </Box>
           </Flex>
@@ -211,7 +222,7 @@ export default function AppWindow(props: {
           style={{ pointerEvents: wnapp.zIndex !== maxZIndex ? 'unset' : 'none' }}
         ></div>
         {/* app window content */}
-        <Flex flexGrow={1} overflow={'hidden'} borderRadius={'0 0 6px 6px'} position={'relative'}>
+        <Flex flexGrow={1} overflow={'hidden'} borderRadius={'0 0 16px 16px'} position={'relative'}>
           {/* Drag necessary to improve fluency */}
           {dragging && (
             <Box
@@ -224,7 +235,7 @@ export default function AppWindow(props: {
           )}
           {props.children}
         </Flex>
-      </div>
+      </Box>
     </Draggable>
   );
 }

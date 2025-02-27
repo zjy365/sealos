@@ -8,10 +8,10 @@
   will-change: transform;
   position: fixed;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25), 0px 0px 1px rgba(0, 0, 0, 0.25);
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 8px;
+  left: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
   border-radius: 6px;
   transition: all cubic-bezier(0.85, 0.14, 0.14, 0.85) 150ms;
   transform-origin: center;
@@ -56,7 +56,7 @@
 }
 
 .uicon {
-  width: 46px;
+  // width: 46px;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -68,11 +68,12 @@
   }
 
   &:hover {
-    background: rgba(136, 136, 136, 0.2);
+    background: #f4f4f5;
   }
 
   &[data-type='close']:hover {
-    background: rgba(255, 0, 0, 0.8);
+    // background: rgba(255, 0, 0, 0.8);
+    border-radius: 0 16px 0 0;
   }
 }
 

@@ -1,7 +1,9 @@
-import { Box, Flex, FlexProps, HStack, Text, VStack } from '@chakra-ui/react';
+import { Avatar, Box, Flex, FlexProps, HStack, Text, VStack, Image } from '@chakra-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
+import { useState, useEffect } from 'react';
+import BoringAvatar from 'boring-avatars';
 
 const NsListItem = ({
   isSelected,
@@ -10,6 +12,7 @@ const NsListItem = ({
   teamName,
   selectedColor = 'white',
   showCheck = false,
+  teamAvatar,
   ...flexprop
 }: {
   displayPoint: boolean;
@@ -18,9 +21,11 @@ const NsListItem = ({
   isSelected: boolean;
   selectedColor?: string;
   showCheck?: boolean;
+  teamAvatar?: string;
 } & FlexProps) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+
   return (
     <Flex
       align={'center'}
@@ -32,24 +37,10 @@ const NsListItem = ({
       }}
       cursor={'pointer'}
       {...flexprop}
-      // {...(isSelected
-      //   ? {
-      //       background: 'rgba(255, 244, 244, 0.10)'
-      //     }
-      //   : {
-      //       bgColor: 'unset'
-      //     })}
-      // _hover={{
-      //   '> .namespace-option': {
-      //     display: 'flex'
-      //   },
-      //   bgColor: 'rgba(255, 244, 244, 0.10)'
-      // }}
     >
       <HStack
         align={'center'}
         width={'full'}
-        justifyContent={'space-between'}
         px={'8px'}
         borderRadius={'8px'}
         p={'6px 8px'}
@@ -57,9 +48,19 @@ const NsListItem = ({
           bg: '#F4F4F5'
         }}
       >
+        {teamAvatar && showCheck && (
+          <Box boxSize={'28px'}>
+            <BoringAvatar
+              size={28}
+              name={teamAvatar}
+              colors={['#5480f2', '#493ed5', '#46c7a6', '#9de4cd', '#f6cc81']}
+            />
+          </Box>
+        )}
         <Text textTransform={'capitalize'}>{isPrivate ? t('common:default_team') : teamName}</Text>
-
-        {isSelected && showCheck && <CheckIcon size={16} color={'#1C4EF5'} />}
+        {isSelected && showCheck && (
+          <CheckIcon style={{ marginLeft: 'auto' }} size={16} color={'#1C4EF5'} />
+        )}
       </HStack>
     </Flex>
   );
