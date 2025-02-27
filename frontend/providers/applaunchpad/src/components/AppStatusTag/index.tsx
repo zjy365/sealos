@@ -27,7 +27,7 @@ const AppStatusTag = ({
       fontSize={'xs'}
       fontWeight={'bold'}
       alignItems={'center'}
-      minW={'68px'}
+      minW={'78px'}
       gap={'4px'}
     >
       <Box

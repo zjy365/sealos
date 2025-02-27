@@ -328,7 +328,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
         alignItems={'center'}
         h={'100%'}
         minWidth={'1024px'}
-        backgroundColor={'grayModern.100'}
+        backgroundColor={'#FFF'}
         overflowY={'auto'}
       >
         <Header
