@@ -135,7 +135,7 @@ export default function DevboxListContainer({ ...props }: FlexProps) {
   }, [list.length]);
 
   return (
-    <Flex flexDir={'column'} backgroundColor={'grayModern.100'} px={'32px'} h="100vh" {...props}>
+    <Flex flexDir={'column'} backgroundColor={'white'} px={10} h="100vh" {...props}>
       <DevboxHeader listLength={list.length} />
       {list.length === 0 && !isLoading ? (
         <Empty />

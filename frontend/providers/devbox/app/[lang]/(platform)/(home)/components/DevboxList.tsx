@@ -345,7 +345,13 @@ const DevboxList = ({
   ];
   return (
     <>
-      <AdvancedTable columns={columns} data={devboxList} itemClass="devboxListItem" />
+      <AdvancedTable
+        border={'0.5px solid'}
+        borderColor={'#E4E4E7'}
+        columns={columns}
+        data={devboxList}
+        itemClass="devboxListItem"
+      />
       {!!delDevbox && (
         <DelModal
           devbox={delDevbox}

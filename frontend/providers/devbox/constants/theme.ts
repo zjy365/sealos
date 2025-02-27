@@ -13,5 +13,6 @@ export const theme = extendTheme(SealosTheme, {
         minWidth: '700px'
       }
     }
+    // colors
   }
 });
