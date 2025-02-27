@@ -60,7 +60,6 @@ const AppDetail = ({ appName }: { appName: string }) => {
         flexDirection={'column'}
         minH={'100%'}
         flex={'1 0 0'}
-        w={0}
         overflowY={'auto'}
         overflowX={'hidden'}
       >

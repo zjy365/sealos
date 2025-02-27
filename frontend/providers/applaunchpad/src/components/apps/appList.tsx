@@ -341,7 +341,7 @@ const AppList = ({
   );
 
   return (
-    <Box backgroundColor={'grayModern.100'} px={'32px'} pb={5} minH={'100%'}>
+    <Box backgroundColor={'#FFF'} px={'40px'} pb={5} minH={'100%'}>
       <Flex h={'88px'} alignItems={'center'}>
         <Center
           w="46px"
@@ -361,18 +361,22 @@ const AppList = ({
           ( {apps.length} )
         </Box>
         <Box flex={1}></Box>
-        <Button
-          h={'40px'}
-          w={'156px'}
-          flex={'0 0 auto'}
-          leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#FFF'} />}
-          onClick={() => router.push('/app/edit')}
-        >
+        <Button h={'40px'} w={'106px'} flex={'0 0 auto'} onClick={() => router.push('/app/edit')}>
           {t('Create Application')}
         </Button>
       </Flex>
 
-      <MyTable itemClass="appItem" columns={columns} data={apps} />
+      <MyTable
+        itemClass="appItem"
+        columns={columns}
+        data={apps}
+        pagination={{
+          current: 1,
+          pageSize: 10,
+          total: 100,
+          onChange: (page) => console.log('切换到页码:', page)
+        }}
+      />
 
       <PauseChild />
       {!!delAppName && (

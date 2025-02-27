@@ -63,15 +63,16 @@ export default function DissolveTeam({
   return (
     <>
       <Button
-        size={'sm'}
-        height={'32px'}
+        size={'md'}
+        width={'64px'}
+        height={'36px'}
         variant={'outline'}
+        borderRadius={'8px'}
         _hover={{
           color: 'red.600',
           bg: 'rgba(17, 24, 36, 0.05)'
         }}
         {...props}
-        leftIcon={<DeleteIcon boxSize={'14px'} />}
         onClick={() => {
           if (session?.user?.ns_uid === ns_uid) {
             return toast({
@@ -81,7 +82,7 @@ export default function DissolveTeam({
           onOpen();
         }}
       >
-        {t('common:dissolve_team')}
+        {t('cc:delete')}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />

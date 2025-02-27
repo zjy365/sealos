@@ -85,7 +85,7 @@ const Logs = ({
         <Box
           py={1}
           px={4}
-          backgroundColor={'grayModern.100'}
+          backgroundColor={'#FFF'}
           whiteSpace={'nowrap'}
           overflow={'hidden'}
           textOverflow={'ellipsis'}
