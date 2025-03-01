@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { Box, Button, Flex } from '@chakra-ui/react';
-import { Dispatch, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useRouter } from '@/i18n';
 import { useDevboxStore } from '@/stores/devbox';

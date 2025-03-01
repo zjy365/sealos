@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 import Header from './components/Header';
 import Version from './components/Version';
 import MainBody from './components/MainBody';
-import BasicInfo from './components/BasicInfo';
+import BasicInfo from './components/Basic';
 
 import { useEnvStore } from '@/stores/env';
 import { useLoading } from '@/hooks/useLoading';
@@ -121,7 +121,14 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
           </Flex>
 
           <Divider my={2} />
-          <Flex position={'relative'} flex={'1 0 0'} direction={'column'} w={'80%'} mx={'auto'}>
+          <Flex
+            position={'relative'}
+            flex={'1 0 0'}
+            direction={'column'}
+            w={'80%'}
+            mx={'auto'}
+            my={4}
+          >
             {/* basic */}
             <Box
               w={'full'}

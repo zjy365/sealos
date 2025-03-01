@@ -90,7 +90,8 @@ const map = {
   cpu: require('./icons/cpu.svg').default,
   memory: require('./icons/memory.svg').default,
   port: require('./icons/port.svg').default,
-  gpu: require('./icons/gpu.svg').default
+  gpu: require('./icons/gpu.svg').default,
+  attention: require('./icons/attention.svg').default
 };
 
 const MyIcon = ({
