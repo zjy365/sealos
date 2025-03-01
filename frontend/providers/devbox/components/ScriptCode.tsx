@@ -26,9 +26,10 @@ const ScriptCode = ({
       py={1}
       borderRadius={'6px'}
       border={'1px solid'}
+      bg={'black'}
       borderColor={'grayModern.200'}
       flexDirection={oneLine ? 'row' : 'column'}
-      w={'585px'}
+      maxW={'100%'}
       maxH={'300px'}
       sx={{
         '& .copy-button': {
@@ -47,7 +48,7 @@ const ScriptCode = ({
               bg={'transparent'}
               border={'none'}
               boxShadow={'none'}
-              color={'grayModern.900'}
+              color={'#93C5FD'}
               fontWeight={400}
               _hover={{
                 cursor: 'pointer'
@@ -55,7 +56,7 @@ const ScriptCode = ({
               leftIcon={
                 <MyIcon
                   name="arrowRight"
-                  color={'grayModern.500'}
+                  color={'white'}
                   w={'16px'}
                   transform={onOpenScripts ? 'rotate(90deg)' : 'rotate(0)'}
                   transition="transform 0.2s ease"
@@ -67,7 +68,7 @@ const ScriptCode = ({
           </Box>
         )}
         {oneLine && (
-          <Box py={2} overflowY={'auto'} h={'100%'} pl={4}>
+          <Box py={2} overflowY={'auto'} h={'100%'} pl={4} maxW={'100%'}>
             <Code content={script} language={platform === 'Windows' ? 'powershell' : 'bash'} />
           </Box>
         )}
@@ -80,7 +81,7 @@ const ScriptCode = ({
             right: 2
           })}
           boxShadow={'none'}
-          color={'grayModern.900'}
+          color={'#A3A3A3'}
           _hover={{
             color: 'brightBlue.600',
             '& svg': {
@@ -98,7 +99,7 @@ const ScriptCode = ({
       </Flex>
       {!oneLine && (
         <Collapse in={onOpenScripts} animateOpacity>
-          <Box pt={2} pl={3} overflowY={'auto'} h={'100%'}>
+          <Box pt={2} pl={3} overflowY={'auto'} h={'100%'} maxW={'100%'}>
             <Code content={script} language={platform === 'Windows' ? 'powershell' : 'bash'} />
           </Box>
         </Collapse>

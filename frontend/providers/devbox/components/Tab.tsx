@@ -8,17 +8,17 @@ const Tab = React.forwardRef((props: { children: React.ReactNode }, ref) => {
     <Box
       {...tabProps}
       color={'grayModern.500'}
-      bg={'white'}
       cursor={'pointer'}
       _hover={{
-        color: 'brightBlue.600'
+        color: '#18181B'
       }}
-      mr={6}
       pb={1}
-      fontWeight={500}
+      textAlign={'center'}
+      w={'full'}
+      fontWeight={400}
       fontSize={'14px'}
       _selected={{
-        color: 'brightBlue.600',
+        color: '#18181B',
         position: 'relative',
         '&::after': {
           content: '""',
@@ -27,7 +27,7 @@ const Tab = React.forwardRef((props: { children: React.ReactNode }, ref) => {
           left: '0px',
           width: '100%',
           height: '2px',
-          backgroundColor: 'brightBlue.600'
+          backgroundColor: '#18181B'
         }
       }}
     >
