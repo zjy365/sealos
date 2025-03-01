@@ -291,7 +291,7 @@ const DevboxCreatePage = () => {
           alignItems={'center'}
           h={'100vh'}
           minWidth={'1024px'}
-          backgroundColor={'grayModern.100'}
+          backgroundColor={'white'}
         >
           <Header
             yamlList={yamlList}
