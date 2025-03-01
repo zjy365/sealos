@@ -174,6 +174,7 @@
   "my_templates": "我的模板",
   "name": "名字",
   "network": "网络配置",
+  "network_settings": "网络配置",
   "no_description": "暂无简介",
   "no_network": "暂无网络配置",
   "no_template_repository_versions": "暂无可用模板",
