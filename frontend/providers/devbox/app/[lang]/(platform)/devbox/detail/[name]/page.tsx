@@ -66,7 +66,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
     }
   );
   return (
-    <Flex p={5} h={'100vh'} px={'32px'} flexDirection={'column'}>
+    <Flex p={5} h={'100vh'} px={'32px'} flexDirection={'column'} bg={'white'}>
       <Loading loading={!initialized} />
       {devboxDetail && initialized && (
         <>
