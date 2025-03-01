@@ -191,6 +191,7 @@
   "opening_ide": "正在打开 IDE...",
   "os": "操作系统",
   "outstanding_tips": "您已欠费，无法创建项目，请尽快充值",
+  "overview": "概览",
   "overview_template_version_prompt": "即将覆盖原有的 {name} {version}，请确认是否继续，以避免数据丢失。",
   "page": "页",
   "pause": "关机",

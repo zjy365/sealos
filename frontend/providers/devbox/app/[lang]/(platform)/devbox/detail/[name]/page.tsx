@@ -1,33 +1,32 @@
 'use client';
 
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
-import { useLoading } from '@/hooks/useLoading';
-import BasicInfo from './components/BasicInfo';
 import Header from './components/Header';
-import MainBody from './components/MainBody';
 import Version from './components/Version';
+import MainBody from './components/MainBody';
+import BasicInfo from './components/BasicInfo';
 
-import { useDevboxStore } from '@/stores/devbox';
 import { useEnvStore } from '@/stores/env';
-import { useGlobalStore } from '@/stores/global';
+import { useLoading } from '@/hooks/useLoading';
+import { useDevboxStore } from '@/stores/devbox';
 import useDetailDriver from '@/hooks/useDetailDriver';
 
 const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
+  const t = useTranslations();
+
   const devboxName = params.name;
   const { Loading } = useLoading();
   const { handleUserGuide } = useDetailDriver();
-
   const { env } = useEnvStore();
-  const { screenWidth } = useGlobalStore();
   const { devboxDetail, setDevboxDetail, loadDetailMonitorData, intervalLoadPods } =
     useDevboxStore();
 
-  const [showSlider, setShowSlider] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const isLargeScreen = useMemo(() => screenWidth > 1280, [screenWidth]);
+  const [tab, setTab] = useState<'overview' | 'monitor'>('overview');
 
   const { refetch, data } = useQuery(
     ['initDevboxDetail'],
@@ -66,22 +65,66 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
     }
   );
   return (
-    <Flex p={5} h={'100vh'} px={'32px'} flexDirection={'column'} bg={'white'}>
+    <Flex py={5} direction={'column'} bg={'white'}>
       <Loading loading={!initialized} />
       {devboxDetail && initialized && (
         <>
-          <Box mb={6}>
-            <Header
-              refetchDevboxDetail={refetch}
-              setShowSlider={setShowSlider}
-              isLargeScreen={isLargeScreen}
-            />
+          <Box mb={6} px={5}>
+            <Header refetchDevboxDetail={refetch} />
           </Box>
-          <Flex position={'relative'} flex={'1 0 0'} h={0}>
+
+          {/* tab */}
+          <Flex gap={4} px={10}>
+            <Button
+              border={'none'}
+              bg={'white'}
+              h={'30px'}
+              color={'grayModern.900'}
+              boxShadow={'none'}
+              fontWeight={'normal'}
+              _hover={{
+                bg: '#F2F2F2',
+                fontWeight: 'bold'
+              }}
+              {...(tab === 'overview' && {
+                bg: '#F2F2F2',
+                fontWeight: 'bold'
+              })}
+              onClick={() => {
+                setTab('overview');
+              }}
+            >
+              {t('overview')}
+            </Button>
+            <Divider h={'30px'} orientation={'vertical'} />
+            <Button
+              border={'none'}
+              bg={'white'}
+              h={'30px'}
+              color={'grayModern.900'}
+              boxShadow={'none'}
+              fontWeight={'normal'}
+              _hover={{
+                bg: '#F2F2F2',
+                fontWeight: 'bold'
+              }}
+              {...(tab === 'monitor' && {
+                bg: '#F2F2F2',
+                fontWeight: 'bold'
+              })}
+              onClick={() => {
+                setTab('monitor');
+              }}
+            >
+              {t('monitor')}
+            </Button>
+          </Flex>
+
+          <Divider my={2} />
+          <Flex position={'relative'} flex={'1 0 0'} direction={'column'} w={'80%'} mx={'auto'}>
+            {/* basic */}
             <Box
-              h={'100%'}
-              flex={'0 0 410px'}
-              w={'410px'}
+              w={'full'}
               mr={4}
               overflow={'overlay'}
               zIndex={1}
@@ -89,22 +132,12 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
               bg={'white'}
               borderWidth={1}
               borderRadius={'lg'}
-              {...(isLargeScreen
-                ? {}
-                : {
-                    position: 'absolute',
-                    left: 0,
-                    boxShadow: '7px 4px 12px rgba(165, 172, 185, 0.25)',
-                    transform: `translateX(${showSlider ? '0' : '-500'}px)`
-                  })}
             >
               <BasicInfo />
             </Box>
             <Flex
+              w={'full'}
               flexDirection={'column'}
-              minH={'100%'}
-              flex={'1 0 0'}
-              w={0}
               overflow={'overlay'}
               sx={{
                 '&::-webkit-scrollbar': {
@@ -122,17 +155,6 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
               </Box>
             </Flex>
           </Flex>
-          {/* mask */}
-          {!isLargeScreen && showSlider && (
-            <Box
-              position={'fixed'}
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              onClick={() => setShowSlider(false)}
-            />
-          )}
         </>
       )}
     </Flex>
