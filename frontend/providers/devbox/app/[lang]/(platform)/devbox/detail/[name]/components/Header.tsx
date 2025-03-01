@@ -1,31 +1,23 @@
-import { Box, Button, Flex } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
+import { sealosApp } from 'sealos-desktop-sdk/app';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { Dispatch, useCallback, useMemo, useState } from 'react';
 
-import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
 import { useRouter } from '@/i18n';
 import { useDevboxStore } from '@/stores/devbox';
 import { useGlobalStore } from '@/stores/global';
+import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
 
 import { DevboxDetailTypeV2 } from '@/types/devbox';
 
-import DevboxStatusTag from '@/components/DevboxStatusTag';
 import MyIcon from '@/components/Icon';
 import IDEButton from '@/components/IDEButton';
 import DelModal from '@/components/modals/DelModal';
-import { sealosApp } from 'sealos-desktop-sdk/app';
-import { useQuery } from '@tanstack/react-query';
+import DevboxStatusTag from '@/components/DevboxStatusTag';
 
-const Header = ({
-  refetchDevboxDetail,
-  setShowSlider,
-  isLargeScreen = true
-}: {
-  refetchDevboxDetail: () => void;
-  setShowSlider: Dispatch<boolean>;
-  isLargeScreen: boolean;
-}) => {
+const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) => {
   const router = useRouter();
   const t = useTranslations();
   const { message: toast } = useMessage();
@@ -143,28 +135,8 @@ const Header = ({
         <Box fontSize="2xl" fontWeight="bold">
           {devboxDetail.name}
         </Box>
-        {/* detail button */}
-        <Flex alignItems={'center'}>
-          <DevboxStatusTag status={devboxDetail.status} h={'27px'} />
-          {!isLargeScreen && (
-            <Box ml={4}>
-              <Button
-                width={'96px'}
-                height={'40px'}
-                bg={'white'}
-                borderWidth={1}
-                color={'grayModern.900'}
-                leftIcon={<MyIcon name="detail" w="16px" h="16px" />}
-                _hover={{
-                  color: 'brightBlue.600'
-                }}
-                onClick={() => setShowSlider(true)}
-              >
-                {t('detail')}
-              </Button>
-            </Box>
-          )}
-        </Flex>
+        {/* status  */}
+        <DevboxStatusTag status={devboxDetail.status} h={'27px'} />
       </Flex>
       {/* right main button group */}
       <Flex gap={5}>

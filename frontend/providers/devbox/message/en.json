@@ -189,6 +189,7 @@
   "opening_ide": "Opening IDE...",
   "os": "OS",
   "outstanding_tips": "Due to an outstanding balance on your account, you are unable to Create New Project. Please add funds to your account as soon as possible.",
+  "overview": "Overview",
   "overview_template_version_prompt": "The existing runtime {name} {version} is about to be overwritten. Please confirm whether to continue to avoid data loss.",
   "page": "Page",
   "pause": "Shutdown",
