@@ -124,6 +124,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
           <Flex
             position={'relative'}
             flex={'1 0 0'}
+            gap={4}
             direction={'column'}
             w={'80%'}
             mx={'auto'}
