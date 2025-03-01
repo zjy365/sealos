@@ -1,7 +1,7 @@
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useState } from 'react';
-import { Box, Text, Flex, Image, Spinner, Tooltip, Button, Grid, Divider } from '@chakra-ui/react';
+import { Box, Text, Flex, Tooltip, Button, Grid, Divider } from '@chakra-ui/react';
 
 import { useEnvStore } from '@/stores/env';
 import { usePriceStore } from '@/stores/price';
@@ -13,7 +13,7 @@ import { downLoadBlob, parseTemplateConfig } from '@/utils/tools';
 import MyIcon from '@/components/Icon';
 import GPUItem from '@/components/GPUItem';
 import { JetBrainsGuideData } from '@/components/IDEButton';
-import SshConnectModal from '@/components/modals/SshConnectModal';
+import SshConnectDrawer from './SSHConnectDrawer';
 
 const BasicInfo = () => {
   const t = useTranslations();
@@ -251,7 +251,7 @@ const BasicInfo = () => {
         </Button>
       </Flex>
       {onOpenSsHConnect && sshConfigData && (
-        <SshConnectModal
+        <SshConnectDrawer
           jetbrainsGuideData={sshConfigData}
           onSuccess={() => {
             setOnOpenSsHConnect(false);

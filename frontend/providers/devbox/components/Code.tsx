@@ -19,7 +19,8 @@ const Code = ({ content, language, ...props }: TMarkDown) => {
       sx={{
         height: '100%',
         '& div': {
-          overflow: 'auto !important'
+          overflow: 'auto !important',
+          maxW: '100%'
         }
       }}
     >
