@@ -55,7 +55,15 @@ const Header = ({
         </Box>
       </Flex>
       <Box flex={1}></Box>
-      <Button h={'40px'} flex={'0 0 114px'} mr={5} variant={'outline'} onClick={handleExportYaml}>
+      <Button
+        h={'40px'}
+        flex={'0 0 114px'}
+        mr={5}
+        variant={'outline'}
+        onClick={handleExportYaml}
+        boxShadow={'none'}
+        color={'grayModern.900'}
+      >
         {t('export_yaml')}
       </Button>
       <Button flex={'0 0 114px'} h={'40px'} variant={'solid'} onClick={applyCb}>

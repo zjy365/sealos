@@ -99,7 +99,7 @@
   "estimated_price": "Estimated Cost",
   "event": "Event",
   "export_privateKey": "Export  privateKey",
-  "export_yaml": "Export YAML",
+  "export_yaml": "Export to Yaml",
   "external_address": "Public Address",
   "framework": "Framework",
   "gpu": "GPU",
