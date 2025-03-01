@@ -42,7 +42,7 @@ const TemplateRepositoryListNav = () => {
         <Text
           fontFamily="PingFang SC"
           fontSize="12px"
-          fontWeight="500"
+          fontWeight="400"
           lineHeight="16px"
           letterSpacing="0.5px"
           color="#485264"
@@ -73,7 +73,7 @@ const TemplateRepositoryListNav = () => {
         <Text
           fontFamily="PingFang SC"
           fontSize="12px"
-          fontWeight="500"
+          fontWeight="400"
           lineHeight="16px"
           letterSpacing="0.5px"
           color="#485264"

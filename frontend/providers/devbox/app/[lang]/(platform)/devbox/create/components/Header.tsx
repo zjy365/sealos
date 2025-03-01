@@ -37,9 +37,10 @@ const Header = ({
     downLoadBlob(res, 'application/zip', `yaml${dayjs().format('YYYYMMDDHHmmss')}.zip`);
   }, [yamlList]);
   return (
-    <Flex w={'100%'} px={10} h={'86px'} alignItems={'center'}>
+    <Flex w={'100%'} px={5} h={'86px'} alignItems={'center'}>
       <Flex
         alignItems={'center'}
+        gap={2}
         cursor={'pointer'}
         onClick={() => {
           if (config.lastRoute) {
@@ -49,7 +50,7 @@ const Header = ({
           }
         }}
       >
-        <MyIcon name="arrowLeft" width={'24px'} height={'24px'} />
+        <MyIcon name="arrowLeft" color={'white'} width={'24px'} height={'24px'} />
         <Box fontWeight={'bold'} color={'grayModern.900'} fontSize={'2xl'}>
           {t(title)}
         </Box>
