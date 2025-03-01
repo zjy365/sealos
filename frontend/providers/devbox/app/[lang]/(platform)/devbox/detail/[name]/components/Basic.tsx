@@ -76,7 +76,7 @@ const BasicInfo = () => {
 
   return (
     <Flex borderRadius="lg" bg={'white'} p={4} flexDirection={'column'} h={'100%'}>
-      <Flex mb={3} mt={2}>
+      <Flex mb={3} mt={2} px={4}>
         <Box color={'grayModern.900'} fontSize={'medium'} fontWeight={'bold'}>
           {t('basic_info')}
         </Box>

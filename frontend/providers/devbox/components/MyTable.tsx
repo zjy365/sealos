@@ -35,9 +35,9 @@ const MyTable = ({
         borderTopRadius={'md'}
         borderBottomRadius={needRadius ? 'md' : '0'}
         fontSize={'base'}
-        color={'grayModern.600'}
+        color={'#71717A'}
         fontWeight={'bold'}
-        backgroundColor={'grayModern.100'}
+        backgroundColor={'#FAFAFA'}
       >
         {columns.map((item) => (
           <Box
@@ -64,7 +64,6 @@ const MyTable = ({
           overflowX={'auto'}
           key={index1}
           bg={alternateRowColors ? (index1 % 2 === 0 ? '#FBFBFC' : '#F4F4F7') : 'white'}
-          _hover={{ bg: '#FBFBFC' }}
           borderBottomRadius={index1 === data.length - 1 ? 'md' : '0px'}
           borderBottom={'1px solid'}
           borderBottomColor={index1 !== data.length - 1 ? 'grayModern.150' : 'transparent'}
@@ -78,7 +77,7 @@ const MyTable = ({
               px={3}
               py={4}
               fontSize={'base'}
-              fontWeight={'bold'}
+              fontWeight={'normal'}
               color={'grayModern.900'}
               minWidth={col.minWidth || '100px'}
             >

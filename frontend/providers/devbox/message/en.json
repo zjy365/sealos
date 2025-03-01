@@ -168,7 +168,7 @@
   "matched_apps": "Deployed apps",
   "memory": "Memory",
   "memory_exceeds_quota": "Memory requested exceeds quota. Contact admin.",
-  "monitor": "Monitor",
+  "monitor": "Live Monitoring",
   "my_templates": "My Templates",
   "name": "Name",
   "network": "Network",
