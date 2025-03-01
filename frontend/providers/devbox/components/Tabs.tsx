@@ -10,7 +10,7 @@ interface Props extends GridProps {
   onChange: (id: string) => void;
 }
 
-export const Tabs = ({ list, size = 'md', activeId, onChange, ...props }: Props) => {
+export default function Tabs({ list, size = 'md', activeId, onChange, ...props }: Props) {
   const sizeMap = useMemo(() => {
     switch (size) {
       case 'sm':
@@ -74,4 +74,4 @@ export const Tabs = ({ list, size = 'md', activeId, onChange, ...props }: Props)
       ))}
     </Grid>
   );
-};
+}

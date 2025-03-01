@@ -9,9 +9,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import Label from '../../Label';
-import TemplateRepositoryListNav from '../TemplateRepositoryListNav';
-import TemplateRepositoryItem from './TemplateReposistoryItem';
+import Label from '../Label';
+import TemplateRepositoryListNav from './TemplateRepositoryListNav';
+import TemplateRepositoryItem from './TemplateRepositoryItem';
 import { useSearchParams } from 'next/navigation';
 
 interface TemplateRepositorySelectorProps {
