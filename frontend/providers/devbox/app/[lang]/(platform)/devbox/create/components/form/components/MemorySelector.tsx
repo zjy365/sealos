@@ -1,17 +1,18 @@
-import { MemorySlideMarkList } from '@/constants/devbox';
-import { DevboxEditTypeV2 } from '@/types/devbox';
-import { Flex, FlexProps } from '@chakra-ui/react';
-import { MySlider } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
-import Label from '../Label';
+import { Flex, FlexProps, Text } from '@chakra-ui/react';
+
+import { DevboxEditTypeV2 } from '@/types/devbox';
+import { MemorySlideMarkList } from '@/constants/devbox';
+
+import { MySlider } from '@/components/MySlider';
 
 export default function MemorySelector(props: FlexProps) {
   const t = useTranslations();
   const { watch, setValue } = useFormContext<DevboxEditTypeV2>();
   return (
     <Flex mb={'50px'} pr={3} alignItems={'center'} {...props}>
-      <Label w={100}>{t('memory')}</Label>
+      <Text w={100}>{t('memory')}</Text>
       <MySlider
         markList={MemorySlideMarkList}
         activeVal={watch('memory')}

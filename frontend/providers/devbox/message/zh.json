@@ -8,6 +8,7 @@
   "Delete": "删除中",
   "Error": "错误",
   "Failed": "失败",
+  "GPU": "GPU",
   "Gpu under inventory Tip": "{gputype} 库存不足，请更换型号或减少数量",
   "Input your custom domain": "输入您的自定义域名",
   "Inventory": "库存",
@@ -102,6 +103,8 @@
   "export_yaml": "导出 YAML",
   "external_address": "公网地址",
   "framework": "框架",
+  "gpu": "GPU",
+  "gpu_exceeds_quota": "申请的 GPU 超出配额限制，请联系管理员",
   "guide": {
     "click_shadow_skip": "点击任意阴影跳过",
     "deploy_cost": "当前资源，预估单日消耗",
@@ -141,8 +144,8 @@
   "jetbrains_guide_move_to_path": "将下载好的私钥移动到目录：<blue>~/.ssh/sealos/</blue> 。",
   "jetbrains_guide_one_click_setup": "一键配置",
   "jetbrains_guide_one_click_setup_desc": "点击上方按钮 <blue>下载 bat/sh 脚本</blue>，下载到本地后<blue>直接双击运行</blue>即可完成 SSH 连接信息的配置。",
-  "jetbrains_guide_one_click_setup_desc_windows": "点击上方按钮 <blue>下载 bat/sh 脚本</blue>，下载到本地后<blue>右键点击文件 > 使用 PowerShell 运行</blue> 即可完成 SSH 连接信息的配置。",
   "jetbrains_guide_one_click_setup_desc_2": "<lightColor>或者，您也可以复制下方脚本到本地命令行，然后直接执行。</lightColor>",
+  "jetbrains_guide_one_click_setup_desc_windows": "点击上方按钮 <blue>下载 bat/sh 脚本</blue>，下载到本地后<blue>右键点击文件 > 使用 PowerShell 运行</blue> 即可完成 SSH 连接信息的配置。",
   "jetbrains_guide_post_connection": "后续使用可点击下方按钮进行查看。",
   "jetbrains_guide_post_use": "后续使用",
   "jetbrains_guide_prepare": "前置准备",
@@ -271,6 +274,7 @@
   "update_template": "更新模板",
   "update_template_success": "更新模板成功！",
   "update_time": "更新时间",
+  "usage": "用量",
   "use_case": "用例",
   "use_jetbrains": "使用 JetBrains IDE 开发",
   "used": "已用",
@@ -286,8 +290,5 @@
   "vscode": "VS Code",
   "vscodeInsider": "VSCode Insider",
   "vscode_tooltip": "点击在 VSCode 中开发",
-  "yaml_file": "YAML 文件",
-  "gpu_exceeds_quota": "申请的 GPU 超出配额限制，请联系管理员",
-  "GPU": "GPU",
-  "gpu": "GPU"
+  "yaml_file": "YAML 文件"
 }
