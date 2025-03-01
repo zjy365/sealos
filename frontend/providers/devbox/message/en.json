@@ -8,6 +8,7 @@
   "Delete": "Deleting",
   "Error": "Error",
   "Failed": "Failed",
+  "GPU": "GPU",
   "Gpu under inventory Tip": "{gputype} is out of stock. Please select a different type or reduce the quantity",
   "Input your custom domain": "Enter your custom domain",
   "Inventory": "Stock",
@@ -95,12 +96,14 @@
   "enter_devbox_name": "Please enter the DevBox name",
   "enter_version_description": "Please enter the  description...",
   "enter_version_number": "Please enter the tag",
-  "estimated_price": "The Estimated Cost",
+  "estimated_price": "Estimated Cost",
   "event": "Event",
   "export_privateKey": "Export  privateKey",
   "export_yaml": "Export YAML",
   "external_address": "Public Address",
   "framework": "Framework",
+  "gpu": "GPU",
+  "gpu_exceeds_quota": "Requested GPU exceeds your quota. Please contact admin.",
   "guide": {
     "click_shadow_skip": "Click on any shadow to skip",
     "deploy_cost": "Current resource usage and estimated daily consumption",
@@ -284,8 +287,5 @@
   "vm": "vm",
   "vscode": "VS Code",
   "vscode_tooltip": "Click to develop in VSCode",
-  "yaml_file": "YAML",
-  "gpu_exceeds_quota": "Requested GPU exceeds your quota. Please contact admin.",
-  "GPU": "GPU",
-  "gpu": "GPU"
+  "yaml_file": "YAML"
 }

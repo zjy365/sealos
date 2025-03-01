@@ -20,4 +20,5 @@
     "google",
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
+  "svg.preview.background": "transparent",
 }
