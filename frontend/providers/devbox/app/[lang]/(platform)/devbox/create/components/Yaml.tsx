@@ -70,7 +70,7 @@ const Yaml = ({ yamlList = [], pxVal }: { yamlList: YamlItemType[]; pxVal: numbe
               }}
               {...(index === selectedIndex
                 ? {
-                    fontWeight: 'bold',
+                    fontWeight: 'normal',
                     borderColor: 'grayModern.900',
                     backgroundColor: '#F4F6FE'
                   }
