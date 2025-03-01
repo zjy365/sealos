@@ -1,43 +1,43 @@
 'use client';
 
-import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
-import { SealosMenu, useMessage } from '@sealos/ui';
-import { useQuery } from '@tanstack/react-query';
 import { customAlphabet } from 'nanoid';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { sealosApp } from 'sealos-desktop-sdk/app';
+import { SealosMenu, useMessage } from '@sealos/ui';
+import { useCallback, useEffect, useState } from 'react';
+import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 
-import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
-import DevboxStatusTag from '@/components/DevboxStatusTag';
-import EditVersionDesModal from '@/components/modals/EditVersionDesModal';
-import ReleaseModal from '@/components/modals/ReleaseModal';
+import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
-import { devboxIdKey, DevboxReleaseStatusEnum } from '@/constants/devbox';
-import { DevboxVersionListItemType } from '@/types/devbox';
+import DevboxStatusTag from '@/components/DevboxStatusTag';
+import ReleaseModal from '@/components/modals/ReleaseModal';
+import AppSelectModal from '@/components/modals/AppSelectModal';
+import EditVersionDesModal from '@/components/modals/EditVersionDesModal';
 
+import { useEnvStore } from '@/stores/env';
+import { AppListItemType } from '@/types/app';
 import { useConfirm } from '@/hooks/useConfirm';
 import { useLoading } from '@/hooks/useLoading';
+import { useDevboxStore } from '@/stores/devbox';
+import { parseTemplateConfig } from '@/utils/tools';
+import useReleaseDriver from '@/hooks/useReleaseDriver';
+import { DevboxVersionListItemType } from '@/types/devbox';
+import { devboxIdKey, DevboxReleaseStatusEnum } from '@/constants/devbox';
+import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
 
 import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template';
 import CreateTemplateModal from '@/app/[lang]/(platform)/template/updateTemplate/CreateTemplateModal';
 import SelectTemplateModal from '@/app/[lang]/(platform)/template/updateTemplate/SelectActionModal';
 import UpdateTemplateRepositoryModal from '@/app/[lang]/(platform)/template/updateTemplate/UpdateTemplateRepositoryModal';
-import AppSelectModal from '@/components/modals/AppSelectModal';
-import useReleaseDriver from '@/hooks/useReleaseDriver';
-import { useDevboxStore } from '@/stores/devbox';
-import { useEnvStore } from '@/stores/env';
-import { AppListItemType } from '@/types/app';
-import { parseTemplateConfig } from '@/utils/tools';
-import MyIcon from '@/components/Icon';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
 const Version = () => {
-  const { startReleaseGuide } = useReleaseDriver();
   const t = useTranslations();
   const { message: toast } = useMessage();
   const { Loading, setIsLoading } = useLoading();
+  const { startReleaseGuide } = useReleaseDriver();
   const { isOpen: isOpenEdit, onOpen: onOpenEdit, onClose: onCloseEdit } = useDisclosure();
 
   const { env } = useEnvStore();
@@ -197,10 +197,12 @@ const Version = () => {
     title: string;
     dataIndex?: keyof DevboxVersionListItemType;
     key: string;
+    width?: string;
+    minWidth?: string;
     render?: (item: DevboxVersionListItemType) => JSX.Element;
   }[] = [
     {
-      title: t('version_number'),
+      title: t('name'),
       key: 'tag',
       render: (item: DevboxVersionListItemType) => (
         <Box color={'grayModern.900'} pl={'12px'}>
@@ -219,39 +221,37 @@ const Version = () => {
       title: t('create_time'),
       dataIndex: 'createTime',
       key: 'createTime',
-      render: (item: DevboxVersionListItemType) => {
-        return <Text color={'grayModern.600'}>{item.createTime}</Text>;
-      }
+      render: (item: DevboxVersionListItemType) => (
+        <Text color={'grayModern.600'}>{item.createTime}</Text>
+      )
     },
     {
       title: t('version_description'),
       key: 'description',
       render: (item: DevboxVersionListItemType) => (
-        <Flex alignItems="center" minH={'20px'} width={'full'}>
-          <Box color={'grayModern.600'} noOfLines={1} w={'0'} flex={1}>
-            {item.description}
-          </Box>
-        </Flex>
+        <Text color={'grayModern.600'}>{item.description}</Text>
       )
     },
     {
-      title: t('control'),
+      title: '',
       key: 'control',
       render: (item: DevboxVersionListItemType) => (
         <Flex alignItems={'center'}>
           <Button
             className="guide-online-button"
-            mr={5}
             height={'27px'}
-            w={'60px'}
             size={'sm'}
             h="32px"
+            mr={5}
+            borderWidth={1}
+            boxShadow={'none'}
             fontSize={'base'}
-            bg={'grayModern.150'}
-            color={'grayModern.900'}
+            bg={'white'}
             _hover={{
-              color: 'brightBlue.600'
+              bg: 'grayModern.150'
             }}
+            rightIcon={<MyIcon name="arrowRightUp" />}
+            color={'grayModern.900'}
             isDisabled={item.status.value !== DevboxReleaseStatusEnum.Success}
             onClick={() => handleDeploy(item)}
           >
@@ -262,14 +262,24 @@ const Version = () => {
             Button={
               <MenuButton
                 as={Button}
-                variant={'square'}
+                bg={'white'}
+                width={'20px'}
+                height={'20px'}
+                p={0}
+                borderWidth={1}
+                boxShadow={'none'}
                 boxSize={'32px'}
                 data-group
+                _hover={{
+                  bg: 'grayModern.150'
+                }}
                 isDisabled={item?.status?.value !== 'Success'}
               >
                 <MyIcon
                   name={'more'}
-                  color={'grayModern.600'}
+                  w={'16px'}
+                  h={'16px'}
+                  color={'grayModern.900'}
                   _groupHover={{
                     color: 'brightBlue.600'
                   }}
@@ -337,13 +347,12 @@ const Version = () => {
       pt={4}
       pr={6}
       bg={'white'}
-      h={'full'}
       position={'relative'}
+      minH={'300px'}
     >
       <Flex alignItems="center" justifyContent={'space-between'} mb={5}>
         <Flex alignItems={'center'}>
-          <MyIcon name="list" w={'15px'} h={'15px'} mr={'5px'} color={'grayModern.600'} />
-          <Text fontSize="base" fontWeight={'bold'} color={'grayModern.600'}>
+          <Text fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
             {t('version_history')}
           </Text>
         </Flex>
@@ -354,10 +363,11 @@ const Version = () => {
           color={'grayModern.600'}
           borderWidth={1}
           mr={1}
-          leftIcon={<MyIcon name="version" />}
+          leftIcon={<MyIcon name="version" color={'white'} />}
           _hover={{
             color: 'brightBlue.600'
           }}
+          boxShadow={'none'}
         >
           {t('release_version')}
         </Button>
