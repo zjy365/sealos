@@ -79,7 +79,7 @@
   "devbox_creation": "Project Creation",
   "devbox_empty": "You have not created a DevBox yet.",
   "devbox_list": "DevBox List",
-  "devbox_name": "Name",
+  "devbox_name": "Devbox Name",
   "devbox_name_invalid": "The DevBox name may only contain letters, numbers, and hyphens (-). It must also start with a letter.",
   "devbox_name_max_length": "Exceeds the maximum name length",
   "devbox_name_required": "DevBox name cannot be empty",

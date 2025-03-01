@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { z } from 'zod';
-import Label from '../../Label';
+import Label from '../Label';
 
 interface TemplateSelectorProps {
   isEdit: boolean;

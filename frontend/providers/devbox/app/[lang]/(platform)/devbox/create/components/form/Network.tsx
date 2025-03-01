@@ -19,7 +19,6 @@ import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import ConfigurationHeader from '../ConfigurationHeader';
 // const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 12)
 
 export type CustomAccessModalParams = {
@@ -72,10 +71,6 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
   return (
     <>
       <Box id={'baseInfo'} {...props}>
-        <ConfigurationHeader>
-          <MyIcon name={'network'} mr={'12px'} w={'24px'} color={'grayModern.900'} />
-          {t('Network Configuration')}
-        </ConfigurationHeader>
         <Box px={'42px'} py={'24px'} userSelect={'none'}>
           {networks.length === 0 && <AppendNetworksButton onClick={() => appendNetworks()} />}
           {networks.map((network, i) => (

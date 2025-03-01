@@ -9,10 +9,13 @@ import { obj2Query } from '@/utils/tools';
 import { useDevboxStore } from '@/stores/devbox';
 import type { DevboxEditTypeV2 } from '@/types/devbox';
 
-import { Tabs } from '@/components/Tabs';
+import Usage from './Usage';
+import Runtime from './Runtime';
+import DevboxName from './DevboxName';
+import NetworkConfiguration from './Network';
+
+import Tabs from '@/components/Tabs';
 import PriceBox from '@/components/PriceBox';
-import BasicConfiguration from './BasicConfiguration';
-import NetworkConfiguration from './NetworkConfiguration';
 
 const Form = ({
   pxVal,
@@ -34,6 +37,7 @@ const Form = ({
     border: theme.borders.base,
     borderRadius: 'lg',
     mb: 4,
+    p: 4,
     bg: 'white'
   };
 
@@ -81,13 +85,18 @@ const Form = ({
         position={'relative'}
         overflowY={'scroll'}
       >
-        {/* base info */}
-        <BasicConfiguration
-          isEdit={isEdit}
-          id={'baseInfo'}
-          {...boxStyles}
-          countGpuInventory={countGpuInventory}
-        />
+        {/* Devbox Name */}
+        <Box {...boxStyles}>
+          <DevboxName isEdit={isEdit} />
+        </Box>
+        {/* Runtime */}
+        <Box {...boxStyles}>
+          <Runtime isEdit={isEdit} />
+        </Box>
+        {/* Usage */}
+        <Box {...boxStyles}>
+          <Usage countGpuInventory={countGpuInventory} />
+        </Box>
         {/* network */}
         <NetworkConfiguration isEdit={isEdit} id={'network'} {...boxStyles} />
       </Box>
