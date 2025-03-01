@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
-import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
