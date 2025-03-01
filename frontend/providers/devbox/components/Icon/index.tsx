@@ -91,7 +91,8 @@ const map = {
   memory: require('./icons/memory.svg').default,
   port: require('./icons/port.svg').default,
   gpu: require('./icons/gpu.svg').default,
-  attention: require('./icons/attention.svg').default
+  attention: require('./icons/attention.svg').default,
+  arrowRightUp: require('./icons/arrowRightUp.svg').default
 };
 
 const MyIcon = ({

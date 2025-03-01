@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import Header from './components/Header';
-import Version from './components/Version';
+import Version from './components/Release';
 import MainBody from './components/MainBody';
 import BasicInfo from './components/Basic';
 
