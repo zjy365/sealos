@@ -35,7 +35,7 @@ const PriceBox = ({
 
   const priceList: {
     label: string;
-    icon: 'cpu' | 'memory' | 'port' | 'gpu';
+    icon: string;
     value: string;
   }[] = useMemo(() => {
     let cp = 0;
@@ -94,7 +94,7 @@ const PriceBox = ({
             borderBottom={item.label === 'total_price' ? 'none' : theme.borders.base}
           >
             <Flex alignItems={'center'} gap={'8px'}>
-              <MyIcon name={item?.icon} color={'white'} />
+              <MyIcon name={item?.icon as any} color={'white'} />
               <Box flex={'0 0 90px'}>{t(item?.label)}</Box>
             </Flex>
             <Flex
