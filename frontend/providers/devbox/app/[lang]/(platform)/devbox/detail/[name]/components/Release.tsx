@@ -391,7 +391,7 @@ const Version = () => {
           columns={columns}
           data={devboxVersionList}
           needRadius
-          gridTemplateColumns={'105px 105px 144px minmax(0, 1fr) 140px'}
+          gridTemplateColumns={'105px 105px 144px minmax(0, 1fr) 160px'}
         />
       )}
       {!!currentVersion && (
