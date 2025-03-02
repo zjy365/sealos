@@ -92,6 +92,27 @@ const map = {
     },
     lineColor: '#00A9A6',
     max: 100
+  },
+  purpleBlue: {
+    backgroundColor: {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#F5F7FD'
+        },
+        {
+          offset: 1,
+          color: 'rgba(52, 60, 255, 0)'
+        }
+      ],
+      global: false // 缺省为 false
+    },
+    lineColor: '#3F76ED'
   }
 };
 
@@ -100,7 +121,7 @@ const PodLineChart = ({
   data,
   isShowLabel = false
 }: {
-  type: 'blue' | 'deepBlue' | 'green' | 'purple';
+  type: 'blue' | 'deepBlue' | 'green' | 'purple' | 'purpleBlue';
   data?: MonitorDataResult;
   isShowLabel?: boolean;
 }) => {
@@ -179,7 +200,7 @@ const PodLineChart = ({
         data: yData,
         type: 'line',
         showSymbol: false,
-        smooth: true,
+        smooth: false,
         animationDuration: 300,
         animationEasingUpdate: 'linear',
         ...optionStyle,
