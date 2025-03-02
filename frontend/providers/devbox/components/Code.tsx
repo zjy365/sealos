@@ -8,7 +8,7 @@ import { lightCodeTheme, darkCodeTheme } from '@/constants/hljs';
 type TMarkDown = {
   content: string;
   language: string;
-  theme: 'light' | 'dark';
+  theme?: 'light' | 'dark';
   [key: string]: any;
 };
 

@@ -45,25 +45,19 @@ const MainBody = () => {
       title: t('internal_address'),
       key: 'internalAddress',
       render: (item: NetworkType) => {
+        const address = `http://${devboxDetail?.name}.${env.namespace}.svc.cluster.local:${item.port}`;
         return (
           <Flex alignItems={'center'} justify={'center'}>
-            <Text color={'grayModern.600'}>
-              {`http://${devboxDetail?.name}.${env.namespace}.svc.cluster.local:${item.port}`}
-            </Text>
+            <Text color={'grayModern.600'}>{address}</Text>
             <MyIcon
               name="copy"
               w={'16px'}
               ml={1}
-              color={'grayModern.500'}
               _hover={{
                 color: 'grayModern.600'
               }}
               cursor={'pointer'}
-              onClick={() =>
-                copyData(
-                  `http://${devboxDetail?.name}.${env.namespace}.svc.cluster.local:${item.port}`
-                )
-              }
+              onClick={() => copyData(address)}
             />
           </Flex>
         );

@@ -1,4 +1,3 @@
-import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useState } from 'react';
 import { Box, Text, Flex, Tooltip, Button, Grid, Divider, useDisclosure } from '@chakra-ui/react';
@@ -8,7 +7,7 @@ import { usePriceStore } from '@/stores/price';
 import { useDevboxStore } from '@/stores/devbox';
 import { getTemplateConfig } from '@/api/template';
 import { getSSHConnectionInfo } from '@/api/devbox';
-import { downLoadBlob, parseTemplateConfig } from '@/utils/tools';
+import { downLoadBlob, parseTemplateConfig, useCopyData } from '@/utils/tools';
 
 import MyIcon from '@/components/Icon';
 import GPUItem from '@/components/GPUItem';
@@ -17,7 +16,7 @@ import SshConnectDrawer from './SSHConnectDrawer';
 
 const BasicInfo = () => {
   const t = useTranslations();
-  const { message: toast } = useMessage();
+  const { copyData } = useCopyData();
   const {
     isOpen: isOpenSSHConnect,
     onOpen: onOpenSSHConnect,
@@ -65,17 +64,7 @@ const BasicInfo = () => {
     env.namespace
   ]);
 
-  const handleCopySSHCommand = useCallback(() => {
-    const sshCommand = `ssh -i yourPrivateKeyPath ${devboxDetail?.sshConfig?.sshUser}@${env.sealosDomain} -p ${devboxDetail?.sshPort}`;
-    navigator.clipboard.writeText(sshCommand).then(() => {
-      toast({
-        title: t('copy_success'),
-        status: 'success',
-        duration: 2000,
-        isClosable: true
-      });
-    });
-  }, [devboxDetail?.sshConfig?.sshUser, devboxDetail?.sshPort, env.sealosDomain, toast, t]);
+  const sshCommand = `ssh -i yourPrivateKeyPath ${devboxDetail?.sshConfig?.sshUser}@${env.sealosDomain} -p ${devboxDetail?.sshPort}`;
 
   return (
     <Flex borderRadius="lg" bg={'white'} p={4} flexDirection={'column'} h={'100%'}>
@@ -182,35 +171,25 @@ const BasicInfo = () => {
       </Grid>
       <Divider />
       {/* ssh Connection */}
-      <Flex p={4} borderRadius={'lg'} gap={4} flexDirection={'column'}>
-        <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
-            {t('ssh_connect_info')}
+      <Flex p={4} borderRadius={'lg'}>
+        <Text w={'20%'} fontSize={'12px'} color={'grayModern.500'}>
+          {t('ssh_connect_info')}
+        </Text>
+        <Flex color={'grayModern.900'} w={'80%'}>
+          <Text cursor="pointer" fontSize={'12px'}>
+            {sshCommand}
           </Text>
-          <Flex width={'60%'} color={'grayModern.900'}>
-            <Tooltip
-              label={t('copy')}
-              hasArrow
-              bg={'#FFFFFF'}
-              color={'grayModern.900'}
-              width={'45px'}
-              height={'30px'}
-              fontSize={'12px'}
-              fontWeight={400}
-              py={2}
-              borderRadius={'md'}
-            >
-              <Text
-                cursor="pointer"
-                fontSize={'12px'}
-                _hover={{ color: 'blue.500' }}
-                onClick={handleCopySSHCommand}
-                w={'full'}
-              >
-                {`ssh -i yourPrivateKeyPath ${devboxDetail?.sshConfig?.sshUser}@${env.sealosDomain} -p ${devboxDetail?.sshPort}`}
-              </Text>
-            </Tooltip>
-          </Flex>
+          <MyIcon
+            name="copy"
+            w={'16px'}
+            ml={1}
+            color={'grayModern.500'}
+            _hover={{
+              color: 'grayModern.600'
+            }}
+            cursor={'pointer'}
+            onClick={() => copyData(sshCommand)}
+          />
         </Flex>
       </Flex>
       <Flex px={4} alignItems={'center'} justify={'start'} gap={4}>
