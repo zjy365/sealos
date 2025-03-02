@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import { useRouter } from '@/i18n';
 import { Box, Flex } from '@chakra-ui/react';
@@ -69,8 +68,6 @@ const DevboxCreatePage = () => {
     if (name) {
       setCaptureDevboxName(name);
       router.replace(`/devbox/create?name=${captureDevboxName}`, undefined);
-      setCaptureDevboxName(name);
-      router.replace(`/devbox/create?name=${captureDevboxName}`, undefined);
     }
   }, [searchParams, router, captureDevboxName]);
 
@@ -125,7 +122,6 @@ const DevboxCreatePage = () => {
   useEffect(() => {
     const subscription = formHook.watch((value) => {
       if (value) {
-        debouncedUpdateYaml(value as DevboxEditTypeV2, env);
         debouncedUpdateYaml(value as DevboxEditTypeV2, env);
       }
     });

@@ -158,7 +158,7 @@ const DevboxList = ({
               <Flex alignItems={'center'} gap={'6px'}>
                 <Image width={'20px'} height={'20px'} alt={id} src={`/images/${iconId}.svg`} />
                 <Box color={'black'} fontSize={'md'} width={500}>
-                  {id}
+                  {name}
                 </Box>
               </Flex>
             );

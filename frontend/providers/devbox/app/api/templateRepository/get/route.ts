@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
             isDeleted: true
           }
         },
+        kind: true,
         templateRepositoryTags: {
           select: {
             tag: true

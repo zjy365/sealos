@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { useController, useFormContext } from 'react-hook-form';
-import { Input, Flex, Img, Text, Box } from '@chakra-ui/react';
+import { Input, Flex, Img, Text, Box, FlexProps } from '@chakra-ui/react';
 
 import { nanoid } from '@/utils/tools';
 import { useEnvStore } from '@/stores/env';
@@ -15,18 +15,19 @@ import MySelect from '@/components/MySelect';
 
 export default function TemplateRepositoryItem({
   item,
-  isEdit
+  isEdit,
+  ...props
 }: {
   item: { uid: string; iconId: string; name: string };
   isEdit: boolean;
-}) {
+} & FlexProps) {
   const t = useTranslations();
   const { message: toast } = useMessage();
   const { getValues, setValue, watch, control } = useFormContext<DevboxEditTypeV2>();
 
   const { env } = useEnvStore();
   const { startedTemplate, setStartedTemplate } = useDevboxStore();
-
+  const [currentVersion, setcurrentVersion] = useState('');
   const templateListQuery = useQuery(['templateList', item.uid], () => listTemplate(item.uid), {
     enabled: !!item.uid
   });
@@ -45,8 +46,8 @@ export default function TemplateRepositoryItem({
 
   const isThisTemplateRepository = watch('templateRepositoryUid') === item.uid;
 
-  const currentTemplateId = watch('templateUid');
-  console.log('currentTemplateId', currentTemplateId);
+  // const currentTemplateId = watch('templateUid');
+  // console.log('currentTemplateId', currentTemplateId);
 
   const afterUpdateTemplate = (uid: string) => {
     const template = templateList.find((v) => v.uid === uid)!;
@@ -84,6 +85,7 @@ export default function TemplateRepositoryItem({
     const isExist = !!curTemplate;
 
     if (!isExist) {
+      // default template
       const defaultTemplate = templateList[0];
       setValue('templateUid', defaultTemplate.uid);
       afterUpdateTemplate(defaultTemplate.uid);
@@ -95,12 +97,15 @@ export default function TemplateRepositoryItem({
   }, [templateListQuery.isSuccess, templateList, templateListQuery.isFetched, isEdit]);
 
   const actualValue = useMemo(() => {
-    if (isThisTemplateRepository) {
-      const valueExists = menuList.some((item) => item.value === field.value);
-      return valueExists ? field.value : menuList[0]?.value || '';
-    }
-    return menuList[0]?.value || '';
-  }, [isThisTemplateRepository, field.value, menuList]);
+    // need to keep value when switch other template
+    // if (isThisTemplateRepository) {
+    const valueExists = menuList.some((item) => item.value === currentVersion);
+    return valueExists ? currentVersion : menuList[0]?.value || '';
+    // } else {
+    //   return menuList[0]?.value || '';
+    // }
+    // return menuList[0]?.value || '';
+  }, [isThisTemplateRepository, field.value, menuList, currentVersion]);
   return (
     <Flex
       direction={'column'}
@@ -123,6 +128,7 @@ export default function TemplateRepositoryItem({
               borderColor: '#85ccff'
             }
           })}
+      {...props}
     >
       <Flex
         alignItems={'center'}
@@ -201,6 +207,8 @@ export default function TemplateRepositoryItem({
               if (!isThisTemplateRepository) return;
 
               const oldTemplateUid = getValues('templateUid');
+              // keep the data
+              setcurrentVersion(val);
               field.onChange(val);
               afterUpdateTemplate(val);
               if (oldTemplateUid !== val) resetNetwork();

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { Flex, Box } from '@chakra-ui/react';
+import { Flex, Box, FlexProps } from '@chakra-ui/react';
 
 import type { DevboxReleaseStatusMapType, DevboxStatusMapType } from '@/types/devbox';
 
@@ -16,7 +16,7 @@ const DevboxStatusTag = ({
   thinMode?: boolean;
   w?: string;
   h?: string;
-}) => {
+} & FlexProps) => {
   const label = status?.label;
   const t = useTranslations();
 

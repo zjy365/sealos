@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Flex, Grid, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, VStack } from '@chakra-ui/react';
 
 import useDriver from '@/hooks/useDriver';
 import { useDevboxStore } from '@/stores/devbox';
@@ -23,6 +23,7 @@ interface RuntimeProps {
 export default function Runtime({ isEdit }: RuntimeProps) {
   const { startedTemplate, setStartedTemplate } = useDevboxStore();
   const { setValue, getValues, watch } = useFormContext<DevboxEditTypeV2>();
+
   const t = useTranslations();
   const [currentCategory, setCurrentCategory] = useState<TemplateRepositoryKind>('LANGUAGE');
   const { handleUserGuide } = useDriver();
@@ -32,7 +33,6 @@ export default function Runtime({ isEdit }: RuntimeProps) {
     listOfficialTemplateRepository,
     {
       onSuccess(res) {
-        console.log('res', res);
         handleUserGuide();
       },
       staleTime: Infinity,
@@ -69,7 +69,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
       } as Record<TemplateRepositoryKind, TemplateRepository[]>
     );
   }, [templateData]);
-
+  // for create mode
   useEffect(() => {
     if (!startedTemplate || isEdit) {
       return;
@@ -122,7 +122,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
     templateRepositoryQuery.isFetched,
     isEdit
   ]);
-
+  // for edit mode
   useEffect(() => {
     if (
       !isEdit ||
@@ -133,7 +133,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
     ) {
       return;
     }
-    const templateRepository = curTemplateRepositoryDetail.data.templateRepository;
+    const { templateRepository } = curTemplateRepositoryDetail.data;
     // setStartedTemplate(templateRepository)
     setValue('templateRepositoryUid', templateRepository.uid);
     if (
@@ -143,6 +143,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
     ) {
       setStartedTemplate(templateRepository);
     }
+    setCurrentCategory(templateRepository.kind);
   }, [
     curTemplateRepositoryDetail.isSuccess,
     curTemplateRepositoryDetail.data,
@@ -176,15 +177,15 @@ export default function Runtime({ isEdit }: RuntimeProps) {
       isVisible: boolean;
     }
   >;
-
+  console.log('get runtime status ', startedTemplate, curTemplateRepositoryUid, templateData);
   return (
-    <VStack alignItems={'center'} mb={7} gap={'24px'}>
+    <VStack alignItems={'center'} gap={'24px'}>
       <Flex className="guide-runtimes" gap={'24px'} flexDir={'column'} w={'full'}>
         <Flex w="full" justify={'space-between'}>
           <Label w={100} alignSelf={'flex-start'}>
             {t('runtime_environment')}
           </Label>
-          <TemplateRepositoryListNav />
+          {/* <TemplateRepositoryListNav /> */}
         </Flex>
 
         {!!startedTemplate && (
@@ -207,13 +208,16 @@ export default function Runtime({ isEdit }: RuntimeProps) {
           {Object.values(categoryMap)
             .filter((item) => item.isVisible)
             .map((item) => (
-              <Box
+              <Button
                 key={item.key}
+                variant={'unstyled'}
+                height={'auto'}
                 w={'full'}
                 borderWidth={'1px'}
                 borderColor={currentCategory === item.key ? '#1C4EF5' : 'gray.200'}
                 borderRadius={'lg'}
                 p={'12px 16px'}
+                isDisabled={isEdit}
                 fontSize={'12px'}
                 fontWeight={currentCategory === item.key ? '500' : '400'}
                 cursor={'pointer'}
@@ -227,14 +231,14 @@ export default function Runtime({ isEdit }: RuntimeProps) {
                 }}
               >
                 {item.label}
-              </Box>
+              </Button>
             ))}
         </Flex>
       </Flex>
       {categoryMap[currentCategory].isVisible && (
-        <Grid gridTemplateColumns={'repeat(4, minmax(168px, 1fr))'} gap={'12px'}>
+        <Grid gridTemplateColumns={'repeat(4, minmax(168px, 1fr))'} gap={'12px'} width={'full'}>
           {categorizedData[currentCategory]?.map((item) => (
-            <TemplateRepositoryItem key={item.uid} item={item} isEdit={isEdit} />
+            <TemplateRepositoryItem key={item.uid} item={item} isEdit={isEdit} w="full" />
           ))}
         </Grid>
       )}
