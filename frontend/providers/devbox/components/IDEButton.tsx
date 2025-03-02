@@ -9,6 +9,11 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Portal,
   Tooltip
 } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
@@ -119,13 +124,13 @@ const IDEButton = ({
 
   return (
     <Flex className="guide-ide-button" {...props}>
-      <Tooltip label={t('ide_tooltip')} hasArrow bg={'#FFFFFF'} color={'grayModern.900'}>
+      <Tooltip label={t('ide_tooltip')} hasArrow bg={'#FFFFFF'} color={'#18181B'}>
         <Button
           height={'32px'}
           width={'100px'}
           fontSize={'base'}
-          bg={'grayModern.150'}
-          color={'grayModern.900'}
+          bg={'#F4F4F5'}
+          color={'#18181B'}
           _hover={{
             color: 'brightBlue.600',
             bg: '#1118240D'
@@ -148,11 +153,78 @@ const IDEButton = ({
           )}
         </Button>
       </Tooltip>
+      {/* <Popover placement="bottom-end">
+        <PopoverTrigger>
+          <Button
+            height={'32px'}
+            bg={'#F4F4F5'}
+            color={'#18181B'}
+            _hover={{
+              color: 'brightBlue.600'
+            }}
+            p={2}
+            borderLeftRadius={0}
+            borderLeftWidth={0}
+            boxShadow={
+              '2px 1px 2px 0px rgba(19, 51, 107, 0.05),0px 0px 1px 0px rgba(19, 51, 107, 0.08)'
+            }
+            as={IconButton}
+            isDisabled={status.value !== 'Running' || loading}
+            icon={<MyIcon name={'chevronDown'} w={'16px'} h={'16px'} />}
+            _before={{
+              content: '""',
+              position: 'absolute',
+              left: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '1px',
+              height: '20px',
+              backgroundColor: 'grayModern.250'
+            }}
+            {...rightButtonProps}
+          />
+        </PopoverTrigger>
+        <PopoverContent
+          color={'grayModern.600'}
+          fontWeight={500}
+          fontSize={'12px'}
+          defaultValue={currentIDE}
+          px={1}
+          zIndex={9}
+        >
+          <PopoverBody>
+            {menuItems.map((item) => (
+              <Flex
+                key={item.value}
+                // value={item.value}
+                onClick={() => {
+                  updateDevboxIDE(item.value as IDEType, devboxName);
+                  handleGotoIDE(item.value as IDEType);
+                }}
+                _hover={{
+                  bg: '#1118240D',
+                  borderRadius: 4
+                }}
+                _focus={{
+                  bg: '#1118240D',
+                  borderRadius: 4
+                }}
+              >
+                <MyIcon name={item.value as IDEType} w={'16px'} />
+                <Flex justifyContent="space-between" alignItems="center" width="100%">
+                  {item?.menuLabel}
+                  {currentIDE === item.value && <MyIcon name="check" w={'16px'} />}
+                </Flex>
+              </Flex>
+            ))}
+          </PopoverBody>
+        </PopoverContent>
+      </Popover> */}
       <Menu placement="bottom-end" isLazy>
         <MenuButton
           height={'32px'}
-          bg={'grayModern.150'}
-          color={'grayModern.900'}
+          bg={'#F4F4F5'}
+          color={'#18181B'}
           _hover={{
             color: 'brightBlue.600'
           }}
@@ -177,38 +249,44 @@ const IDEButton = ({
           }}
           {...rightButtonProps}
         />
-        <MenuList
-          color={'grayModern.600'}
-          fontWeight={500}
-          fontSize={'12px'}
-          defaultValue={currentIDE}
-          px={1}
-        >
-          {menuItems.map((item) => (
-            <MenuItem
-              key={item.value}
-              value={item.value}
-              onClick={() => {
-                updateDevboxIDE(item.value as IDEType, devboxName);
-                handleGotoIDE(item.value as IDEType);
-              }}
-              icon={<MyIcon name={item.value as IDEType} w={'16px'} />}
-              _hover={{
-                bg: '#1118240D',
-                borderRadius: 4
-              }}
-              _focus={{
-                bg: '#1118240D',
-                borderRadius: 4
-              }}
-            >
-              <Flex justifyContent="space-between" alignItems="center" width="100%">
-                {item?.menuLabel}
-                {currentIDE === item.value && <MyIcon name="check" w={'16px'} />}
-              </Flex>
-            </MenuItem>
-          ))}
-        </MenuList>
+        <Portal>
+          <MenuList
+            // position={'absolute'}
+            color={'grayModern.600'}
+            fontWeight={500}
+            fontSize={'12px'}
+            defaultValue={currentIDE}
+            px={1}
+            // top={'100%'}
+            // right={0}
+            zIndex={999}
+          >
+            {menuItems.map((item) => (
+              <MenuItem
+                key={item.value}
+                value={item.value}
+                onClick={() => {
+                  updateDevboxIDE(item.value as IDEType, devboxName);
+                  handleGotoIDE(item.value as IDEType);
+                }}
+                icon={<MyIcon name={item.value as IDEType} w={'16px'} />}
+                _hover={{
+                  bg: '#1118240D',
+                  borderRadius: 4
+                }}
+                _focus={{
+                  bg: '#1118240D',
+                  borderRadius: 4
+                }}
+              >
+                <Flex justifyContent="space-between" alignItems="center" width="100%">
+                  {item?.menuLabel}
+                  {currentIDE === item.value && <MyIcon name="check" w={'16px'} />}
+                </Flex>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Portal>
       </Menu>
       {!!onOpenJetbrainsModal && !!jetbrainsGuideData && (
         <JetBrainsGuideModal

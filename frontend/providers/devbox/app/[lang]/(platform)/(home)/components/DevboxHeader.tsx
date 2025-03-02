@@ -45,7 +45,7 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
       <Box ml={'8px'} fontSize={'md'} fontWeight={'bold'} color={'grayModern.500'}>
         ( {listLength} )
       </Box>
-      <Flex
+      {/* <Flex
         alignItems="center"
         justifyContent="center"
         height="18px"
@@ -79,10 +79,12 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
         >
           {t('scan_templates')}
         </Text>
-      </Flex>
+      </Flex> */}
       <Button
         minW={'156px'}
         h={'40px'}
+        ml={'auto'}
+        mr={0}
         variant={'solid'}
         leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#ffffff'} />}
         onClick={() => router.push('/devbox/create')}

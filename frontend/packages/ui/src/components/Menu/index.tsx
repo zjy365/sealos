@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, MenuList, MenuItem, MenuItemProps } from '@chakra-ui/react';
+import { Menu, MenuList, MenuItem, MenuItemProps, Portal } from '@chakra-ui/react';
 
 interface Props {
   width: number;
@@ -27,30 +27,35 @@ export const SealosMenu = ({ width, Button, menuList }: Props) => {
   return (
     <Menu offset={[0, 10]} autoSelect={false} isLazy>
       {Button}
-      <MenuList
-        maxH={'300px'}
-        overflowY={'auto'}
-        borderRadius={'md'}
-        minW={`${width}px !important`}
-        p={'6px'}
-        border={'1px solid #fff'}
-        boxShadow={'0px 2px 4px rgba(161, 167, 179, 0.25), 0px 0px 1px rgba(121, 141, 159, 0.25);'}
-      >
-        {menuList.map((item, i) => (
-          <MenuItem
-            isDisabled={item?.isDisabled || false}
-            key={i}
-            onClick={item.onClick}
-            color={item.isActive ? 'hover.blue' : 'grayModern.600'}
-            py={'6px'}
-            px={'4px'}
-            {...menuItemStyles}
-            {...item.menuItemStyle}
-          >
-            {item.child}
-          </MenuItem>
-        ))}
-      </MenuList>
+      <Portal>
+        <MenuList
+          maxH={'300px'}
+          overflowY={'auto'}
+          borderRadius={'md'}
+          minW={`${width}px !important`}
+          p={'6px'}
+          border={'1px solid #fff'}
+          boxShadow={
+            '0px 2px 4px rgba(161, 167, 179, 0.25), 0px 0px 1px rgba(121, 141, 159, 0.25);'
+          }
+          zIndex={999}
+        >
+          {menuList.map((item, i) => (
+            <MenuItem
+              isDisabled={item?.isDisabled || false}
+              key={i}
+              onClick={item.onClick}
+              color={item.isActive ? 'hover.blue' : 'grayModern.600'}
+              py={'6px'}
+              px={'4px'}
+              {...menuItemStyles}
+              {...item.menuItemStyle}
+            >
+              {item.child}
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

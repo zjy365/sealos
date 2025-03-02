@@ -27,7 +27,6 @@ export const viewport: Viewport = {
 enableMapSet();
 export default function RootLayout({
   children,
-
   params: { lang },
   ...props
 }: Readonly<{
