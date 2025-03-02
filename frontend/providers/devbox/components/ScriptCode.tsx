@@ -31,14 +31,6 @@ const ScriptCode = ({
       flexDirection={oneLine ? 'row' : 'column'}
       maxW={'100%'}
       maxH={'300px'}
-      sx={{
-        '& .copy-button': {
-          display: 'none'
-        },
-        '&:hover .copy-button': {
-          display: 'flex'
-        }
-      }}
     >
       <Flex justifyContent={oneLine ? 'null' : 'space-between'} alignItems={'center'} w={'full'}>
         {!oneLine && (
@@ -69,19 +61,22 @@ const ScriptCode = ({
         )}
         {oneLine && (
           <Box py={2} overflowY={'auto'} h={'100%'} pl={4} maxW={'100%'}>
-            <Code content={script} language={platform === 'Windows' ? 'powershell' : 'bash'} />
+            <Code
+              content={script}
+              language={platform === 'Windows' ? 'powershell' : 'bash'}
+              theme={'dark'}
+            />
           </Box>
         )}
         <Button
-          className="copy-button"
-          bg={'transparent'}
+          bg={'black'}
           border={'none'}
+          zIndex={100}
           {...(oneLine && {
             position: 'absolute',
             right: 2
           })}
           boxShadow={'none'}
-          color={'#A3A3A3'}
           _hover={{
             color: 'brightBlue.600',
             '& svg': {
@@ -89,18 +84,17 @@ const ScriptCode = ({
             }
           }}
         >
-          <MyIcon
-            name="copy"
-            color={'grayModern.600'}
-            w={'16px'}
-            onClick={() => copyData(script)}
-          />
+          <MyIcon color={'#A3A3A3'} name="copy" w={'16px'} onClick={() => copyData(script)} />
         </Button>
       </Flex>
       {!oneLine && (
         <Collapse in={onOpenScripts} animateOpacity>
           <Box pt={2} pl={3} overflowY={'auto'} h={'100%'} maxW={'100%'}>
-            <Code content={script} language={platform === 'Windows' ? 'powershell' : 'bash'} />
+            <Code
+              content={script}
+              language={platform === 'Windows' ? 'powershell' : 'bash'}
+              theme={'dark'}
+            />
           </Box>
         </Collapse>
       )}

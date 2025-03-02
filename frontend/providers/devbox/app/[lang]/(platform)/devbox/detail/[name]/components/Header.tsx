@@ -225,6 +225,10 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
               color: 'brightBlue.600'
             }}
             borderWidth={'1px 0px 1px 0px'}
+            {...(devboxDetail.status.value === 'Stopped' && {
+              borderRadius: '0px 8px 8px 0px',
+              borderWidth: '1px 1px 1px 0px'
+            })}
             onClick={() => router.push(`/devbox/create?name=${devboxDetail.name}`)}
           >
             {t('update')}

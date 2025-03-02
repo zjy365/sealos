@@ -1,7 +1,7 @@
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useState } from 'react';
-import { Box, Text, Flex, Tooltip, Button, Grid, Divider } from '@chakra-ui/react';
+import { Box, Text, Flex, Tooltip, Button, Grid, Divider, useDisclosure } from '@chakra-ui/react';
 
 import { useEnvStore } from '@/stores/env';
 import { usePriceStore } from '@/stores/price';
@@ -18,13 +18,16 @@ import SshConnectDrawer from './SSHConnectDrawer';
 const BasicInfo = () => {
   const t = useTranslations();
   const { message: toast } = useMessage();
+  const {
+    isOpen: isOpenSSHConnect,
+    onOpen: onOpenSSHConnect,
+    onClose: onCloseSSHConnect
+  } = useDisclosure();
 
   const { env } = useEnvStore();
   const { devboxDetail } = useDevboxStore();
   const { sourcePrice, setSourcePrice } = usePriceStore();
 
-  const [loading, setLoading] = useState(false);
-  const [onOpenSsHConnect, setOnOpenSsHConnect] = useState(false);
   const [sshConfigData, setSshConfigData] = useState<JetBrainsGuideData | null>(null);
 
   const handleOneClickConfig = useCallback(async () => {
@@ -52,7 +55,7 @@ const BasicInfo = () => {
       configHost: `${env.sealosDomain}_${env.namespace}_${devboxDetail?.name}`
     });
 
-    setOnOpenSsHConnect(true);
+    onOpenSSHConnect();
   }, [
     devboxDetail?.name,
     devboxDetail?.templateUid,
@@ -250,15 +253,12 @@ const BasicInfo = () => {
           {t('one_click_config')}
         </Button>
       </Flex>
-      {onOpenSsHConnect && sshConfigData && (
+      {sshConfigData && (
         <SshConnectDrawer
+          isOpen={isOpenSSHConnect}
+          onOpen={onOpenSSHConnect}
+          onClose={onCloseSSHConnect}
           jetbrainsGuideData={sshConfigData}
-          onSuccess={() => {
-            setOnOpenSsHConnect(false);
-          }}
-          onClose={() => {
-            setOnOpenSsHConnect(false);
-          }}
         />
       )}
     </Flex>
