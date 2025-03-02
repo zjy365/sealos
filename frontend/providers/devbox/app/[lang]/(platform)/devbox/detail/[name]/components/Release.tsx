@@ -229,7 +229,24 @@ const Version = () => {
       title: t('version_description'),
       key: 'description',
       render: (item: DevboxVersionListItemType) => (
-        <Text color={'grayModern.600'}>{item.description}</Text>
+        <Flex color={'grayModern.600'} role="group">
+          {item.description}
+          <MyIcon
+            name="pencil"
+            w={'16px'}
+            ml={1}
+            cursor={'pointer'}
+            color={'white'}
+            display={'none'}
+            _groupHover={{
+              display: 'inline-block'
+            }}
+            onClick={() => {
+              setCurrentVersion(item);
+              onOpenEdit();
+            }}
+          />
+        </Flex>
       )
     },
     {
