@@ -1,26 +1,23 @@
-import { Box, Button, Flex, Image, MenuButton, Text } from '@chakra-ui/react';
-import { SealosMenu, useMessage } from '@sealos/ui';
-import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { sealosApp } from 'sealos-desktop-sdk/app';
+import { SealosMenu, useMessage } from '@sealos/ui';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Button, Flex, Image, MenuButton, Text } from '@chakra-ui/react';
+import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
-import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
 import { useRouter } from '@/i18n';
 import { useGlobalStore } from '@/stores/global';
 import { DevboxListItemTypeV2 } from '@/types/devbox';
+import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
 
 import MyIcon from '@/components/Icon';
 import IDEButton from '@/components/IDEButton';
+import { BaseTable } from '@/components/ListTable';
 import PodLineChart from '@/components/PodLineChart';
-import { AdvancedTable } from '@/components/AdvancedTable';
+import SwitchPage from '@/components/SwitchDevboxPage';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
 import ReleaseModal from '@/components/modals/ReleaseModal';
-import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { BaseTable } from '@/components/ListTable';
-import SwitchPage from '@/components/SwitchDevboxPage';
-import { totalmem } from 'os';
-import { Dayjs } from 'dayjs';
 
 const DelModal = dynamic(() => import('@/components/modals/DelModal'));
 
@@ -278,7 +275,7 @@ const DevboxList = ({
                   {
                     child: (
                       <>
-                        <MyIcon name={'version'} w={'16px'} />
+                        <MyIcon name={'version'} w={'16px'} color={'white'} />
                         <Box ml={2}>{t('publish')}</Box>
                       </>
                     ),
@@ -287,7 +284,7 @@ const DevboxList = ({
                   {
                     child: (
                       <>
-                        <MyIcon name={'terminal'} w={'16px'} />
+                        <MyIcon name={'terminal'} w={'16px'} color={'white'} />
                         <Box ml={2}>{t('terminal')}</Box>
                       </>
                     ),
