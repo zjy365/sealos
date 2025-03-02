@@ -27,7 +27,6 @@ const Header = ({
   const { lastRoute } = useGlobalStore();
   const t = useTranslations();
   const { config } = useTemplateStore();
-  const { env } = useEnvStore();
   const handleExportYaml = useCallback(async () => {
     const zip = new JSZip();
     yamlList.forEach((item) => {
