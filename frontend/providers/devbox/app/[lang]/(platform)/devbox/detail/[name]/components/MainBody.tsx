@@ -118,7 +118,7 @@ const MainBody = () => {
               </Box>
               <Box h={'60px'} minW={['200px', '250px', '300px']}>
                 <Box h={'60px'} minW={['200px', '250px', '300px']}>
-                  <PodLineChart type="blue" data={devboxDetail?.usedCpu} />
+                  <PodLineChart type="purple" data={devboxDetail?.usedCpu} />
                 </Box>
               </Box>
             </Box>
@@ -129,7 +129,7 @@ const MainBody = () => {
               </Box>
               <Box h={'60px'}>
                 <Box h={'60px'}>
-                  <PodLineChart type="deepBlue" data={devboxDetail?.usedMemory} />
+                  <PodLineChart type="purpleBlue" data={devboxDetail?.usedMemory} />
                 </Box>
               </Box>
             </Box>
