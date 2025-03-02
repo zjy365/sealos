@@ -38,98 +38,79 @@ export default function SwitchPage({
     }
   };
   return (
-    <Flex ml={'auto'} mr={'0'} h="32px" align={'center'} fontSize="14px" {...props}>
-      <Text fontSize="14px" color={'grayModern.500'}>
-        {t('total_page_items')}:
-      </Text>
-      <Flex mr="25px" color={'grayModern.500'}>
-        {totalItem}
+    <Flex
+      w={'full'}
+      py={'15px'}
+      px={'24px'}
+      align={'center'}
+      fontSize="14px"
+      justifyContent={'space-between'}
+      {...props}
+    >
+      <Flex>
+        <Text fontSize="14px" color={'neutral.600'}>
+          {t('total_page_items')}:
+        </Text>
+        <Flex mr="25px" color={'neutral.900'}>
+          {totalItem}
+        </Flex>
       </Flex>
-      <Flex gap={'8px'}>
-        <Button
-          {...switchStyle}
-          isDisabled={currentPage === 1}
-          bg={currentPage !== 1 ? 'grayModern.250' : 'grayModern.150'}
-          p="0"
-          minW="0"
-          boxSize="24px"
-          onClick={(e) => {
-            e.preventDefault();
-            setCurrentPage(1);
-          }}
-          color={currentPage === 1 ? 'grayModern.400' : 'grayModern.900'}
-        >
-          <MyIcon name="firstPage" boxSize={'12px'} fill={'currentcolor'} />
-        </Button>
-        <Button
-          {...switchStyle}
-          isDisabled={currentPage === 1}
-          bg={currentPage !== 1 ? 'grayModern.250' : 'grayModern.150'}
-          p="0"
-          minW="0"
-          boxSize="24px"
-          onClick={(e) => {
-            e.preventDefault();
-            setCurrentPage(currentPage - 1);
-          }}
-          color={currentPage === 1 ? 'grayModern.400' : 'grayModern.900'}
-        >
-          <MyIcon name="prePage" boxSize={'12px'} fill={'currentcolor'} />
-          {/* <RightArrowIcon boxSize={'6px'} transform={'rotate(180deg)'} fill={'currentcolor'} /> */}
-        </Button>
-        <Text color={'grayModern.500'}>{currentPage}</Text>
-        <Text color={'grayModern.500'}>/</Text>
-        <Text color={'grayModern.900'}>{totalPage}</Text>
-        <Button
-          {...switchStyle}
-          isDisabled={isPreviousData ?? currentPage >= totalPage}
-          bg={currentPage !== totalPage ? 'grayModern.250' : 'grayModern.150'}
-          boxSize="24px"
-          p="0"
-          color={currentPage === totalPage ? 'grayModern.400' : 'grayModern.900'}
-          minW="0"
-          borderRadius={'50%'}
-          onClick={(e) => {
-            e.preventDefault();
-            setCurrentPage(currentPage + 1);
-          }}
-        >
-          <MyIcon
-            name="prePage"
-            boxSize={'12px'}
-            fill={'currentcolor'}
-            transform={'rotate(180deg)'}
-          />
-        </Button>
-        <Button
-          {...switchStyle}
-          isDisabled={isPreviousData ?? currentPage >= totalPage}
-          bg={currentPage !== totalPage ? 'grayModern.250' : 'grayModern.150'}
-          boxSize="24px"
-          color={currentPage === totalPage ? 'grayModern.400' : 'grayModern.900'}
-          p="0"
-          minW="0"
-          borderRadius={'50%'}
-          mr={'10px'}
-          onClick={(e) => {
-            e.preventDefault();
-            setCurrentPage(totalPage);
-          }}
-        >
-          <MyIcon
-            name="firstPage"
-            boxSize={'12px'}
-            fill={'currentcolor'}
-            transform={'rotate(180deg)'}
-          />
-        </Button>
+      <Flex>
+        <Flex gap={'8px'}>
+          <Button
+            {...switchStyle}
+            isDisabled={currentPage === 1}
+            bg={currentPage !== 1 ? 'neutral.400' : 'black'}
+            p="0"
+            minW="0"
+            boxSize="32px"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(currentPage - 1);
+            }}
+            color={currentPage === 1 ? 'grayModern.400' : 'grayModern.900'}
+          >
+            <MyIcon name="prePage" boxSize={'12px'} fill={'currentcolor'} />
+            {/* <RightArrowIcon boxSize={'6px'} transform={'rotate(180deg)'} fill={'currentcolor'} /> */}
+          </Button>
+          {new Array(totalPage).fill(0).map((_, index) => (
+            <Button
+              key={index}
+              {...switchStyle}
+              isDisabled={currentPage === index + 1}
+              bg={currentPage === index + 1 ? '#F4F4F5' : 'none'}
+              p="0"
+              boxSize="32px"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage(index + 1);
+              }}
+            >
+              {index + 1}
+            </Button>
+          ))}
+
+          <Button
+            {...switchStyle}
+            isDisabled={isPreviousData ?? currentPage >= totalPage}
+            boxSize="32px"
+            p="0"
+            color={currentPage === totalPage ? 'neutral.400' : 'black'}
+            minW="0"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(currentPage + 1);
+            }}
+          >
+            <MyIcon
+              name="prePage"
+              boxSize={'12px'}
+              fill={'currentcolor'}
+              transform={'rotate(180deg)'}
+            />
+          </Button>
+        </Flex>
       </Flex>
-      <Text fontSize="12px" fontWeight="500" color={'grayModern.900'}>
-        {pageSize}
-      </Text>
-      <Text fontSize="12px" fontWeight="500" color={'grayModern.500'}>
-        /{t('page')}
-      </Text>
     </Flex>
   );
 }

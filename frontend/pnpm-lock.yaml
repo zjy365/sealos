@@ -1520,6 +1520,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.35.3
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-table':
+        specifier: ^8.10.7
+        version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
       axios:
         specifier: ^1.7.3
         version: 1.7.3
@@ -1562,6 +1565,12 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      lucide:
+        specifier: ^0.477.0
+        version: 0.477.0
+      lucide-react:
+        specifier: ^0.477.0
+        version: 0.477.0(react@18.2.0)
       nanoid:
         specifier: ^4.0.2
         version: 4.0.2
@@ -18251,6 +18260,18 @@ packages:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /lucide-react@0.477.0(react@18.2.0):
+    resolution: {integrity: sha512-yCf7aYxerFZAbd8jHJxjwe1j7jEMPptjnaOqdYeirFnEy85cNR3/L+o0I875CYFYya+eEVzZSbNuRk8BZPDpVw==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /lucide@0.477.0:
+    resolution: {integrity: sha512-lEgt1ni9sKohbLsYWSnM3mKVRkvUrJ3Ijj01RAdM5F0iyvxkCcy3gPrb1G2ux6zE4y20ptcitfMa0OOFXI57gw==}
     dev: false
 
   /luxon@3.4.4:

@@ -15,7 +15,6 @@ const Empty = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      bg={'#F3F4F5'}
     >
       <MyIcon name={'noEvents'} color={'transparent'} width={'80px'} height={'80px'} />
       <Box py={8}>{t('devbox_empty')}</Box>
