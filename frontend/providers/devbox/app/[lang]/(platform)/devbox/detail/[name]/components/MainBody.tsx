@@ -101,19 +101,20 @@ const MainBody = () => {
       <Box bg={'white'} borderRadius="lg" pl={6} pt={2} pr={6} pb={6} borderWidth={1}>
         {/* monitor */}
         <Box mt={4}>
-          <Flex alignItems={'space-between'} mb={2}>
-            <Text fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
+          <Flex mb={6} w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
+            <Box fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
               {t('monitor')}
-            </Text>
-            <Box ml={2} color={'grayModern.500'}>
-              ({t('update Time')}&ensp;
-              {dayjs().format('HH:mm')})
+            </Box>
+            <Box color={'#A3A3A3'} fontSize={'12px'} fontWeight={'normal'}>
+              {t('update Time')}&ensp;
+              {dayjs().format('HH:mm')}
             </Box>
           </Flex>
-          <Flex bg={'grayModern.50'} p={4} borderRadius={'lg'} minH={'80px'} gap={4}>
+          <Flex borderRadius={'lg'} minH={'80px'} gap={4}>
             <Box flex={1} position={'relative'}>
-              <Box color={'grayModern.600'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
-                {t('cpu')} {devboxDetail?.usedCpu?.yData[devboxDetail?.usedCpu?.yData?.length - 1]}%
+              <Box color={'grayModern.900'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
+                {t('cpu')}:&ensp;
+                {devboxDetail?.usedCpu?.yData[devboxDetail?.usedCpu?.yData?.length - 1]}%
               </Box>
               <Box h={'60px'} minW={['200px', '250px', '300px']}>
                 <Box h={'60px'} minW={['200px', '250px', '300px']}>
@@ -122,22 +123,13 @@ const MainBody = () => {
               </Box>
             </Box>
             <Box flex={1} position={'relative'}>
-              <Button
-                variant={'square'}
-                position={'absolute'}
-                right={'2px'}
-                top={'-6px'}
-                onClick={onOpen}
-              >
-                <MyIcon name="maximize" width={'16px'} fill={'#667085'} />
-              </Button>
-              <Box color={'grayModern.600'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
-                {t('memory')}
+              <Box color={'grayModern.900'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
+                {t('memory')}:&ensp;
                 {devboxDetail?.usedMemory?.yData[devboxDetail?.usedMemory?.yData?.length - 1]}%
               </Box>
               <Box h={'60px'}>
                 <Box h={'60px'}>
-                  <PodLineChart type="purple" data={devboxDetail?.usedMemory} />
+                  <PodLineChart type="deepBlue" data={devboxDetail?.usedMemory} />
                 </Box>
               </Box>
             </Box>
