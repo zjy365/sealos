@@ -106,6 +106,7 @@ export const getTemplateRepository = (uid: string) =>
       uid: string;
       isPublic: true;
       name: string;
+      kind: TemplateRepositoryKind;
       description: string | null;
       iconId: string | null;
       templateRepositoryTags: {

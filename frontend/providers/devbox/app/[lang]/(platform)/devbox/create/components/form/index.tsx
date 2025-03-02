@@ -37,7 +37,7 @@ const Form = ({
     border: theme.borders.base,
     borderRadius: 'lg',
     mb: 4,
-    p: 4,
+    p: 6,
     bg: 'white'
   };
 

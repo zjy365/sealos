@@ -80,11 +80,11 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
         <Box py={'8px'} userSelect={'none'}>
           {networks.length === 0 && <AppendNetworksButton onClick={() => appendNetworks()} />}
           {networks.map((network, i) => (
-            <>
+            <Box key={network.id}>
               <Flex
                 className="guide-network-configuration"
                 alignItems={'flex-start'}
-                key={network.id}
+                // key={network.id}
                 _notLast={{ pb: 6, borderBottom: theme.borders.base }}
                 _notFirst={{ pt: 6 }}
               >
@@ -244,7 +244,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                   <AppendNetworksButton onClick={() => appendNetworks()} />
                 </Box>
               )}
-            </>
+            </Box>
           ))}
         </Box>
       </Box>
