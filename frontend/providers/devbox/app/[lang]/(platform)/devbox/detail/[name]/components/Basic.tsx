@@ -1,18 +1,20 @@
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useState } from 'react';
-import { Box, Text, Flex, Tooltip, Button, Grid, Divider, useDisclosure } from '@chakra-ui/react';
+import { Box, Text, Flex, Button, Grid, Divider, useDisclosure } from '@chakra-ui/react';
 
 import { useEnvStore } from '@/stores/env';
 import { usePriceStore } from '@/stores/price';
 import { useDevboxStore } from '@/stores/devbox';
 import { getTemplateConfig } from '@/api/template';
+import { DevboxStatusMapType } from '@/types/devbox';
 import { getSSHConnectionInfo } from '@/api/devbox';
 import { downLoadBlob, parseTemplateConfig, useCopyData } from '@/utils/tools';
 
 import MyIcon from '@/components/Icon';
 import GPUItem from '@/components/GPUItem';
-import { JetBrainsGuideData } from '@/components/IDEButton';
 import SshConnectDrawer from './SSHConnectDrawer';
+import { JetBrainsGuideData } from '@/components/IDEButton';
+import DevboxStatusTag from '@/components/DevboxStatusTag';
 
 const BasicInfo = () => {
   const t = useTranslations();
@@ -88,8 +90,8 @@ const BasicInfo = () => {
           <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
             {t('status')}
           </Text>
-          <Flex width={'60%'} color={'grayModern.900'}>
-            <Text fontSize={'12px'}>{devboxDetail?.status?.label}</Text>
+          <Flex width={'60%'} color={'grayModern.900'} mr={'10'}>
+            <DevboxStatusTag status={devboxDetail?.status as DevboxStatusMapType} />
           </Flex>
         </Flex>
         {/* Image */}
@@ -111,10 +113,7 @@ const BasicInfo = () => {
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
             <Text fontSize={'12px'} w={'full'} textOverflow={'ellipsis'}>
-              {
-                // getRuntimeDetailLabel(devboxDetail?., devboxDetail?.runtimeVersion)
-                `${devboxDetail?.templateRepositoryName}-${devboxDetail?.templateName}`
-              }
+              {`${devboxDetail?.templateRepositoryName}-${devboxDetail?.templateName}`}
             </Text>
           </Flex>
         </Flex>
