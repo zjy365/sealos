@@ -93,7 +93,10 @@ const map = {
   gpu: require('./icons/gpu.svg').default,
   attention: require('./icons/attention.svg').default,
   arrowRightUp: require('./icons/arrowRightUp.svg').default,
-  pencil: require('./icons/pencil.svg').default
+  pencil: require('./icons/pencil.svg').default,
+  refresh: require('./icons/refresh.svg').default,
+  to: require('./icons/to.svg').default,
+  calendar: require('./icons/calendar.svg').default
 };
 
 const MyIcon = ({

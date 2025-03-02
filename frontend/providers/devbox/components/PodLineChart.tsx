@@ -119,11 +119,15 @@ const map = {
 const PodLineChart = ({
   type,
   data,
-  isShowLabel = false
+  isShowLabel = false,
+  noBg = false,
+  splitNumber = 2
 }: {
   type: 'blue' | 'deepBlue' | 'green' | 'purple' | 'purpleBlue';
   data?: MonitorDataResult;
+  noBg?: boolean;
   isShowLabel?: boolean;
+  splitNumber?: number;
 }) => {
   const { screenWidth } = useGlobalStore();
   const xData =
@@ -137,7 +141,7 @@ const PodLineChart = ({
   const optionStyle = useMemo(
     () => ({
       areaStyle: {
-        color: map[type].backgroundColor
+        color: noBg ? 'transparent' : map[type].backgroundColor
       },
       lineStyle: {
         width: '1',
@@ -169,7 +173,7 @@ const PodLineChart = ({
     yAxis: {
       type: 'value',
       boundaryGap: false,
-      splitNumber: 2,
+      splitNumber: splitNumber,
       max: 100,
       min: 0,
       axisLabel: {

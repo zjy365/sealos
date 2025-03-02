@@ -14,6 +14,7 @@ import { useEnvStore } from '@/stores/env';
 import { useLoading } from '@/hooks/useLoading';
 import { useDevboxStore } from '@/stores/devbox';
 import useDetailDriver from '@/hooks/useDetailDriver';
+import Monitor from './components/Monitor';
 
 const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
   const t = useTranslations();
@@ -65,7 +66,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
     }
   );
   return (
-    <Flex py={5} direction={'column'} bg={'white'}>
+    <Flex py={5} direction={'column'} bg={'white'} minH={'100vh'}>
       <Loading loading={!initialized} />
       {devboxDetail && initialized && (
         <>
@@ -130,38 +131,43 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
             mx={'auto'}
             my={4}
           >
-            {/* basic */}
-            <Box
-              w={'full'}
-              mr={4}
-              overflow={'overlay'}
-              zIndex={1}
-              transition={'0.4s'}
-              bg={'white'}
-              borderWidth={1}
-              borderRadius={'lg'}
-            >
-              <BasicInfo />
-            </Box>
-            <Flex
-              w={'full'}
-              flexDirection={'column'}
-              overflow={'overlay'}
-              sx={{
-                '&::-webkit-scrollbar': {
-                  display: 'none'
-                },
-                msOverflowStyle: 'none', // IE and Edge
-                scrollbarWidth: 'none' // Firefox
-              }}
-            >
-              <Box mb={4} bg={'white'} borderRadius={'lg'} flexShrink={0} minH={'257px'}>
-                <MainBody />
-              </Box>
-              <Box bg={'white'} borderRadius={'lg'} flex={'1'}>
-                <Version />
-              </Box>
-            </Flex>
+            {tab === 'overview' && (
+              <>
+                {/* basic */}
+                <Box
+                  w={'full'}
+                  mr={4}
+                  overflow={'overlay'}
+                  zIndex={1}
+                  transition={'0.4s'}
+                  bg={'white'}
+                  borderWidth={1}
+                  borderRadius={'lg'}
+                >
+                  <BasicInfo />
+                </Box>
+                <Flex
+                  w={'full'}
+                  flexDirection={'column'}
+                  overflow={'overlay'}
+                  sx={{
+                    '&::-webkit-scrollbar': {
+                      display: 'none'
+                    },
+                    msOverflowStyle: 'none', // IE and Edge
+                    scrollbarWidth: 'none' // Firefox
+                  }}
+                >
+                  <Box mb={4} bg={'white'} borderRadius={'lg'} flexShrink={0} minH={'257px'}>
+                    <MainBody />
+                  </Box>
+                  <Box bg={'white'} borderRadius={'lg'} flex={'1'}>
+                    <Version />
+                  </Box>
+                </Flex>
+              </>
+            )}
+            {tab === 'monitor' && <Monitor />}
           </Flex>
         </>
       )}
