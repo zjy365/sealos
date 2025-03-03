@@ -49,7 +49,6 @@ export default function TemplateRepositoryItem({
   const isThisTemplateRepository = watch('templateRepositoryUid') === item.uid;
 
   // const currentTemplateId = watch('templateUid');
-  // console.log('currentTemplateId', currentTemplateId);
 
   const afterUpdateTemplate = (uid: string) => {
     const template = templateList.find((v) => v.uid === uid)!;
