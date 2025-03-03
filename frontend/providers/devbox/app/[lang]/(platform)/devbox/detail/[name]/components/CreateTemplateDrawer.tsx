@@ -1,31 +1,30 @@
 import { z } from 'zod';
-
-import { createTemplateRepository } from '@/api/template';
-import MyFormLabel from '@/components/MyFormControl';
-import { TemplateState } from '@/constants/template';
-import { usePathname } from '@/i18n';
-import { useTemplateStore } from '@/stores/template';
-import { templateNameSchema, versionSchema } from '@/utils/vaildate';
 import {
   Button,
   ButtonGroup,
   Flex,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  VStack
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  VStack,
+  Divider
 } from '@chakra-ui/react';
-import { useMessage } from '@sealos/ui';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { FC } from 'react';
+import { useMessage } from '@sealos/ui';
+import { useTranslations } from 'next-intl';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+
+import { usePathname } from '@/i18n';
+import { TemplateState } from '@/constants/template';
+import { useTemplateStore } from '@/stores/template';
+import MyFormLabel from '@/components/MyFormControl';
+import { createTemplateRepository } from '@/api/template';
+import { templateNameSchema, versionSchema } from '@/utils/vaildate';
 
 import TemplateRepositoryDescriptionField from '@/app/[lang]/(platform)/template/updateTemplate/components/TemplateRepositoryDescriptionField';
 import TemplateRepositoryIsPublicField from '@/app/[lang]/(platform)/template/updateTemplate/components/TemplateRepositoryIsPublicField';
@@ -35,13 +34,10 @@ const tagSchema = z.object({
   value: z.string()
 });
 
-// 定义表单数据类型和验证规则
-
 interface CreateTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
   devboxReleaseName: string;
-  // onSubmit?: (data: FormData) => void;
 }
 const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
   isOpen,
@@ -152,24 +148,38 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md" onCloseComplete={() => reset()}>
-      <ModalOverlay />
-      <ModalContent maxW="562px" margin={'auto'}>
+    <Drawer isOpen={isOpen} onClose={onClose} size="md">
+      <DrawerOverlay />
+      <DrawerContent
+        maxWidth={'500px'}
+        overflow={'hidden'}
+        minH={'785px'}
+        my={'32px'}
+        mr={'32px'}
+        borderRadius={'16px'}
+        position={'relative'}
+      >
+        <DrawerHeader>{t('create_template')}</DrawerHeader>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmitHandler)}>
-            <ModalHeader>
-              <Text>{t('create_template')}</Text>
-            </ModalHeader>
-            <ModalBody pt={'32px'} pb={'24px'} px={'52px'}>
-              <ModalCloseButton />
+            <DrawerBody
+              h={'full'}
+              borderTopWidth={1}
+              bg={'#F8F8F9'}
+              py={'6'}
+              sx={{
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                }
+              }}
+            >
               <VStack spacing={6} align="stretch">
-                {/* 名称 */}
+                {/* name */}
                 <TemplateRepositoryNameField />
 
-                {/* 版本号 */}
-
-                <Flex align={'center'}>
-                  <MyFormLabel width="108px" m="0" fontSize="14px" isRequired>
+                {/* version */}
+                <Flex align={'start'} direction={'column'} gap={4}>
+                  <MyFormLabel width="108px" m="0" fontSize="14px">
                     {t('version')}
                   </MyFormLabel>
                   <Controller
@@ -179,40 +189,27 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
                       <Input
                         {...field}
                         placeholder={t('input_template_version_placeholder')}
-                        bg="grayModern.50"
+                        bg="white"
                         borderColor="grayModern.200"
                         size="sm"
-                        width={'350px'}
+                        width={'full'}
                       />
                     )}
                   />
                 </Flex>
 
-                {/* 公开 */}
-                {/* <Flex > */}
-                <TemplateRepositoryIsPublicField />
-
-                {/* 标签 */}
+                {/* Tags */}
                 <TemplateRepositoryTagField />
 
-                {/* 简介 */}
+                {/* Description */}
                 <TemplateRepositoryDescriptionField />
+
+                {/* Public */}
+                <TemplateRepositoryIsPublicField />
               </VStack>
-            </ModalBody>
-            <ModalFooter px={'52px'} pb={'32px'}>
-              {/* 按钮组 */}
-              <ButtonGroup spacing={'10px'}>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    reset();
-                    onClose();
-                  }}
-                  px={'29.5px'}
-                  py={'8px'}
-                >
-                  {t('cancel')}
-                </Button>
+            </DrawerBody>
+            <DrawerFooter borderTopWidth={1} bg={'#F8F8F9'} py={'12'}>
+              <ButtonGroup spacing="12px" justifyContent="flex-start" w={'100%'}>
                 <Button
                   type="submit"
                   variant={'solid'}
@@ -222,12 +219,23 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
                 >
                   {t('create')}
                 </Button>
+                <Button
+                  variant={'outline'}
+                  px={'29.5px'}
+                  py={'8px'}
+                  onClick={onClose}
+                  _hover={{
+                    bg: 'grayModern.50'
+                  }}
+                >
+                  {t('cancel')}
+                </Button>
               </ButtonGroup>
-            </ModalFooter>
+            </DrawerFooter>
           </form>
         </FormProvider>
-      </ModalContent>
-    </Modal>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
