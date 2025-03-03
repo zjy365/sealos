@@ -79,16 +79,16 @@ export type TgoogleUser = {
   exp: number;
 };
 // if default, uid
-export const PROVIDERS = [
-  'GITHUB',
-  'WECHAT',
-  'PHONE',
-  'PASSWORD',
-  'GOOGLE',
-  'WECHAT_OPEN',
-  'OAUTH2',
-  'EMAIL'
-] as const;
+// export const PROVIDERS = [
+//   'GITHUB',
+//   'WECHAT',
+//   'PHONE',
+//   'PASSWORD',
+//   'GOOGLE',
+//   'WECHAT_OPEN',
+//   'OAUTH2',
+//   'EMAIL'
+// ] as const;
 export type OauthProvider = Exclude<ProviderType, 'PASSWORD' | 'PHONE' | 'EMAIL'>;
 export type TUserExist = { user: string; exist: boolean };
 

@@ -6,39 +6,73 @@ import { SemData } from '@/types/sem';
 import { hashPassword } from '@/utils/crypto';
 import { nanoid } from 'nanoid';
 import {
+  Prisma,
   PrismaClient,
   ProviderType,
   TaskStatus,
   User,
   UserStatus
 } from 'prisma/global/generated/client';
-import { enableSignUp, enableTracking } from '../enable';
+import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
+import { Select, useId } from '@chakra-ui/react';
 
 type TransactionClient = Omit<
   PrismaClient,
   '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
 >;
+type TSignInResult = Prisma.OauthProviderGetPayload<{
+  select: {
+    user: {
+      include: {
+        userInfo: {
+          select: {
+            isInited: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+async function signIn({
+  provider,
+  id,
+  password
+}: {
+  provider: ProviderType;
+  id: string;
+  password?: string;
+}): Promise<TSignInResult | null> {
+  const query: Prisma.OauthProviderFindUniqueArgs['where'] = {
+    providerId_providerType: {
+      providerType: provider,
+      providerId: id
+    }
+  };
+  if (!!password) query.password = hashPassword(password);
 
-async function signIn({ provider, id }: { provider: ProviderType; id: string }) {
   const userProvider = await globalPrisma.oauthProvider.findUnique({
-    where: {
-      providerId_providerType: {
-        providerType: provider,
-        providerId: id
+    where: query,
+    select: {
+      user: {
+        include: {
+          userInfo: {
+            select: {
+              isInited: true
+            }
+          }
+        }
       }
-    },
-    include: {
-      user: true
     }
   });
   if (!userProvider) return null;
-
-  await checkDeductionBalanceAndCreateTasks(userProvider.user.uid);
-
-  return {
-    user: userProvider.user
-  };
+  try {
+    await checkDeductionBalanceAndCreateTasks(userProvider.user.uid);
+  } catch (error) {
+    console.error('Error occurred while checking deduction balance:', error);
+    throw Error();
+  }
+  return userProvider;
 }
 
 export const inviteHandler = ({
@@ -84,17 +118,10 @@ export const inviteHandler = ({
 };
 
 export async function signInByPassword({ id, password }: { id: string; password: string }) {
-  const userProvider = await globalPrisma.oauthProvider.findUnique({
-    where: {
-      providerId_providerType: {
-        providerType: ProviderType.PASSWORD,
-        providerId: id
-      },
-      password: hashPassword(password)
-    },
-    include: {
-      user: true
-    }
+  const userProvider = await signIn({
+    id,
+    password,
+    provider: 'PASSWORD'
   });
   if (!userProvider) return null;
 
@@ -124,7 +151,6 @@ async function checkDeductionBalanceAndCreateTasks(userUid: string) {
     const userTasks = await globalPrisma.userTask.findFirst({
       where: { userUid }
     });
-
     // If no user tasks are found, create new tasks for the user.
     if (!userTasks) {
       await globalPrisma.$transaction(async (tx) => {
@@ -160,16 +186,31 @@ async function signUp({
   id,
   name: nickname,
   avatar_url,
-  semData
+  password,
+  semData,
+  firstname = '',
+  lastname = ''
 }: {
   provider: ProviderType;
   id: string;
   name: string;
+  password?: string;
+  firstname?: string;
+  lastname?: string;
   avatar_url: string;
   semData?: SemData;
 }) {
   const name = nanoid(10);
   try {
+    let oauthProvider: Prisma.UserCreateArgs['data']['oauthProvider'] = {
+      create: {
+        providerId: id,
+        providerType: provider
+      }
+    };
+    if (!!password && !!oauthProvider?.create)
+      //@ts-ignore
+      oauthProvider.create.password = hashPassword(password);
     const result = await globalPrisma.$transaction(async (tx) => {
       const user: User = await tx.user.create({
         data: {
@@ -177,10 +218,13 @@ async function signUp({
           id: name,
           nickname: nickname,
           avatarUri: avatar_url,
-          oauthProvider: {
+          oauthProvider,
+          userInfo: {
             create: {
-              providerId: id,
-              providerType: provider
+              firstname,
+              lastname,
+              signUpRegionUid: getRegionUid(),
+              isInited: false
             }
           }
         }
@@ -222,7 +266,13 @@ export async function signUpByPassword({
   semData?: SemData;
 }) {
   const name = nanoid(10);
-
+  const result = await signUp({
+    provider: 'PASSWORD',
+    password,
+    id,
+    avatar_url: '',
+    name
+  });
   try {
     const result = await globalPrisma.$transaction(async (tx) => {
       const user: User = await tx.user.create({
@@ -262,6 +312,49 @@ export async function signUpByPassword({
   }
 }
 
+export async function signUpByEmail({
+  id,
+  name: nickname,
+  password,
+  firstname,
+  lastname,
+  semData
+}: {
+  id: string;
+  name: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+  semData?: SemData;
+}) {
+  const name = nanoid(10);
+  const result = await signUp({
+    provider: 'EMAIL',
+    password,
+    id,
+    avatar_url: '',
+    name,
+    firstname,
+    lastname
+  });
+  if (!result) throw Error('email signup error');
+  return {
+    user: result.user
+  };
+}
+
+export async function signInByEmail({ id, password }: { id: string; password: string }) {
+  const result = await signIn({
+    provider: 'EMAIL',
+    password,
+    id
+  });
+  if (!result) return null;
+
+  await checkDeductionBalanceAndCreateTasks(result.user.uid);
+
+  return result;
+}
 export async function updatePassword({ id, password }: { id: string; password: string }) {
   return globalPrisma.oauthProvider.update({
     where: {
@@ -285,7 +378,7 @@ export async function findUser({ userUid }: { userUid: string }) {
     }
   });
 }
-
+// sign in + sign up
 export const getGlobalToken = async ({
   provider,
   providerId,
@@ -306,6 +399,7 @@ export const getGlobalToken = async ({
   bdVid?: string;
 }) => {
   let user: User | null = null;
+  let isInited = false;
 
   const _user = await globalPrisma.oauthProvider.findUnique({
     where: {
@@ -313,90 +407,98 @@ export const getGlobalToken = async ({
         providerType: provider,
         providerId
       }
+    },
+    select: {
+      userUid: true
     }
   });
 
-  if (provider === ProviderType.PASSWORD) {
-    if (!password) {
-      return null;
-    }
-    if (!_user) {
-      if (!enableSignUp()) throw new Error('Failed to signUp user');
-      const result = await signUpByPassword({
-        id: providerId,
-        name,
-        avatar_url,
-        password,
-        semData
-      });
-      if (!!result) {
-        user = result.user;
-        if (inviterId && result) {
-          inviteHandler({
-            inviterId: inviterId,
-            inviteeId: result?.user.name,
-            signResult: result
-          });
-        }
-        if (enableTracking()) {
-          await trackSignUp({
-            userId: result.user.id,
-            userUid: result.user.uid
-          });
-        }
-      }
-    } else {
-      const result = await signInByPassword({
-        id: providerId,
-        password
-      });
-      // password is wrong
-      if (!result) return null;
+  // if (provider === ProviderType.PASSWORD) {
+  //   if (!password) {
+  //     return null;
+  //   }
+  //   if (!_user) {
+  //     if (!enableSignUp()) throw new Error('Failed to signUp user');
+  //     const result = await signUpByPassword({
+  //       id: providerId,
+  //       name,
+  //       avatar_url,
+  //       password,
+  //       semData
+  //     });
+  //     if (!!result) {
+  //       user = result.user;
+  //       if (inviterId && result) {
+  //         inviteHandler({
+  //           inviterId: inviterId,
+  //           inviteeId: result?.user.name,
+  //           signResult: result
+  //         });
+  //       }
+  //       if (enableTracking()) {
+  //         await trackSignUp({
+  //           userId: result.user.id,
+  //           userUid: result.user.uid
+  //         });
+  //       }
+  //     }
+  //   } else {
+  //     const result = await signInByPassword({
+  //       id: providerId,
+  //       password
+  //     });
+  //     // password is wrong
+  //     if (!result) return null;
+  //     user = result.user;
+  //   }
+  // } else {
+  if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
+    throw new Error('not support other way to signin/signup');
+  if (!_user) {
+    if (!enableSignUp()) throw new Error('Failed to signUp user');
+    const result = await signUp({
+      provider,
+      id: providerId,
+      name,
+      avatar_url,
+      semData
+    });
+    if (result) {
       user = result.user;
+      if (inviterId) {
+        inviteHandler({
+          inviterId: inviterId,
+          inviteeId: result?.user.name,
+          signResult: result
+        });
+      }
+      if (bdVid) {
+        await uploadConvertData({ newType: [3], bdVid })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      if (enableTracking()) {
+        await trackSignUp({
+          userId: result.user.id,
+          userUid: result.user.uid
+        });
+      }
     }
   } else {
-    if (!_user) {
-      if (!enableSignUp()) throw new Error('Failed to signUp user');
-      const result = await signUp({
-        provider,
-        id: providerId,
-        name,
-        avatar_url,
-        semData
-      });
-      if (result) {
-        user = result.user;
-        if (inviterId) {
-          inviteHandler({
-            inviterId: inviterId,
-            inviteeId: result?.user.name,
-            signResult: result
-          });
-        }
-        if (bdVid) {
-          await uploadConvertData({ newType: [3], bdVid })
-            .then((res) => {
-              console.log(res);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-        if (enableTracking()) {
-          await trackSignUp({
-            userId: result.user.id,
-            userUid: result.user.uid
-          });
-        }
-      }
-    } else {
-      const result = await signIn({
-        provider,
-        id: providerId
-      });
-      result && (user = result.user);
+    const result = await signIn({
+      provider,
+      id: providerId
+    });
+    if (result) {
+      user = result.user;
+      isInited = !!result.user.userInfo?.isInited;
     }
   }
+  // }
   if (!user) throw new Error('Failed to edit db');
   // user is deleted or banned
   if (user.status !== UserStatus.NORMAL_USER) return null;
@@ -411,6 +513,7 @@ export const getGlobalToken = async ({
       name: user.nickname,
       avatar: user.avatarUri,
       userUid: user.uid
-    }
+    },
+    needInit: !isInited
   };
 };

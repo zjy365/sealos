@@ -65,10 +65,30 @@ export default function Callback() {
               semData: getUserSemData() ?? undefined,
               bdVid: getBaiduId() ?? undefined
             });
+            // const data = {
+            //   code: 200,
+            //   data: {
+            //     token:
+            //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVWlkIjoiNTcxZDY0ODYtYzBlYS00MzQ0LWJlMDMtODI5MmFlYTdmODI1IiwidXNlcklkIjoiSFZqeTVPNkRoUCIsImlhdCI6MTc0MTc2ODEzMCwiZXhwIjoxNzQxNzY4MTkwfQ.tLVnglTHEPBOaQwgVwefMsiniWj72Ai00N1MMd8f9I8',
+            //     user: {
+            //       name: 'xudaotutou',
+            //       avatar: 'https://avatars.githubusercontent.com/u/71751336?v=4',
+            //       userUid: '571d6486-c0ea-4344-be03-8292aea7f825'
+            //     },
+            //     needInit: true
+            //   }
+            // };
             setProvider();
             if (data.code === 200 && data.data?.token) {
               const token = data.data?.token;
               setToken(token);
+              const needInit = data.data.needInit;
+              console.log('needInit', needInit);
+              if (needInit) {
+                // await router.push('/personalinfo');
+                await router.push('/unlockcard');
+                return;
+              }
               const regionTokenRes = await getRegionToken();
               if (regionTokenRes?.data) {
                 await sessionConfig(regionTokenRes.data);

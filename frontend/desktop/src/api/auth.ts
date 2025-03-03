@@ -1,3 +1,5 @@
+import { InitRegionTokenParams } from '@/schema/auth';
+import { ILoginParams, ILoginResult, IRegisterParams } from '@/schema/ccSvc';
 import { SmsType } from '@/services/backend/db/verifyCode';
 import { RegionResourceType } from '@/services/backend/svc/checkResource';
 import request from '@/services/request';
@@ -126,6 +128,7 @@ export const _oauthProviderSignIn =
         realUser: {
           realUserUid: string;
         };
+        needInit: boolean;
       }>
     >(`/api/auth/oauth/${provider.toLocaleLowerCase()}`, data);
 export const _oauthProviderBind =
@@ -210,6 +213,23 @@ export const _getAmount = (request: AxiosInstance) => () =>
   request<never, ApiResp<{ balance: number; deductionBalance: number }>>('/api/account/getAmount');
 export const _verifyToken = (request: AxiosInstance) => () =>
   request<never, ApiResp<null>>('/api/auth/verify');
+
+export const _ccEmailSignIn = (request: AxiosInstance) => (data: ILoginParams) =>
+  request.post<never, ApiResp<ILoginResult>>('/api/auth/email', data);
+
+export const _ccEmailSignUp = (request: AxiosInstance) => (data: IRegisterParams) =>
+  request.post<typeof data, ApiResp<{ token: string }>>('/api/auth/email/signUp', data);
+
+export const _initRegionToken = (request: AxiosInstance) => (data: InitRegionTokenParams) =>
+  request.post<typeof data, ApiResp<{ token: string; kubeconfig: string; appToken: string }>>(
+    '/api/auth/initRegionToken',
+    data
+  );
+
+export const ccEmailSignIn = _ccEmailSignIn(request);
+export const ccEmailSignUp = _ccEmailSignUp(request);
+export const initRegionToken = _initRegionToken(request);
+
 export const passwordExistRequest = _passwordExistRequest(request);
 export const passwordLoginRequest = _passwordLoginRequest(request, (token) => {
   useSessionStore.setState({ token });
