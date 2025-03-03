@@ -1,4 +1,3 @@
-import { listPrivateTemplateRepository } from '@/api/template';
 import MyIcon from '@/components/Icon';
 import SwitchPage from '@/components/SwitchPage';
 import { Box, Flex, Grid, TabPanel, Text } from '@chakra-ui/react';
@@ -6,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import TemplateCard from './TemplateCard';
+import { listPrivateTemplateRepository } from '@/api/template';
 
 export default function PrivatePanel({ search }: { search: string }) {
   const [pageQueryBody, setPageQueryBody] = useState({
@@ -31,7 +31,7 @@ export default function PrivatePanel({ search }: { search: string }) {
     pageSize: pageQueryBody.pageSize,
     search
   };
-  const listPrivateTemplateRepository = useQuery(
+  const listPrivateTemplateRepositoryQuery = useQuery(
     ['template-repository-list', 'template-repository-private', queryBody],
     () => {
       return listPrivateTemplateRepository(queryBody);
@@ -40,11 +40,11 @@ export default function PrivatePanel({ search }: { search: string }) {
 
   useEffect(() => {
     if (
-      listPrivateTemplateRepository.isFetched &&
-      listPrivateTemplateRepository.isSuccess &&
-      listPrivateTemplateRepository.data
+      listPrivateTemplateRepositoryQuery.isFetched &&
+      listPrivateTemplateRepositoryQuery.isSuccess &&
+      listPrivateTemplateRepositoryQuery.data
     ) {
-      const data = listPrivateTemplateRepository.data.page;
+      const data = listPrivateTemplateRepositoryQuery.data.page;
       setPageQueryBody((prev) => ({
         ...prev,
         totalItems: data.totalItems || 0,
@@ -53,14 +53,14 @@ export default function PrivatePanel({ search }: { search: string }) {
       }));
     }
   }, [
-    listPrivateTemplateRepository.data,
-    listPrivateTemplateRepository.isFetched,
-    listPrivateTemplateRepository.isSuccess
+    listPrivateTemplateRepositoryQuery.data,
+    listPrivateTemplateRepositoryQuery.isFetched,
+    listPrivateTemplateRepositoryQuery.isSuccess
   ]);
 
   const t = useTranslations();
   const privateTempalteRepositoryList =
-    listPrivateTemplateRepository.data?.templateRepositoryList || [];
+    listPrivateTemplateRepositoryQuery.data?.templateRepositoryList || [];
   return (
     <TabPanel p={0} height={'full'}>
       <Flex flex="1" direction={'column'} h={'full'}>

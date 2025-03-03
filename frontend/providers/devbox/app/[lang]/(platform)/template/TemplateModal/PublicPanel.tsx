@@ -114,7 +114,7 @@ function _PublicPanel({ search }: { search: string }) {
     search,
     tags: state.getSelectedTagList()
   };
-  const listTemplateRepository = useQuery(
+  const listTemplateRepositoryQuery = useQuery(
     ['template-repository-list', 'template-repository-public', queryBody],
     () => {
       return listTemplateRepository(
@@ -129,8 +129,8 @@ function _PublicPanel({ search }: { search: string }) {
   );
 
   useEffect(() => {
-    if (listTemplateRepository.isSuccess && listTemplateRepository.data) {
-      const data = listTemplateRepository.data.page;
+    if (listTemplateRepositoryQuery.isSuccess && listTemplateRepositoryQuery.data) {
+      const data = listTemplateRepositoryQuery.data.page;
       setPageQueryBody((prev) => ({
         ...prev,
         totalItems: data.totalItems || 0,
@@ -138,9 +138,9 @@ function _PublicPanel({ search }: { search: string }) {
         page: data.page || 1
       }));
     }
-  }, [listTemplateRepository.data]); // 添加依赖项
+  }, [listTemplateRepositoryQuery.data]); // 添加依赖项
 
-  const tempalteRepositoryList = listTemplateRepository.data?.templateRepositoryList || [];
+  const tempalteRepositoryList = listTemplateRepositoryQuery.data?.templateRepositoryList || [];
   const t = useTranslations();
   return (
     <TabPanel p={0} height={'full'}>
