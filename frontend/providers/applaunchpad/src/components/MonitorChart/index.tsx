@@ -128,9 +128,9 @@ const MonitorChart = ({
           },
           hideOverlap: true
         },
-        axisTick: {
-          show: false
-        },
+        // axisTick: {
+        //   show: false
+        // },
         axisLine: {
           show: true,
           lineStyle: {
@@ -142,7 +142,7 @@ const MonitorChart = ({
       },
       yAxis: {
         type: 'value',
-        splitNumber: 2,
+        // splitNumber: 2,
         max: 100,
         min: 0,
         boundaryGap: false,

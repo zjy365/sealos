@@ -23,7 +23,7 @@ export const theme = extendTheme(sealosTheme, {
       'html, body': {
         fontSize: 'md',
         height: '100%',
-        backgroundColor: '#F4F4F7',
+        backgroundColor: '#FFF',
         overflowX: 'auto',
         fontWeight: 400,
         minWidth: '1024px'
@@ -31,6 +31,13 @@ export const theme = extendTheme(sealosTheme, {
     }
   },
   components: {
-    Switch: Switch
+    Switch: Switch,
+    Button: {
+      variants: {
+        solid: {
+          borderRadius: '8px'
+        }
+      }
+    }
   }
 });

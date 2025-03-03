@@ -65,14 +65,15 @@ export default function RenameTeam({
   return (
     <>
       <Button
-        size={'sm'}
-        height={'32px'}
+        size={'md'}
+        width={'64px'}
+        height={'36px'}
         variant={'outline'}
+        borderRadius={'8px'}
         {...props}
-        leftIcon={<EditIcon boxSize={'14px'} />}
         onClick={onOpen}
       >
-        {t('common:rename')}
+        {t('cc:edit')}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />

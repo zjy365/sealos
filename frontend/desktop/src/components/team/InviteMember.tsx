@@ -29,6 +29,7 @@ import { ApiResp } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { GroupAddIcon } from '@sealos/ui';
 import { useCopyData } from '@/hooks/useCopyData';
+import { Plus } from 'lucide-react';
 
 export default function InviteMember({
   ns_uid,
@@ -95,11 +96,12 @@ export default function InviteMember({
     <>
       {[UserRole.Manager, UserRole.Owner].includes(ownRole) ? (
         <Button
-          size={'sm'}
-          variant={'outline'}
-          height={'32px'}
+          height={'36px'}
+          variant={'solid'}
+          borderRadius={'8px'}
           {...props}
-          leftIcon={<GroupAddIcon boxSize={'16px'} />}
+          color={'#FAFAFA'}
+          leftIcon={<Plus size={16} color="#FAFAFA" />}
           onClick={onOpen}
         >
           {t('common:invite_member')}

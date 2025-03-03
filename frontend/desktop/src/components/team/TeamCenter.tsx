@@ -16,7 +16,8 @@ import {
   VStack,
   Circle,
   HStack,
-  StackProps
+  StackProps,
+  Button
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import CreateTeam from './CreateTeam';
@@ -35,6 +36,7 @@ import { useTranslation } from 'next-i18next';
 import { CopyIcon, ListIcon, SettingIcon, StorageIcon } from '@sealos/ui';
 import NsListItem from '@/components/team/NsListItem';
 import RenameTeam from './RenameTeam';
+import { Plus } from 'lucide-react';
 
 export default function TeamCenter(props: StackProps) {
   const session = useSessionStore((s) => s.session);
@@ -124,14 +126,26 @@ export default function TeamCenter(props: StackProps) {
       <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent
-          borderRadius={'8px'}
+          borderRadius={'20px'}
           maxW={'1000px'}
           h="550px"
           bgColor={'rgba(255, 255, 255, 0.9)'}
           backdropFilter="blur(150px)"
+          p={'4px'}
+          boxShadow={
+            '0px 20px 25px -5px rgba(0, 0, 0, 0.10), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }
         >
           <ModalCloseButton zIndex={'99'} />
-          <ModalBody display={'flex'} h="100%" w="100%" p="0" position={'relative'}>
+          <ModalBody
+            display={'flex'}
+            h="100%"
+            w="100%"
+            p="0"
+            position={'relative'}
+            border={'1px solid #E4E4E7'}
+            borderRadius={'16px'}
+          >
             <Box position={'absolute'} bottom={'16px'} left="16px">
               {messages
                 .filter((message) => !messageFilter.includes(message.ns_uid))
@@ -145,58 +159,86 @@ export default function TeamCenter(props: StackProps) {
                   />
                 ))}
             </Box>
-            <Stack flex="1" py="12px">
-              <Flex
-                py="8px"
-                mx="14px"
-                px="4px"
-                justify={'space-between'}
-                align={'center'}
-                mb="4px"
-                borderBottom="1.5px solid rgba(0, 0, 0, 0.05)"
-              >
+            <Stack flex="1" py="12px" bg={'#FAFAFA'} borderLeftRadius={'16px'}>
+              <Flex py="8px" mx="14px" px="4px" justify={'space-between'} align={'center'} mb="4px">
                 <Text fontSize={'16px'} fontWeight={'600'}>
                   {t('common:team')}
                 </Text>
-                <CreateTeam />
               </Flex>
-              <Box overflow={'scroll'} h="0" flex="1" px="16px">
-                {namespaces && namespaces.length > 0 ? (
-                  namespaces.map((ns) => {
-                    return (
-                      <NsListItem
-                        key={ns.uid}
-                        width={'full'}
-                        onClick={() => {
-                          setNs_uid(ns.uid);
-                          setNsid(ns.id);
-                        }}
-                        p={'7.5px 9px'}
-                        fontSize={'14px'}
-                        displayPoint={false}
-                        id={ns.uid}
-                        isPrivate={ns.nstype === NSType.Private}
-                        isSelected={ns.uid === ns_uid}
-                        teamName={ns.teamName}
-                        selectedColor="#0884DD"
-                      />
-                    );
-                  })
-                ) : (
-                  <Center w="full" h="full">
-                    <Text color={'grayModern.600'} fontSize={'12px'}>
-                      {t('common:noworkspacecreated')}
-                    </Text>
-                  </Center>
-                )}
+              <Box overflow={'scroll'} h="0" flex="1" px="12px">
+                <VStack spacing="4px" align="stretch">
+                  {namespaces && namespaces.length > 0 ? (
+                    namespaces.map((ns) => {
+                      return (
+                        <NsListItem
+                          key={ns.uid}
+                          width={'full'}
+                          onClick={() => {
+                            setNs_uid(ns.uid);
+                            setNsid(ns.id);
+                          }}
+                          fontSize={'14px'}
+                          displayPoint={false}
+                          id={ns.uid}
+                          isPrivate={ns.nstype === NSType.Private}
+                          isSelected={ns.uid === ns_uid}
+                          teamName={ns.teamName}
+                          teamAvatar={ns.id}
+                          selectedColor="rgba(0, 0, 0, 0.05)"
+                        />
+                      );
+                    })
+                  ) : (
+                    <Center w="full" h="full">
+                      <Text color={'grayModern.600'} fontSize={'12px'}>
+                        {t('common:noworkspacecreated')}
+                      </Text>
+                    </Center>
+                  )}
+                </VStack>
+                <Divider bg={'#F4F4F5'} h="1px" my={'4px'} />
+                <Flex alignItems={'center'}>
+                  <CreateTeam>
+                    <Flex
+                      alignItems={'center'}
+                      gap={'8px'}
+                      py={'6px'}
+                      px={'8px'}
+                      height={'40px'}
+                      cursor={'pointer'}
+                    >
+                      <Plus size={20} color="#737373" />
+                      <Text fontSize="14px" fontWeight="400" color="#18181B">
+                        {t('cc:add_workspace')}
+                      </Text>
+                    </Flex>
+                  </CreateTeam>
+                  <Button
+                    ml={'auto'}
+                    fontSize={'12px'}
+                    variant={'unstyled'}
+                    display={'flex'}
+                    height={'22px'}
+                    padding={'10px 8px'}
+                    justifyContent={'center'}
+                    alignItems={'center'}
+                    gap={'8px'}
+                    borderRadius={'full'}
+                    background={'#18181B'}
+                    color={'#FFF'}
+                  >
+                    {t('cc:upgrade')}
+                  </Button>
+                </Flex>
               </Box>
             </Stack>
             <VStack
               width={'730px'}
-              borderRadius={'8px'}
+              borderLeft={'1px solid #E4E4E7'}
               bgColor={'white'}
               h="100%"
               alignItems={'stretch'}
+              borderRightRadius={'16px'}
             >
               <Text fontSize={'16px'} fontWeight={'600'} px="16px" py="20px" width={'full'}>
                 {t('common:manage_team')}
@@ -252,33 +294,13 @@ export default function TeamCenter(props: StackProps) {
                           }
                           aria-label={'copy nsid'}
                         />
-                        <Text ml="24px">
-                          {t('common:created_time')}:{' '}
-                          {namespace.createTime ? formatTime(namespace.createTime) : ''}
-                        </Text>
                       </Flex>
                     </Box>
                   </Box>
                   <Divider bg={'rgba(0, 0, 0, 0.10)'} h="1px" />
-                  <Stack mt="15px" mx="29px" flex={1}>
+                  <Stack mt="10px" mx="29px" flex={1}>
                     <Flex align={'center'} gap="6px" mb={'12px'}>
-                      <ListIcon boxSize={'20px'} />
                       <Text>{t('common:member_list')}</Text>
-                      <Flex
-                        py="0px"
-                        px="6px"
-                        fontSize={'10px'}
-                        fontWeight={'600'}
-                        gap="10px"
-                        justifyContent={'center'}
-                        align={'center'}
-                        borderRadius="30px"
-                        background="#EFF0F1"
-                        color={'#5A646E'}
-                        minW="23px"
-                      >
-                        {users.length}
-                      </Flex>
                       {curTeamUser &&
                         [UserRole.Owner, UserRole.Manager].includes(curTeamUser.role) && (
                           <InviteMember
@@ -299,6 +321,12 @@ export default function TeamCenter(props: StackProps) {
                         canAbdicate={!isPrivate}
                       />
                     </Box>
+                    <Center color={'#71717A'} fontSize={'14px'} cursor={'pointer'}>
+                      <Text color={'#18181B'} fontWeight={600} pr={'4px'}>
+                        Upgrade
+                      </Text>
+                      to get more seats
+                    </Center>
                   </Stack>
                 </>
               ) : namespaces.length === 0 ? (

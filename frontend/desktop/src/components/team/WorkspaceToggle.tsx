@@ -120,6 +120,7 @@ export default function WorkspaceToggle() {
                       teamName={ns.teamName}
                       teamAvatar={ns.id}
                       showCheck={true}
+                      selectedColor={'rgba(0, 0, 0, 0.05)'}
                     />
                   );
                 })}

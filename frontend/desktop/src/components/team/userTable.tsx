@@ -35,9 +35,9 @@ export default function UserTable({
   const { t } = useTranslation();
   const headList = [
     t('common:user_name'),
-    t('common:access'),
     t('common:in_time'),
-    t('common:status'),
+    t('common:access'),
+    // t('common:status'),
     t('common:operating')
   ];
   const status = [t('common:waiting'), t('common:added')];
@@ -57,20 +57,19 @@ export default function UserTable({
   return userSelf ? (
     <TableContainer>
       <Table variant={'simple'} fontSize={'12px'}>
-        <Thead color={'#5A646E'} borderRadius="2px" background="#F1F4F6">
+        <Thead color={'#71717A'} borderRadius="2px">
           <Tr>
             {headList.map((v, k) => (
               <Th
                 key={k}
                 _before={{
                   content: `""`,
-                  display: 'block',
-                  borderTopLeftRadius: '10px',
-                  borderTopRightRadius: '10px',
-                  background: '#F1F4F6'
+                  display: 'block'
                 }}
+                color={'#71717A'}
                 fontSize={'12px'}
                 py="10px"
+                textTransform="none"
               >
                 {v}
               </Th>
@@ -111,9 +110,9 @@ export default function UserTable({
               <Td color={'#5A646E'} py="5px">
                 {user.joinTime ? formatTime(user.joinTime) : '-'}
               </Td>
-              <Td color={user.status === InvitedStatus.Inviting ? '#8172D8' : '#00A9A6'} py="5px">
+              {/* <Td color={user.status === InvitedStatus.Inviting ? '#8172D8' : '#00A9A6'} py="5px">
                 {status[user.status]}
-              </Td>
+              </Td> */}
               <Td py="5px">
                 {userCrUid &&
                 canManage(user.role, user.crUid === userCrUid) &&

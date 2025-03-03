@@ -1,4 +1,4 @@
-import { Center, Text, Stack } from '@chakra-ui/react';
+import { Center, Text, Stack, HStack, Divider } from '@chakra-ui/react';
 import MyIcon from '../Icon';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -53,39 +53,53 @@ export default function Sidebar() {
   ];
 
   return (
-    <Stack
+    <HStack
+      px={'40px'}
       w={'76px'}
       py={'12px'}
-      px={'8px'}
       flexShrink={0}
       spacing={'8px'}
       borderRadius={'8px'}
       bg={'white'}
     >
-      {siderbarMap.map((item) => (
-        <Center
-          key={item.path}
-          gap={'4px'}
-          flexDirection={'column'}
-          bg={router.pathname === item.path ? 'rgba(150, 153, 180, 0.15)' : 'transparent'}
-          color={'grayModern.900'}
-          borderRadius={'md'}
-          h={'60px'}
-          cursor={'pointer'}
-          onClick={() => {
-            console.log(router.query);
-            router.push({
-              pathname: item.path,
-              query: { ...router.query }
-            });
-          }}
-        >
-          {item.icon}
-          <Text fontSize={'11px'} fontWeight={'bold'}>
-            {item.label}
-          </Text>
-        </Center>
+      {siderbarMap.map((item, index) => (
+        <>
+          {index > 0 && (
+            <Divider
+              mx={'12px'}
+              flexShrink={0}
+              orientation="horizontal"
+              height={'24px'}
+              borderLeft={'1px'}
+              borderColor={'#CCCCCC'}
+            />
+          )}
+          <Center
+            px={'12px'}
+            key={item.path}
+            gap={'4px'}
+            flexDirection={'column'}
+            bg={router.pathname === item.path ? 'rgba(0, 0, 0, 0.05)' : 'transparent'}
+            _hover={{
+              bg: 'rgba(0, 0, 0, 0.05)'
+            }}
+            borderRadius={'md'}
+            h={'32px'}
+            cursor={'pointer'}
+            onClick={() => {
+              console.log(router.query);
+              router.push({
+                pathname: item.path,
+                query: { ...router.query }
+              });
+            }}
+          >
+            <Text fontSize={'14px'} color={'#000000'} fontWeight={'500'} whiteSpace={'nowrap'}>
+              {item.label}
+            </Text>
+          </Center>
+        </>
       ))}
-    </Stack>
+    </HStack>
   );
 }

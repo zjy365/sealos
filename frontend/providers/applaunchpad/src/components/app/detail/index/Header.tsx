@@ -11,6 +11,7 @@ import MyIcon from '@/components/Icon';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-i18next';
 import UpdateModal from './UpdateModal';
+import { ArrowLeft } from 'lucide-react';
 
 const DelModal = dynamic(() => import('./DelModal'));
 
@@ -112,11 +113,18 @@ const Header = ({
   }, [appName, refetch, toast]);
 
   return (
-    <Flex h={'32px'} my={'14px'} alignItems={'center'}>
+    <Flex px={'40px'} h={'32px'} my={'32px'} alignItems={'center'}>
       <Center cursor={'pointer'} onClick={() => router.replace('/apps')}>
-        <MyIcon name="arrowLeft" w={'24px'} />
+        <ArrowLeft size={24} color="#18181B" />
       </Center>
-      <Box ml={'4px'} mr={3} fontWeight={'bold'} color={'grayModern.900'} fontSize={'18px'}>
+      <Box
+        ml={'12px'}
+        mr={'8px'}
+        lineHeight={'32px'}
+        fontWeight={'600'}
+        color={'black'}
+        fontSize={'24px'}
+      >
         {appName}
       </Box>
       <AppStatusTag status={appStatus} isPause={isPause} showBorder={false} />
@@ -135,6 +143,22 @@ const Header = ({
         </Box>
       )} */}
       <Box flex={1} />
+      <Button
+        h={'40px'}
+        w={'40px'}
+        fontSize={'12px'}
+        borderRadius={'6px'}
+        border={'1px solid #E4E4E7'}
+        background={'#FFF'}
+        _hover={{
+          color: '#FF324A'
+        }}
+        isDisabled={loading}
+        onClick={onOpenDelModal}
+      >
+        <MyIcon name="delete" w={'16px'} color={'#737373'} />
+      </Button>
+      <Box></Box>
 
       {/* btns */}
       {isPause ? (
@@ -155,7 +179,6 @@ const Header = ({
           minW={'75px'}
           fontSize={'12px'}
           variant={'outline'}
-          mr={'12px'}
           h={'32px'}
           leftIcon={<MyIcon name="pause" w={'16px'} fill={'#485264'} />}
           isLoading={loading}
@@ -168,7 +191,6 @@ const Header = ({
         <Button
           className="driver-detail-update-button"
           _focusVisible={{ boxShadow: '' }}
-          mr={'12px'}
           h={'32px'}
           minW={'75px'}
           fontSize={'12px'}
@@ -190,7 +212,6 @@ const Header = ({
 
       {!isPause && (
         <Button
-          mr={'12px'}
           h={'32px'}
           minW={'75px'}
           fontSize={'12px'}
@@ -202,20 +223,7 @@ const Header = ({
           {t('Restart')}
         </Button>
       )}
-      <Button
-        h={'32px'}
-        minW={'75px'}
-        fontSize={'12px'}
-        variant={'outline'}
-        leftIcon={<MyIcon name="delete" w={'16px'} fill={'#485264'} />}
-        _hover={{
-          color: '#FF324A'
-        }}
-        isDisabled={loading}
-        onClick={onOpenDelModal}
-      >
-        {t('Delete')}
-      </Button>
+
       <RestartConfirmChild />
       <PauseChild />
       {isOpenDelModal && (

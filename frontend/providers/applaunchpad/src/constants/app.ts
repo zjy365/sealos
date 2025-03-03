@@ -11,9 +11,9 @@ export const appStatusMap = {
   [AppStatusEnum.running]: {
     label: 'Running',
     value: AppStatusEnum.running,
-    color: 'green.600',
-    backgroundColor: 'green.50',
-    dotColor: 'green.600'
+    color: 'black',
+    backgroundColor: '#ECFDF5',
+    dotColor: '#10B981'
   },
   [AppStatusEnum.creating]: {
     label: 'Creating',
@@ -25,23 +25,23 @@ export const appStatusMap = {
   [AppStatusEnum.error]: {
     label: 'Abnormality Detected',
     value: AppStatusEnum.error,
-    color: 'rgba(240, 68, 56, 1)',
-    backgroundColor: 'rgba(254, 243, 242, 1)',
-    dotColor: 'rgba(240, 68, 56, 1)'
+    color: 'black',
+    backgroundColor: '#FEF2F2',
+    dotColor: '#EF4444'
   },
   [AppStatusEnum.pause]: {
     label: 'Paused',
     value: AppStatusEnum.pause,
-    color: 'rgba(111, 93, 215, 1)',
-    backgroundColor: 'rgba(240, 238, 255, 1)',
-    dotColor: 'rgba(111, 93, 215, 1)'
+    color: 'black',
+    backgroundColor: '#F1F5F9',
+    dotColor: '#6B7280'
   },
   [AppStatusEnum.waiting]: {
     label: 'Waiting',
     value: AppStatusEnum.waiting,
-    color: 'grayModern.500',
-    backgroundColor: 'rgba(17, 24, 36, 0.05)',
-    dotColor: 'grayModern.500'
+    color: 'black',
+    backgroundColor: '#E0F2FE',
+    dotColor: '#0EA5E9'
   }
 };
 

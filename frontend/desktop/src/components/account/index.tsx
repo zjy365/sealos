@@ -196,6 +196,7 @@ export default function Account() {
               _hover={{
                 background: '#FFF'
               }}
+              background={showDisclosure.isOpen ? '#FFF' : 'transparent'}
               onClick={() => showDisclosure.onOpen()}
             >
               <Bell size={20} color={'#262626'} />

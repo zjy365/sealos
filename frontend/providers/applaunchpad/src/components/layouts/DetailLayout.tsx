@@ -4,7 +4,7 @@ import { MOCK_APP_DETAIL } from '@/mock/apps';
 import Header from '@/components/app/detail/index/Header';
 import { useAppStore } from '@/store/app';
 import { useGlobalStore } from '@/store/global';
-import { Flex } from '@chakra-ui/react';
+import { Divider, Flex } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -52,13 +52,7 @@ export default function DetailLayout({ children, appName }: DetailLayoutProps) {
   );
 
   return (
-    <Flex
-      flexDirection={'column'}
-      height={'100vh'}
-      backgroundColor={'grayModern.100'}
-      px={'16px'}
-      pb={4}
-    >
+    <Flex flexDirection={'column'} height={'100vh'} backgroundColor={'#FFF'} pb={4}>
       <Header
         source={appDetail.source}
         appName={appName}
@@ -68,8 +62,9 @@ export default function DetailLayout({ children, appName }: DetailLayoutProps) {
         setShowSlider={setShowSlider}
         isLargeScreen={isLargeScreen}
       />
-      <Flex position={'relative'} flex={'1 0 0'} h={0} gap={'6px'}>
+      <Flex flexDirection={'column'} position={'relative'} flex={'1 0 0'} gap={'6px'}>
         <Sidebar />
+        <Divider borderColor={'#EDEDED'} />
         {children}
       </Flex>
     </Flex>
