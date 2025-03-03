@@ -1,31 +1,23 @@
-import { Box, Button, Flex } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
-import { Dispatch, useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { sealosApp } from 'sealos-desktop-sdk/app';
+import { Box, Button, Flex } from '@chakra-ui/react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
 import { useRouter } from '@/i18n';
 import { useDevboxStore } from '@/stores/devbox';
 import { useGlobalStore } from '@/stores/global';
+import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
 
 import { DevboxDetailTypeV2 } from '@/types/devbox';
 
-import DevboxStatusTag from '@/components/DevboxStatusTag';
 import MyIcon from '@/components/Icon';
 import IDEButton from '@/components/IDEButton';
 import DelModal from '@/components/modals/DelModal';
-import { sealosApp } from 'sealos-desktop-sdk/app';
-import { useQuery } from '@tanstack/react-query';
+import DevboxStatusTag from '@/components/DevboxStatusTag';
 
-const Header = ({
-  refetchDevboxDetail,
-  setShowSlider,
-  isLargeScreen = true
-}: {
-  refetchDevboxDetail: () => void;
-  setShowSlider: Dispatch<boolean>;
-  isLargeScreen: boolean;
-}) => {
+const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) => {
   const router = useRouter();
   const t = useTranslations();
   const { message: toast } = useMessage();
@@ -134,6 +126,7 @@ const Header = ({
         <MyIcon
           name="arrowLeft"
           w={'24px'}
+          color={'white'}
           onClick={() => router.push('/')}
           cursor={'pointer'}
           mt={1}
@@ -142,31 +135,126 @@ const Header = ({
         <Box fontSize="2xl" fontWeight="bold">
           {devboxDetail.name}
         </Box>
-        {/* detail button */}
-        <Flex alignItems={'center'}>
-          <DevboxStatusTag status={devboxDetail.status} h={'27px'} />
-          {!isLargeScreen && (
-            <Box ml={4}>
-              <Button
-                width={'96px'}
-                height={'40px'}
-                bg={'white'}
-                borderWidth={1}
-                color={'grayModern.600'}
-                leftIcon={<MyIcon name="detail" w="16px" h="16px" />}
-                _hover={{
-                  color: 'brightBlue.600'
-                }}
-                onClick={() => setShowSlider(true)}
-              >
-                {t('detail')}
-              </Button>
-            </Box>
-          )}
-        </Flex>
+        {/* status  */}
+        <DevboxStatusTag status={devboxDetail.status} h={'27px'} />
       </Flex>
       {/* right main button group */}
       <Flex gap={5}>
+        {/* delete button */}
+        <Button
+          h={'40px'}
+          fontSize={'14px'}
+          boxShadow={'none'}
+          bg={'white'}
+          color={'#737373'}
+          _hover={{
+            color: 'red.600'
+          }}
+          borderWidth={1}
+          onClick={() => setDelDevbox(devboxDetail)}
+        >
+          <MyIcon name={'delete'} w={'16px'} />
+        </Button>
+        {/* terminal button */}
+        <Button
+          boxShadow={'none'}
+          h={'40px'}
+          fontSize={'14px'}
+          bg={'white'}
+          color={'grayModern.400'}
+          _hover={{
+            color: 'brightBlue.600'
+          }}
+          borderWidth={1}
+          onClick={() => handleGoToTerminal(devboxDetail)}
+        >
+          <MyIcon name={'terminal'} w={'16px'} color={'white'} />
+        </Button>
+
+        {/* control button group */}
+        <Flex>
+          {/* shutdown button */}
+          {devboxDetail.status.value === 'Running' && (
+            <Button
+              className="guide-close-button"
+              h={'40px'}
+              fontSize={'14px'}
+              boxShadow={'none'}
+              w={'96px'}
+              bg={'white'}
+              borderRadius={'8px 0px 0px 8px'}
+              color={'grayModern.900'}
+              _hover={{
+                color: 'brightBlue.600'
+              }}
+              borderWidth={'1px'}
+              onClick={() => handlePauseDevbox(devboxDetail)}
+            >
+              {t('pause')}
+            </Button>
+          )}
+          {/* start button */}
+          {devboxDetail.status.value === 'Stopped' && (
+            <Button
+              h={'40px'}
+              boxShadow={'none'}
+              fontSize={'14px'}
+              bg={'white'}
+              w={'96px'}
+              borderRadius={'8px 0px 0px 8px'}
+              color={'grayModern.900'}
+              _hover={{
+                color: 'brightBlue.600'
+              }}
+              borderWidth={'1px'}
+              onClick={() => handleStartDevbox(devboxDetail)}
+            >
+              {t('start')}
+            </Button>
+          )}
+          {/* update button */}
+          <Button
+            h={'40px'}
+            w={'96px'}
+            borderRadius={'none'}
+            boxShadow={'none'}
+            fontSize={'14px'}
+            bg={'white'}
+            color={'grayModern.900'}
+            _hover={{
+              color: 'brightBlue.600'
+            }}
+            borderWidth={'1px 0px 1px 0px'}
+            {...(devboxDetail.status.value === 'Stopped' && {
+              borderRadius: '0px 8px 8px 0px',
+              borderWidth: '1px 1px 1px 0px'
+            })}
+            onClick={() => router.push(`/devbox/create?name=${devboxDetail.name}`)}
+          >
+            {t('update')}
+          </Button>
+          {/* restart button */}
+          {devboxDetail.status.value !== 'Stopped' && (
+            <Button
+              h={'40px'}
+              w={'96px'}
+              boxShadow={'none'}
+              fontSize={'14px'}
+              bg={'white'}
+              borderRadius={'0px 8px 8px 0px'}
+              color={'grayModern.900'}
+              _hover={{
+                color: 'brightBlue.600'
+              }}
+              borderWidth={'1px 1px 1px 1px'}
+              onClick={() => handleRestartDevbox(devboxDetail)}
+            >
+              {t('restart')}
+            </Button>
+          )}
+        </Flex>
+
+        {/* IDE button */}
         <Box>
           <IDEButton
             runtimeType={devboxDetail.iconId}
@@ -175,114 +263,30 @@ const Header = ({
             status={devboxDetail.status}
             isBigButton={isBigButton}
             leftButtonProps={{
+              fontSize: '14px',
               height: '40px',
-              width: '96px',
-              borderWidth: '1 0 1 1',
+              width: '120px',
+              border: '1px solid var(--base-border, #E4E4E7)',
+              // borderWidth: '1px 0 1px 1px',
               bg: 'white',
-              color: 'grayModern.600'
+              boxShadow: 'none',
+              pl: '12px',
+              pr: 'auto',
+              color: 'grayModern.900'
             }}
             rightButtonProps={{
               height: '40px',
-              borderWidth: '1 1 1 0',
+              border: '1px solid var(--base-border, #E4E4E7)',
+              borderWidth: '1px 1px 1px 0',
               bg: 'white',
-              color: 'grayModern.600',
+              color: 'grayModern.900',
               mr: 0,
-              boxShadow:
-                '2px 1px 2px 0px rgba(19, 51, 107, 0.05),0px 0px 1px 0px rgba(19, 51, 107, 0.08)'
+              boxShadow: 'none'
+              // boxShadow:
+              //   '2px 1px 2px 0px rgba(19, 51, 107, 0.05),0px 0px 1px 0px rgba(19, 51, 107, 0.08)'
             }}
           />
         </Box>
-        <Button
-          h={'40px'}
-          fontSize={'14px'}
-          bg={'white'}
-          color={'grayModern.600'}
-          _hover={{
-            color: 'brightBlue.600'
-          }}
-          borderWidth={1}
-          leftIcon={isBigButton ? <MyIcon name={'terminal'} w={'16px'} /> : undefined}
-          onClick={() => handleGoToTerminal(devboxDetail)}
-        >
-          {isBigButton ? t('terminal') : <MyIcon name={'terminal'} w={'16px'} />}
-        </Button>
-        {devboxDetail.status.value === 'Running' && (
-          <Button
-            className="guide-close-button"
-            h={'40px'}
-            fontSize={'14px'}
-            bg={'white'}
-            color={'grayModern.600'}
-            _hover={{
-              color: 'brightBlue.600'
-            }}
-            borderWidth={1}
-            leftIcon={isBigButton ? <MyIcon name={'shutdown'} w={'16px'} /> : undefined}
-            onClick={() => handlePauseDevbox(devboxDetail)}
-          >
-            {isBigButton ? t('pause') : <MyIcon name={'shutdown'} w={'16px'} />}
-          </Button>
-        )}
-        {devboxDetail.status.value === 'Stopped' && (
-          <Button
-            h={'40px'}
-            fontSize={'14px'}
-            bg={'white'}
-            color={'grayModern.600'}
-            _hover={{
-              color: 'brightBlue.600'
-            }}
-            borderWidth={1}
-            leftIcon={isBigButton ? <MyIcon name={'start'} w={'16px'} /> : undefined}
-            onClick={() => handleStartDevbox(devboxDetail)}
-          >
-            {isBigButton ? t('start') : <MyIcon name={'start'} w={'16px'} />}
-          </Button>
-        )}
-        <Button
-          h={'40px'}
-          fontSize={'14px'}
-          bg={'white'}
-          color={'grayModern.600'}
-          _hover={{
-            color: 'brightBlue.600'
-          }}
-          borderWidth={1}
-          leftIcon={isBigButton ? <MyIcon name={'change'} w={'16px'} /> : undefined}
-          onClick={() => router.push(`/devbox/create?name=${devboxDetail.name}`)}
-        >
-          {!isBigButton ? <MyIcon name={'change'} w={'16px'} /> : t('update')}
-        </Button>
-        {devboxDetail.status.value !== 'Stopped' && (
-          <Button
-            h={'40px'}
-            fontSize={'14px'}
-            bg={'white'}
-            color={'grayModern.600'}
-            _hover={{
-              color: 'brightBlue.600'
-            }}
-            borderWidth={1}
-            leftIcon={isBigButton ? <MyIcon name={'restart'} w={'16px'} /> : undefined}
-            onClick={() => handleRestartDevbox(devboxDetail)}
-          >
-            {isBigButton ? t('restart') : <MyIcon name={'restart'} w={'16px'} />}
-          </Button>
-        )}
-        <Button
-          h={'40px'}
-          fontSize={'14px'}
-          bg={'white'}
-          color={'grayModern.600'}
-          _hover={{
-            color: 'red.600'
-          }}
-          borderWidth={1}
-          leftIcon={isBigButton ? <MyIcon name={'delete'} w={'16px'} /> : undefined}
-          onClick={() => setDelDevbox(devboxDetail)}
-        >
-          {isBigButton ? t('delete') : <MyIcon name={'delete'} w={'16px'} />}
-        </Button>
       </Flex>
       {delDevbox && (
         <DelModal

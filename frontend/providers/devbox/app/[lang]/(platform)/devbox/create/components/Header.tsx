@@ -27,7 +27,6 @@ const Header = ({
   const { lastRoute } = useGlobalStore();
   const t = useTranslations();
   const { config } = useTemplateStore();
-  const { env } = useEnvStore();
   const handleExportYaml = useCallback(async () => {
     const zip = new JSZip();
     yamlList.forEach((item) => {
@@ -37,9 +36,10 @@ const Header = ({
     downLoadBlob(res, 'application/zip', `yaml${dayjs().format('YYYYMMDDHHmmss')}.zip`);
   }, [yamlList]);
   return (
-    <Flex w={'100%'} px={10} h={'86px'} alignItems={'center'}>
+    <Flex w={'100%'} px={5} h={'86px'} alignItems={'center'}>
       <Flex
         alignItems={'center'}
+        gap={2}
         cursor={'pointer'}
         onClick={() => {
           if (config.lastRoute) {
@@ -49,13 +49,21 @@ const Header = ({
           }
         }}
       >
-        <MyIcon name="arrowLeft" width={'24px'} height={'24px'} />
+        <MyIcon name="arrowLeft" color={'white'} width={'24px'} height={'24px'} />
         <Box fontWeight={'bold'} color={'grayModern.900'} fontSize={'2xl'}>
           {t(title)}
         </Box>
       </Flex>
       <Box flex={1}></Box>
-      <Button h={'40px'} flex={'0 0 114px'} mr={5} variant={'outline'} onClick={handleExportYaml}>
+      <Button
+        h={'40px'}
+        flex={'0 0 114px'}
+        mr={5}
+        variant={'outline'}
+        onClick={handleExportYaml}
+        boxShadow={'none'}
+        color={'grayModern.900'}
+      >
         {t('export_yaml')}
       </Button>
       <Button flex={'0 0 114px'} h={'40px'} variant={'solid'} onClick={applyCb}>

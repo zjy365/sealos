@@ -1,4 +1,4 @@
-export const codeTheme = {
+export const lightCodeTheme = {
   hljs: {
     display: 'block',
     overflowX: 'auto',
@@ -118,4 +118,121 @@ export const codeTheme = {
   '-moz-user-select': 'none' /* Old versions of Firefox */,
   '-ms-user-select': 'none' /* Internet Explorer/Edge */,
   'user-select': 'none' /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+};
+
+export const darkCodeTheme = {
+  hljs: {
+    display: 'block',
+    overflowX: 'auto',
+    color: '#E3E3E3'
+  },
+  linenumber: {
+    minWidth: '2em',
+    color: '#A3A3A3'
+  },
+  'hljs-comment': {
+    color: '#6A9955'
+  },
+  comment: {
+    color: '#6A9955'
+  },
+  'hljs-keyword': {
+    color: '#569CD6'
+  },
+  'hljs-selector-tag': {
+    color: '#569CD6'
+  },
+  'hljs-meta-keyword': {
+    color: '#569CD6'
+  },
+  'hljs-doctag': {
+    color: '#569CD6'
+  },
+  'hljs-section': {
+    color: '#569CD6'
+  },
+  'hljs-selector-class': {
+    color: '#569CD6'
+  },
+  'hljs-meta': {
+    color: '#569CD6'
+  },
+  'hljs-selector-pseudo': {
+    color: '#569CD6'
+  },
+  'hljs-attr': {
+    color: '#9CDCFE'
+  },
+  'hljs-attribute': {
+    color: '#CE9178'
+  },
+  'hljs-name': {
+    color: '#4EC9B0'
+  },
+  'hljs-type': {
+    color: '#4EC9B0'
+  },
+  'hljs-number': {
+    color: '#B5CEA8'
+  },
+  'hljs-selector-id': {
+    color: '#4EC9B0'
+  },
+  'hljs-quote': {
+    color: '#4EC9B0'
+  },
+  'hljs-template-tag': {
+    color: '#4EC9B0'
+  },
+  'hljs-built_in': {
+    color: '#4EC9B0'
+  },
+  'hljs-title': {
+    color: '#4EC9B0'
+  },
+  'hljs-literal': {
+    color: '#4EC9B0'
+  },
+  'hljs-string': {
+    color: '#CE9178'
+  },
+  'hljs-regexp': {
+    color: '#CE9178'
+  },
+  'hljs-symbol': {
+    color: '#CE9178'
+  },
+  'hljs-variable': {
+    color: '#9CDCFE'
+  },
+  'hljs-template-variable': {
+    color: '#9CDCFE'
+  },
+  'hljs-link': {
+    color: '#CE9178'
+  },
+  'hljs-selector-attr': {
+    color: '#CE9178'
+  },
+  'hljs-meta-string': {
+    color: '#CE9178'
+  },
+  'hljs-bullet': {
+    color: '#D4D4D4'
+  },
+  'hljs-code': {
+    color: '#D4D4D4'
+  },
+  'hljs-deletion': {
+    color: '#F14C4C'
+  },
+  'hljs-addition': {
+    color: '#4EC9B0'
+  },
+  'hljs-emphasis': {
+    fontStyle: 'italic'
+  },
+  'hljs-strong': {
+    fontWeight: 'bold'
+  }
 };

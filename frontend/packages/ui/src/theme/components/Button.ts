@@ -47,7 +47,8 @@ export const Button = defineStyleConfig({
     },
     // <<<
     solid: {
-      bg: ThemeColors.grayModern[900],
+      // bg: ThemeColors.grayModern[900],
+      bg: ThemeColors.neutral[950],
       color: '#FFF',
       borderRadius: 'md',
       fontWeight: 500,

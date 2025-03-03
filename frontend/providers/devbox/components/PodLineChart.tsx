@@ -92,17 +92,42 @@ const map = {
     },
     lineColor: '#00A9A6',
     max: 100
+  },
+  purpleBlue: {
+    backgroundColor: {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#F5F7FD'
+        },
+        {
+          offset: 1,
+          color: 'rgba(52, 60, 255, 0)'
+        }
+      ],
+      global: false // 缺省为 false
+    },
+    lineColor: '#3F76ED'
   }
 };
 
 const PodLineChart = ({
   type,
   data,
-  isShowLabel = false
+  isShowLabel = false,
+  noBg = false,
+  splitNumber = 2
 }: {
-  type: 'blue' | 'deepBlue' | 'green' | 'purple';
+  type: 'blue' | 'deepBlue' | 'green' | 'purple' | 'purpleBlue';
   data?: MonitorDataResult;
+  noBg?: boolean;
   isShowLabel?: boolean;
+  splitNumber?: number;
 }) => {
   const { screenWidth } = useGlobalStore();
   const xData =
@@ -116,7 +141,7 @@ const PodLineChart = ({
   const optionStyle = useMemo(
     () => ({
       areaStyle: {
-        color: map[type].backgroundColor
+        color: noBg ? 'transparent' : map[type].backgroundColor
       },
       lineStyle: {
         width: '1',
@@ -148,7 +173,7 @@ const PodLineChart = ({
     yAxis: {
       type: 'value',
       boundaryGap: false,
-      splitNumber: 2,
+      splitNumber: splitNumber,
       max: 100,
       min: 0,
       axisLabel: {
@@ -179,7 +204,7 @@ const PodLineChart = ({
         data: yData,
         type: 'line',
         showSymbol: false,
-        smooth: true,
+        smooth: false,
         animationDuration: 300,
         animationEasingUpdate: 'linear',
         ...optionStyle,

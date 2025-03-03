@@ -2,10 +2,9 @@ import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Center, Flex } from '@chakra-ui/react';
+import { Box, Center, Flex, Text } from '@chakra-ui/react';
 import { MySelect, MyTooltip } from '@sealos/ui';
 
-import Label from '../Label';
 import { usePriceStore } from '@/stores/price';
 import { DevboxEditTypeV2 } from '@/types/devbox';
 import { GpuAmountMarkList } from '@/constants/devbox';
@@ -88,7 +87,7 @@ export default function GpuSelector({
   return (
     <Box mb={7}>
       <Flex alignItems={'center'}>
-        <Label w={100}>GPU</Label>
+        <Text w={100}>GPU</Text>
         <MySelect
           width={'300px'}
           placeholder={t('No GPU') || ''}

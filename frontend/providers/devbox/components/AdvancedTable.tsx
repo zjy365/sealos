@@ -14,12 +14,15 @@ interface Props extends BoxProps {
 
 export const AdvancedTable = ({ columns, data, itemClass = '' }: Props) => {
   return (
-    <>
+    <Box border={'0.5px solid'} borderColor={'#E4E4E7'} borderRadius={'md'}>
       <Grid
-        templateColumns={`repeat(${columns.length},1fr)`}
+        // templateColumns={`repeat(${columns.length},1fr)`}
+        templateColumns={`200px 1fr 2`}
         overflowX={'auto'}
-        borderRadius={'md'}
         mb={2}
+        borderTopRadius={'md'}
+        borderBottom={'0.5px solid'}
+        borderColor={'#E4E4E7'}
         fontSize={'base'}
         color={'grayModern.600'}
         fontWeight={'bold'}
@@ -27,12 +30,12 @@ export const AdvancedTable = ({ columns, data, itemClass = '' }: Props) => {
         {columns.map((item, i) => (
           <Box
             px={3}
-            py={3}
+            py={'11px'}
             bg={'white'}
             key={item.key}
             whiteSpace={'nowrap'}
             _first={{
-              pl: 7
+              pl: 6
             }}
           >
             {item.title}
@@ -60,8 +63,8 @@ export const AdvancedTable = ({ columns, data, itemClass = '' }: Props) => {
               data-id={item.id}
               key={col.key}
               alignItems={'center'}
-              px={3}
-              py={4}
+              px={6}
+              py={'14px'}
               fontSize={'base'}
               fontWeight={'bold'}
               color={'grayModern.900'}
@@ -71,6 +74,6 @@ export const AdvancedTable = ({ columns, data, itemClass = '' }: Props) => {
           ))}
         </Grid>
       ))}
-    </>
+    </Box>
   );
 };

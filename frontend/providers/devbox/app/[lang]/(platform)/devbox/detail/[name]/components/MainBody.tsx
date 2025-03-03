@@ -1,22 +1,23 @@
-import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
-import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
+import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
 import PodLineChart from '@/components/PodLineChart';
 
-import { NetworkType } from '@/types/devbox';
-import { useCopyData } from '@/utils/tools';
-
-import { useDevboxStore } from '@/stores/devbox';
+import { useRouter } from '@/i18n';
 import { useEnvStore } from '@/stores/env';
+import { useCopyData } from '@/utils/tools';
+import { NetworkType } from '@/types/devbox';
+import { useDevboxStore } from '@/stores/devbox';
 
 const MonitorModal = dynamic(() => import('@/components/modals/MonitorModal'));
 
 const MainBody = () => {
   const t = useTranslations();
+  const router = useRouter();
   const { copyData } = useCopyData();
   const { devboxDetail } = useDevboxStore();
   const { env } = useEnvStore();
@@ -45,30 +46,22 @@ const MainBody = () => {
       title: t('internal_address'),
       key: 'internalAddress',
       render: (item: NetworkType) => {
+        const address = `http://${devboxDetail?.name}.${env.namespace}.svc.cluster.local:${item.port}`;
         return (
-          <Tooltip
-            label={t('copy')}
-            hasArrow
-            bg={'#FFFFFF'}
-            color={'grayModern.900'}
-            fontSize={'12px'}
-            fontWeight={400}
-            py={2}
-            borderRadius={'md'}
-          >
-            <Text
-              cursor="pointer"
+          <Flex alignItems={'center'} justify={'center'}>
+            <Text color={'grayModern.600'}>{address}</Text>
+            <MyIcon
+              name="copy"
+              w={'16px'}
+              color={'grayModern.400'}
+              ml={1}
               _hover={{
-                textDecoration: 'underline'
+                color: 'grayModern.600'
               }}
-              color={'grayModern.600'}
-              onClick={() =>
-                copyData(
-                  `http://${devboxDetail?.name}.${env.namespace}.svc.cluster.local:${item.port}`
-                )
-              }
-            >{`http://${devboxDetail?.name}.${env.namespace}.svc.cluster.local:${item.port}`}</Text>
-          </Tooltip>
+              cursor={'pointer'}
+              onClick={() => copyData(address)}
+            />
+          </Flex>
         );
       }
     },
@@ -96,7 +89,7 @@ const MainBody = () => {
                 _hover={{ textDecoration: 'underline' }}
                 onClick={() => window.open(`https://${address}`, '_blank')}
               >
-                https://{address}
+                {address}
               </Text>
             </Tooltip>
           );
@@ -106,74 +99,92 @@ const MainBody = () => {
     }
   ];
   return (
-    <Box bg={'white'} borderRadius="lg" pl={6} pt={2} pr={6} pb={6} h={'full'} borderWidth={1}>
-      {/* monitor */}
-      <Box mt={4}>
-        <Flex alignItems={'center'} mb={2}>
-          <MyIcon name="monitor" w={'15px'} h={'15px'} mr={'5px'} color={'grayModern.600'} />
-          <Text fontSize="base" fontWeight={'bold'} color={'grayModern.600'}>
-            {t('monitor')}
-          </Text>
-          <Box ml={2} color={'grayModern.500'}>
-            ({t('update Time')}&ensp;
-            {dayjs().format('HH:mm')})
-          </Box>
-        </Flex>
-        <Flex bg={'grayModern.50'} p={4} borderRadius={'lg'} minH={'80px'} gap={4}>
-          <Box flex={1} position={'relative'}>
-            <Box color={'grayModern.600'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
-              {t('cpu')} {devboxDetail?.usedCpu?.yData[devboxDetail?.usedCpu?.yData?.length - 1]}%
+    <Flex gap={4} direction={'column'}>
+      <Box bg={'white'} borderRadius="lg" pl={6} pt={2} pr={6} pb={6} borderWidth={1}>
+        {/* monitor */}
+        <Box mt={4}>
+          <Flex mb={6} w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
+            <Box fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
+              {t('monitor')}
             </Box>
-            <Box h={'60px'} minW={['200px', '250px', '300px']}>
-              <Box h={'60px'} minW={['200px', '250px', '300px']}>
-                <PodLineChart type="blue" data={devboxDetail?.usedCpu} />
-              </Box>
+            <Box color={'#A3A3A3'} fontSize={'12px'} fontWeight={'normal'}>
+              {t('update Time')}&ensp;
+              {dayjs().format('HH:mm')}
             </Box>
-          </Box>
-          <Box flex={1} position={'relative'}>
-            <Button
-              variant={'square'}
-              position={'absolute'}
-              right={'2px'}
-              top={'-6px'}
-              onClick={onOpen}
-            >
-              <MyIcon name="maximize" width={'16px'} fill={'#667085'} />
-            </Button>
-            <Box color={'grayModern.600'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
-              {t('memory')}
-              {devboxDetail?.usedMemory?.yData[devboxDetail?.usedMemory?.yData?.length - 1]}%
-            </Box>
-            <Box h={'60px'}>
-              <Box h={'60px'}>
-                <PodLineChart type="purple" data={devboxDetail?.usedMemory} />
-              </Box>
-            </Box>
-          </Box>
-        </Flex>
-      </Box>
-      {/* network */}
-      <Box mt={4}>
-        <Flex alignItems={'center'} mb={2}>
-          <MyIcon name="network" w={'15px'} h={'15px'} mr={'5px'} color={'grayModern.600'} />
-          <Text fontSize="base" fontWeight={'bold'} color={'grayModern.600'}>
-            {t('network')} ( {devboxDetail?.networks?.length} )
-          </Text>
-        </Flex>
-        {devboxDetail?.networks && devboxDetail.networks.length > 0 ? (
-          <MyTable
-            columns={networkColumn}
-            data={devboxDetail?.networks}
-            alternateRowColors={true}
-          />
-        ) : (
-          <Flex justify={'center'} align={'center'} h={'100px'}>
-            <Text color={'grayModern.600'}>{t('no_network')}</Text>
           </Flex>
-        )}
+          <Flex borderRadius={'lg'} minH={'80px'} gap={4}>
+            <Box flex={1} position={'relative'}>
+              <Box color={'grayModern.900'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
+                {t('cpu')}:&ensp;
+                {devboxDetail?.usedCpu?.yData[devboxDetail?.usedCpu?.yData?.length - 1]}%
+              </Box>
+              <Box h={'60px'} minW={['200px', '250px', '300px']}>
+                <Box h={'60px'} minW={['200px', '250px', '300px']}>
+                  <PodLineChart type="purple" data={devboxDetail?.usedCpu} />
+                </Box>
+              </Box>
+            </Box>
+            <Box flex={1} position={'relative'}>
+              <Box color={'grayModern.900'} fontWeight={'bold'} mb={2} fontSize={'12px'}>
+                {t('memory')}:&ensp;
+                {devboxDetail?.usedMemory?.yData[devboxDetail?.usedMemory?.yData?.length - 1]}%
+              </Box>
+              <Box h={'60px'}>
+                <Box h={'60px'}>
+                  <PodLineChart type="purpleBlue" data={devboxDetail?.usedMemory} />
+                </Box>
+              </Box>
+            </Box>
+          </Flex>
+        </Box>
+        <MonitorModal isOpen={isOpen} onClose={onClose} />
       </Box>
-      <MonitorModal isOpen={isOpen} onClose={onClose} />
-    </Box>
+      <Box bg={'white'} borderRadius="lg" pl={6} pt={2} pr={6} pb={6} borderWidth={1}>
+        {/* network */}
+        <Box mt={4}>
+          <Flex alignItems={'center'} mb={2} justifyContent={'space-between'}>
+            <Text fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
+              {t('network')}
+            </Text>
+            <Flex gap={2} alignItems={'center'}>
+              <Button
+                variant={'ghost'}
+                size={'sm'}
+                color={'#224EF5'}
+                _hover={{
+                  bg: 'white'
+                }}
+                fontSize={'12px'}
+                onClick={() => {}}
+                leftIcon={<MyIcon name={'question'} w={'16px'} color={'white'} />}
+              >
+                {t('network_unavailable')}
+              </Button>
+              <Button
+                bg={'white'}
+                color={'grayModern.900'}
+                _hover={{ bg: 'grayModern.50' }}
+                fontSize={'12px'}
+                boxShadow={'none'}
+                borderWidth={1}
+                borderColor={'grayModern.200'}
+                borderRadius={'md'}
+                onClick={() => router.push(`/devbox/create?name=${devboxDetail?.name}`)}
+              >
+                {t('manage_network')}
+              </Button>
+            </Flex>
+          </Flex>
+          {devboxDetail?.networks && devboxDetail.networks.length > 0 ? (
+            <MyTable columns={networkColumn} data={devboxDetail?.networks} />
+          ) : (
+            <Flex justify={'center'} align={'center'} h={'100px'}>
+              <Text color={'grayModern.600'}>{t('no_network')}</Text>
+            </Flex>
+          )}
+        </Box>
+      </Box>
+    </Flex>
   );
 };
 

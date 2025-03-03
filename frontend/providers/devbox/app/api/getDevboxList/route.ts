@@ -22,9 +22,8 @@ export async function GET(req: NextRequest) {
       namespace,
       'devboxes'
     );
-
     const devboxBody = devboxResponse.body as { items: KBDevboxTypeV2[] };
-    const uidList = devboxBody.items.map((item) => item.spec.templateID);
+    const uidList = devboxBody.items.map((item) => item.spec.templateID).filter((id) => !!id);
     const templateResultList = await devboxDB.template.findMany({
       where: {
         uid: {

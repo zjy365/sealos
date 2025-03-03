@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { CurrencySymbol } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
-import { Box, Flex, useTheme, Text } from '@chakra-ui/react';
+import { Box, Flex, useTheme, Text, Divider } from '@chakra-ui/react';
 
-import { usePriceStore } from '@/stores/price';
 import { useEnvStore } from '@/stores/env';
+import { usePriceStore } from '@/stores/price';
+
+import MyIcon from './Icon';
 
 export const colorMap = {
   cpu: '#33BABB',
@@ -33,7 +35,7 @@ const PriceBox = ({
 
   const priceList: {
     label: string;
-    color: string;
+    icon: string;
     value: string;
   }[] = useMemo(() => {
     let cp = 0;
@@ -60,34 +62,46 @@ const PriceBox = ({
     return [
       {
         label: 'cpu',
-        color: '#33BABB',
+        icon: 'cpu',
         value: cp.toFixed(2)
       },
-      { label: 'memory', color: '#36ADEF', value: mp.toFixed(2) },
+      { label: 'memory', icon: 'memory', value: mp.toFixed(2) },
       {
-        label: 'nodeports',
-        color: '#8172D8',
+        label: 'port',
+        icon: 'port',
         value: pp.toFixed(2)
       },
-      ...(sourcePrice?.gpu ? [{ label: 'GPU', color: '#89CD11', value: gp.toFixed(2) }] : []),
-      { label: 'total_price', color: '#485058', value: tp.toFixed(2) }
+      ...(sourcePrice?.gpu ? [{ label: 'GPU', icon: 'gpu', value: gp.toFixed(2) }] : []),
+      { label: 'total_price', icon: '', value: tp.toFixed(2) }
     ];
   }, [components, sourcePrice.cpu, sourcePrice.memory, sourcePrice.nodeports, sourcePrice.gpu]);
 
   return (
-    <Box bg={'#FFF'} borderRadius={'md'} border={theme.borders.base} className="guide-cost">
-      <Flex py={3} px={'20px'} borderBottom={theme.borders.base} gap={'8px'}>
+    <Box bg={'#FFF'} borderRadius={'base'} className="guide-cost" border={theme.borders.base}>
+      <Flex py={3} px={'20px'} borderBottom={theme.borders.base} gap={'8px'} bg={'#FAFAFA'}>
         <Text color={'grayModern.900'} fontWeight={500}>
           {t('estimated_price')}
         </Text>
-        <Text color={'grayModern.500'}> ({t('daily')})</Text>
       </Flex>
-      <Flex flexDirection={'column'} gap={'12px'} py={'16px'} px={'20px'}>
+      <Flex flexDirection={'column'}>
         {priceList.map((item) => (
-          <Flex key={item?.label} alignItems={'center'}>
-            <Box bg={item.color} w={'8px'} h={'8px'} borderRadius={'10px'} mr={2}></Box>
-            <Box flex={'0 0 90px'}>{t(item?.label)}:</Box>
-            <Flex alignItems={'center'} gap={'4px'}>
+          <Flex
+            key={item?.label}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+            px={'20px'}
+            py={'12px'}
+            borderBottom={item.label === 'total_price' ? 'none' : theme.borders.base}
+          >
+            <Flex alignItems={'center'} gap={'8px'}>
+              <MyIcon name={item?.icon as any} color={'white'} />
+              <Box flex={'0 0 90px'}>{t(item?.label)}</Box>
+            </Flex>
+            <Flex
+              alignItems={'center'}
+              gap={'4px'}
+              color={item.label === 'total_price' ? '#1C4EF5' : 'neutral.600'}
+            >
               <CurrencySymbol type={env.currencySymbol} />
               {item.value}
             </Flex>

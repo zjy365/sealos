@@ -1,27 +1,31 @@
-import { getTemplateRepository, listOfficialTemplateRepository } from '@/api/template';
+import { useTranslations } from 'next-intl';
+import { useFormContext } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Flex, Grid, VStack } from '@chakra-ui/react';
+
 import useDriver from '@/hooks/useDriver';
-import { TemplateRepositoryKind } from '@/prisma/generated/client';
 import { useDevboxStore } from '@/stores/devbox';
 import { DevboxEditTypeV2 } from '@/types/devbox';
 import { TemplateRepository } from '@/types/template';
-import { Box, Flex, VStack } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
-import { useEffect, useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
-import Label from '../../Label';
-import TemplateRepositoryListNav from '../TemplateRepositoryListNav';
-import TemplateRepositoryItem from './TemplateReposistoryItem';
-import { useSearchParams } from 'next/navigation';
+import { TemplateRepositoryKind } from '@/prisma/generated/client';
+import { getTemplateRepository, listOfficialTemplateRepository } from '@/api/template';
 
-interface TemplateRepositorySelectorProps {
+import Label from './Label';
+import TemplateRepositoryListNav from './components/RuntimeNav';
+import TemplateRepositoryItem from './components/RuntimeItem';
+
+interface RuntimeProps {
   isEdit: boolean;
 }
 
-export default function TemplateRepositorySelector({ isEdit }: TemplateRepositorySelectorProps) {
+export default function Runtime({ isEdit }: RuntimeProps) {
   const { startedTemplate, setStartedTemplate } = useDevboxStore();
   const { setValue, getValues, watch } = useFormContext<DevboxEditTypeV2>();
+
   const t = useTranslations();
+  const [currentCategory, setCurrentCategory] = useState<TemplateRepositoryKind>('LANGUAGE');
   const { handleUserGuide } = useDriver();
   const searchParams = useSearchParams();
   const templateRepositoryQuery = useQuery(
@@ -29,7 +33,6 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
     listOfficialTemplateRepository,
     {
       onSuccess(res) {
-        console.log('res', res);
         handleUserGuide();
       },
       staleTime: Infinity,
@@ -66,6 +69,7 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
       } as Record<TemplateRepositoryKind, TemplateRepository[]>
     );
   }, [templateData]);
+  // for create mode
   useEffect(() => {
     if (!startedTemplate || isEdit) {
       return;
@@ -118,7 +122,7 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
     templateRepositoryQuery.isFetched,
     isEdit
   ]);
-
+  // for edit mode
   useEffect(() => {
     if (
       !isEdit ||
@@ -129,10 +133,9 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
     ) {
       return;
     }
-    const templateRepository = curTemplateRepositoryDetail.data.templateRepository;
+    const { templateRepository } = curTemplateRepositoryDetail.data;
     // setStartedTemplate(templateRepository)
     setValue('templateRepositoryUid', templateRepository.uid);
-
     if (
       templateData.findIndex((item) => {
         return item.uid === templateRepository.uid;
@@ -140,6 +143,7 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
     ) {
       setStartedTemplate(templateRepository);
     }
+    setCurrentCategory(templateRepository.kind);
   }, [
     curTemplateRepositoryDetail.isSuccess,
     curTemplateRepositoryDetail.data,
@@ -148,14 +152,40 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
     templateData,
     templateRepositoryQuery.isSuccess
   ]);
+
+  const categoryMap = {
+    LANGUAGE: {
+      label: t('language'),
+      key: 'LANGUAGE',
+      isVisible: categorizedData['LANGUAGE'].length !== 0
+    },
+    FRAMEWORK: {
+      label: t('framework'),
+      key: 'FRAMEWORK',
+      isVisible: categorizedData['FRAMEWORK'].length !== 0
+    },
+    OS: {
+      label: t('os'),
+      key: 'OS',
+      isVisible: categorizedData['OS'].length !== 0
+    }
+  } as Record<
+    TemplateRepositoryKind,
+    {
+      label: string;
+      key: TemplateRepositoryKind;
+      isVisible: boolean;
+    }
+  >;
+  console.log('get runtime status ', startedTemplate, curTemplateRepositoryUid, templateData);
   return (
-    <VStack alignItems={'center'} mb={7} gap={'24px'}>
+    <VStack alignItems={'center'} gap={'24px'}>
       <Flex className="guide-runtimes" gap={'24px'} flexDir={'column'} w={'full'}>
         <Flex w="full" justify={'space-between'}>
           <Label w={100} alignSelf={'flex-start'}>
             {t('runtime_environment')}
           </Label>
-          <TemplateRepositoryListNav />
+          {/* <TemplateRepositoryListNav /> */}
         </Flex>
 
         {!!startedTemplate && (
@@ -173,34 +203,45 @@ export default function TemplateRepositorySelector({ isEdit }: TemplateRepositor
             </Flex>
           </Flex>
         )}
-        <Flex gap={'10px'} px={'14px'} width={'full'}>
-          {/* Language */}
-          {categorizedData['LANGUAGE'].length !== 0 && <Box width={'85px'}>{t('language')}</Box>}
-          <Flex flexWrap={'wrap'} gap={'12px'} flex={1}>
-            {categorizedData['LANGUAGE']?.map((item) => (
-              <TemplateRepositoryItem key={item.uid} item={item} isEdit={isEdit} />
+
+        <Flex gap={'3'} justifyContent={'space-between'}>
+          {Object.values(categoryMap)
+            .filter((item) => item.isVisible)
+            .map((item) => (
+              <Button
+                key={item.key}
+                variant={'unstyled'}
+                height={'auto'}
+                w={'full'}
+                borderWidth={'1px'}
+                borderColor={currentCategory === item.key ? '#1C4EF5' : 'gray.200'}
+                borderRadius={'lg'}
+                p={'12px 16px'}
+                isDisabled={isEdit}
+                fontSize={'12px'}
+                fontWeight={currentCategory === item.key ? '500' : '400'}
+                cursor={'pointer'}
+                bg={currentCategory === item.key ? '#F5F7FF' : 'white'}
+                onClick={() => {
+                  setCurrentCategory(item.key);
+                  if (categorizedData[item.key]?.length > 0) {
+                    const firstTemplate = categorizedData[item.key][0];
+                    setValue('templateRepositoryUid', firstTemplate.uid);
+                  }
+                }}
+              >
+                {item.label}
+              </Button>
             ))}
-          </Flex>
         </Flex>
       </Flex>
-      <Flex gap={'10px'} px={'14px'} width={'full'}>
-        {/* Framework */}
-        {categorizedData['FRAMEWORK'].length !== 0 && <Box width={'85px'}>{t('framework')}</Box>}
-        <Flex flexWrap={'wrap'} gap={'12px'} flex={1}>
-          {categorizedData['FRAMEWORK']?.map((item) => (
-            <TemplateRepositoryItem key={item.uid} item={item} isEdit={isEdit} />
+      {categoryMap[currentCategory].isVisible && (
+        <Grid gridTemplateColumns={'repeat(4, minmax(168px, 1fr))'} gap={'12px'} width={'full'}>
+          {categorizedData[currentCategory]?.map((item) => (
+            <TemplateRepositoryItem key={item.uid} item={item} isEdit={isEdit} w="full" />
           ))}
-        </Flex>
-      </Flex>
-      <Flex gap={'10px'} px={'14px'} width={'full'}>
-        {/* OS */}
-        {categorizedData['OS'].length !== 0 && <Box width={'85px'}>{t('os')}</Box>}
-        <Flex flexWrap={'wrap'} gap={'12px'} flex={1}>
-          {categorizedData['OS']?.map((item) => (
-            <TemplateRepositoryItem key={item.uid} item={item} isEdit={isEdit} />
-          ))}
-        </Flex>
-      </Flex>
+        </Grid>
+      )}
     </VStack>
   );
 }

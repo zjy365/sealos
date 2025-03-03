@@ -1,4 +1,4 @@
-import { extendTheme } from '@chakra-ui/react';
+import { extendTheme, space } from '@chakra-ui/react';
 import { colors } from './colors';
 import { components } from './components';
 
@@ -42,7 +42,8 @@ const _theme = {
   borders: {
     150: '1px solid #F0F1F6',
     200: '1px solid #E8EBF0',
-    base: '1px solid #E8EBF0'
+    base: '1px solid #E8EBF0',
+    'cc-base': 'border-bottom: 0.5px solid var(--base-border, #E4E4E7);'
   }
 };
 

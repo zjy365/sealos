@@ -3,15 +3,16 @@ import { Box } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
-import { codeTheme } from '@/constants/hljs';
+import { lightCodeTheme, darkCodeTheme } from '@/constants/hljs';
 
 type TMarkDown = {
   content: string;
   language: string;
+  theme?: 'light' | 'dark';
   [key: string]: any;
 };
 
-const Code = ({ content, language, ...props }: TMarkDown) => {
+const Code = ({ content, language, theme = 'light', ...props }: TMarkDown) => {
   const code = useMemo(() => '```' + language + '\n' + content + '```', [content, language]);
 
   return (
@@ -19,7 +20,8 @@ const Code = ({ content, language, ...props }: TMarkDown) => {
       sx={{
         height: '100%',
         '& div': {
-          overflow: 'auto !important'
+          overflow: 'auto !important',
+          maxW: '100%'
         }
       }}
     >
@@ -36,7 +38,7 @@ const Code = ({ content, language, ...props }: TMarkDown) => {
                 children={String(children).replace(/\n$/, '')}
                 showLineNumbers={true}
                 // @ts-ignore nextline
-                style={codeTheme}
+                style={theme === 'light' ? lightCodeTheme : darkCodeTheme}
                 language={match[1]}
                 PreTag="div"
                 {...props}

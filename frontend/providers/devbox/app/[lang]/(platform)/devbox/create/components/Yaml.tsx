@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Tabs } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Box, Center, Flex, Grid, useTheme } from '@chakra-ui/react';
 
 import Code from '@/components/Code';
+import Tabs from '@/components/Tabs';
 import MyIcon from '@/components/Icon';
 
 import { useRouter } from '@/i18n';
@@ -66,13 +66,13 @@ const Yaml = ({ yamlList = [], pxVal }: { yamlList: YamlItemType[]; pxVal: numbe
               h={'40px'}
               borderRadius={'base'}
               _hover={{
-                backgroundColor: 'grayModern.100'
+                backgroundColor: '#F4F6FE'
               }}
               {...(index === selectedIndex
                 ? {
-                    fontWeight: 'bold',
+                    fontWeight: 'normal',
                     borderColor: 'grayModern.900',
-                    backgroundColor: 'grayModern.100'
+                    backgroundColor: '#F4F6FE'
                   }
                 : {
                     color: 'grayModern.900',
@@ -85,7 +85,7 @@ const Yaml = ({ yamlList = [], pxVal }: { yamlList: YamlItemType[]; pxVal: numbe
                 w={'2px'}
                 h={'24px'}
                 justifySelf={'start'}
-                bg={'grayModern.900'}
+                bg={'#224EF5'}
                 borderRadius={'12px'}
                 opacity={selectedIndex === index ? 1 : 0}
               ></Box>
@@ -104,7 +104,7 @@ const Yaml = ({ yamlList = [], pxVal }: { yamlList: YamlItemType[]; pxVal: numbe
           borderRadius={'md'}
           position={'relative'}
         >
-          <Flex px={8} py={4} bg={'grayModern.50'}>
+          <Flex px={8} py={4} bg={'white'} borderBottom={theme.borders.base}>
             <Box flex={1} fontSize={'xl'} color={'grayModern.900'} fontWeight={'bold'}>
               {yamlList[selectedIndex].filename}
             </Box>

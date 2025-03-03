@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Flex,
   Input,
   Modal,
   ModalBody,
@@ -10,7 +9,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Textarea
+  Textarea,
+  VStack
 } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
@@ -105,60 +105,93 @@ const ReleaseModal = ({
     <Box>
       <Modal isOpen onClose={onClose} lockFocusAcrossFrames={false}>
         <ModalOverlay />
-        <ModalContent minW={'500px'} mt={'100px'} minH={'300px'} top={'50px'}>
-          <ModalHeader>
-            <Flex alignItems={'center'} gap={'10px'} ml={'14px'}>
-              {t('release_version')}
-            </Flex>
+        <ModalContent minW={'450px'} mt={'100px'} minH={'300px'} top={'50px'}>
+          <ModalHeader
+            bgColor={'white'}
+            px={'24px'}
+            pt={'24px'}
+            border={'none'}
+            pb={0}
+            fontSize={'20px'}
+          >
+            {t('release_version')}
           </ModalHeader>
-          <ModalCloseButton top={'10px'} right={'10px'} />
-          <ModalBody pb={4}>
-            <Flex alignItems={'start'} gap={'5px'} mb={'24px'}>
-              <Box w={'110px'} fontWeight={'bold'} fontSize={'lg'}>
+          <ModalCloseButton
+            top={'16px'}
+            right={'16px'}
+            boxSize={'16px'}
+            _hover={{
+              bgColor: 'none'
+            }}
+            _focus={{
+              bgColor: 'none'
+            }}
+          />
+          <ModalBody px="24px" gap={'16px'} py={'16px'} display={'flex'} flexDirection={'column'}>
+            <VStack width={'full'} gap={'8px'} alignItems={'flex-start'}>
+              <Box w={'110px'} color="#18181B" fontWeight={500}>
                 {t('image_name')}
               </Box>
               <Input
+                height={'40px'}
+                width={'full'}
+                bgColor={'white'}
+                _placeholder={{ color: 'rgba(113, 113, 122, 1)' }}
+                border="1px solid var(--base-input, #E4E4E7)"
                 defaultValue={`${env.registryAddr}/${env.namespace}/${devbox.name}`}
                 isReadOnly
               />
-            </Flex>
-            <Flex alignItems={'start'} gap={'5px'}>
-              <Box w={'110px'} fontWeight={'bold'} fontSize={'lg'}>
-                {t('version_config')}
+            </VStack>
+
+            <VStack width={'full'} gap={'8px'} alignItems={'flex-start'}>
+              <Box w={'100px'} color="#18181B" fontWeight={500}>
+                {t('version_number')}
               </Box>
-              <Flex gap={'5px'} direction={'column'}>
-                <Box w={'100px'}>{t('version_number')}</Box>
-                <Input
-                  placeholder={t('enter_version_number')}
-                  value={tag}
-                  onChange={(e) => setTag(e.target.value)}
-                  mb={'8px'}
-                  borderColor={tagError ? 'red.500' : undefined}
-                />
-                {tagError && (
-                  <Box color="red.500" fontSize="sm">
-                    {t('tag_required')}
-                  </Box>
-                )}
-                <Box w={'100px'}>{t('version_description')}</Box>
-                <Textarea
-                  value={releaseDes}
-                  minH={'150px'}
-                  onChange={(e) => setReleaseDes(e.target.value)}
-                  placeholder={t('enter_version_description')}
-                />
-              </Flex>
-            </Flex>
+              <Input
+                placeholder={t('enter_version_number')}
+                value={tag}
+                height={'40px'}
+                w={'full'}
+                onChange={(e) => setTag(e.target.value)}
+                bgColor={'white'}
+                _placeholder={{ color: 'rgba(113, 113, 122, 1)' }}
+                border="1px solid var(--base-input, #E4E4E7)"
+                borderColor={tagError ? 'red.500' : undefined}
+              />
+              {tagError && (
+                <Box color="red.500" fontSize="sm">
+                  {t('tag_required')}
+                </Box>
+              )}
+            </VStack>
+            <VStack width={'full'} gap={'8px'} alignItems={'flex-start'}>
+              <Box w={'100px'} color="#18181B" fontWeight={500}>
+                {t('version_description')}
+              </Box>
+              <Textarea
+                value={releaseDes}
+                minH={'150px'}
+                bgColor={'white'}
+                _placeholder={{ color: 'rgba(113, 113, 122, 1)' }}
+                border="1px solid var(--base-input, #E4E4E7)"
+                onChange={(e) => setReleaseDes(e.target.value)}
+                placeholder={t('enter_version_description')}
+              />
+            </VStack>
+            {/* </Flex> */}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter px={'24px'} pb={'24px'}>
             <Button
               variant={'solid'}
               onClick={handleSubmit}
-              mr={'11px'}
-              width={'80px'}
+              mr={'auto'}
+              ml="0"
+              px={'10px'}
+              py={'16px'}
+              // width={'80px'}
               isLoading={loading}
             >
-              {t('publish')}
+              {t('Release')}
             </Button>
           </ModalFooter>
         </ModalContent>

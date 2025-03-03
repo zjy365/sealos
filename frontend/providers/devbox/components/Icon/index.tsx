@@ -85,7 +85,19 @@ const map = {
   webstorm: require('./icons/jetbrains/webstorm.svg').default,
   gift: require('./icons/gift.svg').default,
   fileConfig: require('./icons/fileConfig.svg').default,
-  trae: require('./icons/trae.svg').default
+  trae: require('./icons/trae.svg').default,
+
+  cpu: require('./icons/cpu.svg').default,
+  memory: require('./icons/memory.svg').default,
+  port: require('./icons/port.svg').default,
+  gpu: require('./icons/gpu.svg').default,
+  attention: require('./icons/attention.svg').default,
+  arrowRightUp: require('./icons/arrowRightUp.svg').default,
+  pencil: require('./icons/pencil.svg').default,
+  refresh: require('./icons/refresh.svg').default,
+  to: require('./icons/to.svg').default,
+  calendar: require('./icons/calendar.svg').default,
+  question: require('./icons/question.svg').default
 };
 
 const MyIcon = ({
