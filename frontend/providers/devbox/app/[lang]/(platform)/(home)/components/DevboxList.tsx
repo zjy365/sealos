@@ -18,6 +18,7 @@ import PodLineChart from '@/components/PodLineChart';
 import SwitchPage from '@/components/SwitchDevboxPage';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
 import ReleaseModal from '@/components/modals/ReleaseModal';
+import { FilePen, IterationCw, Pause, Trash2 } from 'lucide-react';
 
 const DelModal = dynamic(() => import('@/components/modals/DelModal'));
 
@@ -93,7 +94,6 @@ const DevboxList = ({
           title: typeof error === 'string' ? error : error.message || t('restart_error'),
           status: 'error'
         });
-        console.error(error, '==');
       }
       refetchDevboxList();
       setLoading(false);
@@ -157,7 +157,7 @@ const DevboxList = ({
             return (
               <Flex alignItems={'center'} gap={'6px'}>
                 <Image width={'20px'} height={'20px'} alt={id} src={`/images/${iconId}.svg`} />
-                <Box color={'black'} fontSize={'md'} width={500}>
+                <Box color={'black'} fontSize={'md'}>
                   {name}
                 </Box>
               </Flex>
@@ -239,15 +239,29 @@ const DevboxList = ({
         cell(props) {
           const item = props.row.original;
           return (
-            <Flex>
+            <Flex onClick={(e) => e.stopPropagation()}>
               <IDEButton
                 devboxName={item.name}
                 sshPort={item.sshPort}
                 status={item.status}
                 mr={'8px'}
+                leftButtonProps={{
+                  borderRight: '1px solid var(--base-border, #E4E4E7)',
+                  boxShadow: 'none',
+                  width: '110px',
+                  pr: 'auto',
+                  bgColor: '#F4F4F5',
+                  pl: '12px'
+                  // borderStartRadius: 'md'
+                }}
+                rightButtonProps={{
+                  boxShadow: 'none',
+                  bgColor: '#F4F4F5'
+                  // borderEndRadius: 'md'
+                }}
                 runtimeType={item.template.templateRepository.iconId as string}
               />
-              <Button
+              {/* <Button
                 mr={'8px'}
                 size={'sm'}
                 boxSize={'32px'}
@@ -263,42 +277,47 @@ const DevboxList = ({
                 }}
               >
                 <MyIcon name={'detail'} w={'16px'} />
-              </Button>
+              </Button> */}
               <SealosMenu
                 width={100}
                 Button={
-                  <MenuButton as={Button} variant={'square'} boxSize={'32px'}>
+                  <MenuButton
+                    as={Button}
+                    variant={'square'}
+                    boxSize={'32px'}
+                    bgColor={'rgba(244, 244, 245, 1)'}
+                  >
                     <MyIcon name={'more'} />
                   </MenuButton>
                 }
                 menuList={[
+                  // {
+                  //   child: (
+                  //     <>
+                  //       <MyIcon name={'version'} w={'16px'} color={'white'} />
+                  //       <Box ml={2}>{t('publish')}</Box>
+                  //     </>
+                  //   ),
+                  //   onClick: () => handleOpenRelease(item)
+                  // },
+                  // {
+                  //   child: (
+                  //     <>
+                  //       <MyIcon name={'terminal'} w={'16px'} color={'white'} />
+                  //       <Box ml={2}>{t('terminal')}</Box>
+                  //     </>
+                  //   ),
+                  //   onClick: () => handleGoToTerminal(item),
+                  //   menuItemStyle: {
+                  //     borderBottomLeftRadius: '0px',
+                  //     borderBottomRightRadius: '0px',
+                  //     borderBottom: '1px solid #F0F1F6'
+                  //   }
+                  // },
                   {
                     child: (
                       <>
-                        <MyIcon name={'version'} w={'16px'} color={'white'} />
-                        <Box ml={2}>{t('publish')}</Box>
-                      </>
-                    ),
-                    onClick: () => handleOpenRelease(item)
-                  },
-                  {
-                    child: (
-                      <>
-                        <MyIcon name={'terminal'} w={'16px'} color={'white'} />
-                        <Box ml={2}>{t('terminal')}</Box>
-                      </>
-                    ),
-                    onClick: () => handleGoToTerminal(item),
-                    menuItemStyle: {
-                      borderBottomLeftRadius: '0px',
-                      borderBottomRightRadius: '0px',
-                      borderBottom: '1px solid #F0F1F6'
-                    }
-                  },
-                  {
-                    child: (
-                      <>
-                        <MyIcon name={'change'} w={'16px'} />
+                        <FilePen size={'16px'} />
                         <Box ml={2}>{t('update')}</Box>
                       </>
                     ),
@@ -318,12 +337,26 @@ const DevboxList = ({
                       ]
                     : []),
                   // maybe Error or other status,all can restart
+                  ...(item.status.value === 'Running'
+                    ? [
+                        {
+                          child: (
+                            <>
+                              <Pause size={'16px'} />
+                              <Box ml={2}>Pause</Box>
+                            </>
+                          ),
+                          onClick: () => handlePauseDevbox(item)
+                        }
+                      ]
+                    : []),
+
                   ...(item.status.value !== 'Stopped'
                     ? [
                         {
                           child: (
                             <>
-                              <MyIcon name={'restart'} w={'16px'} />
+                              <IterationCw size={'16px'} />
                               <Box ml={2}>{t('restart')}</Box>
                             </>
                           ),
@@ -331,27 +364,17 @@ const DevboxList = ({
                         }
                       ]
                     : []),
-                  ...(item.status.value === 'Running'
-                    ? [
-                        {
-                          child: (
-                            <>
-                              <MyIcon name={'shutdown'} w={'16px'} />
-                              <Box ml={2}>{t('shutdown')}</Box>
-                            </>
-                          ),
-                          onClick: () => handlePauseDevbox(item)
-                        }
-                      ]
-                    : []),
                   {
                     child: (
                       <>
-                        <MyIcon name={'delete'} w={'16px'} />
-                        <Box ml={2}>{t('delete')}</Box>
+                        <Trash2 size={'16px'} color="#DC2626" />
+                        <Box ml={2} color={'#DC2626'}>
+                          {t('delete')}
+                        </Box>
                       </>
                     ),
                     menuItemStyle: {
+                      borderTop: 'border: 1px solid var(--base-muted, #F4F4F5)',
                       _hover: {
                         color: 'red.600',
                         bg: 'rgba(17, 24, 36, 0.05)'
@@ -408,18 +431,23 @@ const DevboxList = ({
           refetchDevboxList={refetchDevboxList}
         />
       )}
-      {!!onOpenRelease && !!currentDevboxListItem && (
-        <ReleaseModal
-          onSuccess={() => {
-            router.push(`/devbox/detail/${currentDevboxListItem?.name}`);
-          }}
-          onClose={() => {
-            setOnOpenRelease(false);
-            setCurrentDevboxListItem(null);
-          }}
-          devbox={currentDevboxListItem}
-        />
-      )}
+      {/* {!!onOpenRelease && !!currentDevboxListItem && ( */}
+      {/* <ReleaseModal
+        onSuccess={() => {
+          router.push(`/devbox/detail/${currentDevboxListItem?.name}`);
+        }}
+        onClose={() => {
+          setOnOpenRelease(false);
+          setCurrentDevboxListItem(null);
+        }}
+        devbox={{
+          name: 'xxx',
+          status: {
+            value: 'stop'
+          }
+        }}
+      /> */}
+      {/* )} */}
     </>
   );
 };

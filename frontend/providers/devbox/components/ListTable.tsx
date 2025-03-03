@@ -1,3 +1,4 @@
+import { useRouter } from '@/i18n';
 import {
   Img,
   ImgProps,
@@ -17,6 +18,7 @@ export function BaseTable<T extends unknown>({
   table,
   ...styles
 }: { table: ReactTable<T> } & TableContainerProps) {
+  const router = useRouter();
   return (
     <TableContainer w="100%" my="0px" p="0" overflowY={'auto'} {...styles}>
       <Table variant="simple" mb={'0'} fontSize={'12px'} width={'full'} textTransform={'none'}>
@@ -86,6 +88,12 @@ export function BaseTable<T extends unknown>({
                 fontSize={'12px'}
                 _hover={{
                   bgColor: '#F9F9F9'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // name, id, iconid
+                  const [name] = item.getValue('name') as [string, string, string];
+                  router.push(`/devbox/detail/${name}`);
                 }}
                 role="group"
                 borderBottom={'0.5px solid var(--base-border, #E4E4E7)'}

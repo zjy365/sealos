@@ -29,7 +29,9 @@ export default function TemplateRepositoryItem({
   const { startedTemplate, setStartedTemplate } = useDevboxStore();
   const [currentVersion, setcurrentVersion] = useState('');
   const templateListQuery = useQuery(['templateList', item.uid], () => listTemplate(item.uid), {
-    enabled: !!item.uid
+    enabled: !!item.uid,
+    staleTime: 60000,
+    cacheTime: 60000
   });
 
   const templateList = templateListQuery.data?.templateList || [];
@@ -59,11 +61,12 @@ export default function TemplateRepositoryItem({
     const devboxName = getValues('name');
     const config = getValues('templateConfig');
     const parsedConfig = JSON.parse(config as string) as {
-      appPorts: [{ port: number; name: string; protocol: string }];
+      appPorts?: { port: number; name: string; protocol: string }[];
     };
+
     setValue(
       'networks',
-      parsedConfig.appPorts.map(
+      (parsedConfig.appPorts || []).map(
         ({ port }) =>
           ({
             networkName: `${devboxName}-${nanoid()}`,
