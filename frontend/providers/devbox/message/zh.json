@@ -203,8 +203,9 @@
   "pause_error": "关机失败",
   "pause_success": "关机成功",
   "please_enter_devbox_name_confirm": "请输入 <strong>{name}</strong> 确认:",
+  "please_select_tag": "请选择一个标签",
   "port": "端口",
-  "privacy_and_security_agreement": "安全隐私说明",
+  "privacy_and_security_agreement": "安全隐私说明。",
   "privacy_and_security_agreement_tips": "请阅读并同意安全隐私协议。",
   "private": "私有",
   "private_key": "私钥",
@@ -255,6 +256,7 @@
   "submit_release_failed": "发版请求提交失败",
   "submit_release_successful": "发版请求提交成功，正在发版中......",
   "tag_format_error": "版本号格式错误",
+  "tag_limit_tips": "最多选择三个标签",
   "tag_required": "需要填写版本号",
   "tags": "标签",
   "tags_enum": {
