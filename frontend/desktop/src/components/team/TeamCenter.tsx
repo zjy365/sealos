@@ -105,9 +105,8 @@ export default function TeamCenter(props: StackProps) {
   return (
     <>
       <HStack
-        gap={'8px'}
+        px={'8px'}
         alignItems={'center'}
-        p={'6px 4px'}
         cursor={'pointer'}
         borderRadius={'4px'}
         onClick={() => {
@@ -115,15 +114,11 @@ export default function TeamCenter(props: StackProps) {
           onOpen();
         }}
         {...props}
-        _hover={{
-          bgColor: 'rgba(0, 0, 0, 0.03)'
-        }}
-        pb={'10px'}
-        borderBottom={'1px solid rgba(0, 0, 0, 0.05)'}
-        mb={'4px'}
       >
-        <SettingIcon boxSize={'16px'} color={'white'} />
-        <Text>{t('common:manage_team')}</Text>
+        <Center p={'6px 8px'} gap={'12px'}>
+          <SettingIcon boxSize={'16px'} color={'#737373'} />
+          <Text>{t('common:manage_team')}</Text>
+        </Center>
       </HStack>
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={false}>

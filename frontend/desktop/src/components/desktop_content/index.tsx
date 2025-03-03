@@ -169,83 +169,33 @@ export default function Desktop(props: any) {
   }, []);
 
   return (
-    <Box
-      id="desktop"
-      className={styles.desktop}
-      backgroundImage={`url(${backgroundImage || '/images/bg-blue.svg'})`}
-      backgroundRepeat={'no-repeat'}
-      backgroundSize={'cover'}
-      position={'relative'}
-    >
-      {isClient && layoutConfig?.customerServiceURL && <OnlineServiceButton />}
+    <Box id="desktop" className={styles.desktop} bg={'#E0E9FF'} position={'relative'}>
       <ChakraIndicator />
+      <Flex height={'68px'} px="32px">
+        <Account />
+      </Flex>
+
       <Flex
-        gap={'8px'}
         width={'100%'}
-        height={'calc(100% - 87px)'}
-        pt={'24px'}
-        px={'24px'}
+        height={'calc(100% - 68px)'}
+        pt={'60px'}
+        pb={'84px'}
+        px={'180px'}
         mx={'auto'}
-        maxW={'1300px'}
-        maxH={'1000px'}
+        // maxW={'1300px'}
+        // maxH={'1000px'}
         position={'relative'}
       >
-        {/* monitor  */}
-        <Flex
-          flex={'0 0 250px'}
-          flexDirection={'column'}
-          display={{
-            base: 'none',
-            xl: 'flex'
-          }}
-          gap={'8px'}
-        >
-          {layoutConfig?.common.aiAssistantEnabled && <Assistant />}
-          <Monitor />
-          <Warn />
-        </Flex>
-
-        {/* apps */}
         <Flex flexDirection={'column'} gap={'8px'} flex={1} position={'relative'}>
-          <Flex zIndex={2} flexShrink={0} height={{ base: '32px', sm: '48px' }} gap={'8px'}>
+          {/* <Flex zIndex={2} flexShrink={0} height={{ base: '32px', sm: '48px' }} gap={'8px'}>
             <Box display={{ base: 'block', xl: 'none' }}>
               {layoutConfig?.common.aiAssistantEnabled && <Assistant />}
             </Box>
-            <SearchBox />
             <TriggerAccountModule showAccount={showAccount} setShowAccount={setShowAccount} />
-          </Flex>
+          </Flex> */}
+          <SearchBox />
           <Apps />
         </Flex>
-
-        {/* user account */}
-        <Box position={'relative'}>
-          {showAccount && (
-            <Box
-              position={'fixed'}
-              inset={0}
-              zIndex={2}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAccount(false);
-              }}
-            ></Box>
-          )}
-          <Box
-            display={{ base: showAccount ? 'flex' : 'none', lg: 'flex' }}
-            position={{ base: 'absolute', lg: 'relative' }}
-            right={{ base: '0px', lg: 'auto' }}
-            top={{ base: '0px', lg: 'auto' }}
-            flexDirection={'column'}
-            gap={'8px'}
-            flex={'0 0 266px'}
-            width={'266px'}
-            h={'full'}
-            zIndex={3}
-          >
-            <Account />
-            <Cost />
-          </Box>
-        </Box>
 
         {isClient && (
           <Box>
@@ -316,6 +266,7 @@ export default function Desktop(props: any) {
           </AppWindow>
         );
       })}
+
       {/* modal */}
       <NeedToMerge />
     </Box>

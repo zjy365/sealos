@@ -1,0 +1,17 @@
+{
+  "account_settings": "账户设置",
+  "copy_kubeconfig": "复制 Kubeconfig",
+  "create_workspace": "创建工作空间",
+  "guide": "引导",
+  "kubeconfig": "Kubeconfig",
+  "plan_and_billing": "计划与账单",
+  "settings": "设置",
+  "upgrade_plan": "升级计划",
+  "usage_analysis": "使用分析",
+  "get_started_from_recommended": "从以下推荐方案开始",
+  "most_popular": "最受欢迎",
+  "plan_benefit_statement": "简短的收益说明，突出显示此套餐的理想用户。",
+  "includes_credits": "包含 ${{credits}} 积分",
+  "your_current_plan": "当前套餐",
+  "purchase_plan": "购买套餐"
+}

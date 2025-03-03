@@ -34,26 +34,38 @@ export default function SearchBox() {
 
   return (
     <Box
-      flex={1}
+      width={'320px'}
+      height={'40px'}
       onClick={() => {
         inputRef.current?.focus();
       }}
       cursor={'pointer'}
       position={'relative'}
+      mx={'auto'}
+      zIndex={2}
     >
       <Flex
         height={'full'}
         alignItems={'center'}
         color={'white'}
-        bg={'rgba(22, 30, 40, 0.35)'}
-        backdropFilter={'blur(80px) saturate(180%)'}
-        border={'none'}
-        borderRadius={'12px'}
+        bg={'rgba(0, 0, 0, 0.05)'}
+        border={'1px solid'}
+        borderColor={'rgba(0, 0, 0, 0.04)'}
+        borderRadius={'8px'}
+        {...(searchTerm !== '' && {
+          borderColor: '#A3A3A3',
+          background: 'rgba(255, 255, 255, 0.40)'
+        })}
+        _hover={{
+          borderColor: '#A3A3A3',
+          background: 'rgba(255, 255, 255, 0.40)'
+        }}
       >
-        <SearchIcon ml={'16px'} width={'16px'} height={'16px'} />
+        <SearchIcon ml={'16px'} width={'16px'} height={'16px'} color={'#666666'} />
         <Input
+          color={'#4D4D4D'}
           pl={'6px'}
-          mr={'16px'}
+          mr={searchTerm ? '0' : '16px'}
           ref={inputRef}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -64,18 +76,45 @@ export default function SearchBox() {
           bg={'transparent'}
           outlineOffset={''}
           border={'none'}
-          _placeholder={{ color: 'white' }}
+          _placeholder={{ color: '#4D4D4D' }}
           boxShadow={'none'}
           _hover={{
             bg: 'transparent'
           }}
           _focus={{
             bg: 'transparent',
-            color: 'white',
+            color: '#4D4D4D',
             border: 'none',
             boxShadow: 'none'
           }}
         />
+        {searchTerm && (
+          <Center
+            mr={'16px'}
+            cursor={'pointer'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSearchTerm('');
+              inputRef.current?.focus();
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <rect x="1" y="1" width="14" height="14" rx="7" fill="#A3A3A3" />
+              <path
+                d="M10 6L6 10M6 6L10 10"
+                stroke="white"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </Center>
+        )}
       </Flex>
       {searchTerm !== '' && (
         <Flex
@@ -84,9 +123,12 @@ export default function SearchBox() {
           top={'100%'}
           width={'100%'}
           mt={2}
-          p={'16px'}
-          color={'rgba(255, 255, 255, 0.90)'}
-          {...blurBackgroundStyles}
+          p={'8px'}
+          color={'#18181B'}
+          borderRadius={'12px'}
+          border={'1px solid #E4E4E7'}
+          bg={'#FFF'}
+          boxShadow={'0px 4px 12px 0px rgba(0, 0, 0, 0.08)'}
         >
           {filteredApps.length > 0 ? (
             filteredApps.map((app) => (
@@ -94,9 +136,8 @@ export default function SearchBox() {
                 key={app.key}
                 p={'7px 13px'}
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255, 255, 255, 0.07)' }}
+                _hover={{ bg: '#F4F4F5' }}
                 alignItems={'center'}
-                borderRadius={'md'}
                 onClick={() => {
                   openApp(app);
                   setSearchTerm('');
@@ -105,25 +146,16 @@ export default function SearchBox() {
                 gap={'10px'}
                 fontSize={'12px'}
                 fontWeight={500}
-                color={'rgba(255, 255, 255, 0.90)'}
+                borderRadius={'8px'}
               >
-                <Center
-                  w="28px"
-                  h="28px"
-                  borderRadius={'md'}
-                  boxShadow={'0px 2px 6px 0px rgba(17, 24, 36, 0.15)'}
-                  backgroundColor={'rgba(255, 255, 255, 0.90)'}
-                  backdropFilter={'blur(50px)'}
-                >
-                  <Image
-                    width="20px"
-                    height="20px"
-                    src={app?.icon}
-                    fallbackSrc={logo || '/logo.svg'}
-                    draggable={false}
-                    alt="app logo"
-                  />
-                </Center>
+                <Image
+                  width="28px"
+                  height="28px"
+                  src={app?.icon}
+                  fallbackSrc={logo || '/logo.svg'}
+                  draggable={false}
+                  alt="app logo"
+                />
 
                 {app?.i18n?.[i18n?.language]?.name ? app?.i18n?.[i18n?.language]?.name : app?.name}
               </Flex>

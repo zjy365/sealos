@@ -264,7 +264,7 @@ export async function getServerSideProps({ req, res, locales }: any) {
     props: {
       ...(await serverSideTranslations(
         local,
-        ['common', 'cloudProviders', 'error', 'applist'],
+        ['common', 'cloudProviders', 'error', 'applist', 'cc'],
         null,
         locales || []
       )),

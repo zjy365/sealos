@@ -18,11 +18,12 @@ export default function Apps() {
   const [page, setPage] = useState(1);
 
   // grid value
-  const gridMX = useBreakpointValue({ base: 32, lg: 48 }) || 32;
-  const gridMT = 32;
-  const gridSpacing = 36;
-  const appWidth = 80;
-  const appHeight = 86;
+  const gridMX = 0;
+  const gridMT = 48;
+  const gridColumnGap = 72;
+  const gridRowGap = 36;
+  const appWidth = 120;
+  const appHeight = 136;
   const pageButton = 12;
 
   const handleDoubleClick = (e: MouseEvent<HTMLDivElement>, item: TApp) => {
@@ -38,10 +39,11 @@ export default function Apps() {
       const appsContainer = document.getElementById('apps-container');
       if (appsContainer) {
         const gridWidth = appsContainer.offsetWidth - gridMX * 2 - pageButton * 2;
-        const gridHeight = appsContainer.offsetHeight - gridMT + gridSpacing;
+        const gridHeight = appsContainer.offsetHeight - gridMT;
 
-        const maxAppsInRow = Math.floor((gridWidth + gridSpacing) / (appWidth + gridSpacing));
-        const maxAppsInColumn = Math.floor(gridHeight / (appHeight + gridSpacing));
+        // 使用实际的 gridColumnGap 和 gridRowGap 进行计算
+        const maxAppsInRow = Math.floor((gridWidth + gridColumnGap) / (appWidth + gridColumnGap));
+        const maxAppsInColumn = Math.floor((gridHeight + gridRowGap) / (appHeight + gridRowGap));
 
         const maxApps = maxAppsInRow * maxAppsInColumn;
 
@@ -49,7 +51,7 @@ export default function Apps() {
         setPageSize(maxApps);
       }
     }, 100),
-    [gridMX]
+    [gridMX, gridColumnGap, gridRowGap]
   );
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function Apps() {
     return () => {
       window.removeEventListener('resize', calculateMaxAppsPerPage);
     };
-  }, [calculateMaxAppsPerPage, gridMX]);
+  }, [calculateMaxAppsPerPage, gridMX, gridColumnGap, gridRowGap]);
 
   const paginatedApps = useMemo(
     () => renderApps.slice((page - 1) * pageSize, page * pageSize),
@@ -74,19 +76,7 @@ export default function Apps() {
   }, [renderApps.length, pageSize]);
 
   return (
-    <Flex
-      flexDirection={'column'}
-      flex={1}
-      height={'0'}
-      {...blurBackgroundStyles}
-      py={'32px'}
-      px={{ base: '24px', xl: '36px' }}
-      position={'relative'}
-      zIndex={1}
-    >
-      <Box height={'20px'} color={'rgba(255, 255, 255, 0.90)'} fontSize={'md'} fontWeight={'bold'}>
-        {t('common:all_apps')}
-      </Box>
+    <Flex flexDirection={'column'} flex={1} height={'0'} position={'relative'} zIndex={1}>
       <Flex width={'full'} height={'full'} id="apps-container" overflow={'auto'}>
         {totalPages !== 1 && (
           <Button
@@ -97,6 +87,7 @@ export default function Apps() {
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
             opacity={page === 1 ? '0.3' : '0.7'}
+            color={'rgba(0, 0, 0, 0.90)'}
           >
             <ArrowLeftIcon />
           </Button>
@@ -106,7 +97,8 @@ export default function Apps() {
           flex={1}
           mt={`${gridMT}px`}
           mx={`${gridMX}px`}
-          gap={`${gridSpacing}px`}
+          columnGap={`${gridColumnGap}px`}
+          rowGap={`${gridRowGap}px`}
           templateColumns={`repeat(auto-fill, minmax(${appWidth}px, 1fr))`}
           templateRows={`repeat(auto-fit, ${appHeight}px)`}
           className="apps-container"
@@ -117,7 +109,7 @@ export default function Apps() {
                 flexDirection={'column'}
                 alignItems={'center'}
                 w="100%"
-                h="86px"
+                h="136px"
                 key={index}
                 userSelect="none"
                 cursor={'pointer'}
@@ -125,13 +117,14 @@ export default function Apps() {
                 className={item.key}
               >
                 <Box
-                  w="60px"
-                  h="60px"
-                  p={'8px'}
-                  borderRadius={'8px'}
-                  boxShadow={'0px 2px 6px 0px rgba(17, 24, 36, 0.15)'}
+                  w="88px"
+                  h="88px"
+                  p={'16px'}
+                  borderRadius={'full'}
+                  boxShadow={
+                    '0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 16px 40px 0px rgba(0, 0, 0, 0.06)'
+                  }
                   backgroundColor={'rgba(255, 255, 255, 0.90)'}
-                  backdropFilter={'blur(50px)'}
                 >
                   <Image
                     width="100%"
@@ -143,12 +136,11 @@ export default function Apps() {
                   />
                 </Box>
                 <Text
-                  mt="10px"
-                  color={'rgba(255, 255, 255, 0.90)'}
-                  fontSize={'12px'}
+                  mt="12px"
+                  color={'rgba(0, 0, 0, 0.90)'}
+                  fontSize={'14px'}
                   fontWeight={'bold'}
                   textAlign={'center'}
-                  textShadow={'0px 1px 2px rgba(17, 24, 36, 0.40)'}
                   lineHeight={'16px'}
                 >
                   {item?.i18n?.[i18n?.language]?.name
@@ -167,6 +159,7 @@ export default function Apps() {
             onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={page === totalPages}
             opacity={page === totalPages ? '0.3' : '0.7'}
+            color={'rgba(0, 0, 0, 0.90)'}
           >
             <ArrowRightIcon />
           </Button>
