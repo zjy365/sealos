@@ -1,12 +1,12 @@
 'use client';
 
 import { customAlphabet } from 'nanoid';
+import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { SealosMenu, useMessage } from '@sealos/ui';
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -27,7 +27,8 @@ import { devboxIdKey, DevboxReleaseStatusEnum } from '@/constants/devbox';
 import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
 
 import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template';
-import CreateTemplateModal from '@/app/[lang]/(platform)/template/updateTemplate/CreateTemplateModal';
+
+import CreateTemplateDrawer from './CreateTemplateDrawer';
 import SelectTemplateModal from '@/app/[lang]/(platform)/template/updateTemplate/SelectActionModal';
 import UpdateTemplateRepositoryModal from '@/app/[lang]/(platform)/template/updateTemplate/UpdateTemplateRepositoryModal';
 
@@ -431,7 +432,7 @@ const Version = () => {
         />
       )}
       <ConfirmChild />
-      <CreateTemplateModal
+      <CreateTemplateDrawer
         isOpen={createTemplateModalHandler.isOpen}
         onClose={createTemplateModalHandler.onClose}
         devboxReleaseName={currentVersion?.name || ''}
