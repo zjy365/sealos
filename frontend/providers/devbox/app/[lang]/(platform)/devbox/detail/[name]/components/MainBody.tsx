@@ -1,22 +1,23 @@
-import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
+import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
 import PodLineChart from '@/components/PodLineChart';
 
-import { NetworkType } from '@/types/devbox';
-import { useCopyData } from '@/utils/tools';
-
-import { useDevboxStore } from '@/stores/devbox';
+import { useRouter } from '@/i18n';
 import { useEnvStore } from '@/stores/env';
+import { useCopyData } from '@/utils/tools';
+import { NetworkType } from '@/types/devbox';
+import { useDevboxStore } from '@/stores/devbox';
 
 const MonitorModal = dynamic(() => import('@/components/modals/MonitorModal'));
 
 const MainBody = () => {
   const t = useTranslations();
+  const router = useRouter();
   const { copyData } = useCopyData();
   const { devboxDetail } = useDevboxStore();
   const { env } = useEnvStore();
@@ -141,10 +142,38 @@ const MainBody = () => {
       <Box bg={'white'} borderRadius="lg" pl={6} pt={2} pr={6} pb={6} borderWidth={1}>
         {/* network */}
         <Box mt={4}>
-          <Flex alignItems={'center'} mb={2}>
+          <Flex alignItems={'center'} mb={2} justifyContent={'space-between'}>
             <Text fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
               {t('network')}
             </Text>
+            <Flex gap={2} alignItems={'center'}>
+              <Button
+                variant={'ghost'}
+                size={'sm'}
+                color={'#224EF5'}
+                _hover={{
+                  bg: 'white'
+                }}
+                fontSize={'12px'}
+                onClick={() => {}}
+                leftIcon={<MyIcon name={'question'} w={'16px'} color={'white'} />}
+              >
+                {t('network_unavailable')}
+              </Button>
+              <Button
+                bg={'white'}
+                color={'grayModern.900'}
+                _hover={{ bg: 'grayModern.50' }}
+                fontSize={'12px'}
+                boxShadow={'none'}
+                borderWidth={1}
+                borderColor={'grayModern.200'}
+                borderRadius={'md'}
+                onClick={() => router.push(`/devbox/create?name=${devboxDetail?.name}`)}
+              >
+                {t('manage_network')}
+              </Button>
+            </Flex>
           </Flex>
           {devboxDetail?.networks && devboxDetail.networks.length > 0 ? (
             <MyTable columns={networkColumn} data={devboxDetail?.networks} />

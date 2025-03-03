@@ -96,7 +96,8 @@ const map = {
   pencil: require('./icons/pencil.svg').default,
   refresh: require('./icons/refresh.svg').default,
   to: require('./icons/to.svg').default,
-  calendar: require('./icons/calendar.svg').default
+  calendar: require('./icons/calendar.svg').default,
+  question: require('./icons/question.svg').default
 };
 
 const MyIcon = ({
