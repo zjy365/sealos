@@ -16,9 +16,9 @@ import {
 } from '@chakra-ui/react';
 import { MyTooltip, SealosMenu } from '@sealos/ui';
 import { useLocale, useTranslations } from 'next-intl';
-import DeleteTemplateReposistoryModal from '../updateTemplate/DeleteTemplateReposistoryModal';
+import DeleteTemplateRepositoryModal from '../updateTemplate/DeleteTemplateRepositoryModal';
 import EditTemplateModal from '../updateTemplate/EditTemplateModal';
-import EditTemplateRepositoryModal from '../updateTemplate/EditTemplateReposistoryModal';
+import EditTemplateRepositoryModal from '../updateTemplate/EditTemplateRepositoryModal';
 const TemplateCard = ({
   isPublic,
   iconId,
@@ -268,7 +268,7 @@ const TemplateCard = ({
         onClose={editTemplateRepositoryHandle.onClose}
         uid={templateRepositoryUid}
       />
-      <DeleteTemplateReposistoryModal
+      <DeleteTemplateRepositoryModal
         isOpen={deleteTemplateHandle.isOpen}
         onClose={deleteTemplateHandle.onClose}
         templateRepositoryName={templateRepositoryName}

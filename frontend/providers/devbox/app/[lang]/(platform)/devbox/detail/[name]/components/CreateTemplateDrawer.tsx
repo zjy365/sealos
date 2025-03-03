@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { createTemplateReposistory } from '@/api/template';
+import { createTemplateRepository } from '@/api/template';
 import MyFormLabel from '@/components/MyFormControl';
 import { TemplateState } from '@/constants/template';
 import { usePathname } from '@/i18n';
@@ -84,7 +84,7 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
   const { openTemplateModal, config } = useTemplateStore();
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: createTemplateReposistory
+    mutationFn: createTemplateRepository
     // return await createTemplate(data)
   });
   const { message: toast } = useMessage();
