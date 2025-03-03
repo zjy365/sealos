@@ -51,7 +51,7 @@ export default function Tabs({ list, size = 'md', activeId, onChange, ...props }
           borderRadius={'md'}
           textAlign={'center'}
           _hover={{
-            color: 'brightBlue.600'
+            fontWeight: 'bold'
           }}
           {...(activeId === item.id
             ? {

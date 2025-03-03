@@ -14,16 +14,15 @@ import {
   StepNumber,
   StepStatus,
   StepSeparator,
-  Circle,
   Tabs,
   TabList,
   Divider
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Tabs as MyTabs } from '@sealos/ui';
 
 import Tab from '@/components/Tab';
+import MyTabs from '@/components/Tabs';
 import MyIcon from '@/components/Icon';
 import ScriptCode from '@/components/ScriptCode';
 import {

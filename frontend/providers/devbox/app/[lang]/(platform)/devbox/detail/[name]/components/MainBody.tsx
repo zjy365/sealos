@@ -52,6 +52,7 @@ const MainBody = () => {
             <MyIcon
               name="copy"
               w={'16px'}
+              color={'grayModern.400'}
               ml={1}
               _hover={{
                 color: 'grayModern.600'
@@ -87,7 +88,7 @@ const MainBody = () => {
                 _hover={{ textDecoration: 'underline' }}
                 onClick={() => window.open(`https://${address}`, '_blank')}
               >
-                https://{address}
+                {address}
               </Text>
             </Tooltip>
           );

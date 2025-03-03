@@ -1,8 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { sealosApp } from 'sealos-desktop-sdk/app';
 import { SealosMenu, useMessage } from '@sealos/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FilePen, IterationCw, Pause, Trash2 } from 'lucide-react';
 import { Box, Button, Flex, Image, MenuButton, Text } from '@chakra-ui/react';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
@@ -17,8 +17,6 @@ import { BaseTable } from '@/components/ListTable';
 import PodLineChart from '@/components/PodLineChart';
 import SwitchPage from '@/components/SwitchDevboxPage';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
-import ReleaseModal from '@/components/modals/ReleaseModal';
-import { FilePen, IterationCw, Pause, Trash2 } from 'lucide-react';
 
 const DelModal = dynamic(() => import('@/components/modals/DelModal'));
 
@@ -50,7 +48,6 @@ const DevboxList = ({
     // handle with page, pageSize, total
     const newTotal = Math.ceil(totalItem / pageSize);
     if (totalItem < page || total !== newTotal) {
-      // 向上取整
       setTotal(Math.ceil(totalItem / pageSize));
       setPage(1);
     }
@@ -120,27 +117,6 @@ const DevboxList = ({
       setLoading(false);
     },
     [refetchDevboxList, setLoading, t, toast]
-  );
-  const handleGoToTerminal = useCallback(
-    async (devbox: DevboxListItemTypeV2) => {
-      const defaultCommand = `kubectl exec -it $(kubectl get po -l app.kubernetes.io/name=${devbox.name} -oname) -- sh -c "clear; (bash || ash || sh)"`;
-      try {
-        sealosApp.runEvents('openDesktopApp', {
-          appKey: 'system-terminal',
-          query: {
-            defaultCommand
-          },
-          messageData: { type: 'new terminal', command: defaultCommand }
-        });
-      } catch (error: any) {
-        toast({
-          title: typeof error === 'string' ? error : error.message || t('jump_terminal_error'),
-          status: 'error'
-        });
-        console.error(error);
-      }
-    },
-    [t, toast]
   );
 
   const columns = useMemo(() => {

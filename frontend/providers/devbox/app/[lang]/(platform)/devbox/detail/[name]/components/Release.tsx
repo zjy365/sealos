@@ -229,7 +229,7 @@ const Version = () => {
       title: t('version_description'),
       key: 'description',
       render: (item: DevboxVersionListItemType) => (
-        <Flex color={'grayModern.600'} role="group">
+        <Flex color={'grayModern.600'} role="group" w={'100%'}>
           {item.description}
           <MyIcon
             name="pencil"
@@ -308,22 +308,15 @@ const Version = () => {
               {
                 child: (
                   <>
-                    <MyIcon name={'edit'} w={'16px'} />
-                    <Box ml={2}>{t('edit')}</Box>
-                  </>
-                ),
-                onClick: () => {
-                  setCurrentVersion(item);
-                  onOpenEdit();
-                }
-              },
-              {
-                child: (
-                  <>
-                    <MyIcon name={'template'} w={'16px'} />
+                    <MyIcon name={'template'} w={'16px'} color={'white'} />
                     <Box ml={2}>{t('convert_to_runtime')}</Box>
                   </>
                 ),
+                menuItemStyle: {
+                  _hover: {
+                    bg: 'rgba(17, 24, 36, 0.05)'
+                  }
+                },
                 onClick: () => {
                   setCurrentVersion(item);
                   // onOpenEdit()

@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  Flex,
-  HStack,
   Input,
   Modal,
   ModalBody,
@@ -135,6 +133,7 @@ const ReleaseModal = ({
                 {t('image_name')}
               </Box>
               <Input
+                height={'40px'}
                 width={'full'}
                 bgColor={'white'}
                 _placeholder={{ color: 'rgba(113, 113, 122, 1)' }}
@@ -151,6 +150,8 @@ const ReleaseModal = ({
               <Input
                 placeholder={t('enter_version_number')}
                 value={tag}
+                height={'40px'}
+                w={'full'}
                 onChange={(e) => setTag(e.target.value)}
                 bgColor={'white'}
                 _placeholder={{ color: 'rgba(113, 113, 122, 1)' }}

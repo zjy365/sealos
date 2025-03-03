@@ -174,7 +174,7 @@ const BasicInfo = () => {
         <Text w={'20%'} fontSize={'12px'} color={'grayModern.500'}>
           {t('ssh_connect_info')}
         </Text>
-        <Flex color={'grayModern.900'} w={'80%'}>
+        <Flex color={'grayModern.900'} w={'80%'} role="group">
           <Text cursor="pointer" fontSize={'12px'}>
             {sshCommand}
           </Text>
@@ -182,6 +182,10 @@ const BasicInfo = () => {
             name="copy"
             w={'16px'}
             ml={1}
+            display={'none'}
+            _groupHover={{
+              display: 'inline-block'
+            }}
             color={'grayModern.500'}
             _hover={{
               color: 'grayModern.600'
