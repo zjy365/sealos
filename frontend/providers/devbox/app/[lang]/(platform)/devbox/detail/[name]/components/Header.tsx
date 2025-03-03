@@ -263,20 +263,27 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
             status={devboxDetail.status}
             isBigButton={isBigButton}
             leftButtonProps={{
+              fontSize: '14px',
               height: '40px',
-              width: '96px',
-              borderWidth: '1 0 1 1',
+              width: '120px',
+              border: '1px solid var(--base-border, #E4E4E7)',
+              // borderWidth: '1px 0 1px 1px',
               bg: 'white',
+              boxShadow: 'none',
+              pl: '12px',
+              pr: 'auto',
               color: 'grayModern.900'
             }}
             rightButtonProps={{
               height: '40px',
-              borderWidth: '1 1 1 0',
+              border: '1px solid var(--base-border, #E4E4E7)',
+              borderWidth: '1px 1px 1px 0',
               bg: 'white',
               color: 'grayModern.900',
               mr: 0,
-              boxShadow:
-                '2px 1px 2px 0px rgba(19, 51, 107, 0.05),0px 0px 1px 0px rgba(19, 51, 107, 0.08)'
+              boxShadow: 'none'
+              // boxShadow:
+              //   '2px 1px 2px 0px rgba(19, 51, 107, 0.05),0px 0px 1px 0px rgba(19, 51, 107, 0.08)'
             }}
           />
         </Box>

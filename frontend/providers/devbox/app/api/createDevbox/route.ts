@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
       devboxForm: DevboxEditTypeV2;
       // runtimeNamespaceMap: runtimeNamespaceMapType
     };
-
     const headerList = req.headers;
 
     const { applyYamlList, k8sCustomObjects, namespace } = await getK8s({
