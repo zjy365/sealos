@@ -1,8 +1,8 @@
-import { Button, ButtonProps, Flex, FlexProps, Text } from '@chakra-ui/react';
-import { useTranslations } from 'next-intl';
-import MyIcon from './Icon';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button, ButtonProps, Flex, FlexProps, Text } from '@chakra-ui/react';
+
 export default function SwitchPage({
   totalPage,
   totalItem,
@@ -42,8 +42,8 @@ export default function SwitchPage({
   return (
     <Flex
       w={'full'}
-      py={'15px'}
       px={'24px'}
+      pb={2}
       align={'center'}
       fontSize="14px"
       justifyContent={'space-between'}
@@ -51,9 +51,9 @@ export default function SwitchPage({
     >
       <Flex>
         <Text fontSize="14px" color={'neutral.600'}>
-          {t('total_page_items')}:
+          {t('total_page_items')}&nbsp;
         </Text>
-        <Flex mr="25px" color={'neutral.900'}>
+        <Flex mr="25px" color={'neutral.900'} fontWeight={'bold'}>
           {totalItem}
         </Flex>
       </Flex>
@@ -79,14 +79,17 @@ export default function SwitchPage({
           <Button
             variant={'unstyled'}
             key={val}
-            isDisabled={currentPage === index + 1}
-            bg={currentPage === index + 1 ? '#F4F4F5' : 'none'}
             p="0"
             minW="0"
-            background="#F4F4F5"
+            background="white"
+            fontWeight={'normal'}
             color={'#0A0A0A'}
             borderRadius="full"
             boxSize="32px"
+            {...(currentPage === index + 1 && {
+              bg: '#F4F4F5',
+              color: 'black'
+            })}
             onClick={(e) => {
               e.preventDefault();
               setCurrentPage(index + 1);

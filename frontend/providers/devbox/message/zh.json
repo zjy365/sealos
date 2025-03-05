@@ -77,6 +77,7 @@
   "deploy": "上线",
   "deploy_a_new_app": "上线一个新应用",
   "detail": "详情",
+  "devbox": "DevBox",
   "devbox_creation": "项目创建",
   "devbox_empty": "您还没有新建项目",
   "devbox_list": "项目列表",

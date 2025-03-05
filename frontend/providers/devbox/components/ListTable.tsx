@@ -1,19 +1,15 @@
 import { useRouter } from '@/i18n';
 import {
-  Img,
-  ImgProps,
   Table,
   TableContainer,
   TableContainerProps,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr
 } from '@chakra-ui/react';
 import { Table as ReactTable, flexRender } from '@tanstack/react-table';
-import { ReactElement } from 'react-markdown/lib/react-markdown';
 export function BaseTable<T extends unknown>({
   table,
   ...styles
@@ -89,6 +85,7 @@ export function BaseTable<T extends unknown>({
                 _hover={{
                   bgColor: '#F9F9F9'
                 }}
+                cursor={'pointer'}
                 onClick={(e) => {
                   e.stopPropagation();
                   // name, id, iconid
