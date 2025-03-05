@@ -84,8 +84,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
               boxShadow={'none'}
               fontWeight={'normal'}
               _hover={{
-                bg: '#F2F2F2',
-                fontWeight: 'bold'
+                bg: '#F2F2F2'
               }}
               {...(tab === 'overview' && {
                 bg: '#F2F2F2',
@@ -106,8 +105,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
               boxShadow={'none'}
               fontWeight={'normal'}
               _hover={{
-                bg: '#F2F2F2',
-                fontWeight: 'bold'
+                bg: '#F2F2F2'
               }}
               {...(tab === 'monitor' && {
                 bg: '#F2F2F2',
