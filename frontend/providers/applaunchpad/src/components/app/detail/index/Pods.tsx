@@ -239,7 +239,17 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
   ];
 
   return (
-    <Box h={'100%'} py={'20px'} px={'32px'} position={'relative'}>
+    <Box
+      mt={'16px'}
+      h={'100%'}
+      py={'20px'}
+      px={'24px'}
+      position={'relative'}
+      borderRadius={'16px'}
+      border={'1px solid #E4E4E7'}
+      bg={'#FFF'}
+      boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+    >
       <Flex>
         <Box fontSize={'14px'} fontWeight={'bold'} color={'grayModern.900'}>
           {t('Pods List')}

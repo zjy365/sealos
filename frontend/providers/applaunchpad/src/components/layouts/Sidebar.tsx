@@ -1,4 +1,4 @@
-import { Center, Text, Stack, HStack, Divider } from '@chakra-ui/react';
+import { Center, Text, Stack, HStack, Divider, Flex } from '@chakra-ui/react';
 import MyIcon from '../Icon';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -53,22 +53,14 @@ export default function Sidebar() {
   ];
 
   return (
-    <HStack
-      px={'40px'}
-      w={'76px'}
-      py={'12px'}
-      flexShrink={0}
-      spacing={'8px'}
-      borderRadius={'8px'}
-      bg={'white'}
-    >
+    <Flex alignItems={'center'} px={'40px'}>
       {siderbarMap.map((item, index) => (
         <>
           {index > 0 && (
             <Divider
+              w={'0px'}
               mx={'12px'}
               flexShrink={0}
-              orientation="horizontal"
               height={'24px'}
               borderLeft={'1px'}
               borderColor={'#CCCCCC'}
@@ -100,6 +92,6 @@ export default function Sidebar() {
           </Center>
         </>
       ))}
-    </HStack>
+    </Flex>
   );
 }

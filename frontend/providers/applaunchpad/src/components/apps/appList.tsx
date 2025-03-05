@@ -37,6 +37,8 @@ const AppList = ({
   apps: AppListItemType[];
   refetchApps: () => void;
 }) => {
+  console.log('apps', apps);
+
   const { t } = useTranslation();
   const { setLoading } = useGlobalStore();
   const { userSourcePrice } = useUserStore();
@@ -53,6 +55,16 @@ const AppList = ({
     onOpen: onOpenUpdateModal,
     onClose: onCloseUpdateModal
   } = useDisclosure();
+
+  // 添加分页相关状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  // 计算当前页的数据
+  const currentPageData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return apps.slice(startIndex, startIndex + pageSize);
+  }, [apps, currentPage]);
 
   const handleRestartApp = useCallback(
     async (appName: string) => {
@@ -369,12 +381,12 @@ const AppList = ({
       <MyTable
         itemClass="appItem"
         columns={columns}
-        data={apps}
+        data={currentPageData}
         pagination={{
-          current: 1,
-          pageSize: 10,
-          total: 100,
-          onChange: (page) => console.log('切换到页码:', page)
+          current: currentPage,
+          pageSize: pageSize,
+          total: apps.length,
+          onChange: (page) => setCurrentPage(page)
         }}
       />
 
