@@ -1,17 +1,17 @@
-import MyIcon from '@/components/Icon';
-import { TemplateState } from '@/constants/template';
-import { usePathname, useRouter } from '@/i18n';
-import { useTemplateStore } from '@/stores/template';
-import { Box, Button, Center, Flex, Text, useTheme } from '@chakra-ui/react';
-import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { Box, Button, Center, Flex, Text, useTheme } from '@chakra-ui/react';
+
+import MyIcon from '@/components/Icon';
+import { useRouter } from '@/i18n';
+import { TemplateState } from '@/constants/template';
+import { useTemplateStore } from '@/stores/template';
 
 export default function DevboxHeader({ listLength }: { listLength: number }) {
   const { openTemplateModal, config, updateTemplateModalConfig } = useTemplateStore();
   const theme = useTheme();
   const router = useRouter();
   const t = useTranslations();
-  const pathname = usePathname();
   const lastRoute = '/?openTemplate=publicTemplate';
   useEffect(() => {
     const refreshLastRoute = '/';
@@ -45,7 +45,7 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
       <Box ml={'8px'} fontSize={'md'} fontWeight={'bold'} color={'grayModern.500'}>
         ( {listLength} )
       </Box>
-      {/* <Flex
+      <Flex
         alignItems="center"
         justifyContent="center"
         height="18px"
@@ -55,42 +55,34 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
         ml={'auto'}
         cursor="pointer"
         onClick={() => {
-          // setLastRoute(pathname)
           openTemplateModal({
             templateState: TemplateState.publicTemplate,
             lastRoute
           });
         }}
       >
-        <MyIcon
-          name={'templateTitle'}
-          width="18px"
-          height="18px"
-          color="brightBlue.600"
-          fill={'currentColor'}
-        />
         <Text
           fontFamily="PingFang SC"
           fontSize="12px"
           fontWeight="500"
           lineHeight="16px"
           letterSpacing="0.5px"
-          color="brightBlue.600"
+          color="#1C4EF5"
         >
           {t('scan_templates')}
         </Text>
-      </Flex> */}
-      <Button
-        minW={'156px'}
-        h={'40px'}
-        ml={'auto'}
-        mr={0}
-        variant={'solid'}
-        leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#ffffff'} />}
-        onClick={() => router.push('/devbox/create')}
-      >
-        {t('create_devbox')}
-      </Button>
+        <Button
+          minW={'156px'}
+          h={'40px'}
+          ml={4}
+          mr={0}
+          variant={'solid'}
+          leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#ffffff'} />}
+          onClick={() => router.push('/devbox/create')}
+        >
+          {t('create_devbox')}
+        </Button>
+      </Flex>
     </Flex>
   );
 }
