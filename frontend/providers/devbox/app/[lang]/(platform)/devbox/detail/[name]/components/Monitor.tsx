@@ -11,6 +11,8 @@ import {
   MenuList,
   Text
 } from '@chakra-ui/react';
+import { Check } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 
 import DatePicker from '@/components/DatePicker';
@@ -19,12 +21,22 @@ import PodLineChart from '@/components/PodLineChart';
 import useDateTimeStore from '@/stores/date';
 import { useDevboxStore } from '@/stores/devbox';
 import { REFRESH_INTERVAL_OPTIONS } from '@/constants/monitor';
-import { Check } from 'lucide-react';
 
 const Monitor = () => {
   const t = useTranslations();
-  const { devboxDetail } = useDevboxStore();
-  const { refreshInterval, setRefreshInterval } = useDateTimeStore();
+  const { devboxDetail, loadDetailMonitorData } = useDevboxStore();
+  const { refreshInterval, setRefreshInterval, startDateTime, endDateTime } = useDateTimeStore();
+
+  useQuery({
+    queryKey: ['monitorData', devboxDetail?.name, refreshInterval, startDateTime, endDateTime],
+    queryFn: () =>
+      loadDetailMonitorData(
+        devboxDetail?.name || '',
+        refreshInterval,
+        startDateTime.getTime(),
+        endDateTime.getTime()
+      )
+  });
 
   return (
     <Flex gap={4} direction={'column'} minH={'100%'}>
@@ -39,7 +51,12 @@ const Monitor = () => {
               bg: 'grayModern.50'
             }}
             onClick={() => {
-              // refetchData();
+              loadDetailMonitorData(
+                devboxDetail?.name || '',
+                refreshInterval,
+                startDateTime.getTime(),
+                endDateTime.getTime()
+              );
             }}
             position={'relative'}
           >
@@ -59,9 +76,7 @@ const Monitor = () => {
               }}
             >
               <Flex alignItems={'center'}>
-                {refreshInterval === 0 ? null : (
-                  <Text mr={'4px'}>{`${refreshInterval / 1000}s`}</Text>
-                )}
+                {refreshInterval === '' ? null : <Text mr={'4px'}>{`${refreshInterval}`}</Text>}
                 <ChevronDownIcon w={'16px'} h={'16px'} color={'grayModern.500'} />
               </Flex>
             </MenuButton>

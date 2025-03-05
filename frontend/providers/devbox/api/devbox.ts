@@ -94,6 +94,8 @@ export const getDevboxMonitorData = (payload: {
   queryName: string;
   queryKey: keyof MonitorQueryKey;
   step: string;
+  start: number;
+  end: number;
 }) => GET<MonitorDataResult[]>(`/api/monitor/getMonitorData`, payload);
 
 export const getAppsByDevboxId = (devboxId: string) =>

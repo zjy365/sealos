@@ -45,7 +45,12 @@ type State = {
   devboxDetail?: DevboxDetailTypeV2;
   setDevboxDetail: (devboxName: string, sealosDomain: string) => Promise<DevboxDetailTypeV2>;
   intervalLoadPods: (devboxName: string, updateDetail: boolean) => Promise<any>;
-  loadDetailMonitorData: (devboxName: string) => Promise<any>;
+  loadDetailMonitorData: (
+    devboxName: string,
+    step: string,
+    start: number,
+    end: number
+  ) => Promise<any>;
 };
 
 export const useDevboxStore = create<State>()(
@@ -64,16 +69,24 @@ export const useDevboxStore = create<State>()(
         const pods = await getDevboxPodsByDevboxName(devboxName);
         const queryName = pods.length > 0 ? pods[0].podName : devboxName;
 
+        // One hour of monitoring data
+        const endTime = Date.now();
+        const startTime = endTime - 60 * 60 * 1000;
+
         const [averageCpuData, averageMemoryData] = await Promise.all([
           getDevboxMonitorData({
             queryKey: 'average_cpu',
             queryName: queryName,
-            step: '2m'
+            step: '2m',
+            start: startTime,
+            end: endTime
           }),
           getDevboxMonitorData({
             queryKey: 'average_memory',
             queryName: queryName,
-            step: '2m'
+            step: '2m',
+            start: startTime,
+            end: endTime
           })
         ]);
         set((state) => {
@@ -170,21 +183,29 @@ export const useDevboxStore = create<State>()(
         });
         return 'success';
       },
-      loadDetailMonitorData: async (devboxName) => {
+      loadDetailMonitorData: async (devboxName, step, start, end) => {
         const pods = await getDevboxPodsByDevboxName(devboxName);
 
         const queryName = pods.length > 0 ? pods[0].podName : devboxName;
+
+        // One hour of monitoring data
+        const endTime = Date.now();
+        const startTime = endTime - 60 * 60 * 1000;
 
         const [averageCpuData, averageMemoryData] = await Promise.all([
           getDevboxMonitorData({
             queryKey: 'average_cpu',
             queryName: queryName,
-            step: '2m'
+            step: step || '2m',
+            start: start || startTime,
+            end: end || endTime
           }),
           getDevboxMonitorData({
             queryKey: 'average_memory',
             queryName: queryName,
-            step: '2m'
+            step: step || '2m',
+            start: start || startTime,
+            end: end || endTime
           })
         ]);
 
