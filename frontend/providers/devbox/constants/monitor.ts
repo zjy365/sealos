@@ -1,7 +1,8 @@
 export const REFRESH_INTERVAL_OPTIONS = [
-  { value: 1000, label: '1s' },
-  { value: 2000, label: '2s' },
-  { value: 5000, label: '5s' },
-  { value: 10000, label: '10s' },
-  { value: 0, label: 'close' }
+  { value: '1m', label: '1m' },
+  { value: '5m', label: '5m' },
+  { value: '10m', label: '10m' },
+  { value: '30m', label: '30m' },
+  { value: '1h', label: '1h' },
+  { value: '', label: 'close' }
 ];

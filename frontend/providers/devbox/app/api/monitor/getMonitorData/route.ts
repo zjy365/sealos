@@ -89,22 +89,24 @@ export async function GET(req: NextRequest) {
     const end = searchParams.get('end') as string;
     const step = searchParams.get('step') as string | '1m';
 
+    console.log('start', start);
+    console.log('end', end);
+    console.log('step', step);
+    console.log('queryName', queryName);
+    console.log('queryKey', queryKey);
+
     const kubeconfig = await authSession(headerList);
 
     const { namespace } = await getK8s({
       kubeconfig: kubeconfig
     });
 
-    // One hour of monitoring data
-    const endTime = Date.now();
-    const startTime = endTime - 60 * 60 * 1000;
-
     const params = {
       type: queryKey,
       launchPadName: queryName,
       namespace: namespace,
-      start: startTime / 1000,
-      end: endTime / 1000,
+      start: parseInt(start) / 1000,
+      end: parseInt(end) / 1000,
       step: step
     };
 
