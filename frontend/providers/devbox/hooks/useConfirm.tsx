@@ -30,7 +30,14 @@ const ConfirmCheckbox = ({
   };
 
   return (
-    <Checkbox isChecked={isChecked} spacing={4} onChange={handleChange}>
+    <Checkbox
+      isChecked={isChecked}
+      spacing={4}
+      onChange={handleChange}
+      bg={'brightBlue.50'}
+      p={'2'}
+      borderRadius={'md'}
+    >
       {t(checkboxLabel)}
     </Checkbox>
   );
@@ -75,7 +82,14 @@ export const useConfirm = ({
         <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
           <AlertDialogOverlay>
             <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              <AlertDialogHeader
+                fontSize="lg"
+                fontWeight="bold"
+                bg={'white'}
+                borderBottom={'none'}
+                pl={10}
+                pb={0}
+              >
                 {t(title)}
               </AlertDialogHeader>
 
@@ -96,6 +110,9 @@ export const useConfirm = ({
               <AlertDialogFooter>
                 <Button
                   variant={'outline'}
+                  _hover={{
+                    bg: 'grayModern.50'
+                  }}
                   onClick={() => {
                     onClose();
                     typeof cancelCb.current === 'function' && cancelCb.current();

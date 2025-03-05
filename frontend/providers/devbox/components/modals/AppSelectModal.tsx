@@ -107,7 +107,7 @@ const AppSelectModal = ({
       key: 'name',
       render: (item: AppListItemType) => {
         return (
-          <Text ml={4} color={'grayModern.600'}>
+          <Text ml={4} color={'grayModern.900'}>
             {item.name}
           </Text>
         );
@@ -124,7 +124,7 @@ const AppSelectModal = ({
         )
           ? item.imageName.replace(`${env.registryAddr}/${env.namespace}/`, '')
           : '-';
-        return <Text color={'grayModern.600'}>{dealImageName}</Text>;
+        return <Text color={'grayModern.900'}>{dealImageName}</Text>;
       }
     },
     {
@@ -132,11 +132,11 @@ const AppSelectModal = ({
       dataIndex: 'createTime',
       key: 'createTime',
       render: (item: AppListItemType) => {
-        return <Text color={'grayModern.600'}>{item.createTime}</Text>;
+        return <Text color={'grayModern.900'}>{item.createTime}</Text>;
       }
     },
     {
-      title: t('control'),
+      title: '',
       key: 'control',
       render: (item: AppListItemType) => (
         <Flex>
@@ -146,7 +146,6 @@ const AppSelectModal = ({
             size={'sm'}
             fontSize={'base'}
             bg={'grayModern.150'}
-            borderWidth={1}
             color={'grayModern.900'}
             _hover={{
               color: 'brightBlue.600'
@@ -164,24 +163,17 @@ const AppSelectModal = ({
     <Box>
       <Modal isOpen onClose={onClose} lockFocusAcrossFrames={false}>
         <ModalOverlay />
-        <ModalContent top={'30%'} maxWidth={'800px'} w={'700px'}>
-          <ModalHeader pl={10}>{t('deploy')}</ModalHeader>
+        <ModalContent top={'30%'} maxWidth={'800px'} w={'600px'}>
+          <ModalHeader pl={10} borderBottom={'none'} bg={'white'} fontWeight={'600'} pt={4} pb={0}>
+            {t('deploy')}
+          </ModalHeader>
           <ModalBody pb={4}>
-            <Flex
-              alignItems={'center'}
-              direction={'column'}
-              mb={2}
-              justifyContent={'space-between'}
-              p={4}
-            >
-              <Text fontSize={'lg'} fontWeight={'medium'}>
-                {t('create_directly')}
-              </Text>
+            <Flex direction={'column'} mb={2} justifyContent={'space-between'}>
+              <Text fontSize={'lg'}>{t('create_directly')}</Text>
               <Button
                 onClick={handleCreate}
-                height={'36px'}
-                mt={4}
-                size={'md'}
+                height={'40px'}
+                my={4}
                 px={8}
                 fontSize={'base'}
                 leftIcon={<MyIcon name="rocket" w={'15px'} h={'15px'} color={'white'} />}
@@ -191,10 +183,8 @@ const AppSelectModal = ({
             </Flex>
             <Divider />
             <Box mt={4}>
-              <Flex alignItems={'center'} mb={4} justifyContent={'center'}>
-                <Text fontSize={'lg'} fontWeight={'medium'}>
-                  {t('update_matched_apps_notes')}
-                </Text>
+              <Flex alignItems={'center'} mb={4}>
+                <Text>{t('update_matched_apps_notes')}</Text>
               </Flex>
               <MyTable columns={columns} data={apps} />
             </Box>
