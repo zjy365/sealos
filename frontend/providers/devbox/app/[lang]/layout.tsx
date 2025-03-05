@@ -1,11 +1,13 @@
-import type { Metadata, Viewport } from 'next';
+import { enableMapSet } from 'immer';
 import { Inter } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
 
 import IntlProvider from '@/components/providers/MyIntlProvider';
 import QueryProvider from '@/components/providers/MyQueryProvider';
-import { enableMapSet } from 'immer';
+
 import './globals.css';
 import '@sealos/driver/src/driver.css';
+import 'react-day-picker/dist/style.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
