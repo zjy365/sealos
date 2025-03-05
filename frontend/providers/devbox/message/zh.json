@@ -217,6 +217,7 @@
   "read_event_detail": "查看事件详情",
   "recent_error": "最近错误",
   "recommend": "推荐",
+  "refresh": "刷新",
   "release": "发布",
   "release_confirm_info": "发版过程中将暂时关闭机器，且以当前状态发版，请保存好正在运行的项目。",
   "release_failed": "发版失败",

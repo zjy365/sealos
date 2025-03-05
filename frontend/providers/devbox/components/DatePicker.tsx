@@ -298,10 +298,7 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
       bg="grayModern.50"
       gap={'10px'}
       align={'center'}
-      px={'10px'}
       justify={'space-between'}
-      border={'1px solid'}
-      borderColor={'grayModern.200'}
       borderRadius="6px"
       color={'grayModern.900'}
       fontSize={'12px'}
@@ -309,13 +306,22 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
     >
       <Popover isOpen={isOpen} onClose={onClose}>
         <PopoverTrigger>
-          <Flex cursor={'pointer'} alignItems={'center'} gap={'4px'} onClick={onOpen}>
-            <Text>{format(startDateTime, 'y-MM-dd HH:mm:ss')}</Text>
-            <MyIcon name="to" />
-            <Text>{format(endDateTime, 'y-MM-dd HH:mm:ss')}</Text>
+          <Flex
+            cursor={'pointer'}
+            alignItems={'center'}
+            gap={'4px'}
+            onClick={onOpen}
+            bg={'white'}
+            px={'4'}
+            border={'1px solid'}
+            borderColor={'grayModern.200'}
+            borderRadius={'6px'}
+          >
             <Button variant={'unstyled'} isDisabled={isDisabled} minW={'fit-content'}>
-              <MyIcon name="calendar" />
+              <MyIcon name="calendar" color={'white'} />
             </Button>
+            <Text>{format(startDateTime, 'HH:mm, MMM d')}</Text>-
+            <Text>{format(endDateTime, 'HH:mm, MMM d')}</Text>
           </Flex>
         </PopoverTrigger>
         <PopoverContent zIndex={99} w={'fit-content'} borderRadius={'12px'}>

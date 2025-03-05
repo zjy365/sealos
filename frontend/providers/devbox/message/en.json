@@ -214,6 +214,7 @@
   "read_event_detail": "Toggle event detail",
   "recent_error": "Recent Errors",
   "recommend": "Rec",
+  "refresh": "Refresh",
   "release": "Release",
   "release_confirm_info": "During the release process, your DevBox will be temporarily shutdown. Please save any changes before continuing.",
   "release_failed": "Release failed",

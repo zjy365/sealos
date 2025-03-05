@@ -371,7 +371,7 @@ const Version = () => {
           className="guide-release-button"
           onClick={() => setOnOpenRelease(true)}
           bg={'white'}
-          color={'grayModern.600'}
+          color={'grayModern.900'}
           borderWidth={1}
           mr={1}
           leftIcon={<MyIcon name="version" color={'white'} />}

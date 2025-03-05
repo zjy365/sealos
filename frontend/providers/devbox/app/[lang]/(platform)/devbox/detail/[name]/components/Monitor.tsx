@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { useTranslations } from 'next-intl';
 import {
   Box,
@@ -10,59 +11,50 @@ import {
   MenuList,
   Text
 } from '@chakra-ui/react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 
-import MyIcon from '@/components/Icon';
 import DatePicker from '@/components/DatePicker';
 import PodLineChart from '@/components/PodLineChart';
 
+import useDateTimeStore from '@/stores/date';
 import { useDevboxStore } from '@/stores/devbox';
+import { REFRESH_INTERVAL_OPTIONS } from '@/constants/monitor';
 
 const Monitor = () => {
   const t = useTranslations();
   const { devboxDetail } = useDevboxStore();
+  const { refreshInterval, setRefreshInterval } = useDateTimeStore();
 
   return (
     <Flex gap={4} direction={'column'} minH={'100%'}>
-      <Flex justifyContent={'start'} alignItems={'center'}>
-        {/* <DatePicker /> */}
-        {/* <ButtonGroup isAttached variant={'outline'} size={'sm'}>
+      <Flex justifyContent={'start'} alignItems={'center'} gap={4}>
+        <DatePicker />
+        <ButtonGroup isAttached variant={'outline'} size={'sm'}>
           <Button
-            height="32px"
-            bg={'grayModern.50'}
+            height="36px"
+            boxShadow={'none'}
+            bg={'white'}
             _hover={{
               bg: 'grayModern.50'
             }}
             onClick={() => {
-              refetchData();
+              // refetchData();
             }}
             position={'relative'}
           >
-            <Box position={'relative'}>
-              <MyIcon
-                name="refresh"
-                w={'16px'}
-                h={'16px'}
-                color={'grayModern.500'}
-                _hover={{
-                  color: 'brightBlue.500'
-                }}
-              />
-            </Box>
+            <Text position={'relative'} fontSize={'normal'} fontWeight={'normal'}>
+              {t('refresh')}
+            </Text>
           </Button>
 
           <Menu>
             <MenuButton
               as={Button}
-              height="32px"
-              bg={'grayModern.50'}
+              height="36px"
+              bg={'white'}
+              boxShadow={'none'}
               _hover={{
-                bg: 'grayModern.50',
-                '& div': {
-                  color: 'brightBlue.500'
-                },
-                '& svg': {
-                  color: 'brightBlue.500'
-                }
+                bg: 'grayModern.50'
               }}
             >
               <Flex alignItems={'center'}>
@@ -107,7 +99,11 @@ const Monitor = () => {
               ))}
             </MenuList>
           </Menu>
-        </ButtonGroup> */}
+        </ButtonGroup>
+        <Box color={'#737373'} fontSize={'12px'} fontWeight={'normal'}>
+          {t('update Time')}&ensp;
+          {dayjs().format('HH:mm')}
+        </Box>
       </Flex>
       {/* cpu */}
       <Box bg={'white'} borderRadius="lg" borderWidth={1} minH={'350px'}>
