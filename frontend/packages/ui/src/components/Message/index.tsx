@@ -30,35 +30,35 @@ export default function useMessage(props?: CustomToastOptions) {
     info: {
       bg: props?.infoIconBg || '#DBF3FF',
       icon: <GeneralIcon w={'16px'} h="16px" fill={props?.infoIconFill || '#0884DD'} />,
-      boxBg: props?.infoBoxBg
+      boxBg: props?.infoBoxBg || '#3B82F6'
     },
     error: {
       bg: props?.errorIconBg || '#FEE4E2',
       icon: <CloseIcon w={'16px'} h="16px" fill={props?.errorIconFill || '#D92D20'} />,
-      boxBg: props?.errorBoxBg
+      boxBg: props?.errorBoxBg || '#EF4444'
     },
     success: {
       bg: props?.successIconBg || '#D0F5DC',
       icon: <SuccessIcon w={'16px'} h="16px" fill={props?.successIconFill || '#039855'} />,
-      boxBg: props?.successBoxBg
+      boxBg: props?.successBoxBg || '#1DBA98'
     },
     warning: {
       bg: props?.warningIconBg || '#FEF0C7',
       icon: <WarningIcon w={'16px'} h="16px" fill={props?.warningIconFill || '#D97706'} />,
-      boxBg: props?.warningBoxBg
+      boxBg: props?.warningBoxBg || '#FB923C'
     },
 
     loading: {
       bg: props?.loadingIconBg || '#FEF0C7',
       icon: <WarningIcon w={'16px'} h="16px" fill={props?.loadingIconFill || '#D97706'} />,
-      boxBg: props?.loadingBoxBg
+      boxBg: props?.loadingBoxBg || '#FB923C'
     }
   };
 
   const renderStatusIcon = (status: AlertStatus) => {
-    const { bg, icon } = statusMap[status];
+    const { icon } = statusMap[status];
     return (
-      <Center bg={bg} borderRadius={'full'} p={1}>
+      <Center bg={'white'} borderRadius={'full'} p={1}>
         {icon}
       </Center>
     );
@@ -87,7 +87,7 @@ export default function useMessage(props?: CustomToastOptions) {
         >
           <Flex alignItems={props?.description ? 'start' : 'center'} gap={'12px'}>
             {renderStatusIcon(props?.status || 'info')}
-            <Box flex={1} color={'sealosGrayModern.900'}>
+            <Box flex={1} color={'white'}>
               {props?.title && (
                 <Box
                   fontSize={props?.description ? '16px' : '14px'}
@@ -118,7 +118,7 @@ export default function useMessage(props?: CustomToastOptions) {
                 cursor={'pointer'}
                 onClick={props.onClose}
               >
-                <CloseIcon w="16px" h="16px" fill={'black'} />
+                <CloseIcon w="16px" h="16px" fill={'white'} />
               </Center>
             )}
           </Flex>
