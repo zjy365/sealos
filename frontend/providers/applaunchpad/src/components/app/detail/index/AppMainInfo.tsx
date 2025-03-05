@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useMemo } from 'react';
 import MonitorModal from './MonitorModal';
+import { HelpCircle } from 'lucide-react';
 
 const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   const { t } = useTranslation();
@@ -35,8 +36,16 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   );
 
   return (
-    <Box p={'24px'} position={'relative'}>
-      <>
+    <Box position={'relative'}>
+      <Box
+        mt={'16px'}
+        py={'20px'}
+        px={'24px'}
+        borderRadius={'16px'}
+        border={'1px solid #E4E4E7'}
+        bg={'#FFF'}
+        boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+      >
         <Flex alignItems={'center'} fontSize={'14px'} fontWeight={'bold'}>
           <Box color={'grayModern.900'}>{t('Real-time Monitoring')}</Box>
           <Box ml={'8px'} color={'grayModern.600'}>
@@ -73,11 +82,39 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
             </Box>
           </Box>
         </Grid>
-        <Flex mt={3} alignItems={'center'} fontSize={'14px'} fontWeight={'bold'}>
-          <Text color={'grayModern.900'}>{t('Network Configuration')}</Text>
+      </Box>
+
+      <Box
+        mt={'16px'}
+        py={'20px'}
+        px={'24px'}
+        borderRadius={'16px'}
+        border={'1px solid #E4E4E7'}
+        bg={'#FFF'}
+        boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+      >
+        <Flex alignItems={'center'} fontSize={'14px'} fontWeight={'bold'}>
+          <Text fontSize={'20px'} fontWeight={500} color={'grayModern.900'}>
+            {t('Network Configuration')}
+          </Text>
           <Text ml={'8px'} color={'grayModern.600'}>
             ({networks.length})
           </Text>
+          <Flex ml="auto" alignItems="center" gap={2}>
+            <Flex alignItems="center">
+              <HelpCircle size={8} color="#1C4EF5"></HelpCircle>
+              <Text ml={'8px'} color="#1C4EF5">
+                {t('Public address unavailable')}
+              </Text>
+            </Flex>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<MyIcon name="settings" w="16px" h="16px" />}
+            >
+              {t('Manage Network')}
+            </Button>
+          </Flex>
         </Flex>
         <Flex mt={'12px'} className="driver-detail-network">
           <table className={'table-cross'}>
@@ -156,7 +193,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
             </tbody>
           </table>
         </Flex>
-      </>
+      </Box>
       <MonitorModal isOpen={isOpen} onClose={onClose} />
     </Box>
   );

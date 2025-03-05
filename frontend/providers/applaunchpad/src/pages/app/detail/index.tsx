@@ -60,24 +60,23 @@ const AppDetail = ({ appName }: { appName: string }) => {
         flexDirection={'column'}
         minH={'100%'}
         flex={'1 0 0'}
-        w={0}
         overflowY={'auto'}
         overflowX={'hidden'}
+        w={'1000px'}
+        mx={'auto'}
+        my={'32px'}
       >
-        <Flex mb={'6px'} borderRadius={'lg'} flexShrink={0} minH={'257px'} gap={'6px'}>
-          <Box flexShrink={0} w="408px" bg={'white'} borderRadius={'8px'}>
-            <AppBaseInfo app={appDetail} />
-          </Box>
-          <Box flex="1" bg={'white'} borderRadius={'8px'}>
-            {appDetail ? <AppMainInfo app={appDetail} /> : <Loading loading={true} fixed={false} />}
-          </Box>
-        </Flex>
-        <Box bg={'white'} borderRadius={'8px'} mb={'6px'}>
+        <AppBaseInfo app={appDetail} />
+
+        <Box flex="1" bg={'white'} borderRadius={'8px'}>
+          {appDetail ? <AppMainInfo app={appDetail} /> : <Loading loading={true} fixed={false} />}
+        </Box>
+
+        {/* <Box bg={'white'} borderRadius={'8px'} mb={'6px'}>
           <AdvancedInfo app={appDetail} />
-        </Box>
-        <Box bg={'white'} borderRadius={'lg'} flex={1}>
-          <Pods pods={appDetailPods} appName={appName} />
-        </Box>
+        </Box> */}
+
+        <Pods pods={appDetailPods} appName={appName} />
       </Flex>
     </DetailLayout>
   );

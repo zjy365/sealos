@@ -22,8 +22,15 @@ import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import React, { useMemo, useState } from 'react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
 
 const ConfigMapDetailModal = dynamic(() => import('./ConfigMapDetailModal'));
+
+// 初始化 dayjs 插件
+dayjs.extend(relativeTime);
+dayjs.extend(duration);
 
 const AppBaseInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   const { t } = useTranslation();
@@ -49,7 +56,7 @@ const AppBaseInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   >(
     () => [
       {
-        name: 'Basic Information',
+        name: 'Basic',
         iconName: 'formInfo',
         items: [
           { label: 'Creation Time', value: app.createTime },
@@ -125,94 +132,142 @@ const AppBaseInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
       );
   }, [app.volumes, app.volumeMounts]);
 
+  // 计算从创建时间到现在的时间差
+  const timeSinceCreation = useMemo(() => {
+    if (!app.createTime) return '-';
+
+    const createdAt = dayjs(app.createTime);
+    const now = dayjs();
+    const diffInHours = now.diff(createdAt, 'hour');
+
+    if (diffInHours < 24) {
+      return `${diffInHours}h`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays}d`;
+    }
+  }, [app.createTime]);
+
   return (
-    <Box px={'32px'} py={'24px'} position={'relative'}>
-      {appInfoTable.map((info, index) => (
-        <Box key={info.name}>
-          <Flex
-            alignItems={'center'}
-            color={'grayModern.900'}
-            fontSize={'14px'}
-            fontWeight={'bold'}
-          >
-            {t(info.name)}
-          </Flex>
-          <Box mt={'14px'}>
-            {app?.source?.hasSource && index === 0 && (
-              <Box fontSize={'12px'}>
-                <Flex
-                  flexWrap={'wrap'}
-                  cursor={'pointer'}
-                  onClick={() => {
-                    if (!app?.source?.sourceName) return;
-                    if (app.source.sourceType === 'app_store') {
-                      sealosApp.runEvents('openDesktopApp', {
-                        appKey: 'system-template',
-                        pathname: '/instance',
-                        query: { instanceName: app.source.sourceName }
-                      });
-                    }
-                    if (app.source.sourceType === 'sealaf') {
-                      sealosApp.runEvents('openDesktopApp', {
-                        appKey: 'system-sealaf',
-                        pathname: '/',
-                        query: { instanceName: app.source.sourceName }
-                      });
-                    }
-                  }}
-                >
-                  <Text flex={'0 0 110px'} w={0} color={'grayModern.600'}>
-                    {t('application_source')}
-                  </Text>
-                  <Flex alignItems={'center'}>
-                    <Text color={'grayModern.900'}>{t(app.source?.sourceType)}</Text>
-                    <Divider
-                      orientation="vertical"
-                      h={'12px'}
-                      mx={'8px'}
-                      borderColor={'grayModern.300'}
-                    />
-                    <Box color={'grayModern.600'}>{t('Manage all resources')}</Box>
-                    <MyIcon name="upperRight" width={'14px'} color={'grayModern.600'} />
-                  </Flex>
-                </Flex>
+    <Box
+      px={'24px'}
+      py={'20px'}
+      position={'relative'}
+      borderRadius={'16px'}
+      border={'1px solid #E4E4E7'}
+      bg={'#FFF'}
+      boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+    >
+      <Box>
+        <Flex
+          alignItems={'center'}
+          color={'#18181B'}
+          fontSize={'20px'}
+          fontWeight={'bold'}
+          height={'36px'}
+          mb={'16px'}
+        >
+          {t('cc:basic')}
+        </Flex>
+        <Box>
+          <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px" mb="12px">
+            <Box>
+              <Box display="grid" gridTemplateColumns="144px 1fr" mb={4}>
+                <Text color={'#525252'}>Image</Text>
+                <Text color={'#18181B'}>{app.imageName}</Text>
               </Box>
-            )}
-            {info.items.map((item, i) => (
-              <Flex
-                key={item.label || i}
-                flexWrap={'wrap'}
-                _notFirst={{
-                  mt: '12px'
-                }}
-              >
-                <Box flex={'0 0 110px'} w={0} color={'grayModern.600'} fontSize={'12px'}>
-                  {t(item.label)}
-                </Box>
-                <Box
-                  fontSize={'12px'}
-                  color={'grayModern.900'}
-                  flex={'1 0 0'}
-                  textOverflow={'ellipsis'}
-                  overflow={'hidden'}
-                  whiteSpace={'nowrap'}
-                >
-                  <MyTooltip label={item.value}>
-                    <Box
-                      as="span"
-                      cursor={!!item.copy ? 'pointer' : 'default'}
-                      onClick={() => item.value && !!item.copy && copyData(item.copy)}
+              <Box display="grid" gridTemplateColumns="144px 1fr">
+                <Text color={'#525252'}>Created at</Text>
+                <Text color={'#18181B'}>{app.createTime}</Text>
+              </Box>
+            </Box>
+            <Box>
+              <Box display="grid" gridTemplateColumns="144px 1fr" mb={'12px'}>
+                <Text color={'#525252'}>Source</Text>
+                {app.source.hasSource ? (
+                  <Box fontSize={'12px'}>
+                    <Flex
+                      flexWrap={'wrap'}
+                      cursor={'pointer'}
+                      onClick={() => {
+                        if (!app?.source?.sourceName) return;
+                        if (app.source.sourceType === 'app_store') {
+                          sealosApp.runEvents('openDesktopApp', {
+                            appKey: 'system-template',
+                            pathname: '/instance',
+                            query: { instanceName: app.source.sourceName }
+                          });
+                        }
+                        if (app.source.sourceType === 'sealaf') {
+                          sealosApp.runEvents('openDesktopApp', {
+                            appKey: 'system-sealaf',
+                            pathname: '/',
+                            query: { instanceName: app.source.sourceName }
+                          });
+                        }
+                      }}
                     >
-                      {item.render ? item.render : item.value}
-                    </Box>
-                  </MyTooltip>
-                </Box>
-              </Flex>
-            ))}
+                      <Flex alignItems={'center'}>
+                        <Text color={'#18181B'}>{t(app.source?.sourceType)}</Text>
+                        <Divider
+                          orientation="vertical"
+                          h={'12px'}
+                          mx={'8px'}
+                          borderColor={'grayModern.300'}
+                        />
+                        <Box color={'#525252'}>{t('Manage all resources')}</Box>
+                        <MyIcon name="upperRight" width={'14px'} color={'#525252'} />
+                      </Flex>
+                    </Flex>
+                  </Box>
+                ) : (
+                  <Text flex="1">/</Text>
+                )}
+              </Box>
+              <Box display="grid" gridTemplateColumns="144px 1fr">
+                <Text color={'#525252'}>Start Time</Text>
+                <Text>{timeSinceCreation}</Text>
+              </Box>
+            </Box>
           </Box>
-          {index !== appInfoTable.length - 1 && <Divider my={'16px'} />}
+          <Divider my={'16px'} />
+          <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px">
+            <Box>
+              <Box display="grid" gridTemplateColumns="144px 1fr" mb={'12px'}>
+                <Text color={'#525252'}>CPU Limit</Text>
+                <Text>{`${app.cpu / 1000} Core`}</Text>
+              </Box>
+              {app.hpa.use ? (
+                <Box display="grid" gridTemplateColumns="144px 1fr">
+                  <Text color={'#525252'}>
+                    {`${app.hpa.target.toLocaleUpperCase()} ${t('target_value')}`}
+                  </Text>
+                  <Text>{`${app.hpa.value}${app.hpa.target === 'gpu' ? '' : '%'}`}</Text>
+                </Box>
+              ) : (
+                <Box display="grid" gridTemplateColumns="144px 1fr">
+                  <Text color={'#525252'}>Replica Count</Text>
+                  <Text>{app.replicas}</Text>
+                </Box>
+              )}
+            </Box>
+            <Box>
+              <Box display="grid" gridTemplateColumns="144px 1fr" mb={'12px'}>
+                <Text color={'#525252'}>Memory Limit</Text>
+                <Text>{printMemory(app.memory)}</Text>
+              </Box>
+              {app.hpa.use && (
+                <Box display="grid" gridTemplateColumns="144px 1fr">
+                  <Text color={'#525252'}>Replica Count</Text>
+                  <Text>
+                    {app.hpa.use ? `${app.hpa.minReplicas} ~ ${app.hpa.maxReplicas}` : app.replicas}
+                  </Text>
+                </Box>
+              )}
+            </Box>
+          </Box>
         </Box>
-      ))}
+      </Box>
 
       {detailConfigMap && (
         <ConfigMapDetailModal {...detailConfigMap} onClose={() => setDetailConfigMap(undefined)} />

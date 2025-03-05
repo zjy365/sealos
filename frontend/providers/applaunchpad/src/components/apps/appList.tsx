@@ -37,6 +37,8 @@ const AppList = ({
   apps: AppListItemType[];
   refetchApps: () => void;
 }) => {
+  console.log('apps', apps);
+
   const { t } = useTranslation();
   const { setLoading } = useGlobalStore();
   const { userSourcePrice } = useUserStore();
@@ -53,6 +55,16 @@ const AppList = ({
     onOpen: onOpenUpdateModal,
     onClose: onCloseUpdateModal
   } = useDisclosure();
+
+  // 添加分页相关状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  // 计算当前页的数据
+  const currentPageData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return apps.slice(startIndex, startIndex + pageSize);
+  }, [apps, currentPage]);
 
   const handleRestartApp = useCallback(
     async (appName: string) => {
@@ -341,7 +353,7 @@ const AppList = ({
   );
 
   return (
-    <Box backgroundColor={'grayModern.100'} px={'32px'} pb={5} minH={'100%'}>
+    <Box backgroundColor={'#FFF'} px={'40px'} pb={5} minH={'100%'}>
       <Flex h={'88px'} alignItems={'center'}>
         <Center
           w="46px"
@@ -361,18 +373,22 @@ const AppList = ({
           ( {apps.length} )
         </Box>
         <Box flex={1}></Box>
-        <Button
-          h={'40px'}
-          w={'156px'}
-          flex={'0 0 auto'}
-          leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#FFF'} />}
-          onClick={() => router.push('/app/edit')}
-        >
+        <Button h={'40px'} w={'106px'} flex={'0 0 auto'} onClick={() => router.push('/app/edit')}>
           {t('Create Application')}
         </Button>
       </Flex>
 
-      <MyTable itemClass="appItem" columns={columns} data={apps} />
+      <MyTable
+        itemClass="appItem"
+        columns={columns}
+        data={currentPageData}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: apps.length,
+          onChange: (page) => setCurrentPage(page)
+        }}
+      />
 
       <PauseChild />
       {!!delAppName && (

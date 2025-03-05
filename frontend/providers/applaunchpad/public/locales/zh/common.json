@@ -317,5 +317,9 @@
   "selected": "已选中",
   "please_select": "请选择",
   "refetching_success": "刷新成功",
-  "refresh": "刷新"
+  "refresh": "刷新",
+  "cc": {
+    "basic": "基础"
+  },
+  "Public address unavailable": "Public address unavailable"
 }

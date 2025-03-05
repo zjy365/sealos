@@ -161,41 +161,64 @@ export default function MonitorPage({ appName }: { appName: string }) {
         py={'16px'}
         px={'24px'}
         overflow={'auto'}
+        mt={'8px'}
+        w={'1000px'}
+        mx={'auto'}
       >
         <Header podList={podList} setPodList={setPodList} refetchData={refetchData} />
         {!isLoading ? (
-          <>
-            <Box mt={'20px'} fontSize={'14px'} fontWeight={'bold'} color={'#000000'}>
-              CPU: {cpuLatestAvg}%
+          <Box mt={'16px'}>
+            <Box border={'1px solid #E4E4E7'} borderRadius={'16px'}>
+              <Box
+                pl={'24px'}
+                py={'18px'}
+                height={'64px'}
+                fontSize={'20px'}
+                fontWeight={'500'}
+                color={'#000000'}
+                borderBottom={'1px solid #E4E4E7'}
+              >
+                CPU
+              </Box>
+              <Box height={'342px'} position={'relative'} p={'32px'}>
+                {cpuChartData?.yData?.length > 0 ? (
+                  <MonitorChart data={cpuChartData} title={'chartTitle'} unit="%" />
+                ) : (
+                  <Center height={'100%'} flexDirection={'column'} gap={'12px'}>
+                    <EmptyChart />
+                    <Text fontSize={'12px'} fontWeight={500} color={'grayModern.500'}>
+                      {t('no_data_available')}
+                    </Text>
+                  </Center>
+                )}
+              </Box>
             </Box>
-            <Box mt={'24px'} height={'242px'} position={'relative'}>
-              {cpuChartData?.yData?.length > 0 ? (
-                <MonitorChart data={cpuChartData} title={'chartTitle'} unit="%" />
-              ) : (
-                <Center height={'100%'} flexDirection={'column'} gap={'12px'}>
-                  <EmptyChart />
-                  <Text fontSize={'12px'} fontWeight={500} color={'grayModern.500'}>
-                    {t('no_data_available')}
-                  </Text>
-                </Center>
-              )}
+            <Box mt={'16px'} border={'1px solid #E4E4E7'} borderRadius={'16px'}>
+              <Box
+                pl={'24px'}
+                py={'18px'}
+                height={'64px'}
+                fontSize={'20px'}
+                fontWeight={'500'}
+                color={'#000000'}
+                borderBottom={'1px solid #E4E4E7'}
+              >
+                Memory
+              </Box>
+              <Box height={'342px'} position={'relative'} p={'32px'}>
+                {memoryChartData?.yData?.length > 0 ? (
+                  <MonitorChart data={memoryChartData} title={'chartTitle'} unit="%" />
+                ) : (
+                  <Center height={'100%'} flexDirection={'column'} gap={'12px'}>
+                    <EmptyChart />
+                    <Text fontSize={'12px'} fontWeight={500} color={'grayModern.500'}>
+                      {t('no_data_available')}
+                    </Text>
+                  </Center>
+                )}
+              </Box>
             </Box>
-            <Box mt={'20px'} fontSize={'14px'} fontWeight={'bold'} color={'#000000'}>
-              Memory: {memoryLatestAvg}%
-            </Box>
-            <Box mt={'24px'} height={'200px'} position={'relative'}>
-              {memoryChartData?.yData?.length > 0 ? (
-                <MonitorChart data={memoryChartData} title={'chartTitle'} unit="%" />
-              ) : (
-                <Center height={'100%'} flexDirection={'column'} gap={'12px'}>
-                  <EmptyChart />
-                  <Text fontSize={'12px'} fontWeight={500} color={'grayModern.500'}>
-                    {t('no_data_available')}
-                  </Text>
-                </Center>
-              )}
-            </Box>
-          </>
+          </Box>
         ) : (
           <Stack flex={1} bg={'white'} borderRadius={'8px'} py={'16px'}>
             <Skeleton

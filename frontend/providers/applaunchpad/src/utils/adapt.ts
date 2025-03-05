@@ -86,7 +86,7 @@ export const adaptAppListItem = (app: V1Deployment & V1StatefulSet): AppListItem
     name: app.metadata?.name || 'app name',
     status: appStatusMap.waiting,
     isPause: !!app?.metadata?.annotations?.[pauseKey],
-    createTime: dayjs(app.metadata?.creationTimestamp).format('YYYY/MM/DD HH:mm'),
+    createTime: dayjs(app.metadata?.creationTimestamp).format('YYYY/MM/DD'),
     cpu: cpuFormatToM(app.spec?.template?.spec?.containers?.[0]?.resources?.limits?.cpu || '0'),
     memory: memoryFormatToMi(
       app.spec?.template?.spec?.containers?.[0]?.resources?.limits?.memory || '0'

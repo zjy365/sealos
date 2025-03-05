@@ -47,8 +47,9 @@ const NsListItem = ({
         _hover={{
           bg: '#F4F4F5'
         }}
+        bg={isSelected ? selectedColor : 'transparent'}
       >
-        {teamAvatar && showCheck && (
+        {teamAvatar && (
           <Box boxSize={'28px'}>
             <BoringAvatar
               size={28}
