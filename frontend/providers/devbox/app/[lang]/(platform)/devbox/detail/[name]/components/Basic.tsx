@@ -15,27 +15,8 @@ import GPUItem from '@/components/GPUItem';
 import SshConnectDrawer from './SSHConnectDrawer';
 import { JetBrainsGuideData } from '@/components/IDEButton';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
-import { useMessage } from '@sealos/ui';
 
 const BasicInfo = () => {
-  const { message: toast } = useMessage();
-  toast({
-    title: 'test',
-    status: 'success'
-  });
-  toast({
-    title: 'test',
-    status: 'error'
-  });
-  toast({
-    title: 'test',
-    status: 'warning'
-  });
-  toast({
-    title: 'test',
-    status: 'info'
-  });
-
   const t = useTranslations();
   const { copyData } = useCopyData();
   const {
