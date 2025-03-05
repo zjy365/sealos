@@ -197,16 +197,16 @@ const BasicInfo = () => {
       </Flex>
       <Flex px={4} alignItems={'center'} justify={'start'} gap={4}>
         <Button
-          h={'30px'}
+          h={'40px'}
           leftIcon={<MyIcon name="download" w={'16px'} color={'white'} />}
           boxShadow={'none'}
           bg={'white'}
           color={'grayModern.900'}
           border={'1px solid'}
-          fontWeight={'normal'}
+          fontWeight={'450'}
           borderColor={'grayModern.200'}
           _hover={{
-            color: 'brightBlue.600'
+            bg: 'grayModern.50'
           }}
           onClick={() =>
             downLoadBlob(
@@ -219,16 +219,16 @@ const BasicInfo = () => {
           {t('private_key')}
         </Button>
         <Button
-          h={'30px'}
+          h={'40px'}
           leftIcon={<MyIcon name="attention" w={'16px'} color={'white'} />}
           boxShadow={'none'}
           bg={'white'}
-          fontWeight={'normal'}
+          fontWeight={'450'}
           color={'grayModern.900'}
           border={'1px solid'}
           borderColor={'grayModern.200'}
           _hover={{
-            color: 'brightBlue.600'
+            bg: 'grayModern.50'
           }}
           onClick={() => handleOneClickConfig()}
         >
