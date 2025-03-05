@@ -36,7 +36,6 @@ const MyTable = ({
         borderBottomRadius={needRadius ? 'md' : '0'}
         fontSize={'base'}
         color={'#71717A'}
-        fontWeight={'bold'}
         backgroundColor={'#FAFAFA'}
       >
         {columns.map((item) => (

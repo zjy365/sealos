@@ -48,7 +48,6 @@ const ReleaseModal = ({
   });
 
   const handleSubmit = () => {
-    const tagResult = versionSchema.safeParse(tag);
     if (!tag) {
       setTagError(true);
     } else if (versionSchema.safeParse(tag).success === false) {
