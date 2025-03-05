@@ -18,10 +18,11 @@ import { enUS, zhCN } from 'date-fns/locale';
 import { useTranslation } from 'next-i18next';
 import { ChangeEventHandler, useMemo, useState } from 'react';
 import { DateRange, DayPicker, SelectRangeEventHandler } from 'react-day-picker';
-import useDateTimeStore from '@/stores/date';
-import { formatTimeRange, parseTimeRange } from '@/utils/timeRange';
+
 import { MySelect } from '@sealos/ui';
 import MyIcon from '@/components/Icon';
+import useDateTimeStore from '@/stores/date';
+import { formatTimeRange, parseTimeRange } from '@/utils/timeRange';
 
 interface DatePickerProps extends FlexProps {
   isDisabled?: boolean;
@@ -325,8 +326,8 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
           </Flex>
         </PopoverTrigger>
         <PopoverContent zIndex={99} w={'fit-content'} borderRadius={'12px'}>
-          <Flex w={'402px'} height={'382px'}>
-            <Flex w={'242px'} flexDir={'column'}>
+          <Flex w={'500px'} height={'500px'}>
+            <Flex w={'400px'} flexDir={'column'}>
               <DayPicker
                 mode="range"
                 selected={selectedRange}

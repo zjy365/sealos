@@ -19,6 +19,7 @@ import PodLineChart from '@/components/PodLineChart';
 import useDateTimeStore from '@/stores/date';
 import { useDevboxStore } from '@/stores/devbox';
 import { REFRESH_INTERVAL_OPTIONS } from '@/constants/monitor';
+import { Check } from 'lucide-react';
 
 const Monitor = () => {
   const t = useTranslations();
@@ -47,7 +48,7 @@ const Monitor = () => {
             </Text>
           </Button>
 
-          <Menu>
+          <Menu autoSelect={false}>
             <MenuButton
               as={Button}
               height="36px"
@@ -65,7 +66,7 @@ const Monitor = () => {
               </Flex>
             </MenuButton>
             <MenuList
-              p={'6px'}
+              p={'2'}
               borderRadius={'base'}
               border={'1px solid #E8EBF0'}
               boxShadow={
@@ -75,6 +76,9 @@ const Monitor = () => {
               overflow={'overlay'}
               maxH={'300px'}
             >
+              <Box color={'#71717A'} mb={'3'} pl={1} fontSize={'12px'} fontWeight={'500'}>
+                {t('set_automatic_refresh')}
+              </Box>
               {REFRESH_INTERVAL_OPTIONS.map((item) => (
                 <MenuItem
                   key={item.value}
@@ -82,19 +86,18 @@ const Monitor = () => {
                   onClick={() => {
                     setRefreshInterval(item.value);
                   }}
-                  {...(refreshInterval === item.value
-                    ? {
-                        color: 'brightBlue.600'
-                      }
-                    : {})}
                   borderRadius={'4px'}
                   _hover={{
-                    bg: 'rgba(17, 24, 36, 0.05)',
-                    color: 'brightBlue.600'
+                    bg: 'rgba(17, 24, 36, 0.05)'
                   }}
                   p={'6px'}
                 >
-                  {item.label}
+                  <Flex alignItems={'center'} justifyContent={'space-between'} w={'full'}>
+                    {item.label}
+                    {refreshInterval === item.value && (
+                      <Check color={'#1C4EF5'} width={'16px'} height={'16px'} />
+                    )}
+                  </Flex>
                 </MenuItem>
               ))}
             </MenuList>
