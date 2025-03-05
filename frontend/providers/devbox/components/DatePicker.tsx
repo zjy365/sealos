@@ -18,10 +18,11 @@ import { enUS, zhCN } from 'date-fns/locale';
 import { useTranslation } from 'next-i18next';
 import { ChangeEventHandler, useMemo, useState } from 'react';
 import { DateRange, DayPicker, SelectRangeEventHandler } from 'react-day-picker';
-import useDateTimeStore from '@/stores/date';
-import { formatTimeRange, parseTimeRange } from '@/utils/timeRange';
+
 import { MySelect } from '@sealos/ui';
 import MyIcon from '@/components/Icon';
+import useDateTimeStore from '@/stores/date';
+import { formatTimeRange, parseTimeRange } from '@/utils/timeRange';
 
 interface DatePickerProps extends FlexProps {
   isDisabled?: boolean;
@@ -298,10 +299,7 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
       bg="grayModern.50"
       gap={'10px'}
       align={'center'}
-      px={'10px'}
       justify={'space-between'}
-      border={'1px solid'}
-      borderColor={'grayModern.200'}
       borderRadius="6px"
       color={'grayModern.900'}
       fontSize={'12px'}
@@ -309,18 +307,27 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
     >
       <Popover isOpen={isOpen} onClose={onClose}>
         <PopoverTrigger>
-          <Flex cursor={'pointer'} alignItems={'center'} gap={'4px'} onClick={onOpen}>
-            <Text>{format(startDateTime, 'y-MM-dd HH:mm:ss')}</Text>
-            <MyIcon name="to" />
-            <Text>{format(endDateTime, 'y-MM-dd HH:mm:ss')}</Text>
+          <Flex
+            cursor={'pointer'}
+            alignItems={'center'}
+            gap={'4px'}
+            onClick={onOpen}
+            bg={'white'}
+            px={'4'}
+            border={'1px solid'}
+            borderColor={'grayModern.200'}
+            borderRadius={'6px'}
+          >
             <Button variant={'unstyled'} isDisabled={isDisabled} minW={'fit-content'}>
-              <MyIcon name="calendar" />
+              <MyIcon name="calendar" color={'white'} />
             </Button>
+            <Text>{format(startDateTime, 'HH:mm, MMM d')}</Text>-
+            <Text>{format(endDateTime, 'HH:mm, MMM d')}</Text>
           </Flex>
         </PopoverTrigger>
         <PopoverContent zIndex={99} w={'fit-content'} borderRadius={'12px'}>
-          <Flex w={'402px'} height={'382px'}>
-            <Flex w={'242px'} flexDir={'column'}>
+          <Flex w={'500px'} height={'500px'}>
+            <Flex w={'400px'} flexDir={'column'}>
               <DayPicker
                 mode="range"
                 selected={selectedRange}

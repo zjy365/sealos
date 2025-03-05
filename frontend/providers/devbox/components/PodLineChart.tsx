@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 
 import { useGlobalStore } from '@/stores/global';
 import { MonitorDataResult } from '@/types/monitor';
+import { Box, Flex } from '@chakra-ui/react';
 
 const map = {
   blue: {
@@ -196,7 +197,19 @@ const PodLineChart = ({
       appendToBody: true,
       formatter: (params: any[]) => {
         const axisValue = params[0]?.axisValue;
-        return `${axisValue} ${params[0]?.value || 0}%`;
+        return `
+          <div style="padding: 8px; width: 200px;">
+            <div style="border-bottom: 1px solid #F1F1F3; margin-bottom: 5px; color: #18181B; padding-bottom: 5px;">${
+              axisValue || '2025-03-04 12:00'
+            }</div>
+            <div style="display: flex; align-items: center;">
+              <div style="width: 10px; height: 10px; border-radius: 10px; background-color: #22C55E; margin-right: 5px; "></div>
+              <div style="font-size: 12px; font-weight: 500; color: black;">${
+                params[0]?.value || 0
+              }%</div>
+            </div>
+          </div>
+        `;
       }
     },
     series: [

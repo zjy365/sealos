@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Button, Divider, Flex } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
+import { Box, Button, Divider, Flex } from '@chakra-ui/react';
 
 import Header from './components/Header';
 import Version from './components/Release';
@@ -15,7 +15,6 @@ import { useLoading } from '@/hooks/useLoading';
 import { useDevboxStore } from '@/stores/devbox';
 import useDetailDriver from '@/hooks/useDetailDriver';
 import Monitor from './components/Monitor';
-
 const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
   const t = useTranslations();
 
@@ -84,8 +83,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
               boxShadow={'none'}
               fontWeight={'normal'}
               _hover={{
-                bg: '#F2F2F2',
-                fontWeight: 'bold'
+                bg: '#F2F2F2'
               }}
               {...(tab === 'overview' && {
                 bg: '#F2F2F2',
@@ -106,8 +104,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
               boxShadow={'none'}
               fontWeight={'normal'}
               _hover={{
-                bg: '#F2F2F2',
-                fontWeight: 'bold'
+                bg: '#F2F2F2'
               }}
               {...(tab === 'monitor' && {
                 bg: '#F2F2F2',

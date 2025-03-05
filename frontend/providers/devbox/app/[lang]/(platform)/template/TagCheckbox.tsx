@@ -20,16 +20,14 @@ export const TagCheckbox = (props: CheckboxProps) => {
         cursor={'pointer'}
         {...(state.isChecked
           ? {
-              bg: 'blue.50',
-              borderColor: 'brightBlue.500',
-              boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)'
+              bg: 'black'
             }
           : {
               borderColor: 'grayModern.300'
             })}
         transition="all 0.2s"
       >
-        {state.isChecked && <CheckIcon w="12px" h="12px" color="#219BF4" />}
+        {state.isChecked && <CheckIcon w="12px" h="12px" color="white" />}
       </Box>
       <Box {...getLabelProps()}>{props.children}</Box>
     </chakra.label>

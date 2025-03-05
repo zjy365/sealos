@@ -13,8 +13,8 @@ import { TemplateRepositoryKind } from '@/prisma/generated/client';
 import { getTemplateRepository, listOfficialTemplateRepository } from '@/api/template';
 
 import Label from './Label';
-import TemplateRepositoryListNav from './components/RuntimeNav';
 import TemplateRepositoryItem from './components/RuntimeItem';
+import TemplateRepositoryListNav from './components/RuntimeNav';
 
 interface RuntimeProps {
   isEdit: boolean;
@@ -177,7 +177,6 @@ export default function Runtime({ isEdit }: RuntimeProps) {
       isVisible: boolean;
     }
   >;
-  console.log('get runtime status ', startedTemplate, curTemplateRepositoryUid, templateData);
   return (
     <VStack alignItems={'center'} gap={'24px'}>
       <Flex className="guide-runtimes" gap={'24px'} flexDir={'column'} w={'full'}>
@@ -185,7 +184,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
           <Label w={100} alignSelf={'flex-start'}>
             {t('runtime_environment')}
           </Label>
-          {/* <TemplateRepositoryListNav /> */}
+          <TemplateRepositoryListNav />
         </Flex>
 
         {!!startedTemplate && (

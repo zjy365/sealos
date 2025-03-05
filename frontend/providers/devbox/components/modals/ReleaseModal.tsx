@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Divider,
   Input,
   Modal,
   ModalBody,
@@ -16,11 +17,11 @@ import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
-import { pauseDevbox, releaseDevbox, startDevbox } from '@/api/devbox';
-import { useConfirm } from '@/hooks/useConfirm';
 import { useEnvStore } from '@/stores/env';
-import { DevboxListItemTypeV2 } from '@/types/devbox';
 import { versionSchema } from '@/utils/vaildate';
+import { DevboxListItemTypeV2 } from '@/types/devbox';
+import { pauseDevbox, releaseDevbox, startDevbox } from '@/api/devbox';
+import { TagCheckbox } from '@/app/[lang]/(platform)/template/TagCheckbox';
 
 const ReleaseModal = ({
   onClose,
@@ -40,15 +41,9 @@ const ReleaseModal = ({
   const [loading, setLoading] = useState(false);
   const [tagError, setTagError] = useState(false);
   const [releaseDes, setReleaseDes] = useState('');
-
-  const { openConfirm, ConfirmChild } = useConfirm({
-    content: 'release_confirm_info',
-    showCheckbox: true,
-    checkboxLabel: 'pause_devbox_info'
-  });
+  const [enableRestartMachine, setEnableRestartMachine] = useState(true);
 
   const handleSubmit = () => {
-    const tagResult = versionSchema.safeParse(tag);
     if (!tag) {
       setTagError(true);
     } else if (versionSchema.safeParse(tag).success === false) {
@@ -58,7 +53,7 @@ const ReleaseModal = ({
       });
     } else {
       setTagError(false);
-      openConfirm((enableRestartMachine: boolean) => handleReleaseDevbox(enableRestartMachine))();
+      handleReleaseDevbox(enableRestartMachine);
     }
   };
 
@@ -128,6 +123,26 @@ const ReleaseModal = ({
             }}
           />
           <ModalBody px="24px" gap={'16px'} py={'16px'} display={'flex'} flexDirection={'column'}>
+            <VStack
+              width={'full'}
+              gap={'8px'}
+              alignItems={'flex-start'}
+              bg={'#EFF6FF'}
+              p={'16px'}
+              borderRadius={'md'}
+            >
+              <Box color="#18181B">{t('release_confirm_info')}</Box>
+              <Divider />
+              <TagCheckbox
+                isChecked={enableRestartMachine}
+                spacing={4}
+                onChange={(e) => setEnableRestartMachine(e.target.checked)}
+                p={'2'}
+                borderRadius={'md'}
+              >
+                {t('pause_devbox_info')}
+              </TagCheckbox>
+            </VStack>
             <VStack width={'full'} gap={'8px'} alignItems={'flex-start'}>
               <Box w={'110px'} color="#18181B" fontWeight={500}>
                 {t('image_name')}
@@ -196,7 +211,6 @@ const ReleaseModal = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <ConfirmChild />
     </Box>
   );
 };

@@ -26,7 +26,6 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
   const { screenWidth, setLoading } = useGlobalStore();
 
   const [delDevbox, setDelDevbox] = useState<DevboxDetailTypeV2 | null>(null);
-  const isBigButton = useMemo(() => screenWidth > 1000, [screenWidth]);
 
   const { refetch: refetchDevboxList } = useQuery(['devboxListQuery'], setDevboxList, {
     onSettled(res) {
@@ -261,7 +260,6 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
             devboxName={devboxDetail.name}
             sshPort={devboxDetail.sshPort as number}
             status={devboxDetail.status}
-            isBigButton={isBigButton}
             leftButtonProps={{
               fontSize: '14px',
               height: '40px',

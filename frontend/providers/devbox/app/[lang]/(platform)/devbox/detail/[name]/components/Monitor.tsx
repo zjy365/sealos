@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { useTranslations } from 'next-intl';
 import {
   Box,
@@ -10,70 +11,77 @@ import {
   MenuList,
   Text
 } from '@chakra-ui/react';
+import { Check } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 
-import MyIcon from '@/components/Icon';
 import DatePicker from '@/components/DatePicker';
 import PodLineChart from '@/components/PodLineChart';
 
+import useDateTimeStore from '@/stores/date';
 import { useDevboxStore } from '@/stores/devbox';
+import { REFRESH_INTERVAL_OPTIONS } from '@/constants/monitor';
 
 const Monitor = () => {
   const t = useTranslations();
-  const { devboxDetail } = useDevboxStore();
+  const { devboxDetail, loadDetailMonitorData } = useDevboxStore();
+  const { refreshInterval, setRefreshInterval, startDateTime, endDateTime } = useDateTimeStore();
+
+  useQuery({
+    queryKey: ['monitorData', devboxDetail?.name, refreshInterval, startDateTime, endDateTime],
+    queryFn: () =>
+      loadDetailMonitorData(
+        devboxDetail?.name || '',
+        refreshInterval,
+        startDateTime.getTime(),
+        endDateTime.getTime()
+      )
+  });
 
   return (
     <Flex gap={4} direction={'column'} minH={'100%'}>
-      <Flex justifyContent={'start'} alignItems={'center'}>
-        {/* <DatePicker /> */}
-        {/* <ButtonGroup isAttached variant={'outline'} size={'sm'}>
+      <Flex justifyContent={'start'} alignItems={'center'} gap={4}>
+        <DatePicker />
+        <ButtonGroup isAttached variant={'outline'} size={'sm'}>
           <Button
-            height="32px"
-            bg={'grayModern.50'}
+            height="36px"
+            boxShadow={'none'}
+            bg={'white'}
             _hover={{
               bg: 'grayModern.50'
             }}
             onClick={() => {
-              refetchData();
+              loadDetailMonitorData(
+                devboxDetail?.name || '',
+                refreshInterval,
+                startDateTime.getTime(),
+                endDateTime.getTime()
+              );
             }}
             position={'relative'}
           >
-            <Box position={'relative'}>
-              <MyIcon
-                name="refresh"
-                w={'16px'}
-                h={'16px'}
-                color={'grayModern.500'}
-                _hover={{
-                  color: 'brightBlue.500'
-                }}
-              />
-            </Box>
+            <Text position={'relative'} fontSize={'normal'} fontWeight={'normal'}>
+              {t('refresh')}
+            </Text>
           </Button>
 
-          <Menu>
+          <Menu autoSelect={false}>
             <MenuButton
               as={Button}
-              height="32px"
-              bg={'grayModern.50'}
+              height="36px"
+              bg={'white'}
+              boxShadow={'none'}
               _hover={{
-                bg: 'grayModern.50',
-                '& div': {
-                  color: 'brightBlue.500'
-                },
-                '& svg': {
-                  color: 'brightBlue.500'
-                }
+                bg: 'grayModern.50'
               }}
             >
               <Flex alignItems={'center'}>
-                {refreshInterval === 0 ? null : (
-                  <Text mr={'4px'}>{`${refreshInterval / 1000}s`}</Text>
-                )}
+                {refreshInterval === '' ? null : <Text mr={'4px'}>{`${refreshInterval}`}</Text>}
                 <ChevronDownIcon w={'16px'} h={'16px'} color={'grayModern.500'} />
               </Flex>
             </MenuButton>
             <MenuList
-              p={'6px'}
+              p={'2'}
               borderRadius={'base'}
               border={'1px solid #E8EBF0'}
               boxShadow={
@@ -83,6 +91,9 @@ const Monitor = () => {
               overflow={'overlay'}
               maxH={'300px'}
             >
+              <Box color={'#71717A'} mb={'3'} pl={1} fontSize={'12px'} fontWeight={'500'}>
+                {t('set_automatic_refresh')}
+              </Box>
               {REFRESH_INTERVAL_OPTIONS.map((item) => (
                 <MenuItem
                   key={item.value}
@@ -90,24 +101,27 @@ const Monitor = () => {
                   onClick={() => {
                     setRefreshInterval(item.value);
                   }}
-                  {...(refreshInterval === item.value
-                    ? {
-                        color: 'brightBlue.600'
-                      }
-                    : {})}
                   borderRadius={'4px'}
                   _hover={{
-                    bg: 'rgba(17, 24, 36, 0.05)',
-                    color: 'brightBlue.600'
+                    bg: 'rgba(17, 24, 36, 0.05)'
                   }}
                   p={'6px'}
                 >
-                  {item.label}
+                  <Flex alignItems={'center'} justifyContent={'space-between'} w={'full'}>
+                    {item.label}
+                    {refreshInterval === item.value && (
+                      <Check color={'#1C4EF5'} width={'16px'} height={'16px'} />
+                    )}
+                  </Flex>
                 </MenuItem>
               ))}
             </MenuList>
           </Menu>
-        </ButtonGroup> */}
+        </ButtonGroup>
+        <Box color={'#737373'} fontSize={'12px'} fontWeight={'normal'}>
+          {t('update Time')}&ensp;
+          {dayjs().format('HH:mm')}
+        </Box>
       </Flex>
       {/* cpu */}
       <Box bg={'white'} borderRadius="lg" borderWidth={1} minH={'350px'}>
