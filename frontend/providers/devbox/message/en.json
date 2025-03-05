@@ -216,7 +216,7 @@
   "recommend": "Rec",
   "refresh": "Refresh",
   "release": "Release",
-  "release_confirm_info": "During the release process, your DevBox will be temporarily shutdown. Please save any changes before continuing.",
+  "release_confirm_info": "Your Devbox will be temporarily shut down during the release process. Please ensure all changes are saved before proceeding.",
   "release_failed": "Release failed",
   "release_pending": "Releasing...",
   "release_prompt": "The release process will shutdown your DevBox for processing, once complete your DevBox will return to its current state.",
