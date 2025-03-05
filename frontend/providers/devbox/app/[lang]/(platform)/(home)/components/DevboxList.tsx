@@ -164,9 +164,9 @@ const DevboxList = ({
           return (
             <Box h={'35px'} w={['120px', '130px', '140px']}>
               <Box h={'35px'} w={['120px', '130px', '140px']} position={'relative'}>
-                <PodLineChart type="blue" data={usedCpu} />
+                <PodLineChart type="purple" data={usedCpu} />
                 <Text
-                  color={'#0077A9'}
+                  color={'#7C3AED'}
                   fontSize={'sm'}
                   fontWeight={'bold'}
                   position={'absolute'}
@@ -190,9 +190,9 @@ const DevboxList = ({
           return (
             <Box h={'35px'} w={['120px', '130px', '140px']}>
               <Box h={'35px'} w={['120px', '130px', '140px']} position={'relative'}>
-                <PodLineChart type="purple" data={usedMemory} />
+                <PodLineChart type="purpleBlue" data={usedMemory} />
                 <Text
-                  color={'#6F5DD7'}
+                  color={'#2563EB'}
                   fontSize={'sm'}
                   fontWeight={'bold'}
                   position={'absolute'}

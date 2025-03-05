@@ -71,7 +71,7 @@
   "delete_template_version_prompt": "是否删除 {name} {version} ？此操作不可撤销，请确保该版本不再需要。",
   "delete_template_version_success": "删除版本成功！",
   "delete_version_confirm_info": "你确定要删除该版本吗？",
-  "delete_warning": "删除警告",
+  "delete_warning": "删除Devbox",
   "delete_warning_content": "您确定要删除该云沙箱嘛？",
   "delete_warning_content_2": "删除云沙箱会导致云沙箱远程环境被删除，您将无法访问远程开发环境。（您已发布的版本仍然会保留）。",
   "deploy": "上线",
