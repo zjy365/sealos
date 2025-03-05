@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, BoxProps, Grid, Flex, Button, Text, IconButton } from '@chakra-ui/react';
+import { Box, BoxProps, Grid, Flex, Button, Text, IconButton, Center } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 interface Props extends BoxProps {
@@ -86,24 +86,31 @@ export const MyTable = ({ columns, data, itemClass = '', pagination }: Props) =>
           p={4}
           borderTop="1px solid #EDEDED"
         >
-          <Text fontSize="sm" color="grayModern.600">
-            共 {pagination.total} 条
-          </Text>
+          <Center gap={'4px'}>
+            <Text fontSize="14px" color="#525252">
+              Total
+            </Text>
+            <Text fontSize="14px" fontWeight={600}>
+              {pagination.total}
+            </Text>
+          </Center>
           <Flex alignItems="center" gap={2}>
             <IconButton
-              aria-label="上一页"
-              icon={<ChevronLeftIcon />}
-              size="sm"
-              variant="outline"
+              aria-label="Previous"
+              icon={<ChevronLeftIcon w={'18px'} height={'18px'} />}
+              variant="unstyled"
               isDisabled={pagination.current <= 1}
               onClick={() => pagination.onChange(pagination.current - 1)}
             />
-            {generatePaginationButtons(pagination)}
+            <Center boxSize={'32px'} borderRadius={'full'} bg={'#F4F4F5'}>
+              <Text fontSize={'14px'} fontWeight={500} textAlign="center">
+                {pagination.current}
+              </Text>
+            </Center>
             <IconButton
-              aria-label="下一页"
-              icon={<ChevronRightIcon />}
-              size="sm"
-              variant="outline"
+              aria-label="Next"
+              icon={<ChevronRightIcon w={'18px'} height={'18px'} />}
+              variant="unstyled"
               isDisabled={pagination.current >= Math.ceil(pagination.total / pagination.pageSize)}
               onClick={() => pagination.onChange(pagination.current + 1)}
             />
@@ -112,40 +119,4 @@ export const MyTable = ({ columns, data, itemClass = '', pagination }: Props) =>
       )}
     </Box>
   );
-};
-
-// 生成分页按钮
-const generatePaginationButtons = (pagination: {
-  current: number;
-  pageSize: number;
-  total: number;
-  onChange: (page: number) => void;
-}) => {
-  const totalPages = Math.ceil(pagination.total / pagination.pageSize);
-  const buttons = [];
-
-  // 显示最多5个页码按钮
-  let startPage = Math.max(1, pagination.current - 2);
-  let endPage = Math.min(totalPages, startPage + 4);
-
-  // 调整起始页，确保显示5个按钮（如果总页数足够）
-  if (endPage - startPage < 4 && totalPages > 4) {
-    startPage = Math.max(1, endPage - 4);
-  }
-
-  for (let i = startPage; i <= endPage; i++) {
-    buttons.push(
-      <Button
-        key={i}
-        size="sm"
-        variant={i === pagination.current ? 'solid' : 'outline'}
-        colorScheme={i === pagination.current ? 'blue' : 'gray'}
-        onClick={() => pagination.onChange(i)}
-      >
-        {i}
-      </Button>
-    );
-  }
-
-  return buttons;
 };
