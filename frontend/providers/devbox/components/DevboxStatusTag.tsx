@@ -24,9 +24,9 @@ const DevboxStatusTag = ({
     <Flex
       className="guide-status-tag"
       color={status.color}
-      // backgroundColor={thinMode ? 'transparent' : status.backgroundColor}
-      // border={showBorder ? '1px solid' : 'none'}
-      // borderColor={status.color}
+      backgroundColor={thinMode ? 'transparent' : status.backgroundColor}
+      border={showBorder ? '1px solid' : 'none'}
+      borderColor={status.color}
       py={1}
       px={thinMode ? 0 : 4}
       borderRadius={'24px'}
@@ -37,14 +37,8 @@ const DevboxStatusTag = ({
       whiteSpace={'nowrap'}
       {...props}
     >
-      <Box
-        w={'6px'}
-        h={'6px'}
-        borderRadius={'10px'}
-        backgroundColor={status.dotColor}
-        display={thinMode ? 'none' : 'block'}
-      ></Box>
-      <Box ml={thinMode ? 0 : 2} flex={1}>
+      <Box w={'6px'} h={'6px'} borderRadius={'10px'} backgroundColor={status.dotColor}></Box>
+      <Box ml={2} flex={1}>
         {t(label)}
       </Box>
     </Flex>

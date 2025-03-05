@@ -39,11 +39,8 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
       >
         <MyIcon name="logo" w={'30px'} h={'30px'} />
       </Center>
-      <Box fontSize={'xl'} color={'grayModern.900'} fontWeight={'bold'}>
-        {t('devbox_list')}
-      </Box>
-      <Box ml={'8px'} fontSize={'md'} fontWeight={'bold'} color={'grayModern.500'}>
-        ( {listLength} )
+      <Box fontSize={'3xl'} color={'grayModern.900'} fontWeight={'600'}>
+        Devbox
       </Box>
       <Flex
         alignItems="center"
