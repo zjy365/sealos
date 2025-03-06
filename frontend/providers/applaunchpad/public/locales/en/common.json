@@ -7,7 +7,7 @@
   "Advanced Configuration": "Advanced Configuration",
   "Age": "Age",
   "Amount": "Amount",
-  "AnticipatedPrice": "The Estimated Cost",
+  "AnticipatedPrice": "Estimated Cost",
   "app": {
     "Resource Quota": "Resource Quota",
     "The applied CPU exceeds the quota": "Requested CPU exceeds your quota. Please contact admin.",
@@ -18,7 +18,7 @@
     "The maximum number of exposed ports is 65535": "Maximum port number is 65535",
     "The minimum exposed port is 1": "Minimum port number is 1"
   },
-  "App Name": "Name",
+  "App Name": "Application Name",
   "Application Deployment": "Application Deployment",
   "Application failed": "Failed to pause application",
   "Application paused": "Application Paused",
@@ -79,7 +79,7 @@
   "Deploy": "Deploy",
   "Deploy Application": "Deploy Application",
   "Deployment Failed": "Deployment Failed",
-  "Deployment Mode": "Deployment Infomation",
+  "Deployment Mode": "Usage",
   "Deployment Successful": "Deployment succeeded",
   "Details": "Details",
   "download": "Download",
@@ -197,7 +197,7 @@
   "Stateless": "Stateless",
   "Status": "Status",
   "storage": "Storage",
-  "Storage": "Mounted Volumes",
+  "Storage": "Storage",
   "Storage path can not empty": "Storage mount path is required",
   "Storage Range": "Storage Range",
   "Storage Value can not empty": "Storage size is required",
@@ -321,5 +321,8 @@
   "cc": {
     "basic": "Basic"
   },
-  "Public address unavailable": "Public address unavailable"
+  "Public address unavailable": "Public address unavailable",
+  "update Time": "Update Time",
+  "Manage Network": "Manage Network",
+  "Target": "Target"
 }

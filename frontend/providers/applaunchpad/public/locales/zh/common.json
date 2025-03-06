@@ -79,7 +79,7 @@
   "Deploy": "部署",
   "Deploy Application": "部署应用",
   "Deployment Failed": "部署失败",
-  "Deployment Mode": "部署模式",
+  "Deployment Mode": "用量",
   "Deployment Successful": "部署成功",
   "Details": "详情",
   "download": "下载",
@@ -321,5 +321,8 @@
   "cc": {
     "basic": "基础"
   },
-  "Public address unavailable": "Public address unavailable"
+  "Public address unavailable": "Public address unavailable",
+  "update Time": "更新时间",
+  "Manage Network": "配置网络",
+  "Target": "目标"
 }

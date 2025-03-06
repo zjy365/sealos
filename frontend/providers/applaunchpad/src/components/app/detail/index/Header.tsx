@@ -113,7 +113,7 @@ const Header = ({
   }, [appName, refetch, toast]);
 
   return (
-    <Flex px={'40px'} h={'32px'} my={'32px'} alignItems={'center'}>
+    <Flex px={'40px'} h={'40px'} my={'32px'} alignItems={'center'}>
       <Center cursor={'pointer'} onClick={() => router.replace('/apps')}>
         <ArrowLeft size={24} color="#18181B" />
       </Center>
@@ -131,7 +131,7 @@ const Header = ({
       {/* {!isLargeScreen && (
         <Box mx={4}>
           <Button
-            minW={'75px'}
+            minW={'100px'}
             fontSize={'12px'}
             height={'32px'}
             leftIcon={<MyIcon name="detail" w="16px" h="16px" />}
@@ -155,6 +155,7 @@ const Header = ({
         }}
         isDisabled={loading}
         onClick={onOpenDelModal}
+        mr={'12px'}
       >
         <MyIcon name="delete" w={'16px'} color={'#737373'} />
       </Button>
@@ -163,11 +164,11 @@ const Header = ({
       {/* btns */}
       {isPause ? (
         <Button
-          minW={'75px'}
+          minW={'100px'}
           fontSize={'12px'}
           variant={'outline'}
           mr={'12px'}
-          h={'32px'}
+          h={'40px'}
           leftIcon={<MyIcon name="continue" w={'16px'} fill={'#485264'} />}
           isLoading={loading}
           onClick={handleStartApp}
@@ -176,12 +177,16 @@ const Header = ({
         </Button>
       ) : (
         <Button
-          minW={'75px'}
+          minW={'100px'}
           fontSize={'12px'}
           variant={'outline'}
-          h={'32px'}
+          h={'40px'}
           leftIcon={<MyIcon name="pause" w={'16px'} fill={'#485264'} />}
           isLoading={loading}
+          style={{
+            borderRadius: '8px 0px 0px 8px',
+            borderRight: 'none'
+          }}
           onClick={onOpenPause(handlePauseApp)}
         >
           {t('Pause')}
@@ -191,12 +196,15 @@ const Header = ({
         <Button
           className="driver-detail-update-button"
           _focusVisible={{ boxShadow: '' }}
-          h={'32px'}
-          minW={'75px'}
+          h={'40px'}
+          minW={'100px'}
           fontSize={'12px'}
           variant={'outline'}
           leftIcon={<MyIcon name={'change'} w={'16px'} fill={'#485264'} />}
           isLoading={loading}
+          style={{
+            borderRadius: '0px'
+          }}
           onClick={() => {
             if (source?.hasSource && source?.sourceType === 'sealaf') {
               setUpdateAppName(appName);
@@ -212,13 +220,17 @@ const Header = ({
 
       {!isPause && (
         <Button
-          h={'32px'}
-          minW={'75px'}
+          h={'40px'}
+          minW={'100px'}
           fontSize={'12px'}
           variant={'outline'}
           leftIcon={<MyIcon name="restart" w={'16px'} fill={'#485264'} />}
           onClick={openRestartConfirm(handleRestartApp)}
           isLoading={loading}
+          style={{
+            borderRadius: '0px 8px 8px 0px',
+            borderLeft: 'none'
+          }}
         >
           {t('Restart')}
         </Button>

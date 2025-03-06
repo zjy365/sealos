@@ -402,7 +402,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
           }}
         />
 
-        <Box flex={'1 0 0'} h={0} w={'100%'} pb={4}>
+        <Box flex={'1 0 0'} h={0} w={'100%'} pb={4} mt={'32px'}>
           {tabType === 'form' ? (
             <Form
               formHook={formHook}

@@ -29,6 +29,7 @@ import React, { useCallback, useState } from 'react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { MOCK_APP_DETAIL } from '@/mock/apps';
 import { useAppStore } from '@/store/app';
+import { Terminal } from 'lucide-react';
 
 const LogsModal = dynamic(() => import('./LogsModal'));
 const DetailModel = dynamic(() => import('./PodDetailModal'));
@@ -79,7 +80,15 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
       title: 'Pod Name',
       key: 'podName',
       render: (_: PodDetailType, i: number) => (
-        <Box fontSize={'12px'} color={'grayModern.900'} fontWeight={500}>
+        <Box
+          fontSize={'12px'}
+          color={'grayModern.900'}
+          fontWeight={500}
+          width={'85px'}
+          overflow={'hidden'}
+          textOverflow={'ellipsis'}
+          whiteSpace={'nowrap'}
+        >
           {_?.podName}
         </Box>
       )
@@ -88,8 +97,9 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
       title: 'Status',
       key: 'status',
       render: (item: PodDetailType) => (
-        <Box color={item.status.color}>
-          {item.status.label}
+        <Center color={'#000000'} gap={'4px'}>
+          <Center borderRadius={'full'} bg={item.status.color} w={'6px'} h={'6px'}></Center>
+          <Text textTransform={'capitalize'}>{item.status.label}</Text>
           {!!item.status.reason && (
             <MyTooltip
               label={`Reason: ${item.status.reason}${
@@ -102,7 +112,7 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
               <QuestionOutlineIcon ml={1} />
             </MyTooltip>
           )}
-        </Box>
+        </Center>
       )
     },
     {
@@ -179,47 +189,46 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
       key: 'control',
       render: (item: PodDetailType, i: number) => (
         <Flex alignItems={'center'} className="driver-detail-operate">
-          <MyTooltip label={t('Log')} offset={[0, 10]}>
-            <Button variant={'square'} onClick={() => setLogsPodIndex(i)}>
-              <MyIcon name="log" w="18px" h="18px" fill={'#485264'} />
-            </Button>
-          </MyTooltip>
-          <MyTooltip offset={[0, 10]} label={t('Terminal')}>
-            <Button
-              variant={'square'}
-              onClick={() => {
-                const defaultCommand = `kubectl exec -it ${item.podName} -c ${appName} -- sh -c "clear; (bash || ash || sh)"`;
-                sealosApp.runEvents('openDesktopApp', {
-                  appKey: 'system-terminal',
-                  query: {
-                    defaultCommand
-                  },
-                  messageData: { type: 'new terminal', command: defaultCommand }
-                });
-              }}
-            >
-              <MyIcon
-                className="driver-detail-terminal"
-                name={'terminal'}
-                w="18px"
-                h="18px"
-                fill={'#485264'}
-              />
-            </Button>
-          </MyTooltip>
-          <MyTooltip offset={[0, 10]} label={t('Details')}>
-            <Button variant={'square'} onClick={() => setDetailPodIndex(i)}>
-              <MyIcon name={'detail'} w="18px" h="18px" fill={'#485264'} />
-            </Button>
-          </MyTooltip>
-          <MyTooltip offset={[0, 10]} label={t('Restart')}>
-            <Button
-              variant={'square'}
-              onClick={openConfirmRestart(() => handleRestartPod(item.podName))}
-            >
-              <MyIcon name={'restart'} w="18px" h="18px" fill={'#485264'} />
-            </Button>
-          </MyTooltip>
+          <Button
+            px={'12px'}
+            color={'#18181B'}
+            borderRadius={'6px'}
+            variant={'outline'}
+            onClick={() => setLogsPodIndex(i)}
+          >
+            {t('logs')}
+          </Button>
+          <Button
+            mx={'10px'}
+            px={'12px'}
+            color={'#18181B'}
+            borderRadius={'6px'}
+            variant={'outline'}
+            onClick={openConfirmRestart(() => handleRestartPod(item.podName))}
+          >
+            {t('Restart')}
+          </Button>
+          <Button
+            w={'36px'}
+            height={'36px'}
+            px={'12px'}
+            color={'#18181B'}
+            borderRadius={'6px'}
+            variant={'outline'}
+            onClick={() => {
+              const defaultCommand = `kubectl exec -it ${item.podName} -c ${appName} -- sh -c "clear; (bash || ash || sh)"`;
+              sealosApp.runEvents('openDesktopApp', {
+                appKey: 'system-terminal',
+                query: {
+                  defaultCommand
+                },
+                messageData: { type: 'new terminal', command: defaultCommand }
+              });
+            }}
+          >
+            <Terminal size={'16px'} color="#737373" />
+          </Button>
+
           {appDetail.storeList?.length > 0 && (
             <MyTooltip offset={[0, 10]} label={t('File Management')}>
               <Button
@@ -250,16 +259,16 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
       bg={'#FFF'}
       boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
     >
-      <Flex>
-        <Box fontSize={'14px'} fontWeight={'bold'} color={'grayModern.900'}>
+      <Flex alignItems={'center'}>
+        <Text fontSize={'20px'} fontWeight={500} color={'grayModern.900'}>
           {t('Pods List')}
-        </Box>
-        <Text ml={'8px'} fontSize={'14px'} fontWeight={'bold'} color={'grayModern.500'}>
+        </Text>
+        <Text ml={'8px'} color={'grayModern.600'}>
           ({pods.length})
         </Text>
       </Flex>
 
-      <TableContainer mt={'12px'} overflow={'auto'}>
+      <TableContainer mt={'16px'} overflow={'auto'}>
         <Table variant={'simple'} backgroundColor={'white'}>
           <Thead backgroundColor={'grayModern.50'}>
             <Tr>
@@ -270,12 +279,12 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
                   border={'none'}
                   fontSize={'12px'}
                   fontWeight={'500'}
-                  color={'grayModern.600'}
+                  color={'#71717A'}
                   _first={{
-                    borderLeftRadius: '6px'
+                    borderLeftRadius: '8px'
                   }}
                   _last={{
-                    borderRightRadius: '6px'
+                    borderRightRadius: '8px'
                   }}
                 >
                   {t(item.title)}

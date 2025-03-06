@@ -311,13 +311,13 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
           <Flex cursor={'pointer'} alignItems={'center'} gap={'4px'} onClick={onOpen}>
             <MyIcon name="calendar" />
             <Text>
-              {format(startDateTime, 'HH:mm, MMM d', {
+              {format(startDateTime, 'MMM d, HH:mm', {
                 locale: currentLang === 'zh' ? zhCN : enUS
               })}
             </Text>
             <MyIcon name="to" />
             <Text>
-              {format(endDateTime, 'HH:mm, MMM d', { locale: currentLang === 'zh' ? zhCN : enUS })}
+              {format(endDateTime, 'MMM d, HH:mm', { locale: currentLang === 'zh' ? zhCN : enUS })}
             </Text>
             <Button
               variant={'unstyled'}

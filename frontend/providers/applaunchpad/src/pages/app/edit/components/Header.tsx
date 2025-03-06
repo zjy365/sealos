@@ -36,7 +36,7 @@ const Header = ({
   }, [appName, yamlList]);
 
   return (
-    <Flex w={'100%'} px={10} h={'86px'} alignItems={'center'}>
+    <Flex w={'100%'} px={10} h={'96px'} alignItems={'center'} borderBottom={'1px solid #E4E4E7'}>
       <Flex
         alignItems={'center'}
         cursor={'pointer'}
@@ -51,14 +51,26 @@ const Header = ({
         </Box>
       </Flex>
       <Box flex={1}></Box>
-      <Button h={'40px'} mr={'14px'} minW={'140px'} variant={'outline'} onClick={handleExportYaml}>
+      <Button
+        style={{
+          borderRadius: '8px'
+        }}
+        h={'40px'}
+        mr={'14px'}
+        minW={'120px'}
+        variant={'outline'}
+        onClick={handleExportYaml}
+      >
         {t('Export')} Yaml
       </Button>
       <Button
         className="driver-deploy-button"
-        minW={'140px'}
+        minW={'120px'}
         h={'40px'}
         onClick={applyCb}
+        style={{
+          borderRadius: '8px'
+        }}
         _focusVisible={{ boxShadow: '' }}
       >
         {t(applyBtnText)}

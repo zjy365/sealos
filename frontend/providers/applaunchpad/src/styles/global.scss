@@ -8,13 +8,15 @@
     padding: 8px 16px;
     user-select: all;
     font-weight: 500;
-    color: #485264;
+    color: #71717a;
+
     line-height: 16px;
     &:first-child {
-      border-radius: 4px 0 0 4px;
+      border-radius: 8px 0 0 8px;
+      width: 120px;
     }
     &:last-child {
-      border-radius: 0 4px 4px 0;
+      border-radius: 0 8px 8px 0;
     }
   }
 

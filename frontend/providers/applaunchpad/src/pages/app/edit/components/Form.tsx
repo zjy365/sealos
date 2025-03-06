@@ -1,6 +1,6 @@
 import { obj2Query } from '@/api/tools';
 import MyIcon from '@/components/Icon';
-import { MyRangeSlider, MySelect, MySlider, MyTooltip, RangeInput, Tabs, Tip } from '@sealos/ui';
+import { MyRangeSlider, MySelect, MySlider, MyTooltip, RangeInput, Tip } from '@sealos/ui';
 import { defaultSliderKey, ProtocolList } from '@/constants/app';
 import { GpuAmountMarkList } from '@/constants/editApp';
 import { useToast } from '@/hooks/useToast';
@@ -28,7 +28,9 @@ import {
   Input,
   Switch,
   useDisclosure,
-  useTheme
+  useTheme,
+  Text,
+  Circle
 } from '@chakra-ui/react';
 import { throttle } from 'lodash';
 import { customAlphabet } from 'nanoid';
@@ -43,6 +45,7 @@ import PriceBox from './PriceBox';
 import QuotaBox from './QuotaBox';
 import type { StoreType } from './StoreModal';
 import styles from './index.module.scss';
+import Tabs from '@/components/Tabs';
 
 const CustomAccessModal = dynamic(() => import('./CustomAccessModal'));
 const ConfigmapModal = dynamic(() => import('./ConfigmapModal'));
@@ -203,6 +206,7 @@ const Form = ({
       fontWeight={'bold'}
       userSelect={'none'}
       {...props}
+      fontSize={'20px'}
     >
       {children}
     </Box>
@@ -335,6 +339,8 @@ const Form = ({
       );
   }, [getValues, refresh]);
 
+  console.log(userSourcePrice, 'userSourcePrice');
+
   return (
     <>
       <Grid
@@ -360,7 +366,7 @@ const Form = ({
               )
             }
           />
-          <Box
+          {/* <Box
             mt={3}
             borderRadius={'md'}
             overflow={'hidden'}
@@ -405,7 +411,8 @@ const Form = ({
             <Box mt={3} overflow={'hidden'}>
               <QuotaBox />
             </Box>
-          )}
+          )} */}
+
           {userSourcePrice && (
             <Box mt={3} overflow={'hidden'}>
               <PriceBox
@@ -430,81 +437,100 @@ const Form = ({
           )}
         </Box>
 
-        <Box
-          id={'form-container'}
-          pr={`${pxVal}px`}
-          height={'100%'}
-          position={'relative'}
-          // overflowY={'scroll'}
-        >
-          {/* base info */}
-          <Box id={'baseInfo'} {...boxStyles}>
-            <Box {...headerStyles}>
-              <MyIcon name={'formInfo'} mr={'12px'} w={'24px'} color={'grayModern.900'} />
-              {t('Basic Config')}
-            </Box>
-            <Box px={'42px'} py={'24px'}>
+        <Box id={'form-container'} pr={`${pxVal}px`} height={'100%'} position={'relative'}>
+          <Flex flexDirection={'column'} gap={'16px'}>
+            <Box
+              border={'1px solid #E4E4E7'}
+              borderRadius={'16px'}
+              p={'24px'}
+              boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+            >
               {/* app name */}
-              <FormControl mb={7} isInvalid={!!errors.appName} w={'500px'}>
-                <Flex alignItems={'center'}>
-                  <Label>{t('App Name')}</Label>
-                  <Input
-                    width={'350px'}
-                    disabled={isEdit}
-                    title={isEdit ? t('Not allowed to change app name') || '' : ''}
-                    autoFocus={true}
-                    maxLength={60}
-                    placeholder={
-                      t(
-                        'Starts with a letter and can contain only lowercase letters, digits, and hyphens (-)'
-                      ) || ''
+              <FormControl isInvalid={!!errors.appName} w={'500px'}>
+                <Label>{t('App Name')}</Label>
+                <Input
+                  bg={'#FAFAFA'}
+                  mt={'20px'}
+                  width={'350px'}
+                  disabled={isEdit}
+                  title={isEdit ? t('Not allowed to change app name') || '' : ''}
+                  autoFocus={true}
+                  maxLength={60}
+                  placeholder={
+                    t(
+                      'Starts with a letter and can contain only lowercase letters, digits, and hyphens (-)'
+                    ) || ''
+                  }
+                  {...register('appName', {
+                    required: t('Not allowed to change app name') || '',
+                    maxLength: 60,
+                    pattern: {
+                      value: /[a-z]([-a-z0-9]*[a-z0-9])?/g,
+                      message: t(
+                        'The application name can contain only lowercase letters, digits, and hyphens (-) and must start with a letter'
+                      )
                     }
-                    {...register('appName', {
-                      required: t('Not allowed to change app name') || '',
-                      maxLength: 60,
-                      pattern: {
-                        value: /[a-z]([-a-z0-9]*[a-z0-9])?/g,
-                        message: t(
-                          'The application name can contain only lowercase letters, digits, and hyphens (-) and must start with a letter'
-                        )
-                      }
-                    })}
-                  />
-                </Flex>
+                  })}
+                />
               </FormControl>
-              {/* image */}
-              <Box mb={7} className="driver-deploy-image">
-                <Flex alignItems={'center'}>
-                  <Label>{t('Image')}</Label>
-                  <Tabs
-                    w={'126px'}
-                    size={'sm'}
-                    list={[
-                      {
-                        label: t('public'),
-                        id: `public`
-                      },
-                      {
-                        label: t('private'),
-                        id: `private`
-                      }
-                    ]}
-                    activeId={getValues('secret.use') ? 'private' : 'public'}
-                    onChange={(val) => {
-                      if (val === 'public') {
-                        setValue('secret.use', false);
-                      } else {
-                        setValue('secret.use', true);
-                      }
-                    }}
-                  />
+            </Box>
+
+            <Box
+              border={'1px solid #E4E4E7'}
+              borderRadius={'16px'}
+              p={'24px'}
+              boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+              className="driver-deploy-image"
+            >
+              <Text fontSize="2xl" fontWeight="bold" mb={'20px'}>
+                {t('Image')}
+              </Text>
+              <Flex mb={'24px'} gap={4}>
+                <Flex
+                  alignItems="center"
+                  gap={2}
+                  cursor="pointer"
+                  onClick={() => setValue('secret.use', false)}
+                >
+                  <Circle
+                    size="16px"
+                    bg={!getValues('secret.use') ? 'black' : 'transparent'}
+                    border="2px solid"
+                    borderColor={!getValues('secret.use') ? 'black' : 'gray.200'}
+                  >
+                    <Circle size="14px" bg="white">
+                      {!getValues('secret.use') && <Circle size="10px" bg="black" />}
+                    </Circle>
+                  </Circle>
+                  <Text>{t('public')}</Text>
                 </Flex>
-                <Box mt={4} pl={`${labelWidth}px`}>
-                  <FormControl isInvalid={!!errors.imageName} w={'420px'}>
-                    <Box mb={1} fontSize={'sm'}>
+                <Flex
+                  alignItems="center"
+                  gap={2}
+                  cursor="pointer"
+                  onClick={() => setValue('secret.use', true)}
+                >
+                  <Circle
+                    size="16px"
+                    bg={getValues('secret.use') ? 'black' : 'transparent'}
+                    border="2px solid"
+                    borderColor={getValues('secret.use') ? 'black' : 'gray.200'}
+                  >
+                    <Circle size="14px" bg="white">
+                      {getValues('secret.use') && <Circle size="10px" bg="black" />}
+                    </Circle>
+                  </Circle>
+                  <Text>{t('private')}</Text>
+                </Flex>
+              </Flex>
+              <Box>
+                <FormControl isInvalid={!!errors.imageName} w={'420px'}>
+                  <Flex alignItems={'center'} gap={'16px'}>
+                    <Box flexShrink={0} fontSize={'14px'} fontWeight={500} w={'100px'}>
                       {t('Image Name')}
                     </Box>
                     <Input
+                      bg={'#FAFAFA'}
                       width={'350px'}
                       value={getValues('imageName')}
                       backgroundColor={getValues('imageName') ? 'myWhite.500' : 'grayModern.100'}
@@ -516,14 +542,17 @@ const Form = ({
                         }
                       })}
                     />
-                  </FormControl>
-                  {getValues('secret.use') ? (
-                    <>
-                      <FormControl mt={4} isInvalid={!!errors.secret?.username} w={'420px'}>
-                        <Box mb={1} fontSize={'sm'}>
+                  </Flex>
+                </FormControl>
+                {getValues('secret.use') ? (
+                  <>
+                    <FormControl mt={4} isInvalid={!!errors.secret?.username} w={'420px'}>
+                      <Flex alignItems={'center'} gap={'16px'}>
+                        <Box fontSize={'14px'} fontWeight={500} w={'100px'}>
                           {t('Username')}
                         </Box>
                         <Input
+                          bg={'#FAFAFA'}
                           backgroundColor={
                             getValues('imageName') ? 'myWhite.500' : 'grayModern.100'
                           }
@@ -532,12 +561,15 @@ const Form = ({
                             required: t('The user name cannot be empty') || ''
                           })}
                         />
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={!!errors.secret?.password} w={'420px'}>
-                        <Box mb={1} fontSize={'sm'}>
+                      </Flex>
+                    </FormControl>
+                    <FormControl mt={4} isInvalid={!!errors.secret?.password} w={'420px'}>
+                      <Flex alignItems={'center'} gap={'16px'}>
+                        <Box fontSize={'14px'} fontWeight={500} w={'100px'}>
                           {t('Password')}
                         </Box>
                         <Input
+                          bg={'#FAFAFA'}
                           type={'password'}
                           placeholder={`${t('Password for the image registry')}`}
                           backgroundColor={
@@ -547,12 +579,15 @@ const Form = ({
                             required: t('The password cannot be empty') || ''
                           })}
                         />
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={!!errors.secret?.serverAddress} w={'420px'}>
-                        <Box mb={1} fontSize={'sm'}>
+                      </Flex>
+                    </FormControl>
+                    <FormControl mt={4} isInvalid={!!errors.secret?.serverAddress} w={'420px'}>
+                      <Flex alignItems={'center'} gap={'16px'}>
+                        <Box fontSize={'14px'} fontWeight={500} w={'100px'}>
                           {t('Image Address')}
                         </Box>
                         <Input
+                          bg={'#FAFAFA'}
                           backgroundColor={
                             getValues('imageName') ? 'myWhite.500' : 'grayModern.100'
                           }
@@ -561,43 +596,68 @@ const Form = ({
                             required: t('The image cannot be empty') || ''
                           })}
                         />
-                      </FormControl>
-                    </>
-                  ) : null}
-                </Box>
+                      </Flex>
+                    </FormControl>
+                  </>
+                ) : null}
               </Box>
-              {/* replicas */}
-              <Box mb={7}>
-                <Flex alignItems={'center'}>
-                  <Label>{t('Deployment Mode')}</Label>
-                  <Tabs
-                    className="driver-deploy-instance"
-                    w={'195px'}
-                    size={'sm'}
-                    list={[
-                      {
-                        label: t('Fixed instance'),
-                        id: `static`
-                      },
-                      {
-                        label: t('Auto scaling'),
-                        id: `hpa`
-                      }
-                    ]}
-                    activeId={getValues('hpa.use') ? 'hpa' : 'static'}
-                    onChange={(val) => {
-                      if (val === 'static') {
-                        setValue('hpa.use', false);
-                      } else {
-                        setValue('hpa.use', true);
-                      }
-                    }}
-                  />
+            </Box>
+
+            {/* usage */}
+            <Box
+              border={'1px solid #E4E4E7'}
+              borderRadius={'16px'}
+              p={'24px 24px 36px 24px'}
+              boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+            >
+              <Box>
+                <Label>{t('Deployment Mode')}</Label>
+                <Flex gap={4} mt={'20px'} mb={'32px'}>
+                  <Flex
+                    alignItems="center"
+                    gap={2}
+                    cursor="pointer"
+                    onClick={() => setValue('hpa.use', false)}
+                  >
+                    <Circle
+                      size="16px"
+                      bg={!getValues('hpa.use') ? 'black' : 'transparent'}
+                      border="2px solid"
+                      borderColor={!getValues('hpa.use') ? 'black' : 'gray.200'}
+                    >
+                      <Circle size="14px" bg="white">
+                        {!getValues('hpa.use') && <Circle size="10px" bg="black" />}
+                      </Circle>
+                    </Circle>
+                    <Text>{t('Fixed instance')}</Text>
+                  </Flex>
+                  <Flex
+                    alignItems="center"
+                    gap={2}
+                    cursor="pointer"
+                    onClick={() => setValue('hpa.use', true)}
+                  >
+                    <Circle
+                      size="16px"
+                      bg={getValues('hpa.use') ? 'black' : 'transparent'}
+                      border="2px solid"
+                      borderColor={getValues('hpa.use') ? 'black' : 'gray.200'}
+                    >
+                      <Circle size="14px" bg="white">
+                        {getValues('hpa.use') && <Circle size="10px" bg="black" />}
+                      </Circle>
+                    </Circle>
+                    <Text>{t('Auto scaling')}</Text>
+                  </Flex>
                 </Flex>
-                <Box mt={4} pl={`${labelWidth}px`}>
+
+                <Box mt={4}>
                   {getValues('hpa.use') ? (
                     <>
                       <Flex alignItems={'center'}>
+                        <Box flexShrink={0} fontSize={'14px'} fontWeight={500} w={'100px'}>
+                          {t('Target')}
+                        </Box>
                         <MySelect
                           width={'120px'}
                           height="32px"
@@ -612,9 +672,7 @@ const Form = ({
                         <Input
                           width={'80px'}
                           type={'number'}
-                          backgroundColor={
-                            getValues('hpa.value') ? 'myWhite.500' : 'grayModern.100'
-                          }
+                          backgroundColor={getValues('hpa.value') ? '#fff' : '#fff'}
                           mx={2}
                           {...register('hpa.value', {
                             required: t('The Cpu target is empty') || '',
@@ -630,19 +688,19 @@ const Form = ({
                           })}
                         />
                         <Box>{getValues('hpa.target') === 'gpu' ? '' : '%'}</Box>
-                        <Tip
-                          ml={4}
-                          icon={<InfoOutlineIcon />}
-                          text={t('CPU target is the CPU utilization rate of any container')}
-                          size="sm"
-                        />
+                        {/* <Tip
+                            ml={4}
+                            icon={<InfoOutlineIcon />}
+                            text={t('CPU target is the CPU utilization rate of any container')}
+                            size="sm"
+                          /> */}
                       </Flex>
 
-                      <Box mt={5} pb={5} pr={3}>
-                        <Label mb={1} fontSize={'sm'}>
+                      <Box>
+                        <Box fontSize={'14px'} fontWeight={500} w={'100px'}>
                           {t('Replicas')}
-                        </Label>
-                        <Box w={'410px'} ml={'7px'}>
+                        </Box>
+                        <Box w={'410px'}>
                           <MyRangeSlider
                             min={1}
                             max={20}
@@ -657,10 +715,11 @@ const Form = ({
                       </Box>
                     </>
                   ) : (
-                    <Flex alignItems={'center'}>
-                      <Label w={'auto'} mr={3} fontSize={'12px'}>
+                    <Flex alignItems={'center'} gap={'16px'}>
+                      <Text fontSize={'14px'} fontWeight={500} w={'100px'}>
                         {t('Replicas')}
-                      </Label>
+                      </Text>
+
                       <RangeInput
                         value={getValues('replicas')}
                         min={1}
@@ -691,9 +750,11 @@ const Form = ({
               </Box>
 
               {userSourcePrice?.gpu && (
-                <Box mb={7}>
+                <Box>
                   <Flex alignItems={'center'}>
-                    <Label>GPU</Label>
+                    <Text fontSize={'14px'} fontWeight={500} w={'100px'}>
+                      GPU
+                    </Text>
                     <MySelect
                       width={'300px'}
                       placeholder={t('No GPU') || ''}
@@ -770,8 +831,10 @@ const Form = ({
               )}
 
               {/* cpu && memory */}
-              <Flex mb={10} pr={3} alignItems={'flex-start'}>
-                <Label mr={'7px'}>{t('CPU')}</Label>
+              <Flex mt={'24px'} alignItems={'flex-start'} gap={'16px'} minH={'30px'}>
+                <Text flexShrink={0} fontSize={'14px'} fontWeight={500} w={'100px'}>
+                  {t('CPU')}
+                </Text>
                 <MySlider
                   markList={SliderList.cpu}
                   activeVal={getValues('cpu')}
@@ -786,8 +849,10 @@ const Form = ({
                   (Core)
                 </Box>
               </Flex>
-              <Flex mb={8} pr={3} alignItems={'center'}>
-                <Label mr={'7px'}>{t('Memory')}</Label>
+              <Flex mt={'24px'} alignItems={'center'} gap={'16px'} minH={'30px'}>
+                <Text flexShrink={0} fontSize={'14px'} fontWeight={500} w={'100px'}>
+                  {t('Memory')}
+                </Text>
                 <MySlider
                   markList={SliderList.memory}
                   activeVal={getValues('memory')}
@@ -800,15 +865,34 @@ const Form = ({
                 />
               </Flex>
             </Box>
-          </Box>
+          </Flex>
 
           {/* network */}
-          <Box id={'network'} {...boxStyles}>
-            <Box {...headerStyles}>
-              <MyIcon name={'network'} mr={'12px'} w={'24px'} color={'grayModern.900'} />
-              {t('Network Configuration')}
-            </Box>
-            <Box px={'42px'} py={'24px'} userSelect={'none'}>
+          <Box
+            mt={'16px'}
+            id={'network'}
+            p={'24px'}
+            border={'1px solid #E4E4E7'}
+            borderRadius={'16px'}
+            boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+          >
+            <Flex mb="24px">
+              <Text color={'#000000'} fontWeight={'bold'} userSelect={'none'} fontSize={'20px'}>
+                {t('Network Configuration')}
+              </Text>
+              <Center
+                ml={'8px'}
+                height={'28px'}
+                padding={'10px'}
+                bg={'#EFF6FF'}
+                borderRadius={'100px'}
+                color={'#2563EB'}
+              >
+                $0.008/each
+              </Center>
+            </Flex>
+
+            <Box userSelect={'none'}>
               {networks.map((network, i) => (
                 <Flex
                   alignItems={'flex-start'}
@@ -840,30 +924,8 @@ const Form = ({
                         }
                       })}
                     />
-                    {i === networks.length - 1 && networks.length < 5 && (
-                      <Box mt={3}>
-                        <Button
-                          w={'100px'}
-                          variant={'outline'}
-                          leftIcon={<MyIcon name="plus" w={'18px'} fill={'#485264'} />}
-                          onClick={() =>
-                            appendNetworks({
-                              networkName: '',
-                              portName: nanoid(),
-                              port: 80,
-                              protocol: 'HTTP',
-                              openPublicDomain: false,
-                              publicDomain: '',
-                              customDomain: '',
-                              domain: SEALOS_DOMAIN
-                            })
-                          }
-                        >
-                          {t('Add Port')}
-                        </Button>
-                      </Box>
-                    )}
                   </Box>
+
                   <Box mx={7}>
                     <Box mb={'8px'} h={'20px'} fontSize={'base'} color={'grayModern.900'}>
                       {t('Open Public Access')}
@@ -943,7 +1005,7 @@ const Form = ({
                     </>
                   )}
                   {networks.length > 1 && (
-                    <Box ml={3}>
+                    <Box ml={'auto'}>
                       <Box mb={'8px'} h={'20px'}></Box>
                       <IconButton
                         height={'32px'}
@@ -962,293 +1024,302 @@ const Form = ({
                   )}
                 </Flex>
               ))}
+              <Box pt={'12px'}>
+                <Button
+                  w={'100px'}
+                  variant={'outline'}
+                  leftIcon={<MyIcon name="plus" w={'18px'} fill={'#485264'} />}
+                  onClick={() =>
+                    appendNetworks({
+                      networkName: '',
+                      portName: nanoid(),
+                      port: 80,
+                      protocol: 'HTTP',
+                      openPublicDomain: false,
+                      publicDomain: '',
+                      customDomain: '',
+                      domain: SEALOS_DOMAIN
+                    })
+                  }
+                >
+                  {t('Add Port')}
+                </Button>
+              </Box>
             </Box>
           </Box>
           {/* settings */}
           {already && (
-            <Accordion
-              id={'settings'}
-              allowToggle
-              index={isAdvancedOpen || navList[2].isSetting ? 0 : undefined}
+            <Box
+              mt={'16px'}
+              p={'24px'}
+              border={'1px solid #E4E4E7'}
+              borderRadius={'16px'}
+              boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
             >
-              <AccordionItem {...boxStyles}>
-                <AccordionButton
-                  {...headerStyles}
-                  justifyContent={'space-between'}
-                  _hover={{ bg: '' }}
+              <Flex mb="24px">
+                <Text color={'#000000'} fontWeight={'bold'} userSelect={'none'} fontSize={'20px'}>
+                  {t('Advanced Configuration')}
+                </Text>
+                <Center
+                  bg={'#FAFAFA'}
+                  minW={'48px'}
+                  px={'8px'}
+                  height={'28px'}
+                  ml={'14px'}
+                  fontSize={'11px'}
+                  borderRadius={'33px'}
+                  color={'#525252'}
                 >
-                  <Flex alignItems={'center'}>
-                    <MyIcon name={'settings'} mr={'12px'} w={'24px'} color={'grayModern.900'} />
-                    <Box>{t('Advanced Configuration')}</Box>
-                    <Center
-                      bg={'grayModern.200'}
-                      minW={'48px'}
-                      px={'8px'}
-                      height={'28px'}
-                      ml={'14px'}
-                      fontSize={'11px'}
-                      borderRadius={'33px'}
-                      color={'grayModern.700'}
-                    >
-                      {t('Option')}
-                    </Center>
-                  </Flex>
-                  <AccordionIcon w={'20px'} h={'20px'} color={'#485264'} />
-                </AccordionButton>
+                  {t('Option')}
+                </Center>
+              </Flex>
+              <Flex mb={'16px'} fontSize={'16px'} fontWeight={500}>
+                {t('Command')}
+              </Flex>
+              {/* command && param */}
+              <FormControl>
+                <Flex alignItems={'center'} className="driver-deploy-command">
+                  <Text fontSize={'14px'} fontWeight={500}>
+                    {t('Run command')}
+                  </Text>
+                  <Input
+                    w={'350px'}
+                    bg={getValues('runCMD') ? 'myWhite.500' : 'grayModern.100'}
+                    placeholder={`${t('Such as')} /bin/bash -c`}
+                    {...register('runCMD')}
+                  />
+                </Flex>
+              </FormControl>
+              <FormControl>
+                <Flex alignItems={'center'}>
+                  <Label>{t('Command parameters')}</Label>
+                  <Input
+                    w={'350px'}
+                    bg={getValues('cmdParam') ? 'myWhite.500' : 'grayModern.100'}
+                    placeholder={`${t('Such as')} sleep 10 && /entrypoint.sh db createdb`}
+                    {...register('cmdParam')}
+                  />
+                </Flex>
+              </FormControl>
 
-                <AccordionPanel px={'42px'} py={'24px'}>
-                  <Flex mb={'16px'}>
-                    <Label className={styles.formSecondTitle}>{t('Command')}</Label>
-                    <Tip
-                      icon={<InfoOutlineIcon />}
-                      size="sm"
-                      text={t('If no, the default command is used')}
-                    />
-                  </Flex>
-                  {/* command && param */}
-                  <FormControl mb={7}>
-                    <Flex alignItems={'center'} className="driver-deploy-command">
-                      <Label>{t('Run command')}</Label>
-                      <Input
-                        w={'350px'}
-                        bg={getValues('runCMD') ? 'myWhite.500' : 'grayModern.100'}
-                        placeholder={`${t('Such as')} /bin/bash -c`}
-                        {...register('runCMD')}
+              <Divider my={'30px'} borderColor={'#EFF0F1'} />
+
+              {/* env */}
+              <Box w={'100%'} maxW={'600px'}>
+                <Flex alignItems={'center'}>
+                  <Label className={styles.formSecondTitle}>{t('Environment Variables')}</Label>
+                  <Button
+                    w={'100%'}
+                    height={'32px'}
+                    variant={'outline'}
+                    fontSize={'base'}
+                    leftIcon={<MyIcon name="edit" width={'16px'} fill={'#485264'} />}
+                    onClick={onOpenEditEnvs}
+                  >
+                    {t('Edit Environment Variables')}
+                  </Button>
+                </Flex>
+                <Box pl={`${labelWidth}px`} mt={3}>
+                  <table className={'table-cross'}>
+                    <tbody>
+                      {envs.map((env) => {
+                        const valText = env.value
+                          ? env.value
+                          : env.valueFrom
+                          ? 'value from | ***'
+                          : '';
+                        return (
+                          <tr key={env.id}>
+                            <th>{env.key}</th>
+                            <th>
+                              <MyTooltip label={valText}>
+                                <Box
+                                  className={styles.textEllipsis}
+                                  style={{
+                                    userSelect: 'auto'
+                                  }}
+                                >
+                                  {valText}
+                                </Box>
+                              </MyTooltip>
+                            </th>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </Box>
+              </Box>
+
+              <Divider my={'30px'} borderColor={'#EFF0F1'} />
+
+              <Box>
+                <Flex alignItems={'center'} maxW={'600px'}>
+                  <Label className={styles.formSecondTitle}>{t('Configuration File')}</Label>
+                  <Button
+                    w={'100%'}
+                    height={'32px'}
+                    variant={'outline'}
+                    onClick={() => setConfigEdit({ mountPath: '', value: '' })}
+                    leftIcon={<MyIcon name="plus" w={'16px'} fill="#485264" />}
+                  >
+                    {t('form.add_configmap')}
+                  </Button>
+                </Flex>
+                <Box mt={4} pl={`${labelWidth}px`}>
+                  {configMaps.map((item, index) => (
+                    <Flex key={item.id} _notLast={{ mb: 5 }} alignItems={'center'}>
+                      <Flex
+                        alignItems={'center'}
+                        px={4}
+                        py={1}
+                        border={theme.borders.base}
+                        flex={'0 0 320px'}
+                        w={0}
+                        borderRadius={'md'}
+                        cursor={'pointer'}
+                        onClick={() => setConfigEdit(item)}
+                        bg={'grayModern.25'}
+                      >
+                        <MyIcon name={'configMap'} w={'20px'} />
+                        <Box ml={4} flex={'1 0 0'} w={'0px'}>
+                          <Box color={'myGray.900'} fontWeight={'bold'}>
+                            {item.mountPath}
+                          </Box>
+                          <Box
+                            className={styles.textEllipsis}
+                            color={'grayModern.900'}
+                            fontSize={'sm'}
+                          >
+                            {item.value}
+                          </Box>
+                        </Box>
+                      </Flex>
+                      <IconButton
+                        height={'32px'}
+                        width={'32px'}
+                        variant={'outline'}
+                        aria-label={'button'}
+                        bg={'#FFF'}
+                        ml={3}
+                        _hover={{
+                          color: 'red.600',
+                          bg: 'rgba(17, 24, 36, 0.05)'
+                        }}
+                        icon={<MyIcon name={'delete'} w={'16px'} fill={'#485264'} />}
+                        onClick={() => removeConfigMaps(index)}
                       />
                     </Flex>
-                  </FormControl>
-                  <FormControl>
-                    <Flex alignItems={'center'}>
-                      <Label>{t('Command parameters')}</Label>
-                      <Input
-                        w={'350px'}
-                        bg={getValues('cmdParam') ? 'myWhite.500' : 'grayModern.100'}
-                        placeholder={`${t('Such as')} sleep 10 && /entrypoint.sh db createdb`}
-                        {...register('cmdParam')}
+                  ))}
+                </Box>
+              </Box>
+
+              <Divider my={'30px'} borderColor={'#EFF0F1'} />
+
+              <Box className="driver-deploy-storage">
+                <Flex alignItems={'center'} mb={'10px'}>
+                  <Label className={styles.formSecondTitle} m={0}>
+                    {t('Local Storage')}
+                  </Label>
+
+                  <Button
+                    w={'320px'}
+                    height={'32px'}
+                    variant={'outline'}
+                    onClick={() => setStoreEdit({ name: '', path: '', value: 1 })}
+                    leftIcon={<MyIcon name="plus" w={'16px'} fill="#485264" />}
+                  >
+                    {t('Add volume')}
+                  </Button>
+                  <Tip
+                    ml={4}
+                    icon={<InfoOutlineIcon />}
+                    size="sm"
+                    text={t('Data cannot be communicated between multiple instances')}
+                  />
+                </Flex>
+                <Box mt={4} pl={`${labelWidth}px`}>
+                  {storeList.map((item, index) => (
+                    <Flex key={item.id} _notLast={{ mb: 5 }} alignItems={'center'}>
+                      <Flex
+                        alignItems={'center'}
+                        px={4}
+                        py={1}
+                        border={theme.borders.base}
+                        flex={'0 0 320px'}
+                        w={0}
+                        borderRadius={'md'}
+                        cursor={'pointer'}
+                        bg={'grayModern.25'}
+                        onClick={() => setStoreEdit(item)}
+                      >
+                        <MyIcon name={'store'} w={'20px'} />
+                        <Box ml={4} flex={'1 0 0'} w={'0px'}>
+                          <Box color={'myGray.900'} fontWeight={'bold'}>
+                            {item.path}
+                          </Box>
+                          <Box
+                            className={styles.textEllipsis}
+                            color={'grayModern.900'}
+                            fontSize={'sm'}
+                          >
+                            {item.value} Gi
+                          </Box>
+                        </Box>
+                      </Flex>
+                      <IconButton
+                        height={'32px'}
+                        width={'32px'}
+                        aria-label={'button'}
+                        variant={'outline'}
+                        bg={'#FFF'}
+                        ml={3}
+                        icon={<MyIcon name={'delete'} w={'16px'} fill={'#485264'} />}
+                        _hover={{
+                          color: 'red.600',
+                          bg: 'rgba(17, 24, 36, 0.05)'
+                        }}
+                        onClick={() => {
+                          if (storeList.length === 1) {
+                            toast({
+                              title: t('Store At Least One'),
+                              status: 'error'
+                            });
+                          } else {
+                            removeStoreList(index);
+                          }
+                        }}
                       />
                     </Flex>
-                  </FormControl>
-
-                  <Divider my={'30px'} borderColor={'#EFF0F1'} />
-
-                  {/* env */}
-                  <Box w={'100%'} maxW={'600px'}>
-                    <Flex alignItems={'center'}>
-                      <Label className={styles.formSecondTitle}>{t('Environment Variables')}</Label>
-                      <Button
-                        w={'100%'}
-                        height={'32px'}
-                        variant={'outline'}
-                        fontSize={'base'}
-                        leftIcon={<MyIcon name="edit" width={'16px'} fill={'#485264'} />}
-                        onClick={onOpenEditEnvs}
+                  ))}
+                  {persistentVolumes.map((item) => (
+                    <Flex key={item.path} _notLast={{ mb: 5 }} alignItems={'center'}>
+                      <Flex
+                        alignItems={'center'}
+                        px={4}
+                        py={1}
+                        border={theme.borders.base}
+                        flex={'0 0 320px'}
+                        w={0}
+                        borderRadius={'md'}
+                        cursor={'not-allowed'}
+                        bg={'grayModern.25'}
                       >
-                        {t('Edit Environment Variables')}
-                      </Button>
+                        <MyIcon name={'store'} w={'20px'} />
+                        <Box ml={4} flex={'1 0 0'} w={'0px'}>
+                          <Box color={'myGray.900'} fontWeight={'bold'}>
+                            {item.path}
+                          </Box>
+                        </Box>
+                        <Box fontSize={'12px'} color={'grayModern.600'}>
+                          {t('shared')}
+                        </Box>
+                      </Flex>
                     </Flex>
-                    <Box pl={`${labelWidth}px`} mt={3}>
-                      <table className={'table-cross'}>
-                        <tbody>
-                          {envs.map((env) => {
-                            const valText = env.value
-                              ? env.value
-                              : env.valueFrom
-                              ? 'value from | ***'
-                              : '';
-                            return (
-                              <tr key={env.id}>
-                                <th>{env.key}</th>
-                                <th>
-                                  <MyTooltip label={valText}>
-                                    <Box
-                                      className={styles.textEllipsis}
-                                      style={{
-                                        userSelect: 'auto'
-                                      }}
-                                    >
-                                      {valText}
-                                    </Box>
-                                  </MyTooltip>
-                                </th>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </Box>
-                  </Box>
-
-                  <Divider my={'30px'} borderColor={'#EFF0F1'} />
-
-                  <Box>
-                    <Flex alignItems={'center'} maxW={'600px'}>
-                      <Label className={styles.formSecondTitle}>{t('Configuration File')}</Label>
-                      <Button
-                        w={'100%'}
-                        height={'32px'}
-                        variant={'outline'}
-                        onClick={() => setConfigEdit({ mountPath: '', value: '' })}
-                        leftIcon={<MyIcon name="plus" w={'16px'} fill="#485264" />}
-                      >
-                        {t('form.add_configmap')}
-                      </Button>
-                    </Flex>
-                    <Box mt={4} pl={`${labelWidth}px`}>
-                      {configMaps.map((item, index) => (
-                        <Flex key={item.id} _notLast={{ mb: 5 }} alignItems={'center'}>
-                          <Flex
-                            alignItems={'center'}
-                            px={4}
-                            py={1}
-                            border={theme.borders.base}
-                            flex={'0 0 320px'}
-                            w={0}
-                            borderRadius={'md'}
-                            cursor={'pointer'}
-                            onClick={() => setConfigEdit(item)}
-                            bg={'grayModern.25'}
-                          >
-                            <MyIcon name={'configMap'} w={'20px'} />
-                            <Box ml={4} flex={'1 0 0'} w={'0px'}>
-                              <Box color={'myGray.900'} fontWeight={'bold'}>
-                                {item.mountPath}
-                              </Box>
-                              <Box
-                                className={styles.textEllipsis}
-                                color={'grayModern.900'}
-                                fontSize={'sm'}
-                              >
-                                {item.value}
-                              </Box>
-                            </Box>
-                          </Flex>
-                          <IconButton
-                            height={'32px'}
-                            width={'32px'}
-                            variant={'outline'}
-                            aria-label={'button'}
-                            bg={'#FFF'}
-                            ml={3}
-                            _hover={{
-                              color: 'red.600',
-                              bg: 'rgba(17, 24, 36, 0.05)'
-                            }}
-                            icon={<MyIcon name={'delete'} w={'16px'} fill={'#485264'} />}
-                            onClick={() => removeConfigMaps(index)}
-                          />
-                        </Flex>
-                      ))}
-                    </Box>
-                  </Box>
-
-                  <Divider my={'30px'} borderColor={'#EFF0F1'} />
-
-                  <Box className="driver-deploy-storage">
-                    <Flex alignItems={'center'} mb={'10px'}>
-                      <Label className={styles.formSecondTitle} m={0}>
-                        {t('Local Storage')}
-                      </Label>
-
-                      <Button
-                        w={'320px'}
-                        height={'32px'}
-                        variant={'outline'}
-                        onClick={() => setStoreEdit({ name: '', path: '', value: 1 })}
-                        leftIcon={<MyIcon name="plus" w={'16px'} fill="#485264" />}
-                      >
-                        {t('Add volume')}
-                      </Button>
-                      <Tip
-                        ml={4}
-                        icon={<InfoOutlineIcon />}
-                        size="sm"
-                        text={t('Data cannot be communicated between multiple instances')}
-                      />
-                    </Flex>
-                    <Box mt={4} pl={`${labelWidth}px`}>
-                      {storeList.map((item, index) => (
-                        <Flex key={item.id} _notLast={{ mb: 5 }} alignItems={'center'}>
-                          <Flex
-                            alignItems={'center'}
-                            px={4}
-                            py={1}
-                            border={theme.borders.base}
-                            flex={'0 0 320px'}
-                            w={0}
-                            borderRadius={'md'}
-                            cursor={'pointer'}
-                            bg={'grayModern.25'}
-                            onClick={() => setStoreEdit(item)}
-                          >
-                            <MyIcon name={'store'} w={'20px'} />
-                            <Box ml={4} flex={'1 0 0'} w={'0px'}>
-                              <Box color={'myGray.900'} fontWeight={'bold'}>
-                                {item.path}
-                              </Box>
-                              <Box
-                                className={styles.textEllipsis}
-                                color={'grayModern.900'}
-                                fontSize={'sm'}
-                              >
-                                {item.value} Gi
-                              </Box>
-                            </Box>
-                          </Flex>
-                          <IconButton
-                            height={'32px'}
-                            width={'32px'}
-                            aria-label={'button'}
-                            variant={'outline'}
-                            bg={'#FFF'}
-                            ml={3}
-                            icon={<MyIcon name={'delete'} w={'16px'} fill={'#485264'} />}
-                            _hover={{
-                              color: 'red.600',
-                              bg: 'rgba(17, 24, 36, 0.05)'
-                            }}
-                            onClick={() => {
-                              if (storeList.length === 1) {
-                                toast({
-                                  title: t('Store At Least One'),
-                                  status: 'error'
-                                });
-                              } else {
-                                removeStoreList(index);
-                              }
-                            }}
-                          />
-                        </Flex>
-                      ))}
-                      {persistentVolumes.map((item) => (
-                        <Flex key={item.path} _notLast={{ mb: 5 }} alignItems={'center'}>
-                          <Flex
-                            alignItems={'center'}
-                            px={4}
-                            py={1}
-                            border={theme.borders.base}
-                            flex={'0 0 320px'}
-                            w={0}
-                            borderRadius={'md'}
-                            cursor={'not-allowed'}
-                            bg={'grayModern.25'}
-                          >
-                            <MyIcon name={'store'} w={'20px'} />
-                            <Box ml={4} flex={'1 0 0'} w={'0px'}>
-                              <Box color={'myGray.900'} fontWeight={'bold'}>
-                                {item.path}
-                              </Box>
-                            </Box>
-                            <Box fontSize={'12px'} color={'grayModern.600'}>
-                              {t('shared')}
-                            </Box>
-                          </Flex>
-                        </Flex>
-                      ))}
-                    </Box>
-                  </Box>
-                </AccordionPanel>
-              </AccordionItem>
-            </Accordion>
+                  ))}
+                </Box>
+              </Box>
+            </Box>
           )}
         </Box>
       </Grid>
