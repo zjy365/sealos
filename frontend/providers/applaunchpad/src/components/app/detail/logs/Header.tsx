@@ -48,29 +48,20 @@ export const Header = ({
       w={'100%'}
     >
       <Flex gap={'32px'}>
+        <AdvancedSelect
+          placeholder={t('by_pod')}
+          height="40px"
+          minW={'100px'}
+          checkBoxMode
+          width={'fit-content'}
+          value={'hello-sql-postgresql-0'}
+          onCheckboxChange={(val) => {
+            formHook.setValue('pods', val);
+          }}
+          list={formHook.watch('pods')}
+        />
         <Flex alignItems={'center'} gap={'12px'}>
-          <Text fontSize={'12px'} fontWeight={'400'} lineHeight={'16px'} color={'grayModern.900'}>
-            {t('time')}
-          </Text>
           <DatePicker />
-        </Flex>
-        <Flex alignItems={'center'} gap={'12px'}>
-          <Text fontSize={'12px'} fontWeight={'400'} lineHeight={'16px'} color={'grayModern.900'}>
-            Pods
-          </Text>
-          <AdvancedSelect
-            placeholder={t('please_select')}
-            height="32px"
-            minW={'200px'}
-            checkBoxMode
-            leftIcon={<MyIcon name="pods" w={'16px'} h={'16px'} color={'grayModern.500'} />}
-            width={'fit-content'}
-            value={'hello-sql-postgresql-0'}
-            onCheckboxChange={(val) => {
-              formHook.setValue('pods', val);
-            }}
-            list={formHook.watch('pods')}
-          />
         </Flex>
       </Flex>
       <Flex gap={'32px'}>

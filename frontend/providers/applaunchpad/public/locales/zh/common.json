@@ -324,5 +324,6 @@
   "Public address unavailable": "Public address unavailable",
   "update Time": "更新时间",
   "Manage Network": "配置网络",
-  "Target": "目标"
+  "Target": "目标",
+  "by_pod": "请选择Pod"
 }

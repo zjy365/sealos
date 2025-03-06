@@ -13,7 +13,7 @@ import {
   Checkbox
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
-import { ChevronDownIcon } from '@chakra-ui/icons';
+import { ChevronDown } from 'lucide-react';
 import React, { useRef, forwardRef, useMemo } from 'react';
 import type { BoxProps, ButtonProps } from '@chakra-ui/react';
 
@@ -42,7 +42,7 @@ const AdvancedSelect = (
     leftIcon,
     value,
     width = 'auto',
-    height = '30px',
+    height = '40px',
     list,
     onchange,
     onCheckboxChange,
@@ -94,7 +94,7 @@ const AdvancedSelect = (
         <MenuButton
           as={Button}
           leftIcon={leftIcon}
-          rightIcon={<ChevronDownIcon />}
+          rightIcon={<ChevronDown size={16} color={'#A3A3A3'} />}
           width={width}
           height={height}
           ref={ref}
@@ -108,23 +108,12 @@ const AdvancedSelect = (
           color={'grayModern.900'}
           variant={'outline'}
           _hover={{
-            borderColor: 'brightBlue.300',
             bg: 'grayModern.50'
           }}
           _active={{
             transform: ''
           }}
           boxShadow={'none'}
-          {...(isOpen
-            ? {
-                // boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)',
-                borderColor: 'brightBlue.500',
-                bg: '#FFF'
-              }
-            : {
-                bg: '#F7F8FA',
-                borderColor: isInvalid ? 'red' : ''
-              })}
           onClick={() => {
             isOpen ? onClose() : onOpen();
           }}
@@ -152,7 +141,7 @@ const AdvancedSelect = (
           })()}
           p={'6px'}
           borderRadius={'base'}
-          border={'1px solid #E8EBF0'}
+          border={'none'}
           boxShadow={
             '0px 4px 10px 0px rgba(19, 51, 107, 0.10), 0px 0px 1px 0px rgba(19, 51, 107, 0.10)'
           }
@@ -184,10 +173,8 @@ const AdvancedSelect = (
                 }}
                 sx={{
                   'span.chakra-checkbox__control[data-checked]': {
-                    background: '#f0f4ff',
-                    border: '1px solid #219bf4 ',
-                    boxShadow: '0px 0px 0px 2.4px rgba(33, 155, 244, 0.15)',
-                    color: '#219bf4',
+                    background: 'black',
+                    color: 'white',
                     borderRadius: '4px'
                   },
                   'span.chakra-checkbox__control': {

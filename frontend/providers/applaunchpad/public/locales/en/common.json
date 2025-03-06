@@ -324,5 +324,6 @@
   "Public address unavailable": "Public address unavailable",
   "update Time": "Update Time",
   "Manage Network": "Manage Network",
-  "Target": "Target"
+  "Target": "Target",
+  "by_pod": "by Pod"
 }
