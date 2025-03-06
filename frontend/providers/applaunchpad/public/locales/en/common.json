@@ -84,7 +84,7 @@
   "Details": "Details",
   "download": "Download",
   "Edit Env Variable": "Edit Environment Variables",
-  "Edit Environment Variables": "Edit Environment Variables",
+  "Edit Environment Variables": "Environment Variables",
   "Env Placeholder": "one per line, key and value separated by colon or equals sign, e.g.:\nmongoUrl=127.0.0.1:8000\nredisUrl:127.0.0.0:8001\n-env1 =test",
   "Environment Variables": "Environment Variables",
   "Export": "Export",
@@ -325,5 +325,6 @@
   "update Time": "Update Time",
   "Manage Network": "Manage Network",
   "Target": "Target",
-  "by_pod": "by Pod"
+  "by_pod": "by Pod",
+  "advanced": "Advanced Configuration"
 }
