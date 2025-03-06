@@ -325,5 +325,10 @@
   "update Time": "更新时间",
   "Manage Network": "配置网络",
   "Target": "目标",
-  "by_pod": "请选择Pod"
+  "by_pod": "请选择Pod",
+  "by_container": "请选择容器",
+  "search_placeholder": "通过日志数量搜索",
+  "update_time": "更新于",
+  "by_json": "JSON模式",
+  "search_keyword": "按照关键词搜索"
 }

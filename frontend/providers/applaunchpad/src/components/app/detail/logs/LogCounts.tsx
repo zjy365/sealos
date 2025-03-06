@@ -42,7 +42,7 @@ export const LogCounts = ({
           fontSize={'14px'}
           lineHeight={'20px'}
           mb={onOpenChart ? '12px' : '0px'}
-          leftIcon={
+          rightIcon={
             <MyIcon
               name="arrowRight"
               color={'grayModern.500'}

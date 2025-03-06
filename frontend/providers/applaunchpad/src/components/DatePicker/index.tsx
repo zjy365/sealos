@@ -18,10 +18,11 @@ import { enUS, zhCN } from 'date-fns/locale';
 import { useTranslation } from 'next-i18next';
 import { ChangeEventHandler, useMemo, useState } from 'react';
 import { DateRange, DayPicker, SelectRangeEventHandler } from 'react-day-picker';
+
+import { MySelect } from '@sealos/ui';
+import MyIcon from '@/components/Icon';
 import useDateTimeStore from '@/store/date';
 import { formatTimeRange, parseTimeRange } from '@/utils/timeRange';
-import { MySelect } from '@sealos/ui';
-import MyIcon from '../Icon';
 
 interface DatePickerProps extends FlexProps {
   isDisabled?: boolean;
@@ -294,44 +295,44 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
 
   return (
     <Flex
-      h={'32px'}
-      bg="#FFF"
       gap={'10px'}
-      align={'center'}
-      px={'10px'}
-      justify={'space-between'}
-      border={'1px solid'}
-      borderColor={'#E4E4E7'}
+      align={'start'}
       borderRadius="6px"
+      color={'grayModern.900'}
       fontSize={'12px'}
       {...props}
     >
       <Popover isOpen={isOpen} onClose={onClose}>
         <PopoverTrigger>
-          <Flex cursor={'pointer'} alignItems={'center'} gap={'4px'} onClick={onOpen}>
-            <MyIcon name="calendar" />
-            <Text>
-              {format(startDateTime, 'MMM d, HH:mm', {
-                locale: currentLang === 'zh' ? zhCN : enUS
-              })}
-            </Text>
-            <MyIcon name="to" />
-            <Text>
-              {format(endDateTime, 'MMM d, HH:mm', { locale: currentLang === 'zh' ? zhCN : enUS })}
-            </Text>
-            <Button
-              variant={'unstyled'}
-              isDisabled={isDisabled}
-              minW={'fit-content'}
-              display="none"
-            >
-              <MyIcon name="calendar" />
+          <Flex
+            cursor={'pointer'}
+            alignItems={'center'}
+            gap={'4px'}
+            onClick={onOpen}
+            bg={'white'}
+            px={'4'}
+            minH={'40px'}
+            color={'#404040'}
+            border={'1px solid'}
+            fontWeight={'400'}
+            borderColor={'grayModern.200'}
+            borderRadius={'6px'}
+          >
+            <Button variant={'unstyled'} isDisabled={isDisabled} minW={'fit-content'} w={'24px'}>
+              <MyIcon name="calendar" color={'white'} />
             </Button>
+            <Text minW={'80px'} color={'#404040'}>
+              {format(startDateTime, 'HH:mm, MMM d')}
+            </Text>
+            -
+            <Text minW={'80px'} color={'#404040'}>
+              {format(endDateTime, 'HH:mm, MMM d')}
+            </Text>
           </Flex>
         </PopoverTrigger>
         <PopoverContent zIndex={99} w={'fit-content'} borderRadius={'12px'}>
-          <Flex w={'402px'} height={'382px'}>
-            <Flex w={'242px'} flexDir={'column'}>
+          <Flex w={'500px'} height={'500px'}>
+            <Flex w={'400px'} flexDir={'column'}>
               <DayPicker
                 mode="range"
                 selected={selectedRange}

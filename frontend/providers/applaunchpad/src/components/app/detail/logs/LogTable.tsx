@@ -221,11 +221,11 @@ export const LogTable = ({
           )}
         </Flex>
         <Button
-          minW={'75px'}
+          minW={'76px'}
           fontSize={'12px'}
           variant={'outline'}
-          h={'28px'}
-          leftIcon={<MyIcon name="export" />}
+          color={'#18181B'}
+          h={'34px'}
           onClick={() => exportLogs()}
         >
           {t('export_log')}

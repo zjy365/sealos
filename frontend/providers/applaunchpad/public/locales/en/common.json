@@ -299,7 +299,7 @@
   "less_than": "Less than",
   "field_name": "Select Field",
   "value": "Enter Value",
-  "logNumber": "Log Counts",
+  "logNumber": "Log number",
   "overview": "Overview",
   "monitor": "Monitors",
   "logs": "Logs",
@@ -325,5 +325,10 @@
   "update Time": "Update Time",
   "Manage Network": "Manage Network",
   "Target": "Target",
-  "by_pod": "by Pod"
+  "by_pod": "by Pod",
+  "by_container": "By Container",
+  "search_placeholder": "Search by log number",
+  "update_time": "Update At",
+  "by_json": "by JSON",
+  "search_keyword": "Search keywords"
 }

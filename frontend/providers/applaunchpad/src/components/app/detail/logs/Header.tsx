@@ -4,8 +4,9 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  Grid,
   Input,
+  InputGroup,
+  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
@@ -13,16 +14,17 @@ import {
   Text,
   useMediaQuery
 } from '@chakra-ui/react';
-import { useTranslation } from 'next-i18next';
+import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
-
-import AdvancedSelect from '@/components/AdvancedSelect';
-import MyIcon from '@/components/Icon';
-import { REFRESH_INTERVAL_OPTIONS } from '@/constants/monitor';
-import { LogsFormData } from '@/pages/app/detail/logs';
-import useDateTimeStore from '@/store/date';
+import { Check, Search } from 'lucide-react';
+import { useTranslation } from 'next-i18next';
 import { UseFormReturn } from 'react-hook-form';
-import { MyTooltip } from '@sealos/ui';
+
+import useDateTimeStore from '@/store/date';
+import { LogsFormData } from '@/pages/app/detail/logs';
+import AdvancedSelect from '@/components/AdvancedSelect';
+import { REFRESH_INTERVAL_OPTIONS } from '@/constants/monitor';
+import { Filter } from './Filter';
 
 const DatePicker = dynamic(() => import('@/components/DatePicker'), { ssr: false });
 
@@ -35,161 +37,144 @@ export const Header = ({
 }) => {
   const { t } = useTranslation();
   const { refreshInterval, setRefreshInterval } = useDateTimeStore();
-  const [isLargerThan1440] = useMediaQuery('(min-width: 1440px)');
 
   return (
-    <Flex
-      flexWrap={isLargerThan1440 ? 'nowrap' : 'wrap'}
-      gap={'32px'}
-      rowGap={'12px'}
-      py={'12px'}
-      px={'20px'}
-      alignItems={'center'}
-      w={'100%'}
-    >
-      <Flex gap={'32px'}>
-        <AdvancedSelect
-          placeholder={t('by_pod')}
+    <Flex gap={'32px'} flexWrap={'wrap'} py={'12px'} px={'20px'} w={'100vw'}>
+      <AdvancedSelect
+        placeholder={t('by_pod')}
+        height="40px"
+        w={'100px'}
+        checkBoxMode
+        width={'fit-content'}
+        value={'hello-sql-postgresql-0'}
+        onCheckboxChange={(val) => {
+          formHook.setValue('pods', val);
+        }}
+        list={formHook.watch('pods')}
+      />
+      <AdvancedSelect
+        w={'100px'}
+        width={'fit-content'}
+        placeholder={t('by_container')}
+        height="40px"
+        checkBoxMode
+        value={'hello-sql-postgresql-0'}
+        list={formHook.watch('containers')}
+        onCheckboxChange={(val) => {
+          formHook.setValue('containers', val);
+        }}
+      />
+      <InputGroup w={'200px'}>
+        <InputLeftElement pointerEvents="none" h={'40px'} w={'40px'}>
+          <Search color="#666666" size={16} />
+        </InputLeftElement>
+        <Input
           height="40px"
-          minW={'100px'}
-          checkBoxMode
+          w={'300px'}
           width={'fit-content'}
-          value={'hello-sql-postgresql-0'}
-          onCheckboxChange={(val) => {
-            formHook.setValue('pods', val);
+          bg={'#F5F5F5'}
+          border={'none'}
+          placeholder={t('search_placeholder')}
+          _hover={{
+            bg: 'white',
+            border: '1px solid #E8EBF0'
           }}
-          list={formHook.watch('pods')}
+          _focus={{
+            border: '1px solid #E8EBF0'
+          }}
+          value={formHook.watch('limit')}
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            if (isNaN(val)) {
+              formHook.setValue('limit', 1);
+            } else if (val > 500) {
+              formHook.setValue('limit', 500);
+            } else if (val < 1) {
+              formHook.setValue('limit', 1);
+            } else {
+              formHook.setValue('limit', val);
+            }
+          }}
         />
-        <Flex alignItems={'center'} gap={'12px'}>
-          <DatePicker />
-        </Flex>
-      </Flex>
-      <Flex gap={'32px'}>
-        <Flex alignItems={'center'} gap={'12px'}>
-          <Text fontSize={'12px'} fontWeight={'400'} lineHeight={'16px'} color={'grayModern.900'}>
-            Containers
+      </InputGroup>
+      <Filter formHook={formHook} refetchData={refetchData} />
+      <DatePicker />
+      <ButtonGroup isAttached variant={'outline'} size={'sm'}>
+        <Button
+          height="40px"
+          boxShadow={'none'}
+          bg={'white'}
+          _hover={{
+            bg: 'grayModern.50'
+          }}
+          onClick={() => {
+            refetchData();
+          }}
+          position={'relative'}
+        >
+          <Text position={'relative'} fontSize={'normal'} fontWeight={'normal'}>
+            {t('refresh')}
           </Text>
-          <AdvancedSelect
-            minW={isLargerThan1440 ? '200px' : '270px'}
-            placeholder={t('please_select')}
-            height="32px"
-            checkBoxMode
-            leftIcon={<MyIcon name="container" w={'16px'} h={'16px'} color={'grayModern.500'} />}
-            value={'hello-sql-postgresql-0'}
-            list={formHook.watch('containers')}
-            onCheckboxChange={(val) => {
-              formHook.setValue('containers', val);
+        </Button>
+        <Menu autoSelect={false}>
+          <MenuButton
+            as={Button}
+            height="40px"
+            bg={'white'}
+            boxShadow={'none'}
+            _hover={{
+              bg: 'grayModern.50'
             }}
-          />
-        </Flex>
-        <Flex alignItems={'center'} gap={'12px'}>
-          <Text fontSize={'12px'} fontWeight={'400'} lineHeight={'16px'} color={'grayModern.900'}>
-            {t('log_number')}
-          </Text>
-          <Input
-            height="32px"
-            width={'fit-content'}
-            value={formHook.watch('limit')}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              if (isNaN(val)) {
-                formHook.setValue('limit', 1);
-              } else if (val > 500) {
-                formHook.setValue('limit', 500);
-              } else if (val < 1) {
-                formHook.setValue('limit', 1);
-              } else {
-                formHook.setValue('limit', val);
-              }
-            }}
-          />
-          <ButtonGroup isAttached variant={'outline'} size={'sm'}>
-            <Button
-              height="32px"
-              bg={'grayModern.50'}
-              _hover={{
-                bg: 'grayModern.50'
-              }}
-              onClick={() => {
-                refetchData();
-              }}
-              position={'relative'}
-            >
-              <MyTooltip label={t('refresh')} hasArrow>
-                <Box position={'relative'}>
-                  <MyIcon
-                    name="refresh"
-                    w={'16px'}
-                    h={'16px'}
-                    color={'grayModern.500'}
-                    _hover={{
-                      color: 'brightBlue.500'
-                    }}
-                  />
-                </Box>
-              </MyTooltip>
-            </Button>
-
-            <Menu>
-              <MenuButton
-                as={Button}
-                height="32px"
-                bg={'grayModern.50'}
-                _hover={{
-                  bg: 'grayModern.50',
-                  '& div': {
-                    color: 'brightBlue.500'
-                  },
-                  '& svg': {
-                    color: 'brightBlue.500'
-                  }
+          >
+            <Flex alignItems={'center'}>
+              {refreshInterval === 0 ? null : (
+                <Text mr={'4px'}>{`${refreshInterval / 1000}s`}</Text>
+              )}
+              <ChevronDownIcon w={'16px'} h={'16px'} color={'grayModern.500'} />
+            </Flex>
+          </MenuButton>
+          <MenuList
+            p={'2'}
+            borderRadius={'base'}
+            border={'1px solid #E8EBF0'}
+            boxShadow={
+              '0px 4px 10px 0px rgba(19, 51, 107, 0.10), 0px 0px 1px 0px rgba(19, 51, 107, 0.10)'
+            }
+            zIndex={99}
+            overflow={'overlay'}
+            maxH={'300px'}
+          >
+            <Box color={'#71717A'} mb={'3'} pl={1} fontSize={'12px'} fontWeight={'500'}>
+              {t('set_automatic_refresh')}
+            </Box>
+            {REFRESH_INTERVAL_OPTIONS.map((item) => (
+              <MenuItem
+                key={item.value}
+                value={item.value}
+                onClick={() => {
+                  setRefreshInterval(item.value);
                 }}
-              >
-                <Flex alignItems={'center'}>
-                  {refreshInterval === 0 ? null : (
-                    <Text mr={'4px'}>{`${refreshInterval / 1000}s`}</Text>
-                  )}
-                  <ChevronDownIcon w={'16px'} h={'16px'} color={'grayModern.500'} />
-                </Flex>
-              </MenuButton>
-              <MenuList
+                borderRadius={'4px'}
+                _hover={{
+                  bg: 'rgba(17, 24, 36, 0.05)'
+                }}
                 p={'6px'}
-                borderRadius={'base'}
-                border={'1px solid #E8EBF0'}
-                boxShadow={
-                  '0px 4px 10px 0px rgba(19, 51, 107, 0.10), 0px 0px 1px 0px rgba(19, 51, 107, 0.10)'
-                }
-                zIndex={99}
-                overflow={'overlay'}
-                maxH={'300px'}
               >
-                {REFRESH_INTERVAL_OPTIONS.map((item) => (
-                  <MenuItem
-                    key={item.value}
-                    value={item.value}
-                    onClick={() => {
-                      setRefreshInterval(item.value);
-                    }}
-                    {...(refreshInterval === item.value
-                      ? {
-                          color: 'brightBlue.600'
-                        }
-                      : {})}
-                    borderRadius={'4px'}
-                    _hover={{
-                      bg: 'rgba(17, 24, 36, 0.05)',
-                      color: 'brightBlue.600'
-                    }}
-                    p={'6px'}
-                  >
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu>
-          </ButtonGroup>
-        </Flex>
-      </Flex>
+                <Flex alignItems={'center'} justifyContent={'space-between'} w={'full'}>
+                  {item.label}
+                  {refreshInterval === item.value && (
+                    <Check color={'#1C4EF5'} width={'16px'} height={'16px'} />
+                  )}
+                </Flex>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
+      </ButtonGroup>
+
+      <Text color="#737373" w={'fit-content'} alignSelf={'center'}>
+        {t('update_time') + ' ' + format(new Date(), 'HH:mm:ss')}
+      </Text>
     </Flex>
   );
 };

@@ -153,8 +153,7 @@ const AdvancedSelect = (
             <MenuItem
               borderRadius={'4px'}
               _hover={{
-                bg: 'rgba(17, 24, 36, 0.05)',
-                color: 'brightBlue.600'
+                bg: 'rgba(17, 24, 36, 0.05)'
               }}
               p={'6px'}
               w={'100%'}
