@@ -6,7 +6,8 @@ import { useRouter } from 'next/router';
 export const ROUTES = {
   OVERVIEW: '/app/detail',
   MONITOR: '/app/detail/monitor',
-  LOGS: '/app/detail/logs'
+  LOGS: '/app/detail/logs',
+  ADVANCED: '/app/detail/advanced'
 } as const;
 
 export default function Sidebar() {
@@ -37,6 +38,18 @@ export default function Sidebar() {
         />
       ),
       path: ROUTES.MONITOR
+    },
+    {
+      label: t('advanced'),
+      icon: (
+        <MyIcon
+          name="log"
+          w={'24px'}
+          h={'24px'}
+          color={router.pathname === ROUTES.LOGS ? 'grayModern.900' : 'grayModern.500'}
+        />
+      ),
+      path: ROUTES.ADVANCED
     },
     {
       label: t('Log'),

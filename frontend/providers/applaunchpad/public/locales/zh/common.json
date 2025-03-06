@@ -326,6 +326,7 @@
   "Manage Network": "配置网络",
   "Target": "目标",
   "by_pod": "请选择Pod",
+  "advanced": "高级配置",
   "by_container": "请选择容器",
   "search_placeholder": "通过日志数量搜索",
   "update_time": "更新于",
