@@ -17,9 +17,10 @@ interface Props extends BoxProps {
     total: number;
     onChange: (page: number) => void;
   };
+  onRowClick?: (item: any) => void;
 }
 
-export const MyTable = ({ columns, data, itemClass = '', pagination }: Props) => {
+export const MyTable = ({ columns, data, itemClass = '', pagination, onRowClick }: Props) => {
   return (
     <Box
       borderRadius={'12px'}
@@ -64,6 +65,7 @@ export const MyTable = ({ columns, data, itemClass = '', pagination }: Props) =>
         >
           {columns.map((col, index2) => (
             <Flex
+              cursor={'pointer'}
               className={index2 === 0 ? itemClass : ''}
               data-id={item.id}
               key={col.key}
@@ -73,6 +75,7 @@ export const MyTable = ({ columns, data, itemClass = '', pagination }: Props) =>
               fontSize={'base'}
               fontWeight={'bold'}
               color={'grayModern.900'}
+              onClick={() => (onRowClick ? onRowClick?.(item) : {})}
             >
               {col.render ? col.render(item) : col.dataIndex ? `${item[col.dataIndex]}` : ''}
             </Flex>
