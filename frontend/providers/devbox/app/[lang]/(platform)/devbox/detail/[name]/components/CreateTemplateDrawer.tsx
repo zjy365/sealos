@@ -153,17 +153,22 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
       <DrawerContent
         maxWidth={'500px'}
         overflowY={'auto'}
-        minH={'785px'}
         my={'16px'}
         mr={'16px'}
         borderRadius={'16px'}
         position={'relative'}
+        maxH={'calc(100vh - 32px)'}
+        display={'flex'}
+        flexDirection={'column'}
       >
         <DrawerHeader>{t('create_template')}</DrawerHeader>
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmitHandler)}>
-            <DrawerBody borderTopWidth={1} bg={'#F8F8F9'} py={'12'} h={'full'}>
-              <VStack spacing={6} align="stretch">
+        <DrawerBody borderTopWidth={1} bg={'#F8F8F9'} py={'12'} flex={1} overflowY={'auto'}>
+          <FormProvider {...methods}>
+            <form
+              onSubmit={handleSubmit(onSubmitHandler)}
+              style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            >
+              <VStack spacing={6} align="stretch" flex={1}>
                 {/* name */}
                 <TemplateRepositoryNameField />
 
@@ -197,33 +202,33 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
                 {/* Public */}
                 <TemplateRepositoryIsPublicField />
               </VStack>
-            </DrawerBody>
-            <DrawerFooter borderTopWidth={1} bg={'#F8F8F9'} py={'12'}>
-              <ButtonGroup spacing="12px" justifyContent="flex-start" w={'100%'}>
-                <Button
-                  type="submit"
-                  variant={'solid'}
-                  px={'29.5px'}
-                  py={'8px'}
-                  isLoading={isSubmitting}
-                >
-                  {t('create')}
-                </Button>
-                <Button
-                  variant={'outline'}
-                  px={'29.5px'}
-                  py={'8px'}
-                  onClick={onClose}
-                  _hover={{
-                    bg: 'grayModern.50'
-                  }}
-                >
-                  {t('cancel')}
-                </Button>
-              </ButtonGroup>
-            </DrawerFooter>
-          </form>
-        </FormProvider>
+              <DrawerFooter borderTopWidth={1} bg={'#F8F8F9'} my={'12'} p={0} py={'24px'}>
+                <ButtonGroup spacing="12px" justifyContent="flex-start" w={'100%'}>
+                  <Button
+                    type="submit"
+                    variant={'solid'}
+                    px={'29.5px'}
+                    py={'8px'}
+                    isLoading={isSubmitting}
+                  >
+                    {t('create')}
+                  </Button>
+                  <Button
+                    variant={'outline'}
+                    px={'29.5px'}
+                    py={'8px'}
+                    onClick={onClose}
+                    _hover={{
+                      bg: 'grayModern.50'
+                    }}
+                  >
+                    {t('cancel')}
+                  </Button>
+                </ButtonGroup>
+              </DrawerFooter>
+            </form>
+          </FormProvider>
+        </DrawerBody>
       </DrawerContent>
     </Drawer>
   );

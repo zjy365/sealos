@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { SealosMenu, useMessage } from '@sealos/ui';
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Flex, Img, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -401,7 +401,7 @@ const Version = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Image src={'/images/empty/release-empty.png'} alt="empty" width={50} height={50} />
+          <Img src={'/images/empty/release-empty.png'} alt="empty" width={50} height={50} />
           <Text fontSize={'18px'} fontWeight={'600'} color={'grayModern.900'} mt={'12px'}>
             {t('no_release')}
           </Text>

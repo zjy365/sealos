@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Flex, Img, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -187,7 +187,7 @@ const MainBody = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <Image src={'/images/empty/network-empty.png'} alt="empty" width={50} height={50} />
+              <Img src={'/images/empty/network-empty.png'} alt="empty" width={50} height={50} />
               <Text fontSize={'18px'} fontWeight={'600'} color={'grayModern.900'} mt={'12px'}>
                 {t('no_network')}
               </Text>
