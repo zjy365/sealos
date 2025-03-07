@@ -189,16 +189,15 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
       key: 'control',
       render: (item: PodDetailType, i: number) => (
         <Flex alignItems={'center'} className="driver-detail-operate">
-          <Button variant={'square'} onClick={() => setDetailPodIndex(i)}>
-            <MyIcon name={'detail'} w="18px" h="18px" fill={'#485264'} />
-          </Button>
-
           <Button
             px={'12px'}
             color={'#18181B'}
             borderRadius={'6px'}
             variant={'outline'}
-            onClick={() => setLogsPodIndex(i)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setLogsPodIndex(i);
+            }}
           >
             {t('logs')}
           </Button>
@@ -208,7 +207,10 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
             color={'#18181B'}
             borderRadius={'6px'}
             variant={'outline'}
-            onClick={openConfirmRestart(() => handleRestartPod(item.podName))}
+            onClick={(e) => {
+              e.stopPropagation();
+              openConfirmRestart(() => handleRestartPod(item.podName))();
+            }}
           >
             {t('Restart')}
           </Button>
@@ -219,7 +221,8 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
             color={'#18181B'}
             borderRadius={'6px'}
             variant={'outline'}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               const defaultCommand = `kubectl exec -it ${item.podName} -c ${appName} -- sh -c "clear; (bash || ash || sh)"`;
               sealosApp.runEvents('openDesktopApp', {
                 appKey: 'system-terminal',
@@ -298,7 +301,7 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
           </Thead>
           <Tbody>
             {pods.map((app, i) => (
-              <Tr key={app.podName}>
+              <Tr key={app.podName} onClick={() => setDetailPodIndex(i)} cursor={'pointer'}>
                 {columns.map((col) => (
                   <Td key={col.key} border={'none'}>
                     {col.render
