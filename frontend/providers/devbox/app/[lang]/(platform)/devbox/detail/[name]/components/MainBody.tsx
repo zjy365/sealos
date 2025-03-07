@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { Box, Button, Flex, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
@@ -104,7 +105,7 @@ const MainBody = () => {
         {/* monitor */}
         <Box mt={4}>
           <Flex mb={6} w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
-            <Box fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
+            <Box fontSize="20px" fontWeight={'bold'} color={'grayModern.900'}>
               {t('monitor')}
             </Box>
             <Box color={'#A3A3A3'} fontSize={'12px'} fontWeight={'normal'}>
@@ -143,7 +144,7 @@ const MainBody = () => {
         {/* network */}
         <Box mt={4}>
           <Flex alignItems={'center'} mb={2} justifyContent={'space-between'}>
-            <Text fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
+            <Text fontSize="20px" fontWeight={'bold'} color={'grayModern.900'}>
               {t('network')}
             </Text>
             <Flex gap={2} alignItems={'center'}>
@@ -175,11 +176,24 @@ const MainBody = () => {
               </Button>
             </Flex>
           </Flex>
-          {devboxDetail?.networks && devboxDetail.networks.length > 0 ? (
-            <MyTable columns={networkColumn} data={devboxDetail?.networks} />
-          ) : (
-            <Flex justify={'center'} align={'center'} h={'100px'}>
-              <Text color={'grayModern.600'}>{t('no_network')}</Text>
+
+          <MyTable columns={networkColumn} data={devboxDetail?.networks || []} />
+          {devboxDetail?.networks && devboxDetail.networks.length === 0 && (
+            <Flex
+              w={'full'}
+              flex={1}
+              py={'24px'}
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Image src={'/images/empty/network-empty.png'} alt="empty" width={50} height={50} />
+              <Text fontSize={'18px'} fontWeight={'600'} color={'grayModern.900'} mt={'12px'}>
+                {t('no_network')}
+              </Text>
+              <Box pb={8} w={300} textAlign={'center'}>
+                {t('no_network_desc')}
+              </Box>
             </Flex>
           )}
         </Box>

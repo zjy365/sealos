@@ -24,7 +24,7 @@ const ScriptCode = ({
     <Flex
       px={2}
       py={1}
-      borderRadius={'6px'}
+      borderRadius={'12px'}
       border={'1px solid'}
       bg={'black'}
       borderColor={'grayModern.200'}

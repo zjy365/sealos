@@ -28,18 +28,8 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
     }
   }, []);
   return (
-    <Flex h={'90px'} alignItems={'center'}>
-      <Center
-        mr={'16px'}
-        width={'46px'}
-        bg={'#FFF'}
-        height={'46px'}
-        border={theme.borders.base}
-        borderRadius={'md'}
-      >
-        <MyIcon name="logo" w={'30px'} h={'30px'} />
-      </Center>
-      <Box fontSize={'3xl'} color={'grayModern.900'} fontWeight={'600'}>
+    <Flex h={'96px'} alignItems={'center'}>
+      <Box color={'grayModern.900'} fontWeight={'600'} fontSize={'24px'}>
         Devbox
       </Box>
       <Flex

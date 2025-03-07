@@ -79,9 +79,22 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
   return (
     <>
       <Box id={'baseInfo'} {...props}>
-        <Box h={'40px'}>
-          <Label w={100}>{t('network_settings')}</Label>
-        </Box>
+        <Flex h={'40px'} alignItems={'center'} w={'full'}>
+          <Label w={180}>{t('network_settings')}</Label>
+          <Box
+            fontSize={'12px'}
+            color={'#2563EB'}
+            fontWeight={'500'}
+            borderRadius={'100px'}
+            bg="#EFF6FF"
+            py={'5px'}
+            px={'10px'}
+            w={'95px'}
+            h={'28px'}
+          >
+            $0.008/each
+          </Box>
+        </Flex>
         <Box pt={'8px'} userSelect={'none'}>
           {networks.length === 0 && <AppendNetworksButton onClick={() => appendNetworks()} />}
           {networks.map((network, i) => (

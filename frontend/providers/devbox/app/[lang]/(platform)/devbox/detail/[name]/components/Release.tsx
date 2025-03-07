@@ -1,12 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import { customAlphabet } from 'nanoid';
-import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { SealosMenu, useMessage } from '@sealos/ui';
 import { useCallback, useEffect, useState } from 'react';
+import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -384,26 +385,30 @@ const Version = () => {
         </Button>
       </Flex>
       <Loading loading={!initialized} fixed={false} />
-      {devboxVersionList.length === 0 && initialized ? (
+
+      <MyTable
+        columns={columns}
+        data={devboxVersionList}
+        needRadius
+        gridTemplateColumns={'105px 105px 144px minmax(0, 1fr) 160px'}
+      />
+      {devboxVersionList.length === 0 && initialized && (
         <Flex
-          justifyContent={'center'}
-          alignItems={'center'}
-          mt={10}
-          flexDirection={'column'}
-          gap={4}
+          w={'full'}
+          flex={1}
+          py={'24px'}
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
         >
-          <MyIcon name="empty" w={'40px'} h={'40px'} color={'white'} />
-          <Box textAlign={'center'} color={'grayModern.600'}>
-            {t('no_versions')}
+          <Image src={'/images/empty/release-empty.png'} alt="empty" width={50} height={50} />
+          <Text fontSize={'18px'} fontWeight={'600'} color={'grayModern.900'} mt={'12px'}>
+            {t('no_release')}
+          </Text>
+          <Box pb={8} w={300} textAlign={'center'}>
+            {t('no_release_desc')}
           </Box>
         </Flex>
-      ) : (
-        <MyTable
-          columns={columns}
-          data={devboxVersionList}
-          needRadius
-          gridTemplateColumns={'105px 105px 144px minmax(0, 1fr) 160px'}
-        />
       )}
       {!!currentVersion && (
         <EditVersionDesModal

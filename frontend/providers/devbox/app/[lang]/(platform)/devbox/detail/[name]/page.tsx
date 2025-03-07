@@ -69,16 +69,16 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
       <Loading loading={!initialized} />
       {devboxDetail && initialized && (
         <>
-          <Box mb={6} px={5}>
+          <Box mb={6} px={'40px'}>
             <Header refetchDevboxDetail={refetch} />
           </Box>
 
           {/* tab */}
-          <Flex gap={4} px={10}>
+          <Flex gap={4} px={'40px'} alignItems={'center'}>
             <Button
               border={'none'}
               bg={'white'}
-              h={'30px'}
+              h={'32px'}
               color={'grayModern.900'}
               boxShadow={'none'}
               fontWeight={'normal'}
@@ -95,11 +95,11 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
             >
               {t('overview')}
             </Button>
-            <Divider h={'30px'} orientation={'vertical'} />
+            <Divider h={'24px'} orientation={'vertical'} />
             <Button
               border={'none'}
               bg={'white'}
-              h={'30px'}
+              h={'32px'}
               color={'grayModern.900'}
               boxShadow={'none'}
               fontWeight={'normal'}
@@ -114,7 +114,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
                 setTab('monitor');
               }}
             >
-              {t('monitor')}
+              {t('monitor_tab')}
             </Button>
           </Flex>
 
@@ -124,7 +124,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
             flex={'1 0 0'}
             gap={4}
             direction={'column'}
-            w={'80%'}
+            w={'70%'}
             mx={'auto'}
             my={4}
           >

@@ -43,6 +43,7 @@ export default function SwitchPage({
     <Flex
       w={'full'}
       px={'24px'}
+      py={'8px'}
       pb={2}
       align={'center'}
       fontSize="14px"

@@ -16,6 +16,7 @@ import MyIcon from '@/components/Icon';
 import IDEButton from '@/components/IDEButton';
 import DelModal from '@/components/modals/DelModal';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
+import { ArrowLeft } from 'lucide-react';
 
 const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) => {
   const router = useRouter();
@@ -119,26 +120,18 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
   );
   if (!devboxDetail) return null;
   return (
-    <Flex justify="space-between" align="center" pl={4} pt={2} flexWrap={'wrap'} gap={5}>
+    <Flex justify="space-between" align="center" pt={2} flexWrap={'wrap'} gap={5}>
       {/* left back button and title */}
-      <Flex alignItems={'center'} gap={2}>
-        <MyIcon
-          name="arrowLeft"
-          w={'24px'}
-          color={'white'}
-          onClick={() => router.push('/')}
-          cursor={'pointer'}
-          mt={1}
-          ml={1}
-        />
-        <Box fontSize="2xl" fontWeight="bold">
+      <Flex alignItems={'center'} gap={2} p={0}>
+        <ArrowLeft size={'24px'} onClick={() => router.push('/')} cursor={'pointer'} />
+        <Box fontSize="24px" fontWeight="600">
           {devboxDetail.name}
         </Box>
         {/* status  */}
         <DevboxStatusTag status={devboxDetail.status} h={'27px'} />
       </Flex>
       {/* right main button group */}
-      <Flex gap={5}>
+      <Flex gap={'12px'}>
         {/* delete button */}
         <Button
           h={'40px'}
@@ -162,7 +155,7 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
           bg={'white'}
           color={'grayModern.400'}
           _hover={{
-            color: 'brightBlue.600'
+            bg: 'grayModern.50'
           }}
           borderWidth={1}
           onClick={() => handleGoToTerminal(devboxDetail)}

@@ -152,27 +152,17 @@ const CreateTemplateModal: FC<CreateTemplateModalProps> = ({
       <DrawerOverlay />
       <DrawerContent
         maxWidth={'500px'}
-        overflow={'hidden'}
+        overflowY={'auto'}
         minH={'785px'}
-        my={'32px'}
-        mr={'32px'}
+        my={'16px'}
+        mr={'16px'}
         borderRadius={'16px'}
         position={'relative'}
       >
         <DrawerHeader>{t('create_template')}</DrawerHeader>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmitHandler)}>
-            <DrawerBody
-              h={'full'}
-              borderTopWidth={1}
-              bg={'#F8F8F9'}
-              py={'6'}
-              sx={{
-                '&::-webkit-scrollbar': {
-                  display: 'none'
-                }
-              }}
-            >
+            <DrawerBody borderTopWidth={1} bg={'#F8F8F9'} py={'12'} h={'full'}>
               <VStack spacing={6} align="stretch">
                 {/* name */}
                 <TemplateRepositoryNameField />

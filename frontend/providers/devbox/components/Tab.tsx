@@ -12,9 +12,9 @@ const Tab = React.forwardRef((props: { children: React.ReactNode }, ref) => {
       _hover={{
         color: '#18181B'
       }}
-      pb={1}
       textAlign={'center'}
       w={'full'}
+      h={'32px'}
       fontWeight={400}
       fontSize={'14px'}
       _selected={{
