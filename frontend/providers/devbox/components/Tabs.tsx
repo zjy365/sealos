@@ -37,7 +37,7 @@ export default function Tabs({ list, size = 'md', activeId, onChange, ...props }
     <Grid
       gridTemplateColumns={`repeat(${list.length},1fr)`}
       p={sizeMap.outP}
-      borderRadius={'lg'}
+      borderRadius={'8px'}
       backgroundColor={'#F2F2F2'}
       fontSize={sizeMap.fontSize}
       {...props}
@@ -57,7 +57,6 @@ export default function Tabs({ list, size = 'md', activeId, onChange, ...props }
                 boxShadow: '0px 1px 2px 0px #0000000D',
                 backgroundColor: 'white',
                 cursor: 'default',
-                fontWeight: 'bold',
                 color: 'grayModern.900'
               }
             : {

@@ -1,8 +1,3 @@
-import MyIcon from '@/components/Icon';
-import { ProtocolList } from '@/constants/devbox';
-import { useEnvStore } from '@/stores/env';
-import { DevboxEditTypeV2 } from '@/types/devbox';
-import { nanoid } from '@/utils/tools';
 import {
   Box,
   BoxProps,
@@ -13,15 +8,23 @@ import {
   Input,
   Switch,
   useTheme,
-  Text
+  Text,
+  Divider
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { MySelect, useMessage } from '@sealos/ui';
 import { useFieldArray, useFormContext } from 'react-hook-form';
+
+import MyIcon from '@/components/Icon';
+import { nanoid } from '@/utils/tools';
+import { useEnvStore } from '@/stores/env';
+import { ProtocolList } from '@/constants/devbox';
+import { DevboxEditTypeV2 } from '@/types/devbox';
+
 import Label from './Label';
-import { Trash2 } from 'lucide-react';
 
 export type CustomAccessModalParams = {
   publicDomain: string;
@@ -35,7 +38,6 @@ const AppendNetworksButton = (props: ButtonProps) => {
     <Button
       boxShadow={'none'}
       w={'110px'}
-      mt={'10px'}
       h={'40px'}
       variant={'outline'}
       fontWeight={'normal'}
@@ -74,7 +76,6 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
       customDomain: ''
     });
   };
-  // const networks = watch('networks')
   return (
     <>
       <Box id={'baseInfo'} {...props}>
@@ -88,8 +89,6 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
               <Flex
                 className="guide-network-configuration"
                 alignItems={'flex-start'}
-                // key={network.id}
-                _notLast={{ pb: 6, borderBottom: theme.borders.base }}
                 _notFirst={{ pt: 6 }}
               >
                 <Box>
@@ -261,6 +260,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                   </Box>
                 )}
               </Flex>
+              <Divider my={'16px'} />
               {i === networks.length - 1 && networks.length < 5 && (
                 <Box mt={3}>
                   <AppendNetworksButton onClick={() => appendNetworks()} />
