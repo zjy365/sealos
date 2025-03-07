@@ -318,7 +318,9 @@
   "selected": "Selected",
   "please_select": "Please Select",
   "refetching_success": "Refresh Successful",
-  "refresh": "Refresh",
+  "refresh": "refresh",
+  "Ready": "Preparing",
+  "Accessible": "Accessible",
   "cc": {
     "basic": "Basic"
   },
