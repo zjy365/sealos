@@ -30,6 +30,8 @@ export default function DevboxName({ isEdit, ...props }: { isEdit: boolean } & F
           disabled={isEdit}
           autoFocus={true}
           w={'300px'}
+          h={'40px'}
+          bg={'#FAFAFA'}
           placeholder={t('enter_devbox_name')}
           {...register('name', {
             required: t('devbox_name_required'),

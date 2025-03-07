@@ -51,11 +51,11 @@ export const MySlider = ({
         </SliderMark>
       ))}
       <SliderTrack bg={'#EAEDF3'} borderRadius={'4px'} overflow={'hidden'} h={'4px'}>
-        <SliderFilledTrack bg={'#224EF5'} />
+        <SliderFilledTrack bg={'#1C4EF5'} />
       </SliderTrack>
       <SliderThumb
         bg={'white'}
-        border={'1px solid #224EF5'}
+        border={'1px solid #1C4EF5'}
         _active={{ bg: 'white' }}
         _focus={{ bg: 'white' }}
       ></SliderThumb>

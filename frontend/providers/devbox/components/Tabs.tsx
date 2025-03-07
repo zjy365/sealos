@@ -40,7 +40,6 @@ export default function Tabs({ list, size = 'md', activeId, onChange, ...props }
       borderRadius={'lg'}
       backgroundColor={'#F2F2F2'}
       fontSize={sizeMap.fontSize}
-      fontWeight={500}
       {...props}
     >
       {list.map((item) => (
@@ -58,6 +57,7 @@ export default function Tabs({ list, size = 'md', activeId, onChange, ...props }
                 boxShadow: '0px 1px 2px 0px #0000000D',
                 backgroundColor: 'white',
                 cursor: 'default',
+                fontWeight: 'bold',
                 color: 'grayModern.900'
               }
             : {

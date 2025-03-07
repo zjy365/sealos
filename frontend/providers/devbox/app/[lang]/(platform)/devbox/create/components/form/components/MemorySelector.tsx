@@ -11,8 +11,10 @@ export default function MemorySelector(props: FlexProps) {
   const t = useTranslations();
   const { watch, setValue } = useFormContext<DevboxEditTypeV2>();
   return (
-    <Flex mb={'50px'} pr={3} alignItems={'center'} {...props}>
-      <Text w={100}>{t('memory')}</Text>
+    <Flex mb={'20px'} pr={3} alignItems={'center'} {...props}>
+      <Text w={100} fontWeight={'bold'}>
+        {t('memory')}
+      </Text>
       <MySlider
         markList={MemorySlideMarkList}
         activeVal={watch('memory')}

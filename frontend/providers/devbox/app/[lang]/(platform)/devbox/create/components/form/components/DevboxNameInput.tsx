@@ -29,6 +29,17 @@ export default function DevboxNameInput({
           disabled={isEdit}
           autoFocus={true}
           w={'300px'}
+          _hover={{
+            bg: 'grayModern.50',
+            borderColor: '#E8EBF0'
+          }}
+          _focus={{
+            bg: 'grayModern.50',
+            borderColor: '#E8EBF0'
+          }}
+          _focusVisible={{
+            borderColor: '#E8EBF0'
+          }}
           placeholder={t('enter_devbox_name')}
           {...register('name', {
             required: t('devbox_name_required'),
