@@ -189,6 +189,10 @@ const Pods = ({ pods = [], appName }: { pods: PodDetailType[]; appName: string }
       key: 'control',
       render: (item: PodDetailType, i: number) => (
         <Flex alignItems={'center'} className="driver-detail-operate">
+          <Button variant={'square'} onClick={() => setDetailPodIndex(i)}>
+            <MyIcon name={'detail'} w="18px" h="18px" fill={'#485264'} />
+          </Button>
+
           <Button
             px={'12px'}
             color={'#18181B'}
