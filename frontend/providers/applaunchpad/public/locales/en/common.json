@@ -331,5 +331,8 @@
   "search_placeholder": "Search by log number",
   "update_time": "Update At",
   "by_json": "by JSON",
-  "search_keyword": "Search keywords"
+  "search_keyword": "Search keywords",
+  "Key": "Key",
+  "Value": "Value",
+  "Manage": "Manage"
 }

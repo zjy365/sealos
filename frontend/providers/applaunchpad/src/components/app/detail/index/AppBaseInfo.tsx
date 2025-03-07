@@ -150,9 +150,9 @@ const AppBaseInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
 
   return (
     <Box
+      position={'relative'}
       px={'24px'}
       py={'20px'}
-      position={'relative'}
       borderRadius={'16px'}
       border={'1px solid #E4E4E7'}
       bg={'#FFF'}

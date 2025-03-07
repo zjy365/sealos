@@ -4,7 +4,7 @@ import YamlCode from '@/components/YamlCode/index';
 import styles from './index.module.scss';
 import { useCopyData } from '@/utils/tools';
 import type { YamlItemType, QueryType } from '@/types';
-import { Tabs } from '@sealos/ui';
+import Tabs from '@/components/Tabs';
 import { obj2Query } from '@/api/tools';
 import { useRouter } from 'next/router';
 import MyIcon from '@/components/Icon';

@@ -331,5 +331,8 @@
   "search_placeholder": "通过日志数量搜索",
   "update_time": "更新于",
   "by_json": "JSON模式",
-  "search_keyword": "按照关键词搜索"
+  "search_keyword": "按照关键词搜索",
+  "Key": "Key",
+  "Value": "Value",
+  "Manage": "管理"
 }

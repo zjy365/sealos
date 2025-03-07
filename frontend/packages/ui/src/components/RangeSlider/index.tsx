@@ -4,7 +4,8 @@ import {
   RangeSliderTrack,
   RangeSliderFilledTrack,
   RangeSliderThumb,
-  Box
+  Box,
+  Text
 } from '@chakra-ui/react';
 
 export const MyRangeSlider = ({
@@ -44,13 +45,21 @@ export const MyRangeSlider = ({
         <Box {...startEndValStyle} right={0} transform={'translateX(50%)'}>
           {max}
         </Box>
-        <RangeSliderFilledTrack bg={'grayModern.900'} />
+        <RangeSliderFilledTrack bg={'#1C4EF5'} />
       </RangeSliderTrack>
-      <RangeSliderThumb index={0} bg={'grayModern.900'}>
-        <Box transform={'translateY(18px)'}>{value[0] === min ? '' : value[0]}</Box>
+      <RangeSliderThumb index={0} bg={'#1C4EF5'}>
+        <Box w={'10px'} h={'10px'} bg={'#FFF'} borderRadius={'50%'}>
+          <Text whiteSpace={'nowrap'} transform={'translateY(14px)'}>
+            {value[0] === min ? '' : value[0]}
+          </Text>
+        </Box>
       </RangeSliderThumb>
-      <RangeSliderThumb index={1} bg={'grayModern.900'}>
-        <Box transform={'translateY(18px)'}>{value[1] === max ? '' : value[1]}</Box>
+      <RangeSliderThumb index={1} bg={'#1C4EF5'}>
+        <Box w={'10px'} h={'10px'} bg={'#FFF'} borderRadius={'50%'}>
+          <Text whiteSpace={'nowrap'} transform={'translateY(14px)'}>
+            {value[1] === max ? '' : value[1]}
+          </Text>
+        </Box>
       </RangeSliderThumb>
     </RangeSlider>
   );

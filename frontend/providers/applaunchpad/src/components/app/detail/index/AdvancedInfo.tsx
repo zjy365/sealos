@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Center,
   Divider,
   Flex,
@@ -20,6 +21,8 @@ import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
 import styles from '@/components/app/detail/index/index.module.scss';
+import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 const ConfigMapDetailModal = dynamic(() => import('./ConfigMapDetailModal'));
 
@@ -32,221 +35,247 @@ const AdvancedInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
     value: string;
   }>();
   const [isExpanded, setIsExpanded] = useState(false);
+  const router = useRouter();
 
   return (
     <Box px={'32px'}>
-      <Box>
-        <Flex mt={'8px'} gap={'16px'}>
-          <Box flex={'1 0 0'} width={'0px'}>
-            <Box fontSize={'12px'} fontWeight={400} color={'grayModern.600'}>
-              <Text>{t('Command')}</Text>
-              <Box
-                borderRadius={'4px'}
-                border={'1px solid #F4F4F7'}
-                bg={'grayModern.25'}
-                p={'12px'}
-                mt={'8px'}
-              >
-                {[
-                  { label: 'Command', value: app.runCMD || 'Not Configured' },
-                  { label: 'Parameters', value: app.cmdParam || 'Not Configured' }
-                ].map((item) => (
+      <Box
+        px={'24px'}
+        py={'20px'}
+        borderRadius={'16px'}
+        border={'1px solid #E4E4E7'}
+        bg={'#FFF'}
+        boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+      >
+        <Flex justifyContent={'space-between'}>
+          <Text fontSize={'20px'} fontWeight={'bold'} color={'#18181B'}>
+            {t('Command')}
+          </Text>
+          <Button variant={'outline'} onClick={() => router.push(`/app/edit?name=${app.appName}`)}>
+            {t('Add')}
+          </Button>
+        </Flex>
+        <Flex color={'#737373'} fontSize={'14px'} mt={'20px'} gap={'12px'}>
+          {[
+            { label: 'Command', value: app.runCMD || 'Not Configured' },
+            { label: 'Parameters', value: app.cmdParam || 'Not Configured' }
+          ].map((item) => (
+            <Flex key={item.label} flex={1}>
+              {t(item.label)}
+            </Flex>
+          ))}
+        </Flex>
+        <Flex color={'#18181B'} fontSize={'14px'} mt={'20px'} gap={'12px'}>
+          {[
+            { label: 'Command', value: app.runCMD || 'Not Configured' },
+            { label: 'Parameters', value: app.cmdParam || 'Not Configured' }
+          ].map((item) => (
+            <Flex
+              key={item.label}
+              flex={1}
+              borderRadius={'8px'}
+              border={'1px solid #E4E4E7'}
+              background={'#FAFAFA'}
+              p={'8px 12px'}
+            >
+              {item.value}
+            </Flex>
+          ))}
+        </Flex>
+      </Box>
+
+      <Box
+        mt={'16px'}
+        px={'24px'}
+        py={'20px'}
+        borderRadius={'16px'}
+        border={'1px solid #E4E4E7'}
+        bg={'#FFF'}
+        boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+      >
+        <Flex justifyContent={'space-between'}>
+          <Text fontSize={'20px'} fontWeight={'bold'} color={'#18181B'}>
+            {t('Environment Variables')}
+          </Text>
+          <Button variant={'outline'} onClick={() => router.push(`/app/edit?name=${app.appName}`)}>
+            {t('Manage')}
+          </Button>
+        </Flex>
+        <Box mt={'20px'}>
+          {app.envs?.length > 0 ? (
+            <Flex flexDirection={'column'} gap={'8px'}>
+              {app.envs.map((env, index) => {
+                const valText = env.value ? env.value : env.valueFrom ? 'value from | ***' : '';
+                return (
+                  <Flex key={env.key} gap={'12px'}>
+                    <Box
+                      flex={1}
+                      maxW={'40%'}
+                      overflowWrap={'break-word'}
+                      borderRadius={'8px'}
+                      border={'1px solid #E4E4E7'}
+                      background={'#FAFAFA'}
+                      p={'8px 12px'}
+                    >
+                      {env.key}
+                    </Box>
+                    <Center>
+                      <ArrowRight color="#71717A" size={20} />
+                    </Center>
+                    <MyTooltip label={valText}>
+                      <Box
+                        flex={1}
+                        borderRadius={'8px'}
+                        border={'1px solid #E4E4E7'}
+                        background={'#FAFAFA'}
+                        p={'8px 12px'}
+                        className={styles.textEllipsis}
+                        style={{
+                          userSelect: 'auto',
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => copyData(valText)}
+                      >
+                        {valText}
+                      </Box>
+                    </MyTooltip>
+                  </Flex>
+                );
+              })}
+            </Flex>
+          ) : (
+            <Center
+              w={'100%'}
+              h={'32px'}
+              color={'grayModern.600'}
+              fontSize={'12px'}
+              borderRadius={'4px'}
+            >
+              <Box>{t('no_data_available')}</Box>
+            </Center>
+          )}
+        </Box>
+      </Box>
+
+      <Flex mt={'16px'} gap={'16px'}>
+        <Box
+          flex={1}
+          px={'24px'}
+          py={'20px'}
+          borderRadius={'16px'}
+          border={'1px solid #E4E4E7'}
+          bg={'#FFF'}
+          boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+        >
+          <Flex justifyContent={'space-between'}>
+            <Text fontSize={'20px'} fontWeight={'bold'} color={'#18181B'}>
+              {t('Configuration File')}
+            </Text>
+            <Button
+              variant={'outline'}
+              onClick={() => router.push(`/app/edit?name=${app.appName}`)}
+            >
+              {t('Add')}
+            </Button>
+          </Flex>
+          <Box mt={'16px'}>
+            {app.configMapList?.length > 0 ? (
+              <Box borderRadius={'md'} overflow={'hidden'} bg={'#FFF'} border={theme.borders.base}>
+                {app.configMapList.map((item) => (
                   <Flex
-                    key={item.label}
-                    _notFirst={{
-                      mt: '12px'
+                    key={item.mountPath}
+                    alignItems={'center'}
+                    px={'14px'}
+                    py={'8px'}
+                    cursor={'pointer'}
+                    _notLast={{
+                      borderBottom: theme.borders.base
                     }}
                   >
-                    <Box flex={'0 0 80px'} w={0}>
-                      {t(item.label)}
+                    <MyIcon name={'configMap'} width={'24px'} height={'24px'} />
+                    <Box ml={4} flex={'1 0 0'} w={'0px'}>
+                      <Box fontWeight={'bold'} color={'grayModern.900'}>
+                        {item.mountPath}
+                      </Box>
+                      <Box className={styles.textEllipsis} color={'grayModern.600'} fontSize={'sm'}>
+                        {item.value}
+                      </Box>
                     </Box>
-                    <Box color={'grayModern.900'}>{item.value}</Box>
                   </Flex>
                 ))}
               </Box>
-            </Box>
-            <Box mt={'16px'} fontSize={'12px'} fontWeight={400} color={'grayModern.600'}>
-              <Text>{t('Environment Variables')}</Text>
-              <Box
+            ) : (
+              <Center
+                w={'100%'}
+                h={'32px'}
+                color={'grayModern.600'}
+                fontSize={'12px'}
                 borderRadius={'4px'}
-                border={'1px solid #F4F4F7'}
-                bg={'grayModern.25'}
-                p={'12px'}
-                mt={'8px'}
               >
-                {app.envs?.length > 0 ? (
+                <Box>{t('no_data_available')}</Box>
+              </Center>
+            )}
+          </Box>
+        </Box>
+        <Box
+          flex={1}
+          px={'24px'}
+          py={'20px'}
+          borderRadius={'16px'}
+          border={'1px solid #E4E4E7'}
+          bg={'#FFF'}
+          boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+        >
+          <Flex justifyContent={'space-between'}>
+            <Text fontSize={'20px'} fontWeight={'bold'} color={'#18181B'}>
+              {t('Storage')}
+            </Text>
+            <Button
+              variant={'outline'}
+              onClick={() => router.push(`/app/edit?name=${app.appName}`)}
+            >
+              {t('Add')}
+            </Button>
+          </Flex>
+          <Box mt={'16px'}>
+            {app.storeList?.length > 0 ? (
+              <Box borderRadius={'md'} overflow={'hidden'} bg={'#FFF'} border={theme.borders.base}>
+                {app.storeList.map((item) => (
                   <Flex
-                    flexDirection={'column'}
-                    border={theme.borders.base}
-                    bg={'#fff'}
-                    borderRadius={'md'}
+                    key={item.path}
+                    alignItems={'center'}
+                    px={'14px'}
+                    py={'8px'}
+                    _notLast={{
+                      borderBottom: theme.borders.base
+                    }}
                   >
-                    {app.envs.map((env, index) => {
-                      const valText = env.value
-                        ? env.value
-                        : env.valueFrom
-                        ? 'value from | ***'
-                        : '';
-                      return (
-                        <Flex
-                          key={env.key}
-                          gap={'24px'}
-                          px="10px"
-                          py="8px"
-                          borderBottom={'1px solid'}
-                          borderBottomColor={
-                            index !== app.envs.length - 1 ? 'grayModern.150' : 'transparent'
-                          }
-                        >
-                          <Box flex={1} maxW={'40%'} overflowWrap={'break-word'}>
-                            {env.key}
-                          </Box>
-                          <MyTooltip label={valText}>
-                            <Box
-                              flex={1}
-                              className={styles.textEllipsis}
-                              style={{
-                                userSelect: 'auto',
-                                cursor: 'pointer'
-                              }}
-                              onClick={() => copyData(valText)}
-                            >
-                              {valText}
-                            </Box>
-                          </MyTooltip>
-                        </Flex>
-                      );
-                    })}
+                    <MyIcon name={'store'} width={'24px'} height={'24px'} />
+                    <Box ml={4} flex={'1 0 0'} w={'0px'}>
+                      <Box color={'grayModern.900'} fontWeight={'bold'}>
+                        {item.path}
+                      </Box>
+                      <Box className={styles.textEllipsis} color={'grayModern.600'} fontSize={'sm'}>
+                        {item.value} Gi
+                      </Box>
+                    </Box>
                   </Flex>
-                ) : (
-                  <Center
-                    w={'100%'}
-                    h={'32px'}
-                    color={'grayModern.600'}
-                    fontSize={'12px'}
-                    borderRadius={'4px'}
-                  >
-                    <Box>{t('no_data_available')}</Box>
-                  </Center>
-                )}
+                ))}
               </Box>
-            </Box>
-          </Box>
-          <Box flex={'1 0 0'}>
-            <Box fontSize={'12px'} fontWeight={400} color={'grayModern.600'}>
-              <Text>{t('Configuration File')}</Text>
-              <Box
+            ) : (
+              <Center
+                w={'100%'}
+                h={'32px'}
+                color={'grayModern.600'}
+                fontSize={'12px'}
                 borderRadius={'4px'}
-                border={'1px solid #F4F4F7'}
-                bg={'grayModern.25'}
-                p={'12px'}
-                mt={'8px'}
               >
-                {app.configMapList?.length > 0 ? (
-                  <Box
-                    borderRadius={'md'}
-                    overflow={'hidden'}
-                    bg={'#FFF'}
-                    border={theme.borders.base}
-                  >
-                    {app.configMapList.map((item) => (
-                      <Flex
-                        key={item.mountPath}
-                        alignItems={'center'}
-                        px={'14px'}
-                        py={'8px'}
-                        cursor={'pointer'}
-                        _notLast={{
-                          borderBottom: theme.borders.base
-                        }}
-                      >
-                        <MyIcon name={'configMap'} width={'24px'} height={'24px'} />
-                        <Box ml={4} flex={'1 0 0'} w={'0px'}>
-                          <Box fontWeight={'bold'} color={'grayModern.900'}>
-                            {item.mountPath}
-                          </Box>
-                          <Box
-                            className={styles.textEllipsis}
-                            color={'grayModern.600'}
-                            fontSize={'sm'}
-                          >
-                            {item.value}
-                          </Box>
-                        </Box>
-                      </Flex>
-                    ))}
-                  </Box>
-                ) : (
-                  <Center
-                    w={'100%'}
-                    h={'32px'}
-                    color={'grayModern.600'}
-                    fontSize={'12px'}
-                    borderRadius={'4px'}
-                  >
-                    <Box>{t('no_data_available')}</Box>
-                  </Center>
-                )}
-              </Box>
-            </Box>
-            <Box mt={'16px'} fontSize={'12px'} fontWeight={400} color={'grayModern.600'}>
-              <Text>{t('Storage')}</Text>
-              <Box
-                borderRadius={'4px'}
-                border={'1px solid #F4F4F7'}
-                bg={'grayModern.25'}
-                p={'12px'}
-                mt={'8px'}
-              >
-                {app.storeList?.length > 0 ? (
-                  <Box
-                    borderRadius={'md'}
-                    overflow={'hidden'}
-                    bg={'#FFF'}
-                    border={theme.borders.base}
-                  >
-                    {app.storeList.map((item) => (
-                      <Flex
-                        key={item.path}
-                        alignItems={'center'}
-                        px={'14px'}
-                        py={'8px'}
-                        _notLast={{
-                          borderBottom: theme.borders.base
-                        }}
-                      >
-                        <MyIcon name={'store'} width={'24px'} height={'24px'} />
-                        <Box ml={4} flex={'1 0 0'} w={'0px'}>
-                          <Box color={'grayModern.900'} fontWeight={'bold'}>
-                            {item.path}
-                          </Box>
-                          <Box
-                            className={styles.textEllipsis}
-                            color={'grayModern.600'}
-                            fontSize={'sm'}
-                          >
-                            {item.value} Gi
-                          </Box>
-                        </Box>
-                      </Flex>
-                    ))}
-                  </Box>
-                ) : (
-                  <Center
-                    w={'100%'}
-                    h={'32px'}
-                    color={'grayModern.600'}
-                    fontSize={'12px'}
-                    borderRadius={'4px'}
-                  >
-                    <Box>{t('no_data_available')}</Box>
-                  </Center>
-                )}
-              </Box>
-            </Box>
+                <Box>{t('no_data_available')}</Box>
+              </Center>
+            )}
           </Box>
-        </Flex>
-      </Box>
+        </Box>
+      </Flex>
 
       {detailConfigMap && (
         <ConfigMapDetailModal {...detailConfigMap} onClose={() => setDetailConfigMap(undefined)} />

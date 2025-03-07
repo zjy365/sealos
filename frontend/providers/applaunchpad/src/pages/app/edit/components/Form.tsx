@@ -46,7 +46,7 @@ import QuotaBox from './QuotaBox';
 import type { StoreType } from './StoreModal';
 import styles from './index.module.scss';
 import Tabs from '@/components/Tabs';
-import { Plus } from 'lucide-react';
+import { ArrowRight, Plus } from 'lucide-react';
 
 const CustomAccessModal = dynamic(() => import('./CustomAccessModal'));
 const ConfigmapModal = dynamic(() => import('./ConfigmapModal'));
@@ -1126,34 +1126,57 @@ const Form = ({
                   </Button>
                 </Flex>
                 <Box mt={3}>
-                  <table className={'table-cross'}>
-                    <tbody>
-                      {envs.map((env) => {
-                        const valText = env.value
-                          ? env.value
-                          : env.valueFrom
-                          ? 'value from | ***'
-                          : '';
-                        return (
-                          <tr key={env.id}>
-                            <th>{env.key}</th>
-                            <th>
-                              <MyTooltip label={valText}>
-                                <Box
-                                  className={styles.textEllipsis}
-                                  style={{
-                                    userSelect: 'auto'
-                                  }}
-                                >
-                                  {valText}
-                                </Box>
-                              </MyTooltip>
-                            </th>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  {envs.length > 0 && (
+                    <Flex fontWeight={500} py={2} color="18181B" fontSize="14px" gap={'12px'}>
+                      <Box flex="1 1 40%">{t('Key')}</Box>
+                      <Box w={'20px'}></Box>
+                      <Box flex="1 1 60%">{t('Value')}</Box>
+                    </Flex>
+                  )}
+                  <Flex flexDirection={'column'} gap={'4px'}>
+                    {envs.map((env) => {
+                      const valText = env.value
+                        ? env.value
+                        : env.valueFrom
+                        ? 'value from | ***'
+                        : '';
+                      return (
+                        <Flex key={env.id} gap={'12px'}>
+                          <Box
+                            flex="1 1 40%"
+                            fontWeight="500"
+                            borderRadius={'8px'}
+                            border={'1px solid #E4E4E7'}
+                            background={'#FAFAFA'}
+                            p={'8px 12px'}
+                          >
+                            {env.key}
+                          </Box>
+                          <Center>
+                            <ArrowRight color="#71717A" size={20} />
+                          </Center>
+                          <Box
+                            flex="1 1 60%"
+                            borderRadius={'8px'}
+                            border={'1px solid #E4E4E7'}
+                            background={'#FAFAFA'}
+                            p={'8px 12px'}
+                          >
+                            <MyTooltip label={valText}>
+                              <Box
+                                className={styles.textEllipsis}
+                                style={{
+                                  userSelect: 'auto'
+                                }}
+                              >
+                                {valText}
+                              </Box>
+                            </MyTooltip>
+                          </Box>
+                        </Flex>
+                      );
+                    })}
+                  </Flex>
                 </Box>
               </Box>
 
