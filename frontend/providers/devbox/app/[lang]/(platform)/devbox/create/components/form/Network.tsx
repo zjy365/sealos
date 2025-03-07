@@ -74,7 +74,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
   return (
     <>
       <Box id={'baseInfo'} {...props}>
-        <Box h={'30px'}>
+        <Box h={'40px'}>
           <Label w={100}>{t('network_settings')}</Label>
         </Box>
         <Box py={'8px'} userSelect={'none'}>

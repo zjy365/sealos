@@ -13,7 +13,7 @@ export default function Usage({
   const t = useTranslations();
   return (
     <>
-      <Box h={'30px'} mb={'15px'}>
+      <Box h={'40px'} mb={'15px'}>
         <Label w={100}>{t('usage')}</Label>
       </Box>
       <GpuSelector countGpuInventory={countGpuInventory} />

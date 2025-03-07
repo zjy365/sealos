@@ -23,7 +23,7 @@ export default function DevboxName({ isEdit, ...props }: { isEdit: boolean } & F
   return (
     <FormControl isInvalid={!!errors.name} minW={'500px'} {...props}>
       <Flex alignItems={'start'} direction={'column'}>
-        <Box h={'30px'}>
+        <Box h={'40px'}>
           <Label w={100}>{t('devbox_name')}</Label>
         </Box>
         <Input

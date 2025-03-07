@@ -6,7 +6,6 @@ import { useCallback } from 'react';
 
 import MyIcon from '@/components/Icon';
 import { useRouter } from '@/i18n';
-import { useEnvStore } from '@/stores/env';
 import { useGlobalStore } from '@/stores/global';
 import { useTemplateStore } from '@/stores/template';
 import type { YamlItemType } from '@/types/index';
@@ -36,7 +35,7 @@ const Header = ({
     downLoadBlob(res, 'application/zip', `yaml${dayjs().format('YYYYMMDDHHmmss')}.zip`);
   }, [yamlList]);
   return (
-    <Flex w={'100%'} px={5} h={'86px'} alignItems={'center'}>
+    <Flex w={'100%'} px={5} h={'86px'} alignItems={'center'} borderBottomWidth={'1px'}>
       <Flex
         alignItems={'center'}
         gap={2}
@@ -50,7 +49,7 @@ const Header = ({
         }}
       >
         <MyIcon name="arrowLeft" color={'white'} width={'24px'} height={'24px'} />
-        <Box fontWeight={'bold'} color={'grayModern.900'} fontSize={'2xl'}>
+        <Box fontWeight={'semibold'} color={'grayModern.900'} fontSize={'2xl'}>
           {t(title)}
         </Box>
       </Flex>
@@ -59,6 +58,7 @@ const Header = ({
         h={'40px'}
         flex={'0 0 114px'}
         mr={5}
+        p={'8px 16px'}
         variant={'outline'}
         onClick={handleExportYaml}
         boxShadow={'none'}

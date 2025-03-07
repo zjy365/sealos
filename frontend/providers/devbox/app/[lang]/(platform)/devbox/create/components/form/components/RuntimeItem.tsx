@@ -156,7 +156,7 @@ export default function TemplateRepositoryItem({
           setValue('templateRepositoryUid', item.uid);
         }}
       >
-        <Text textAlign={'center'} noOfLines={1}>
+        <Text textAlign={'center'} noOfLines={1} fontSize={'16px'}>
           {item.name}
         </Text>
         <Img

@@ -48,15 +48,8 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
         height="18px"
         borderRadius="6px"
         gap="4px"
-        mr={'20px'}
         ml={'auto'}
         cursor="pointer"
-        onClick={() => {
-          openTemplateModal({
-            templateState: TemplateState.publicTemplate,
-            lastRoute
-          });
-        }}
       >
         <Text
           fontFamily="PingFang SC"
@@ -65,6 +58,12 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
           lineHeight="16px"
           letterSpacing="0.5px"
           color="#1C4EF5"
+          onClick={() => {
+            openTemplateModal({
+              templateState: TemplateState.publicTemplate,
+              lastRoute
+            });
+          }}
         >
           {t('scan_templates')}
         </Text>
@@ -74,6 +73,7 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
           ml={4}
           mr={0}
           variant={'solid'}
+          borderRadius={'8px'}
           leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#ffffff'} />}
           onClick={() => router.push('/devbox/create')}
         >

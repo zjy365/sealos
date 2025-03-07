@@ -50,6 +50,7 @@
   "cpu_exceeds_quota": "申请的 CPU 超出限制，请联系管理员",
   "create": "创建",
   "create_devbox": "新建项目",
+  "create_devbox_first": "创建你的第一个 Devbox",
   "create_directly": "想要直接上线新应用？",
   "create_failed": "创建失败",
   "create_or_update_template": "创建/更新模板",
