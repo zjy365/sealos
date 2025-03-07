@@ -17,6 +17,7 @@ import { HelpCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useGuideStore } from '@/store/guide';
 import { detailDriverObj, startDriver } from '@/hooks/driver';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   const { t } = useTranslation();
@@ -59,6 +60,18 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
         };
       }),
     [app]
+  );
+  const networkStatuses = useNetworkStatus(networks);
+
+  const statusMap = useMemo(
+    () =>
+      networkStatuses.reduce((acc, status) => {
+        if (status.data?.url) {
+          acc[status.data.url] = status.data;
+        }
+        return acc;
+      }, {} as Record<string, { isReady?: boolean; error?: string }>),
+    [networkStatuses]
   );
 
   const { detailCompleted } = useGuideStore();
@@ -207,7 +220,60 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                       </Flex>
                     </th>
                     <th>
-                      <Flex alignItems={'center'} justifyContent={'space-between'}>
+                      <Flex alignItems={'center'} gap={'2px'} justifyContent={'space-between'}>
+                        {network.public && (
+                          <>
+                            {statusMap[network.public]?.isReady ? (
+                              <Center
+                                fontSize={'12px'}
+                                fontWeight={400}
+                                bg={'rgba(3, 152, 85, 0.05)'}
+                                color={'#039855'}
+                                borderRadius={'full'}
+                                p={'2px 4px'}
+                                gap={'2px'}
+                                minW={'63px'}
+                              >
+                                <Center
+                                  w={'6px'}
+                                  h={'6px'}
+                                  borderRadius={'full'}
+                                  bg={'#039855'}
+                                ></Center>
+                                {t('Accessible')}
+                              </Center>
+                            ) : (
+                              <Center
+                                fontSize={'12px'}
+                                fontWeight={400}
+                                bg={'rgba(17, 24, 36, 0.05)'}
+                                color={'#485264'}
+                                borderRadius={'full'}
+                                p={'2px 4px'}
+                                gap={'2px'}
+                                minW={'63px'}
+                              >
+                                <MyIcon
+                                  name={'loading'}
+                                  w={'12px'}
+                                  h={'12px'}
+                                  animation={'spin 1s linear infinite'}
+                                  sx={{
+                                    '@keyframes spin': {
+                                      '0%': {
+                                        transform: 'rotate(0deg)'
+                                      },
+                                      '100%': {
+                                        transform: 'rotate(360deg)'
+                                      }
+                                    }
+                                  }}
+                                />
+                                {t('Ready')}
+                              </Center>
+                            )}
+                          </>
+                        )}
                         <MyTooltip
                           label={network.public ? t('Open Link') : ''}
                           placement={'bottom-start'}
@@ -223,9 +289,12 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                 }
                               : {})}
                           >
-                            {network.public || '-'}
+                            <Flex alignItems={'center'} gap={2}>
+                              {network.public || '-'}
+                            </Flex>
                           </Box>
                         </MyTooltip>
+
                         {!!network.public && (
                           <Center
                             flexShrink={0}
