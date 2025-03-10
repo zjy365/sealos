@@ -7,7 +7,8 @@ import Draggable, { DraggableEventHandler } from 'react-draggable';
 import styles from './index.module.scss';
 import { useTranslation } from 'next-i18next';
 import { useConfigStore } from '@/stores/config';
-import { Minus, Square, SquareSquare } from 'lucide-react';
+import { Minus, Square, SquareSquare, X } from 'lucide-react';
+import { MaximizeIcon, MinimizeIcon } from '@/components/icons';
 
 export default function AppWindow(props: {
   style?: React.CSSProperties;
@@ -116,8 +117,9 @@ export default function AppWindow(props: {
             });
             setPosition({ x: 0, y: 0 });
           }}
+          position={'relative'}
         >
-          <Flex ml="16px" alignItems={'center'} fontSize={'12px'} fontWeight={400}>
+          <Flex alignItems={'center'} fontSize={'12px'} fontWeight={400}>
             <Image
               src={wnapp?.icon}
               fallbackSrc={logo}
@@ -125,6 +127,7 @@ export default function AppWindow(props: {
               width={'20px'}
               height={'20px'}
             />
+
             <Box ml="8px" fontSize={'12px'} fontWeight={400}>
               {wnapp?.i18n?.[i18n?.language]?.name
                 ? wnapp.i18n?.[i18n?.language]?.name
@@ -145,11 +148,12 @@ export default function AppWindow(props: {
                 </Text>
               ))}
           </Flex>
-          <Flex ml={'auto'}>
+          <Flex position={'absolute'} right={'0'}>
             <Box
               width={'54px'}
               height={'40px'}
               borderLeft={'1px solid #E4E4E7'}
+              borderBottom={'1px solid #E4E4E7'}
               className={styles.uicon}
               onClick={(e) => {
                 e.stopPropagation();
@@ -168,6 +172,7 @@ export default function AppWindow(props: {
               height={'40px'}
               borderLeft={'1px solid #E4E4E7'}
               borderRight={'1px solid #E4E4E7'}
+              borderBottom={'1px solid #E4E4E7'}
               className={styles.uicon}
               onClick={(e) => {
                 e.stopPropagation();
@@ -180,17 +185,16 @@ export default function AppWindow(props: {
                 });
               }}
             >
-              <Image
-                src={wnapp.size === 'maximize' ? '/icons/maximize.svg' : '/icons/maxmin.svg'}
-                fallbackSrc={logo}
-                alt={wnapp?.name}
-                width={'12px'}
-                height={'12px'}
-              />
+              {wnapp.size === 'maximize' ? (
+                <MaximizeIcon color={'#525252'} width={'16px'} height={'16px'} />
+              ) : (
+                <MinimizeIcon color={'#525252'} width={'16px'} height={'16px'} />
+              )}
             </Box>
             <Box
               width={'54px'}
               height={'40px'}
+              borderBottom={'1px solid #E4E4E7'}
               className={clsx(styles.uicon)}
               data-type={'close'}
               onClick={(e) => {
@@ -203,13 +207,7 @@ export default function AppWindow(props: {
                 closeAppById(currentAppPid);
               }}
             >
-              <Image
-                src={'/icons/close.svg'}
-                fallbackSrc={logo}
-                alt={wnapp?.name}
-                width={'16px'}
-                height={'16px'}
-              />
+              <X size={16} color={'#525252'} />
             </Box>
           </Flex>
         </Flex>

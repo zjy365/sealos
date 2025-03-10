@@ -211,13 +211,13 @@ export default function LogsPage({ appName }: { appName: string }) {
   return (
     <DetailLayout appName={appName}>
       <Flex flexDirection={'column'} flex={1} borderRadius="lg" overflowY={'auto'} h={'100%'}>
-        <Flex mb={'6px'} bg={'white'} flexDir={'column'}>
+        <Flex bg={'white'} flexDir={'column'}>
           <Header formHook={formHook} refetchData={refetchData} />
         </Flex>
         <Box
           mb={'6px'}
-          mx={'20px'}
-          p={'20px 20px'}
+          mx={'40px'}
+          p={'20px 24px'}
           bg={'white'}
           border={theme.borders.base}
           borderRadius={'lg'}
@@ -227,7 +227,6 @@ export default function LogsPage({ appName }: { appName: string }) {
           <LogCounts logCountsData={logCounts || []} isLogCountsLoading={isLogCountsLoading} />
           <Box
             bg={'white'}
-            p={'20px'}
             flex={1}
             height={'0px'}
             minH={parsedLogs?.length > 0 ? '400px' : '200px'}

@@ -39,12 +39,13 @@ export const Header = ({
   const { refreshInterval, setRefreshInterval } = useDateTimeStore();
 
   return (
-    <Flex gap={'32px'} flexWrap={'wrap'} py={'12px'} px={'20px'} w={'100vw'}>
+    <Flex pt={'32px'} pb={'16px'} gap={'12px'} flexWrap={'wrap'} px={'40px'} w={'100vw'}>
       <AdvancedSelect
         placeholder={t('by_pod')}
         height="40px"
         w={'100px'}
         checkBoxMode
+        borderRadius={'8px'}
         width={'fit-content'}
         value={'hello-sql-postgresql-0'}
         onCheckboxChange={(val) => {
@@ -53,6 +54,8 @@ export const Header = ({
         list={formHook.watch('pods')}
       />
       <AdvancedSelect
+        minW={'138px'}
+        borderRadius={'8px'}
         w={'100px'}
         width={'fit-content'}
         placeholder={t('by_container')}
@@ -71,17 +74,8 @@ export const Header = ({
         <Input
           height="40px"
           w={'300px'}
-          width={'fit-content'}
           bg={'#F5F5F5'}
-          border={'none'}
           placeholder={t('search_placeholder')}
-          _hover={{
-            bg: 'white',
-            border: '1px solid #E8EBF0'
-          }}
-          _focus={{
-            border: '1px solid #E8EBF0'
-          }}
           value={formHook.watch('limit')}
           onChange={(e) => {
             const val = Number(e.target.value);
