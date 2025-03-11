@@ -322,17 +322,19 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
               <MyIcon name="calendar" color={'white'} />
             </Button>
             <Text minW={'80px'} color={'#404040'}>
-              {format(startDateTime, 'HH:mm, MMM d')}
+              {format(startDateTime, 'MMM d, HH:mm', {
+                locale: currentLang === 'zh' ? zhCN : enUS
+              })}
             </Text>
             -
             <Text minW={'80px'} color={'#404040'}>
-              {format(endDateTime, 'HH:mm, MMM d')}
+              {format(endDateTime, 'MMM d, HH:mm', { locale: currentLang === 'zh' ? zhCN : enUS })}
             </Text>
           </Flex>
         </PopoverTrigger>
         <PopoverContent zIndex={99} w={'fit-content'} borderRadius={'12px'}>
-          <Flex w={'500px'} height={'500px'}>
-            <Flex w={'400px'} flexDir={'column'}>
+          <Flex w={'402px'} height={'382px'}>
+            <Flex w={'242px'} flexDir={'column'}>
               <DayPicker
                 mode="range"
                 selected={selectedRange}

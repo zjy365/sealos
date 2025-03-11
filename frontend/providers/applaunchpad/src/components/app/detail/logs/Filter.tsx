@@ -65,7 +65,7 @@ export const Filter = ({
   }, [isOpen, onClose]);
 
   return (
-    <Box w={'100px'} position="relative">
+    <Box position="relative">
       <Button
         ref={btnRef}
         onClick={() => {
@@ -77,9 +77,11 @@ export const Filter = ({
         width="fit-content"
         h={'40px'}
         boxShadow={'none'}
-        bg={'grayModern.50'}
-        color={'grayModern.900'}
-        leftIcon={<FilterIcon size={16} />}
+        bg={'#fff'}
+        color={'#181818'}
+        borderRadius={'8px'}
+        border={'1px dashed #D4D4D4'}
+        leftIcon={<FilterIcon size={16} color="#737373" />}
       >
         {t('by_json')}
       </Button>

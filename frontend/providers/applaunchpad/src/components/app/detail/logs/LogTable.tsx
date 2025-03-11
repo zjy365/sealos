@@ -145,7 +145,7 @@ export const LogTable = ({
   });
 
   return (
-    <Flex flexDir={'column'} w={'100%'} h={'100%'}>
+    <Flex flexDir={'column'} w={'100%'} h={'100%'} mt={'24px'}>
       <Flex alignItems={'center'} gap={4} justifyContent={'space-between'}>
         <Flex alignItems={'center'} gap={4}>
           <Text
