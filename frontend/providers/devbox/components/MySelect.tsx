@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, forwardRef, useMemo, useEffect } from 'react';
+import React, { useRef, forwardRef, useMemo } from 'react';
 import {
   Menu,
   Box,
@@ -23,6 +23,7 @@ interface Props extends ButtonProps {
   list: {
     label: string | React.ReactNode;
     value: string;
+    icon?: React.ReactNode;
   }[];
   onchange?: (val: string) => void;
   isInvalid?: boolean;
@@ -116,7 +117,10 @@ const MySelect = (
               })}
           {...props}
         >
-          <Flex justifyContent={'flex-start'}>{activeMenu ? activeMenu.label : placeholder}</Flex>
+          <Flex justifyContent={'flex-start'} alignItems={'center'}>
+            {activeMenu?.icon && <Box mr={2}>{activeMenu.icon}</Box>}
+            {activeMenu ? activeMenu.label : placeholder}
+          </Flex>
         </MenuButton>
 
         <MenuList
@@ -155,7 +159,10 @@ const MySelect = (
               }}
             >
               <Flex justifyContent="space-between" width="100%" alignItems="center">
-                <Box>{item.label}</Box>
+                <Flex alignItems="center">
+                  {item.icon && <Box mr={2}>{item.icon}</Box>}
+                  <Box>{item.label}</Box>
+                </Flex>
                 {value === item.value && (
                   <Box ml={2}>
                     <svg

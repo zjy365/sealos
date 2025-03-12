@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { customAlphabet } from 'nanoid';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
@@ -29,9 +28,7 @@ import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
 
 import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template';
 
-import CreateTemplateDrawer from './CreateTemplateDrawer';
-import SelectTemplateModal from '@/app/[lang]/(platform)/template/updateTemplate/SelectActionModal';
-import UpdateTemplateRepositoryModal from '@/app/[lang]/(platform)/template/updateTemplate/UpdateTemplateRepositoryModal';
+import TemplateDrawer from './TemplateDrawer';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -55,9 +52,7 @@ const Version = () => {
     | null
     | Awaited<ReturnType<typeof listPrivateTemplateRepository>>['templateRepositoryList'][number]
   >(null);
-  const createTemplateModalHandler = useDisclosure();
-  const selectTemplalteModalHandler = useDisclosure();
-  const updateTemplateModalHandler = useDisclosure();
+  const templateDrawerHandler = useDisclosure();
   const { openConfirm, ConfirmChild } = useConfirm({
     content: 'delete_version_confirm_info'
   });
@@ -67,9 +62,7 @@ const Version = () => {
     {
       refetchInterval:
         devboxVersionList.length > 0 &&
-        !createTemplateModalHandler.isOpen &&
-        !updateTemplateModalHandler.isOpen &&
-        !selectTemplalteModalHandler.isOpen &&
+        !templateDrawerHandler.isOpen &&
         devboxVersionList[0].status.value === DevboxReleaseStatusEnum.Pending
           ? 3000
           : false,
@@ -95,8 +88,10 @@ const Version = () => {
       });
     }
   );
+
   const templateRepositoryList =
     listPrivateTemplateRepositoryQuery.data?.templateRepositoryList || [];
+
   const handleDeploy = useCallback(
     async (version: DevboxVersionListItemType) => {
       if (!devbox) return;
@@ -216,7 +211,7 @@ const Version = () => {
       title: t('status'),
       key: 'status',
       render: (item: DevboxVersionListItemType) => (
-        <DevboxStatusTag status={item.status} h={'27px'} thinMode />
+        <DevboxStatusTag status={item.status} h={'27px'} />
       )
     },
     {
@@ -321,13 +316,7 @@ const Version = () => {
                 },
                 onClick: () => {
                   setCurrentVersion(item);
-                  // onOpenEdit()
-                  // openTemplateModal({templateState: })
-                  if (templateRepositoryList.length > 0) {
-                    selectTemplalteModalHandler.onOpen();
-                  } else {
-                    createTemplateModalHandler.onOpen();
-                  }
+                  templateDrawerHandler.onOpen();
                 }
               },
               {
@@ -437,32 +426,12 @@ const Version = () => {
         />
       )}
       <ConfirmChild />
-      <CreateTemplateDrawer
-        isOpen={createTemplateModalHandler.isOpen}
-        onClose={createTemplateModalHandler.onClose}
+      <TemplateDrawer
+        isOpen={templateDrawerHandler.isOpen}
+        onClose={templateDrawerHandler.onClose}
         devboxReleaseName={currentVersion?.name || ''}
+        templateRepositoryList={templateRepositoryList}
       />
-      {templateRepositoryList.length > 0 && (
-        <SelectTemplateModal
-          onOpenCreate={createTemplateModalHandler.onOpen}
-          onOpenUdate={(uid) => {
-            const repo = templateRepositoryList.find((item) => item.uid === uid);
-            setUpdateTemplateRepo(repo || null);
-            updateTemplateModalHandler.onOpen();
-          }}
-          templateRepositoryList={templateRepositoryList}
-          isOpen={selectTemplalteModalHandler.isOpen}
-          onClose={selectTemplalteModalHandler.onClose}
-        />
-      )}
-      {!!updateTemplateRepo && (
-        <UpdateTemplateRepositoryModal
-          templateRepository={updateTemplateRepo}
-          isOpen={updateTemplateModalHandler.isOpen}
-          onClose={updateTemplateModalHandler.onClose}
-          devboxReleaseName={currentVersion?.name || ''}
-        />
-      )}
     </Box>
   );
 };
