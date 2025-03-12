@@ -322,13 +322,16 @@ const Version = () => {
               {
                 child: (
                   <>
-                    <MyIcon name={'delete'} w={'16px'} />
+                    <MyIcon name={'delete'} w={'16px'} color={'#737373'} />
                     <Box ml={2}>{t('delete')}</Box>
                   </>
                 ),
                 menuItemStyle: {
                   _hover: {
                     color: 'red.600',
+                    '& > svg': {
+                      color: 'red.600'
+                    },
                     bg: 'rgba(17, 24, 36, 0.05)'
                   }
                 },
