@@ -163,6 +163,7 @@ export default function Account() {
           </Box>
 
           <Center
+            className="guide-button"
             cursor={'pointer'}
             {...baseItemStyle}
             px={'8px'}
@@ -170,6 +171,7 @@ export default function Account() {
             _hover={{
               background: 'rgba(0, 0, 0, 0.05);'
             }}
+            border={'1px solid transparent'}
             onClick={guideDisclosure.onOpen}
           >
             {t('cc:guide')}

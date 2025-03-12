@@ -13,14 +13,26 @@ import {
   Center,
   Grid,
   Divider,
-  Button
+  Button,
+  Image
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
-import { Book, Github, Video, MessageCircle, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { UserInfo } from '@/api/auth';
 import useSessionStore from '@/stores/session';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { driver } from '@sealos/driver';
+import useAppStore from '@/stores/app';
+import {
+  devboxDriverObj,
+  quitGuideDriverObj,
+  startDriver,
+  appLaunchpadDriverObj,
+  templateDriverObj,
+  databaseDriverObj
+} from './driver';
+import { WindowSize } from '@/types';
 
 interface GuideModalProps {
   isOpen: boolean;
@@ -31,6 +43,8 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
   const { t } = useTranslation();
   const { session } = useSessionStore((s) => s);
   const [selectedGuide, setSelectedGuide] = useState<number | null>(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const { installedApps, runningInfo, openApp, setToHighestLayerById } = useAppStore();
 
   const infoData = useQuery({
     queryFn: UserInfo,
@@ -40,152 +54,224 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
     }
   });
 
+  const openDesktopApp = useCallback(
+    ({
+      appKey,
+      query = {},
+      messageData = {},
+      pathname = '/',
+      appSize = 'maximize'
+    }: {
+      appKey: string;
+      query?: Record<string, string>;
+      messageData?: Record<string, any>;
+      pathname: string;
+      appSize?: WindowSize;
+    }) => {
+      const app = installedApps.find((item) => item.key === appKey);
+      const runningApp = runningInfo.find((item) => item.key === appKey);
+      if (!app) return;
+      openApp(app, { query, pathname, appSize });
+      if (runningApp) {
+        setToHighestLayerById(runningApp.pid);
+      }
+      // post message
+      const iframe = document.getElementById(`app-window-${appKey}`) as HTMLIFrameElement;
+      if (!iframe) return;
+      iframe.contentWindow?.postMessage(messageData, app.data.url);
+    },
+    [installedApps, openApp, runningInfo, setToHighestLayerById]
+  );
+
   const guideLinks = [
     {
-      icon: Book,
+      key: 'system-devbox',
+      icon: installedApps.find((app) => app.key === 'system-devbox')?.icon || '',
       title: t('cc:devbox_title'),
       description: t('cc:devbox_desc'),
       steps: [
         {
           title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.'
+          description: 'Enter the DevBox page and create a new development environment.',
+          image: '/onboarding/devbox-1.png'
         },
         {
           title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.'
+          description: 'Set up your development environment with your preferred settings.',
+          image: '/onboarding/devbox-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.'
+          description: 'Begin coding in your preferred IDE with all configurations set.',
+          image: '/onboarding/devbox-3.png'
         },
         {
           title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.'
+          description: 'Manage your development environment and deploy your application.',
+          image: '/onboarding/devbox-4.png'
         }
       ]
     },
     {
-      icon: Video,
+      key: 'system-applaunchpad',
+      icon: installedApps.find((app) => app.key === 'system-applaunchpad')?.icon || '',
       title: t('cc:launchpad_title'),
       description: t('cc:launchpad_desc'),
       steps: [
         {
           title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.'
+          description: 'Enter the DevBox page and create a new development environment.',
+          image: '/onboarding/launchpad-1.png'
         },
         {
           title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.'
+          description: 'Set up your development environment with your preferred settings.',
+          image: '/onboarding/launchpad-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.'
+          description: 'Begin coding in your preferred IDE with all configurations set.',
+          image: '/onboarding/launchpad-3.png'
         },
         {
           title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.'
+          description: 'Manage your development environment and deploy your application.',
+          image: '/onboarding/launchpad-4.png'
         }
       ]
     },
     {
-      icon: Github,
+      key: 'system-template',
+      icon: installedApps.find((app) => app.key === 'system-template')?.icon || '',
       title: t('cc:template_title'),
       description: t('cc:template_desc'),
       steps: [
         {
           title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.'
+          description: 'Enter the DevBox page and create a new development environment.',
+          image: '/onboarding/appstore-1.png'
         },
         {
           title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.'
+          description: 'Set up your development environment with your preferred settings.',
+          image: '/onboarding/appstore-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.'
+          description: 'Begin coding in your preferred IDE with all configurations set.',
+          image: '/onboarding/appstore-3.png'
         },
         {
           title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.'
+          description: 'Manage your development environment and deploy your application.',
+          image: '/onboarding/appstore-4.png'
         }
       ]
     },
     {
-      icon: MessageCircle,
+      key: 'system-dbprovider',
+      icon: installedApps.find((app) => app.key === 'system-dbprovider')?.icon || '',
       title: t('cc:database_title'),
       description: t('cc:database_desc'),
       steps: [
         {
           title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.'
+          description: 'Enter the DevBox page and create a new development environment.',
+          image: '/onboarding/database-1.png'
         },
         {
           title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.'
+          description: 'Set up your development environment with your preferred settings.',
+          image: '/onboarding/database-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.'
+          description: 'Begin coding in your preferred IDE with all configurations set.',
+          image: '/onboarding/database-3.png'
         },
         {
           title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.'
+          description: 'Manage your development environment and deploy your application.',
+          image: '/onboarding/database-4.png'
         }
       ]
     }
   ];
 
-  console.log(infoData.data);
-
-  const StepCard = ({ step, index }: { step: any; index: number }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
+  const StepCard = ({
+    step,
+    index,
+    isActive,
+    onClick
+  }: {
+    step: any;
+    index: number;
+    isActive: boolean;
+    onClick: () => void;
+  }) => {
     return (
       <Flex
+        alignItems={'center'}
         cursor={'pointer'}
         key={index}
-        p={4}
-        mb={3}
+        p={'12px 12px 0px 12px'}
+        mb={'8px'}
         borderRadius="xl"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor={isActive ? 'blue.200' : 'gray.200'}
         bg="white"
-        transition="all 0.3s"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        // _hover={{
-        //   boxShadow: 'lg',
-        //   borderColor: 'blue.500'
-        // }}
-        height={isHovered ? 'auto' : '56px'}
+        transition="all 0.5s ease"
+        onClick={onClick}
+        height={isActive ? 'auto' : '56px'}
         overflow="hidden"
+        position={'relative'}
       >
-        <Center
-          w={8}
-          h={8}
-          borderRadius="full"
-          bg="gray.100"
-          fontSize="md"
-          fontWeight="bold"
-          mr={4}
-          flexShrink={0}
-        >
-          {index + 1}
-        </Center>
-        <Box>
-          <Text fontSize="16px" fontWeight="600">
-            {step.title}
-          </Text>
-          <Text
-            color="gray.600"
-            mt={1}
-            fontSize="14px"
-            opacity={isHovered ? 1 : 0}
-            maxH={isHovered ? '100px' : '0'}
-            transition="all 0.3s"
+        <Flex alignSelf={'start'}>
+          <Center
+            w={'24px'}
+            h={'24px'}
+            borderRadius="full"
+            fontSize="md"
+            fontWeight="bold"
+            mr={4}
+            flexShrink={0}
+            border={'1px solid #E4E4E7'}
           >
-            {step.description}
-          </Text>
+            {index + 1}
+          </Center>
+          <Box>
+            <Text fontSize="16px" fontWeight="600">
+              {step.title}
+            </Text>
+            <Text
+              color="gray.600"
+              mt={1}
+              fontSize="14px"
+              opacity={isActive ? 1 : 0}
+              maxH={isActive ? '100px' : '0'}
+              transition="all 0.5s ease"
+            >
+              {step.description}
+            </Text>
+          </Box>
+        </Flex>
+        <Box
+          borderTopRadius={'12px'}
+          bg={'#EFF3FF'}
+          p={'20px 12px 0px 12px'}
+          width={'390px'}
+          height={'158px'}
+          overflow={'hidden'}
+          opacity={isActive ? 1 : 0}
+          transition="all 0.5s ease"
+        >
+          <Image
+            style={{
+              borderRadius: '6px'
+            }}
+            src={step.image}
+            alt="guide"
+          />
         </Box>
       </Flex>
     );
@@ -238,16 +324,82 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                   color="white"
                   borderRadius="8px"
                   _hover={{ bg: 'gray.800' }}
+                  onClick={() => {
+                    onClose();
+                    console.log(guideLinks[selectedGuide]);
+                    const cur = guideLinks[selectedGuide];
+
+                    switch (cur.key) {
+                      case 'system-applaunchpad':
+                        return startDriver(appLaunchpadDriverObj(openDesktopApp));
+                      case 'system-template':
+                        return startDriver(templateDriverObj(openDesktopApp));
+                      case 'system-dbprovider':
+                        return startDriver(databaseDriverObj(openDesktopApp));
+                      case 'system-devbox':
+                        return startDriver(devboxDriverObj(openDesktopApp));
+                      default:
+                        return;
+                    }
+                  }}
                 >
                   Show me
                 </Button>
               </Flex>
 
-              <Box maxH="350px" overflowY="auto" pt={'20px'} pr={2}>
+              <Box maxH="330px" overflowY="auto" pt={'20px'} pr={2}>
                 {guideLinks[selectedGuide].steps.map((step, index) => (
-                  <StepCard key={index} step={step} index={index} />
+                  <StepCard
+                    key={index}
+                    step={step}
+                    index={index}
+                    isActive={activeStep === index}
+                    onClick={() => setActiveStep(index)}
+                  />
                 ))}
               </Box>
+              <Center gap={2} mt={'12px'} mb={2}>
+                <Flex
+                  w="40px"
+                  h="40px"
+                  borderRadius={'8px'}
+                  border="1px solid"
+                  borderColor="#E4E4E7"
+                  align="center"
+                  justify="center"
+                  cursor={selectedGuide > 0 ? 'pointer' : 'not-allowed'}
+                  opacity={selectedGuide > 0 ? 1 : 0.4}
+                  _hover={{ bg: selectedGuide > 0 ? 'gray.50' : 'initial' }}
+                  onClick={() => {
+                    if (selectedGuide > 0) {
+                      setSelectedGuide(selectedGuide - 1);
+                      setActiveStep(0);
+                    }
+                  }}
+                >
+                  <ChevronLeft size={18} color="#737373" />
+                </Flex>
+                <Flex
+                  w="40px"
+                  h="40px"
+                  borderRadius={'8px'}
+                  border="1px solid"
+                  borderColor="gray.200"
+                  align="center"
+                  justify="center"
+                  cursor={selectedGuide < guideLinks.length - 1 ? 'pointer' : 'not-allowed'}
+                  opacity={selectedGuide < guideLinks.length - 1 ? 1 : 0.4}
+                  _hover={{ bg: selectedGuide < guideLinks.length - 1 ? 'gray.50' : 'initial' }}
+                  onClick={() => {
+                    if (selectedGuide < guideLinks.length - 1) {
+                      setSelectedGuide(selectedGuide + 1);
+                      setActiveStep(0);
+                    }
+                  }}
+                >
+                  <ChevronRight size={18} color="#737373" />
+                </Flex>
+              </Center>
             </Box>
           ) : (
             <>
@@ -293,7 +445,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                       background={'rgba(255, 255, 255, 0.90)'}
                       boxShadow={'0px 0.455px 1.818px 0px rgba(0, 0, 0, 0.12)'}
                     >
-                      <Icon as={item.icon} boxSize={'24px'} color="gray.700" />
+                      <Image width={'24px'} height={'24px'} src={item.icon} alt="guide" />
                     </Center>
                     <Box>
                       <Text
@@ -329,7 +481,10 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                 color={'#1C4EF5'}
                 mb={'20px'}
                 textAlign={'center'}
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  startDriver(quitGuideDriverObj);
+                }}
               >
                 {t('cc:step_title')}
               </Text>
