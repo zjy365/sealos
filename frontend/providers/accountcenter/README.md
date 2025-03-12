@@ -1,68 +1,76 @@
-# sealos costcenter
+# sealos app launchpad
 
-## directory
+## project tree
 
-```
-./src
-├── constants
-│   ├── billing.ts
-│   └── payment.ts
-├── hooks
-│   └── useRecharge.tsx
-├── layout
-│   ├── index.module.scss
-│   ├── index.tsx
-│   └── sidebar.tsx
-├── mock
-│   ├── billing.ts
-│   └── valuation.ts
-├── pages
-│   ├── _app.tsx
-│   ├── _document.tsx
-│   ├── api
-│   │   ├── account
-│   │   │   ├── getAmount.ts
-│   │   │   └── payment
-│   │   │       ├── index.ts
-│   │   │       └── pay.ts
-│   │   └── order
-│   │       └── index.ts
-│   ├── billing
-│   │   ├── index.module.scss
-│   │   └── index.tsx
-│   ├── cost_overview
-│   │   ├── components
-│   │   │   ├── user.module.scss
-│   │   │   └── user.tsx
-│   │   ├── index.module.scss
-│   │   └── index.tsx
-│   ├── index.tsx
-│   └── valuation
-│       ├── index.module.scss
-│       └── index.tsx
-├── service
-│   ├── backend
-│   │   ├── auth.ts
-│   │   ├── kubernetes.ts
-│   │   └── response.ts
-│   └── request.ts
-├── stores
-│   └── session.ts
-├── styles
-│   ├── chakraTheme.ts
-│   └── globals.scss
-├── types
-│   ├── api.ts
-│   ├── billing.ts
-│   ├── crd.ts
-│   ├── session.ts
-│   └── valuation.ts
-└── utils
-    └── format.ts
-```
-
-## build and push the image
-
-```
-.github/workflows/dockerize-web.yml
+```bash
+.
+├── Dockerfile
+├── Makefile
+├── README.md
+├── deploy
+│   └── manifests
+│       └── frontend.yaml
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── pnpm-lock.yaml
+├── public
+│   └── favicon.ico
+├── src
+│   ├── api # FE api
+│   ├── components # global components
+│   │   ├── DBStatusTag
+│   │   ├── ButtonGroup
+│   │   ├── FormControl
+│   │   ├── Icon
+│   │   │   ├── icons # svg icon
+│   │   │   └── index.tsx
+│   │   ├── PodLineChart
+│   │   ├── RangeInput
+│   │   ├── RangeSlider
+│   │   ├── Slider
+│   │   └── YamlCode
+│   ├── constants # global constant data
+│   │   ├── app.ts
+│   │   ├── editApp.ts
+│   │   └── theme.ts
+│   ├── hooks # global hooks
+│   │   ├── useConfirm.tsx
+│   │   ├── useLoading.tsx
+│   │   ├── useScreen.ts
+│   ├── mock
+│   ├── pages
+│   │   ├── 404.tsx
+│   │   ├── _app.tsx
+│   │   ├── _document.tsx
+│   │   ├── api # server api
+│   │   ├── app
+│   │   │   ├── detail
+│   │   │   └── edit
+│   │   └── apps
+│   │       └── index.tsx
+│   ├── services # server function
+│   │   ├── backend
+│   │   │   ├── auth.ts
+│   │   │   ├── kubernetes.ts
+│   │   │   └── response.ts
+│   │   ├── error.ts
+│   │   ├── kubernet.ts
+│   │   └── request.ts
+│   ├── store # FE store
+│   │   ├── app.ts
+│   │   ├── global.ts
+│   │   └── static.ts
+│   ├── styles
+│   │   └── reset.scss
+│   ├── types
+│   │   ├── app.d.ts
+│   │   ├── index.d.ts
+│   │   └── user.d.ts
+│   └── utils
+│       ├── adapt.ts # format api data
+│       ├── deployYaml2Json.ts # form data to yaml
+│       ├── tools.ts
+│       └── user.ts
+└── tsconfig.json
 ```

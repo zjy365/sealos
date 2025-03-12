@@ -37,3 +37,8 @@ next-env.d.ts
 
 data/config.yaml.local
 /prisma/**/generated
+/public/trainData/
+/local/
+platform.json
+.yalc/
+yalc.lock

@@ -1,9 +1,9 @@
-
-SERVICE_NAME=zhujingyang/sealos-cost-center
+SERVICE_NAME=sealos-db-provider
 # Image URL to use all building/pushing image targets
-IMG ?= $(SERVICE_NAME):1.0.0
+IMG ?= $(SERVICE_NAME):latest
+
 .PHONY: all
-all: docker-build-and-push
+all: build
 
 ##@ General
 
@@ -34,13 +34,4 @@ run: ## Run a dev service from host.
 
 .PHONY: docker-build
 docker-build: ## Build docker image with the desktop-frontend.
-	sudo docker build -t $(IMG) .
-
-##@ Deployment
-
-.PHONY: docker-push-image
-docker-push-image: ## Push docker image to Docker Hub.
-	docker push $(IMG)
-	
-.PHONY: docker-build-and-push
-docker-build-and-push: docker-build docker-push-image ## Build and push docker image with the desktop-frontend.
+	docker build -t sealos-db-provider:latest . --network host  --build-arg HTTP_PROXY=http://127.0.0.1:7890 --build-arg HTTPS_PROXY=http://127.0.0.1:7890
