@@ -215,7 +215,7 @@ const DevboxList = ({
         cell(props) {
           const item = props.row.original;
           return (
-            <Flex onClick={(e) => e.stopPropagation()}>
+            <Flex>
               <IDEButton
                 devboxName={item.name}
                 sshPort={item.sshPort}
@@ -228,14 +228,13 @@ const DevboxList = ({
                   pr: 'auto',
                   bgColor: '#F4F4F5',
                   pl: '12px'
-                  // borderStartRadius: 'md'
                 }}
                 rightButtonProps={{
                   boxShadow: 'none',
                   bgColor: '#F4F4F5'
-                  // borderEndRadius: 'md'
                 }}
                 runtimeType={item.template.templateRepository.iconId as string}
+                onClick={(e) => e.stopPropagation()}
               />
               {/* <Button
                 mr={'8px'}
@@ -411,23 +410,6 @@ const DevboxList = ({
           refetchDevboxList={refetchDevboxList}
         />
       )}
-      {/* {!!onOpenRelease && !!currentDevboxListItem && ( */}
-      {/* <ReleaseModal
-        onSuccess={() => {
-          router.push(`/devbox/detail/${currentDevboxListItem?.name}`);
-        }}
-        onClose={() => {
-          setOnOpenRelease(false);
-          setCurrentDevboxListItem(null);
-        }}
-        devbox={{
-          name: 'xxx',
-          status: {
-            value: 'stop'
-          }
-        }}
-      /> */}
-      {/* )} */}
     </>
   );
 };

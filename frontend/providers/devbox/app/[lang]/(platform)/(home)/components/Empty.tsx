@@ -1,12 +1,11 @@
-import Image from 'next/image';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, Img } from '@chakra-ui/react';
 import { useTranslations } from 'next-intl';
 
 const Empty = () => {
   const t = useTranslations();
   return (
     <Flex w={'full'} flex={1} flexDirection="column" alignItems="center" justifyContent="center">
-      <Image src={'/images/empty/devbox-list-empty.png'} alt="empty" width={500} height={200} />
+      <Img src={'/images/empty/devbox-list-empty.png'} alt="empty" width={500} height={250} />
       <Text fontSize={'18px'} fontWeight={'600'} color={'grayModern.900'}>
         {t('create_devbox_first')}
       </Text>
