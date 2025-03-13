@@ -1,12 +1,15 @@
 import MyIcon from '@/components/Icon';
 import { useGlobalStore } from '@/store/global';
+import { useGuideStore } from '@/store/guide';
 import type { YamlItemType } from '@/types/index';
 import { downLoadBold } from '@/utils/tools';
 import { Box, Button, Flex } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { startDriver } from '@/hooks/driver';
+import { createAppDriverObj } from '@/hooks/driver';
 
 const Header = ({
   appName,
@@ -35,8 +38,16 @@ const Header = ({
     );
   }, [appName, yamlList]);
 
+  const { createCompleted } = useGuideStore();
+  useEffect(() => {
+    console.log(1, createCompleted);
+    if (!createCompleted) {
+      startDriver(createAppDriverObj());
+    }
+  }, [createCompleted]);
+
   return (
-    <Flex w={'100%'} px={10} h={'86px'} alignItems={'center'}>
+    <Flex w={'100%'} px={10} h={'96px'} alignItems={'center'} borderBottom={'1px solid #E4E4E7'}>
       <Flex
         alignItems={'center'}
         cursor={'pointer'}
@@ -51,14 +62,26 @@ const Header = ({
         </Box>
       </Flex>
       <Box flex={1}></Box>
-      <Button h={'40px'} mr={'14px'} minW={'140px'} variant={'outline'} onClick={handleExportYaml}>
+      <Button
+        style={{
+          borderRadius: '8px'
+        }}
+        h={'40px'}
+        mr={'14px'}
+        minW={'120px'}
+        variant={'outline'}
+        onClick={handleExportYaml}
+      >
         {t('Export')} Yaml
       </Button>
       <Button
         className="driver-deploy-button"
-        minW={'140px'}
+        minW={'120px'}
         h={'40px'}
         onClick={applyCb}
+        style={{
+          borderRadius: '8px'
+        }}
         _focusVisible={{ boxShadow: '' }}
       >
         {t(applyBtnText)}

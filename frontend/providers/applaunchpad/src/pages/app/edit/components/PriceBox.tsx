@@ -6,6 +6,7 @@ import { CURRENCY } from '@/store/static';
 import { useUserStore } from '@/store/user';
 import MyIcon from '@/components/Icon';
 import { CurrencySymbol, MyTooltip } from '@sealos/ui';
+import { Cpu, HardDrive, MemoryStick } from 'lucide-react';
 
 const PriceBox = ({
   cpu,
@@ -57,43 +58,56 @@ const PriceBox = ({
       {
         label: 'CPU',
         color: '#33BABB',
-        value: podScale(cpuP)
+        value: podScale(cpuP),
+        icon: <Cpu size={20} color="#A3A3A3" />
       },
-      { label: 'Memory', color: '#36ADEF', value: podScale(memoryP) },
-      { label: 'Storage', color: '#8172D8', value: podScale(storageP) },
+      {
+        label: 'Memory',
+        color: '#36ADEF',
+        value: podScale(memoryP),
+        icon: <MemoryStick size={20} color="#A3A3A3" />
+      },
+      {
+        label: 'Storage',
+        color: '#8172D8',
+        value: podScale(storageP),
+        icon: <HardDrive size={20} color="#A3A3A3" />
+      },
       ...(userSourcePrice?.gpu ? [{ label: 'GPU', color: '#89CD11', value: podScale(gpuP) }] : []),
       { label: 'TotalPrice', color: '#485058', value: podScale(totalP) }
     ];
   }, [cpu, gpu, memory, pods, storage, userSourcePrice]);
 
   return (
-    <Box bg={'#FFF'} borderRadius={'md'} border={theme.borders.base}>
-      <Flex py={3} px={4} borderBottom={theme.borders.base} gap={'8px'}>
+    <Box bg={'#FFF'} borderRadius={'12px'} border={theme.borders.base}>
+      <Flex
+        py={3}
+        px={4}
+        borderBottom={theme.borders.base}
+        gap={'8px'}
+        bg={'#FAFAFA'}
+        borderTopRadius={'12px'}
+      >
         <Text color={'grayModern.900'} fontWeight={500}>
           {t('AnticipatedPrice')}
         </Text>
-        <Text color={'grayModern.500'}> ({t('Perday')})</Text>
       </Flex>
-      <Box py={3} px={4}>
+      <Box>
         {priceList.map((item, index) => (
           <Flex
             key={item.label}
             alignItems={'center'}
-            _notFirst={{ mt: '12px' }}
             fontSize={'12px'}
             fontWeight={500}
-            color={'grayModern.600'}
+            height={'56px'}
+            px={'20px'}
+            borderBottom={index !== priceList.length - 1 ? theme.borders.base : 'none'}
           >
-            <Box
-              flexShrink={0}
-              bg={item.color}
-              w={'8px'}
-              h={'8px'}
-              borderRadius={'10px'}
-              mr={2}
-            ></Box>
             <Flex alignItems={'center'} gap={'2px'} flex={'0 0 60px'}>
-              {t(item.label)}
+              {item?.icon}
+              <Text color={'#111824'} ml={index !== priceList.length - 1 ? '8px' : '0px'}>
+                {t(item.label)}
+              </Text>
               {index === priceList.length - 1 && (
                 <MyTooltip label={t('total_price_tip')}>
                   <Center width={'14px'} height={'14px'} cursor={'pointer'}>
@@ -101,9 +115,10 @@ const PriceBox = ({
                   </Center>
                 </MyTooltip>
               )}
-              :
             </Flex>
-            <Box whiteSpace={'nowrap'}>{item.value}</Box>
+            <Box ml={'auto'} color={'#525252'} whiteSpace={'nowrap'}>
+              {item.value}
+            </Box>
           </Flex>
         ))}
       </Box>

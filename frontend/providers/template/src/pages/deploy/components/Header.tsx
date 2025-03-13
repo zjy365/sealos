@@ -23,10 +23,12 @@ import {
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import { useTranslation } from 'next-i18next';
-import { MouseEvent, useCallback, useMemo } from 'react';
+import { MouseEvent, useCallback, useEffect, useMemo } from 'react';
 import PriceBox, { usePriceCalculation } from './PriceBox';
 import { CurrencySymbol } from '@sealos/ui';
 import { useSystemConfigStore } from '@/store/config';
+import { useGuideStore } from '@/store/guide';
+import { deployDriverObj, startDriver } from '@/hooks/driver';
 
 const Header = ({
   appName,
@@ -112,6 +114,14 @@ const Header = ({
   }, [yamlList]);
 
   const priceList = usePriceCalculation(usage);
+
+  const { createCompleted } = useGuideStore();
+  useEffect(() => {
+    console.log(1, createCompleted);
+    if (!createCompleted) {
+      startDriver(deployDriverObj());
+    }
+  }, [createCompleted]);
 
   return (
     <Flex w={'100%'} h={'80px'} alignItems={'center'} backgroundColor={'rgba(255, 255, 255, 0.90)'}>
@@ -309,7 +319,14 @@ const Header = ({
       >
         {t('Export')} Yaml
       </Button>
-      <Button px={4} minW={'120px'} h={'40px'} variant={'solid'} onClick={applyCb}>
+      <Button
+        className="create-app-btn"
+        px={4}
+        minW={'120px'}
+        h={'40px'}
+        variant={'solid'}
+        onClick={applyCb}
+      >
         {t(applyBtnText)}
       </Button>
     </Flex>

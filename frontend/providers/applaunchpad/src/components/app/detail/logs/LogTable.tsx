@@ -145,7 +145,7 @@ export const LogTable = ({
   });
 
   return (
-    <Flex flexDir={'column'} w={'100%'} h={'100%'}>
+    <Flex flexDir={'column'} w={'100%'} h={'100%'} mt={'24px'}>
       <Flex alignItems={'center'} gap={4} justifyContent={'space-between'}>
         <Flex alignItems={'center'} gap={4}>
           <Text
@@ -221,11 +221,11 @@ export const LogTable = ({
           )}
         </Flex>
         <Button
-          minW={'75px'}
+          minW={'76px'}
           fontSize={'12px'}
           variant={'outline'}
-          h={'28px'}
-          leftIcon={<MyIcon name="export" />}
+          color={'#18181B'}
+          h={'34px'}
           onClick={() => exportLogs()}
         >
           {t('export_log')}

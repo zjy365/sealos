@@ -69,29 +69,63 @@ const EditEnvs = ({
   return (
     <Modal isOpen onClose={onClose} lockFocusAcrossFrames={false}>
       <ModalOverlay />
-      <ModalContent maxH={'90vh'} maxW={'90vw'} minW={'530px'} w={'auto'}>
-        <ModalHeader>{t('Edit Environment Variables')}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Box fontSize={'14px'} fontWeight={500} color={'messenger.900'} mb={'8px'}>
-            {t('Environment Variables')}
-          </Box>
-          <Textarea
-            whiteSpace={'pre-wrap'}
-            h={'350px'}
-            maxH={'100%'}
-            value={inputVal}
-            resize={'both'}
-            placeholder={t('Env Placeholder') || ''}
-            overflowX={'auto'}
-            onChange={(e) => setInputVal(e.target.value)}
-          />
-        </ModalBody>
-        <ModalFooter>
-          <Button w={'88px'} onClick={onSubmit}>
-            {t('Confirm')}
-          </Button>
-        </ModalFooter>
+      <ModalContent
+        maxH={'90vh'}
+        maxW={'90vw'}
+        minW={'530px'}
+        w={'auto'}
+        p={'2px'}
+        boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+        borderRadius={'16px'}
+      >
+        <Box border={'1px solid #E4E4E7'} borderRadius={'16px'}>
+          <ModalHeader
+            p={'24px'}
+            borderTopRadius={'16px'}
+            style={{
+              background: '#FFF',
+              border: 'none'
+            }}
+          >
+            {t('Edit Environment Variables')}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody p={'8px 24px 24px 24px'}>
+            <Box fontSize={'14px'} fontWeight={500} mb={'8px'} color={'#71717A'}>
+              {t('Environment Variables')}
+            </Box>
+            <Textarea
+              style={{
+                border: '1px solid #E4E4E7',
+                borderRadius: '6px'
+              }}
+              bg={'#FFF'}
+              color={'#71717A'}
+              whiteSpace={'pre-wrap'}
+              h={'160px'}
+              maxH={'100%'}
+              value={inputVal}
+              resize={'both'}
+              placeholder={t('Env Placeholder') || ''}
+              overflowX={'auto'}
+              onChange={(e) => setInputVal(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter justifyContent={'start'} px={'24px'}>
+            <Button w={'88px'} onClick={onSubmit} borderRadius={'8px'}>
+              {t('Add')}
+            </Button>
+            <Button
+              ml={'8px'}
+              w={'88px'}
+              variant={'outline'}
+              onClick={onClose}
+              borderRadius={'8px'}
+            >
+              {t('Cancel')}
+            </Button>
+          </ModalFooter>
+        </Box>
       </ModalContent>
     </Modal>
   );

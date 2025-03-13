@@ -24,9 +24,11 @@ import {
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ThemeType } from '@sealos/ui';
 import UpdateModal from '@/components/app/detail/index/UpdateModal';
+import { useGuideStore } from '@/store/guide';
+import { applistDriverObj, startDriver } from '@/hooks/driver';
 
 const DelModal = dynamic(() => import('@/components/app/detail/index/DelModal'));
 
@@ -37,8 +39,6 @@ const AppList = ({
   apps: AppListItemType[];
   refetchApps: () => void;
 }) => {
-  console.log('apps', apps);
-
   const { t } = useTranslation();
   const { setLoading } = useGlobalStore();
   const { userSourcePrice } = useUserStore();
@@ -159,11 +159,6 @@ const AppList = ({
         )
       },
       {
-        title: t('Creation Time'),
-        dataIndex: 'createTime',
-        key: 'createTime'
-      },
-      {
         title: t('CPU'),
         key: 'cpu',
         render: (item: AppListItemType) => (
@@ -242,29 +237,19 @@ const AppList = ({
         )
       },
       {
+        title: t('Creation Time'),
+        dataIndex: 'createTime',
+        key: 'createTime'
+      },
+      {
         title: t('Operation'),
         key: 'control',
         render: (item: AppListItemType) => (
-          <Flex>
-            <Button
-              mr={5}
-              height={'32px'}
-              size={'sm'}
-              fontSize={'base'}
-              bg={'grayModern.150'}
-              color={'grayModern.900'}
-              _hover={{
-                color: 'brightBlue.600'
-              }}
-              leftIcon={<MyIcon name={'detail'} w={'16px'} h="16px" />}
-              onClick={() => router.push(`/app/detail?name=${item.name}`)}
-            >
-              {t('Details')}
-            </Button>
+          <Flex onClick={(e) => e.stopPropagation()}>
             <SealosMenu
               width={100}
               Button={
-                <MenuButton as={Button} variant={'square'} w={'30px'} h={'30px'}>
+                <MenuButton bg={'#F4F4F5'} as={Button} variant={'square'} w={'30px'} h={'30px'}>
                   <MyIcon name={'more'} px={3} />
                 </MenuButton>
               }
@@ -352,6 +337,14 @@ const AppList = ({
     [handlePauseApp, handleRestartApp, handleStartApp, onOpenPause, router, t, userSourcePrice?.gpu]
   );
 
+  const { listCompleted } = useGuideStore();
+  useEffect(() => {
+    console.log(1, listCompleted);
+    if (!listCompleted && apps.length > 0) {
+      startDriver(applistDriverObj());
+    }
+  }, [listCompleted, apps.length]);
+
   return (
     <Box backgroundColor={'#FFF'} px={'40px'} pb={5} minH={'100%'}>
       <Flex h={'88px'} alignItems={'center'}>
@@ -373,7 +366,14 @@ const AppList = ({
           ( {apps.length} )
         </Box>
         <Box flex={1}></Box>
-        <Button h={'40px'} w={'106px'} flex={'0 0 auto'} onClick={() => router.push('/app/edit')}>
+        <Button
+          className="create-app-btn"
+          position={'relative'}
+          h={'40px'}
+          minW={'106px'}
+          flex={'0 0 auto'}
+          onClick={() => router.push('/app/edit')}
+        >
           {t('Create Application')}
         </Button>
       </Flex>
@@ -388,6 +388,7 @@ const AppList = ({
           total: apps.length,
           onChange: (page) => setCurrentPage(page)
         }}
+        onRowClick={(item) => router.push(`/app/detail?name=${item.name}`)}
       />
 
       <PauseChild />

@@ -44,6 +44,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import UpgradePlanModal from './UpgradePlanModal';
+import GuideModal from './GuideModal';
 
 const baseItemStyle = {
   minW: '40px',
@@ -69,6 +70,7 @@ export default function Account() {
   const accountCenterRef = useRef<AccountCenterRef>(null);
   const onAmount = useCallback((amount: number) => setNotificationAmount(amount), []);
   const upgradePlanDisclosure = useDisclosure();
+  const guideDisclosure = useDisclosure();
 
   const logout = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -161,6 +163,7 @@ export default function Account() {
           </Box>
 
           <Center
+            className="guide-button"
             cursor={'pointer'}
             {...baseItemStyle}
             px={'8px'}
@@ -168,7 +171,8 @@ export default function Account() {
             _hover={{
               background: 'rgba(0, 0, 0, 0.05);'
             }}
-            onClick={() => window.open(layoutConfig?.common?.docsUrl)}
+            border={'1px solid transparent'}
+            onClick={guideDisclosure.onOpen}
           >
             {t('cc:guide')}
           </Center>
@@ -378,6 +382,8 @@ export default function Account() {
         isOpen={upgradePlanDisclosure.isOpen}
         onClose={upgradePlanDisclosure.onClose}
       />
+
+      <GuideModal isOpen={guideDisclosure.isOpen} onClose={guideDisclosure.onClose} />
     </Box>
   );
 }

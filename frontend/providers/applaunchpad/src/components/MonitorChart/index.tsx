@@ -43,6 +43,12 @@ const MonitorChart = ({
 
   const option = useMemo(
     () => ({
+      legend: {
+        bottom: 0,
+        icon: 'circle',
+        itemWidth: 10,
+        itemHeight: 10
+      },
       tooltip: {
         trigger: 'axis',
         enterable: true,
@@ -62,8 +68,10 @@ const MonitorChart = ({
                   (item: any) => `
                     <div class="${styles.tooltipItem}">
                       <span class="${styles.tooltipDot}" style="background: ${item.color}"></span>
-                      <span class="${styles.tooltipName}">${item.seriesName}</span>
-                      <span class="${styles.tooltipValue}">${item.value}${unit || ''}</span>
+                      
+                      <span class="${styles.tooltipValue}" style="color: ${item.color}">${
+                    item.value
+                  }${unit || ''}</span>
                       <button class="${styles.tooltipButton}" onclick="(() => {
                         const currentUrl = window.location.href;
                         const urlParams = currentUrl.split('?')[1] || '';
@@ -107,7 +115,7 @@ const MonitorChart = ({
       },
       grid: {
         left: '4px',
-        bottom: '4px',
+        bottom: '40px',
         top: '10px',
         right: '20px',
         containLabel: true
@@ -218,31 +226,8 @@ const MonitorChart = ({
   }, [screenWidth]);
 
   return (
-    <Flex position={'relative'} height={'100%'} gap={'25px'}>
-      <Flex ref={chartDom} flex={'1 1 80%'} />
-      {isShowLegend && (
-        <Flex
-          justifyContent={'center'}
-          alignContent={'center'}
-          flexDirection={'column'}
-          flex={'1 0 20%'}
-          gap={'12px'}
-        >
-          {data?.yData?.map((item, index) => (
-            <Flex key={item?.name + index} alignItems={'center'} w={'fit-content'}>
-              <MyIcon
-                width={'16px'}
-                name="chart"
-                color={LineStyleMap[index % LineStyleMap.length].lineColor}
-                mr="6px"
-              />
-              <Text fontSize={'11px'} color={'grayModern.900'} fontWeight={500}>
-                {item?.name}
-              </Text>
-            </Flex>
-          ))}
-        </Flex>
-      )}
+    <Flex position={'relative'} height={'100%'} gap={'25px'} flexDirection={'column'}>
+      <Flex ref={chartDom} flex={1} />
     </Flex>
   );
 };

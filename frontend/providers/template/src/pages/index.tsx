@@ -28,6 +28,8 @@ import { useRouter } from 'next/router';
 import { MouseEvent, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import { ShareIcon } from '@/components/icons';
+import { useGuideStore } from '@/store/guide';
+import { applistDriverObj, startDriver } from '@/hooks/driver';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
@@ -93,6 +95,13 @@ export default function AppList({
       });
     }
   }, [router, setInsideCloud]);
+
+  const { listCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!listCompleted && filterData && filterData?.length > 0) {
+      startDriver(applistDriverObj());
+    }
+  }, [listCompleted, filterData?.length, filterData]);
 
   return (
     <Box

@@ -168,9 +168,9 @@
 .driver-popover-arrow {
   content: '';
   position: absolute;
-  border: 5px solid #fff;
+  border: 5px solid rgba(28, 46, 245, 0.9);
   /* 取消 Arrow */
-  display: none;
+  display: block;
 }
 
 .driver-popover-arrow-side-over {

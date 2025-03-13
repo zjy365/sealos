@@ -103,7 +103,7 @@ const MySelect = (
                 bg: '#FFF'
               }
             : {
-                bg: '#F7F8FA',
+                bg: '#FFF',
                 borderColor: isInvalid ? 'red' : ''
               })}
           {...props}

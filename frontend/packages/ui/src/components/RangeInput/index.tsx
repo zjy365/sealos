@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { HStack, Input, useNumberInput, IconButton, InputProps } from '@chakra-ui/react';
+import { HStack, Input, useNumberInput, IconButton, InputProps, Center } from '@chakra-ui/react';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { MyTooltip } from '../MyTooltip';
 
@@ -53,8 +53,8 @@ export const RangeInput = ({
       <HStack
         w={`${w}px`}
         position={'relative'}
-        borderBottom={`2px solid`}
-        borderColor={isFocus ? 'brightBlue.600' : 'gray.300'}
+        border={'1px solid #E4E4E7'}
+        borderRadius={'6px'}
         onBlurCapture={() => {
           setIsFocus(false);
         }}
@@ -62,28 +62,38 @@ export const RangeInput = ({
           setIsFocus(true);
         }}
       >
-        <IconButton
-          icon={<MinusIcon />}
-          aria-label="minus"
+        <Center
+          flexShrink={0}
+          height={'40px'}
+          width={'40px'}
           color={+input.value <= min ? 'blackAlpha.400' : 'blackAlpha.700'}
           {...dec}
           {...IconStyle}
-        />
+        >
+          <MinusIcon />
+        </Center>
         <Input
           variant={'unstyled'}
           textAlign={'center'}
           fontSize={'lg'}
           fontWeight={'bold'}
+          height={'40px'}
+          borderLeft={'1px solid #E4E4E7'}
+          borderRight={'1px solid #E4E4E7'}
+          borderRadius={'none'}
           {...inputStyle}
           {...input}
         />
-        <IconButton
-          icon={<AddIcon />}
-          aria-label="add"
+        <Center
+          flexShrink={0}
+          height={'40px'}
+          width={'40px'}
           color={+input.value >= max ? 'blackAlpha.400' : 'blackAlpha.700'}
           {...inc}
           {...IconStyle}
-        />
+        >
+          <AddIcon />
+        </Center>
       </HStack>
     </MyTooltip>
   );

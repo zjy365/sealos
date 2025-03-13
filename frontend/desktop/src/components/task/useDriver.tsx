@@ -53,11 +53,11 @@ export default function useDriver() {
       }
     };
 
-    if (isPC && conf?.guideEnabled && canShowGuide && !workspaceInviteCode) {
-      handleUserGuide();
-    } else {
-      setDesktopGuide(false);
-    }
+    // if (isPC && conf?.guideEnabled && canShowGuide && !workspaceInviteCode) {
+    //   handleUserGuide();
+    // } else {
+    //   setDesktopGuide(false);
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conf?.guideEnabled, isPC, canShowGuide, workspaceInviteCode]);
 

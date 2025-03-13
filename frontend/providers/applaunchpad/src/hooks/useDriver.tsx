@@ -166,9 +166,7 @@ export default function useDriver({
   useEffect(() => {
     const handleUserGuide = async () => {
       try {
-        const data = await getUserTasks();
-        if (data.needGuide && !createCompleted) {
-          setReward(formatMoney(Number(data.task.reward)));
+        if (!createCompleted) {
           setIsAdvancedOpen(true);
           setIsGuided(true);
           requestAnimationFrame(() => {

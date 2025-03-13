@@ -113,7 +113,7 @@ export default function Desktop(props: any) {
   );
 
   const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
-  const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
+  // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
 
   useEffect(() => {
     const cleanup = createMasterAPP();
@@ -197,7 +197,7 @@ export default function Desktop(props: any) {
           <Apps />
         </Flex>
 
-        {isClient && (
+        {/* {isClient && (
           <Box>
             {desktopGuide && (
               <>
@@ -253,7 +253,7 @@ export default function Desktop(props: any) {
               />
             )}
           </Box>
-        )}
+        )} */}
       </Flex>
 
       {isAppBar ? <AppDock /> : <FloatButton />}

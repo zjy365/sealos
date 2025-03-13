@@ -1,20 +1,17 @@
 import { useTranslation } from 'next-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Box, useTheme, Flex, Divider } from '@chakra-ui/react';
+import { Box, useTheme, Flex } from '@chakra-ui/react';
 import { useAppStore } from '@/store/app';
 import { serviceSideProps } from '@/utils/i18n';
 import DetailLayout from '@/components/layouts/DetailLayout';
 import { Header } from '@/components/app/detail/logs/Header';
-import { Filter } from '@/components/app/detail/logs/Filter';
 import { LogTable } from '@/components/app/detail/logs/LogTable';
 import { LogCounts } from '@/components/app/detail/logs/LogCounts';
-import { useEffect, useMemo, useState } from 'react';
 import { ListItem } from '@/components/AdvancedSelect';
 import useDateTimeStore from '@/store/date';
 import { getAppLogs, getLogPodList } from '@/api/app';
 import { useForm } from 'react-hook-form';
 import { formatTimeRange } from '@/utils/timeRange';
-import { downLoadBold } from '@/utils/tools';
 import { useLogStore } from '@/store/logStore';
 import { useRouter } from 'next/router';
 import { useMessage } from '@sealos/ui';
@@ -213,38 +210,29 @@ export default function LogsPage({ appName }: { appName: string }) {
 
   return (
     <DetailLayout appName={appName}>
-      <Flex flexDirection={'column'} flex={1} borderRadius="lg" overflowY={'auto'}>
-        <Flex
-          mb={'6px'}
-          bg={'white'}
-          flexDir={'column'}
-          border={theme.borders.base}
-          borderRadius={'lg'}
-        >
+      <Flex flexDirection={'column'} flex={1} borderRadius="lg" overflowY={'auto'} h={'100%'}>
+        <Flex bg={'white'} flexDir={'column'}>
           <Header formHook={formHook} refetchData={refetchData} />
-          <Divider />
-          <Filter formHook={formHook} refetchData={refetchData} />
         </Flex>
         <Box
           mb={'6px'}
-          p={'20px 20px'}
+          mx={'40px'}
+          p={'20px 24px'}
           bg={'white'}
           border={theme.borders.base}
           borderRadius={'lg'}
           flexShrink={0}
+          h={'80%'}
         >
           <LogCounts logCountsData={logCounts || []} isLogCountsLoading={isLogCountsLoading} />
-        </Box>
-        <Box
-          bg={'white'}
-          p={'20px'}
-          border={theme.borders.base}
-          borderRadius={'lg'}
-          flex={1}
-          height={'0px'}
-          minH={parsedLogs?.length > 0 ? '400px' : '200px'}
-        >
-          <LogTable data={parsedLogs || []} isLoading={isLoading} formHook={formHook} />
+          <Box
+            bg={'white'}
+            flex={1}
+            height={'0px'}
+            minH={parsedLogs?.length > 0 ? '400px' : '200px'}
+          >
+            <LogTable data={parsedLogs || []} isLoading={isLoading} formHook={formHook} />
+          </Box>
         </Box>
       </Flex>
     </DetailLayout>

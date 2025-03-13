@@ -1,7 +1,7 @@
 import MyIcon from '@/components/Icon';
 import { MyTooltip } from '@sealos/ui';
 
-import PodLineChart from '@/components/PodLineChart';
+import CCPodLineChart from '@/components/CCPodLineChart';
 import { ProtocolList } from '@/constants/app';
 import { MOCK_APP_DETAIL } from '@/mock/apps';
 import { DOMAIN_PORT } from '@/store/static';
@@ -11,14 +11,18 @@ import { getUserNamespace } from '@/utils/user';
 import { Box, Button, Center, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import MonitorModal from './MonitorModal';
 import { HelpCircle } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { useGuideStore } from '@/store/guide';
+import { detailDriverObj, startDriver } from '@/hooks/driver';
 
 const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   const { t } = useTranslation();
   const { copyData } = useCopyData();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
 
   const networks = useMemo(
     () =>
@@ -30,10 +34,19 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                 ? network.customDomain
                 : `${network.publicDomain}.${network.domain}${DOMAIN_PORT}`
             }`
-          : ''
+          : '',
+        port: network.port
       })),
     [app]
   );
+
+  const { detailCompleted } = useGuideStore();
+  useEffect(() => {
+    console.log(1, detailCompleted);
+    if (!detailCompleted) {
+      startDriver(detailDriverObj());
+    }
+  }, [detailCompleted]);
 
   return (
     <Box position={'relative'}>
@@ -46,42 +59,39 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
         bg={'#FFF'}
         boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
       >
-        <Flex alignItems={'center'} fontSize={'14px'} fontWeight={'bold'}>
-          <Box color={'grayModern.900'}>{t('Real-time Monitoring')}</Box>
-          <Box ml={'8px'} color={'grayModern.600'}>
-            ({t('Update Time')}&ensp;{dayjs().format('HH:mm')})
+        <Flex mb={6} w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
+          <Box fontSize="medium" fontWeight={'bold'} color={'grayModern.900'}>
+            {t('monitor')}
+          </Box>
+          <Box color={'#A3A3A3'} fontSize={'12px'} fontWeight={'normal'}>
+            {t('update Time')}&ensp;
+            {dayjs().format('HH:mm')}
           </Box>
         </Flex>
-        <Grid
-          w={'100%'}
-          templateColumns={'1fr 1fr'}
-          gap={3}
-          mt={'12px'}
-          px={'16px'}
-          py={'12px'}
-          backgroundColor={'#FBFBFC'}
-          borderRadius={'6px'}
-          fontSize={'12px'}
-          color={'grayModern.600'}
-          fontWeight={'bold'}
-          position={'relative'}
-          className="driver-detail-monitor"
-        >
-          <Box>
-            <Box mb={'4px'}>CPU&ensp;({app.usedCpu.yData[app.usedCpu.yData.length - 1]}%)</Box>
-            <Box h={'60px'}>
-              <PodLineChart type={'blue'} data={app.usedCpu} />
+        <Flex borderRadius={'lg'} minH={'80px'} gap={4}>
+          <Box flex={1} position={'relative'}>
+            <Box color={'grayModern.900'} fontWeight={'bold'} mb={'24px'} fontSize={'12px'}>
+              {t('cpu')}:&ensp;
+              {app?.usedCpu?.yData[app?.usedCpu?.yData?.length - 1]}%
+            </Box>
+            <Box h={'85px'} minW={['200px', '250px', '300px']}>
+              <Box h={'85px'} minW={['200px', '250px', '300px']}>
+                <CCPodLineChart type="purple" data={app?.usedCpu} />
+              </Box>
             </Box>
           </Box>
-          <Box>
-            <Box mb={'4px'}>
-              {t('Memory')}&ensp;({app.usedMemory.yData[app.usedMemory.yData.length - 1]}%)
+          <Box flex={1} position={'relative'}>
+            <Box color={'grayModern.900'} fontWeight={'bold'} mb={'24px'} fontSize={'12px'}>
+              {t('memory')}:&ensp;
+              {app?.usedMemory?.yData[app?.usedMemory?.yData?.length - 1]}%
             </Box>
-            <Box h={'60px'}>
-              <PodLineChart type={'purple'} data={app.usedMemory} />
+            <Box h={'85px'}>
+              <Box h={'85px'}>
+                <CCPodLineChart type="purpleBlue" data={app?.usedMemory} />
+              </Box>
             </Box>
           </Box>
-        </Grid>
+        </Flex>
       </Box>
 
       <Box
@@ -102,24 +112,33 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
           </Text>
           <Flex ml="auto" alignItems="center" gap={2}>
             <Flex alignItems="center">
-              <HelpCircle size={8} color="#1C4EF5"></HelpCircle>
+              <HelpCircle size={16} color="#1C4EF5"></HelpCircle>
               <Text ml={'8px'} color="#1C4EF5">
                 {t('Public address unavailable')}
               </Text>
             </Flex>
             <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<MyIcon name="settings" w="16px" h="16px" />}
+              bg={'white'}
+              color={'#18181B'}
+              _hover={{ bg: 'grayModern.50' }}
+              fontSize={'12px'}
+              boxShadow={'none'}
+              borderWidth={1}
+              borderColor={'grayModern.200'}
+              borderRadius={'8px'}
+              onClick={() => router.push(`/app/edit?name=${app?.appName}`)}
             >
               {t('Manage Network')}
             </Button>
           </Flex>
         </Flex>
-        <Flex mt={'12px'} className="driver-detail-network">
+        <Flex mt={'16px'} className="driver-detail-network">
           <table className={'table-cross'}>
             <thead>
               <tr>
+                <Box as={'th'} fontSize={'12px'}>
+                  {t('Port')}
+                </Box>
                 <Box as={'th'} fontSize={'12px'}>
                   {t('Private Address')}
                 </Box>
@@ -132,6 +151,9 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
               {networks.map((network, index) => {
                 return (
                   <tr key={network.inline + index}>
+                    <th>
+                      <Box fontSize={'12px'}>{network.port}</Box>
+                    </th>
                     <th>
                       <Flex>
                         <MyTooltip label={t('Copy')} placement={'bottom-start'}>
