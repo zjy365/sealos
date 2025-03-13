@@ -28,24 +28,39 @@ export async function get_k8s_username() {
 
 export async function getRegionToken({
   userUid,
-  userId,
-  autoCreate = false
+  userId
 }: {
   userUid: string;
   userId: string;
-  autoCreate?: boolean;
 }): Promise<{
   kubeconfig: string;
   token: string;
   appToken: string;
-}> {
+} | null> {
   const region = await globalPrisma.region.findUnique({
     where: {
       uid: getRegionUid()
     }
   });
   if (!region) throw Error('The REGION_UID is undefined');
-
+  const userResult = await globalPrisma.user.findUnique({
+    where: {
+      uid: userUid
+    },
+    select: {
+      userInfo: {
+        select: {
+          isInited: true
+        }
+      }
+    }
+  });
+  // 没有该user
+  if (!userResult?.userInfo) {
+    return null;
+  }
+  // 还没初始化，不应该允许调用该接口
+  if (!userResult.userInfo.isInited) return null;
   const payload = await retrySerially(
     () =>
       prisma.$transaction(async (tx): Promise<AccessTokenPayload | null> => {
@@ -61,6 +76,7 @@ export async function getRegionToken({
             }
           }
         });
+        // console.log('userCrResult', userCrResult,)
         if (userCrResult) {
           // get a exist user
           const relations = userCrResult.userWorkspace!;
@@ -76,8 +92,6 @@ export async function getRegionToken({
             workspaceUid: privateRelation!.workspace.uid
           };
         } else {
-          // 暂时关闭该分支
-          if (!autoCreate) return null;
           const crName = nanoid();
           const regionResult = await tx.userCr.findUnique({
             where: {
@@ -165,22 +179,35 @@ export async function initRegionToken({
   kubeconfig: string;
   token: string;
   appToken: string;
-}> {
+} | null> {
   const region = await globalPrisma.region.findUnique({
     where: {
       uid: regionUid
     }
   });
   if (!region) throw Error('The REGION_UID is undefined');
-  const userInfo = await globalPrisma.userInfo.findUnique({
+  const userResult = await globalPrisma.user.findUnique({
     where: {
-      userUid
+      uid: userUid
+    },
+    select: {
+      userInfo: {
+        select: {
+          isInited: true
+        }
+      }
     }
   });
-  if (!userInfo) throw Error('The user status is error');
+  // 没有该user
+  if (!userResult?.userInfo) {
+    return null;
+  }
+  // 已经初始化，不应该允许调用该接口
+  if (!!userResult.userInfo.isInited) return null;
+  const userInfo = userResult.userInfo;
   const payload = await retrySerially(
     () =>
-      prisma.$transaction(async (tx): Promise<AccessTokenPayload> => {
+      prisma.$transaction(async (tx): Promise<AccessTokenPayload | null> => {
         let userCrResult = await tx.userCr.findUnique({
           where: {
             userUid
@@ -194,18 +221,19 @@ export async function initRegionToken({
           }
         });
         if (userCrResult) {
-          const relations = userCrResult.userWorkspace!;
-          const privateRelation = relations.find((r) => r.isPrivate);
-          return {
-            userUid: userCrResult.userUid,
-            userCrUid: userCrResult.uid,
-            userCrName: userCrResult.crName,
-            regionUid: region.uid,
-            userId,
-            // there is only one private workspace
-            workspaceId: privateRelation!.workspace.id,
-            workspaceUid: privateRelation!.workspace.uid
-          };
+          return null;
+          // const relations = userCrResult.userWorkspace!;
+          // const privateRelation = relations.find((r) => r.isPrivate);
+          // return {
+          //   userUid: userCrResult.userUid,
+          //   userCrUid: userCrResult.uid,
+          //   userCrName: userCrResult.crName,
+          //   regionUid: region.uid,
+          //   userId,
+          //   // there is only one private workspace
+          //   workspaceId: privateRelation!.workspace.id,
+          //   workspaceUid: privateRelation!.workspace.uid
+          // };
         } else {
           const crName = nanoid();
           const workspaceId = GetUserDefaultNameSpace(crName);

@@ -7,7 +7,6 @@ import { initRegionTokenParamsSchema } from '@/schema/auth';
 import { HttpStatusCode } from 'axios';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log(req.body, req.headers);
   await filterAuthenticationToken(req, res, async ({ userId, userUid }) => {
     const parseResult = initRegionTokenParamsSchema.safeParse(req.body);
     if (!parseResult.success) {
