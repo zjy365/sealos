@@ -1,12 +1,15 @@
 import MyIcon from '@/components/Icon';
 import { useGlobalStore } from '@/store/global';
+import { useGuideStore } from '@/store/guide';
 import type { YamlItemType } from '@/types/index';
 import { downLoadBold } from '@/utils/tools';
 import { Box, Button, Flex } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { startDriver } from '@/hooks/driver';
+import { createAppDriverObj } from '@/hooks/driver';
 
 const Header = ({
   appName,
@@ -34,6 +37,14 @@ const Header = ({
       appName ? `${appName}.yaml` : `yaml${dayjs().format('YYYYMMDDHHmmss')}.yaml`
     );
   }, [appName, yamlList]);
+
+  const { createCompleted } = useGuideStore();
+  useEffect(() => {
+    console.log(1, createCompleted);
+    if (!createCompleted) {
+      startDriver(createAppDriverObj());
+    }
+  }, [createCompleted]);
 
   return (
     <Flex w={'100%'} px={10} h={'96px'} alignItems={'center'} borderBottom={'1px solid #E4E4E7'}>

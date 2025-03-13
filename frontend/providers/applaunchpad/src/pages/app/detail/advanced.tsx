@@ -1,4 +1,3 @@
-import useDetailDriver from '@/hooks/useDetailDriver';
 import { useLoading } from '@/hooks/useLoading';
 import { useToast } from '@/hooks/useToast';
 import { MOCK_APP_DETAIL } from '@/mock/apps';
@@ -19,7 +18,6 @@ const AppMainInfo = dynamic(() => import('@/components/app/detail/index/AppMainI
 });
 
 const AppDetail = ({ appName }: { appName: string }) => {
-  const { startGuide } = useDetailDriver();
   const theme = useTheme();
   const { toast } = useToast();
   const { Loading } = useLoading();

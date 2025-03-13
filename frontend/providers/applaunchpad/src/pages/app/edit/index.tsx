@@ -3,7 +3,6 @@ import { checkPermission } from '@/api/platform';
 import { defaultSliderKey } from '@/constants/app';
 import { defaultEditVal, editModeMap } from '@/constants/editApp';
 import { useConfirm } from '@/hooks/useConfirm';
-import useDriver from '@/hooks/useDriver';
 import { useLoading } from '@/hooks/useLoading';
 import { useAppStore } from '@/store/app';
 import { useGlobalStore } from '@/store/global';
@@ -129,7 +128,6 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
   const formHook = useForm<AppEditType>({
     defaultValues: defaultEditVal
   });
-  const { isGuided, closeGuide } = useDriver({ setIsAdvancedOpen });
 
   const realTimeForm = useRef(defaultEditVal);
 
@@ -338,7 +336,6 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
           applyBtnText={applyBtnText}
           applyCb={() => {
             if (isSubmitting) return;
-            closeGuide();
             setIsSubmitting(true);
             formHook.handleSubmit(async (data) => {
               const parseYamls = formData2Yamls(data);

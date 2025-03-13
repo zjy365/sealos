@@ -3,6 +3,8 @@ import MyIcon from '@/components/Icon';
 import { AppLaunchpadIcon } from '@/components/icons/Application';
 import StatusTag from '@/components/StatusTag';
 import MyTable from '@/components/Table';
+import { detailDriverObj, startDriver } from '@/hooks/driver';
+import { useGuideStore } from '@/store/guide';
 import { useResourceStore } from '@/store/resource';
 import useSessionStore from '@/store/session';
 import { AppListItemType } from '@/types/launchpad';
@@ -10,7 +12,7 @@ import { printMemory } from '@/utils/tools';
 import { Box, Button, Center, Flex, Icon, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 
 export const EmptyBoxHeight = '60px';
@@ -133,9 +135,16 @@ export default function AppList({ instanceName }: { instanceName: string }) {
     [handleToDetailPage, t]
   );
 
+  const { detailCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!detailCompleted) {
+      startDriver(detailDriverObj());
+    }
+  }, [detailCompleted]);
+
   return (
     <Box>
-      <Flex alignItems={'center'}>
+      <Flex alignItems={'center'} width={'fit-content'} className="app-launchpad">
         <AppLaunchpadIcon />
         <Text ml="12px" fontWeight={500} fontSize={'18px'} color={'#363C42'}>
           {t('launchpad')}

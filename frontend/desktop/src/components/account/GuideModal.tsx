@@ -13,8 +13,7 @@ import {
   Center,
   Grid,
   Divider,
-  Button,
-  Image
+  Button
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -33,6 +32,7 @@ import {
   databaseDriverObj
 } from './driver';
 import { WindowSize } from '@/types';
+import { Image } from '@chakra-ui/react';
 
 interface GuideModalProps {
   isOpen: boolean;
@@ -83,7 +83,17 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
     [installedApps, openApp, runningInfo, setToHighestLayerById]
   );
 
-  const guideLinks = [
+  const guideLinks: {
+    key: string;
+    icon: string;
+    title: string;
+    description: string;
+    steps: {
+      title: string;
+      description: string;
+      image: string;
+    }[];
+  }[] = [
     {
       key: 'system-devbox',
       icon: installedApps.find((app) => app.key === 'system-devbox')?.icon || '',
@@ -93,22 +103,22 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
         {
           title: 'Access DevBox',
           description: 'Enter the DevBox page and create a new development environment.',
-          image: '/onboarding/devbox-1.png'
+          image: '/images/onboarding/devbox-1.png'
         },
         {
           title: 'Configure Your DevBox',
           description: 'Set up your development environment with your preferred settings.',
-          image: '/onboarding/devbox-2.png'
+          image: '/images/onboarding/devbox-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
           description: 'Begin coding in your preferred IDE with all configurations set.',
-          image: '/onboarding/devbox-3.png'
+          image: '/images/onboarding/devbox-3.png'
         },
         {
           title: 'Manage and Deploy',
           description: 'Manage your development environment and deploy your application.',
-          image: '/onboarding/devbox-4.png'
+          image: '/images/onboarding/devbox-4.png'
         }
       ]
     },
@@ -121,22 +131,22 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
         {
           title: 'Access DevBox',
           description: 'Enter the DevBox page and create a new development environment.',
-          image: '/onboarding/launchpad-1.png'
+          image: '/images/onboarding/launchpad-1.png'
         },
         {
           title: 'Configure Your DevBox',
           description: 'Set up your development environment with your preferred settings.',
-          image: '/onboarding/launchpad-2.png'
+          image: '/images/onboarding/launchpad-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
           description: 'Begin coding in your preferred IDE with all configurations set.',
-          image: '/onboarding/launchpad-3.png'
+          image: '/images/onboarding/launchpad-3.png'
         },
         {
           title: 'Manage and Deploy',
           description: 'Manage your development environment and deploy your application.',
-          image: '/onboarding/launchpad-4.png'
+          image: '/images/onboarding/launchpad-4.png'
         }
       ]
     },
@@ -149,22 +159,22 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
         {
           title: 'Access DevBox',
           description: 'Enter the DevBox page and create a new development environment.',
-          image: '/onboarding/appstore-1.png'
+          image: '/images/onboarding/appstore-1.png'
         },
         {
           title: 'Configure Your DevBox',
           description: 'Set up your development environment with your preferred settings.',
-          image: '/onboarding/appstore-2.png'
+          image: '/images/onboarding/appstore-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
           description: 'Begin coding in your preferred IDE with all configurations set.',
-          image: '/onboarding/appstore-3.png'
+          image: '/images/onboarding/appstore-3.png'
         },
         {
           title: 'Manage and Deploy',
           description: 'Manage your development environment and deploy your application.',
-          image: '/onboarding/appstore-4.png'
+          image: '/images/onboarding/appstore-4.png'
         }
       ]
     },
@@ -177,22 +187,22 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
         {
           title: 'Access DevBox',
           description: 'Enter the DevBox page and create a new development environment.',
-          image: '/onboarding/database-1.png'
+          image: '/images/onboarding/database-1.png'
         },
         {
           title: 'Configure Your DevBox',
           description: 'Set up your development environment with your preferred settings.',
-          image: '/onboarding/database-2.png'
+          image: '/images/onboarding/database-2.png'
         },
         {
           title: 'Start Coding in Your IDE',
           description: 'Begin coding in your preferred IDE with all configurations set.',
-          image: '/onboarding/database-3.png'
+          image: '/images/onboarding/database-3.png'
         },
         {
           title: 'Manage and Deploy',
           description: 'Manage your development environment and deploy your application.',
-          image: '/onboarding/database-4.png'
+          image: '/images/onboarding/database-4.png'
         }
       ]
     }
@@ -204,11 +214,17 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
     isActive,
     onClick
   }: {
-    step: any;
+    step: {
+      title: string;
+      description: string;
+      image: string;
+    };
     index: number;
     isActive: boolean;
     onClick: () => void;
   }) => {
+    console.log(step);
+
     return (
       <Flex
         alignItems={'center'}

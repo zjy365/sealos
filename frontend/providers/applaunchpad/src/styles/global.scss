@@ -45,9 +45,13 @@
 }
 
 #driver-popover-content {
-  padding: 14px;
-  max-width: 600px;
-  border: 1px solid #94b5ff;
+  border: none;
+  padding: 0px;
+  border-radius: 20px;
+  max-width: fit-content;
+  // position: absolute;
+  // top: 0px;
+  // left: 0px;
 }
 
 // date picker

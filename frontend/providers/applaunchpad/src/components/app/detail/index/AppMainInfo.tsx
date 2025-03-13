@@ -11,10 +11,12 @@ import { getUserNamespace } from '@/utils/user';
 import { Box, Button, Center, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import MonitorModal from './MonitorModal';
 import { HelpCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { useGuideStore } from '@/store/guide';
+import { detailDriverObj, startDriver } from '@/hooks/driver';
 
 const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   const { t } = useTranslation();
@@ -37,6 +39,14 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
       })),
     [app]
   );
+
+  const { detailCompleted } = useGuideStore();
+  useEffect(() => {
+    console.log(1, detailCompleted);
+    if (!detailCompleted) {
+      startDriver(detailDriverObj());
+    }
+  }, [detailCompleted]);
 
   return (
     <Box position={'relative'}>

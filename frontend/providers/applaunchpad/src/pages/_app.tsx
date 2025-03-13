@@ -141,6 +141,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             type?: string;
             name?: string;
             formData?: string;
+            action?: string;
           }>
         ) => {
           const whitelist = [`https://${DESKTOP_DOMAIN}`];
@@ -149,7 +150,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           }
           try {
             if (e.data?.type === 'InternalAppCall') {
-              const { name, formData } = e.data;
+              const { name, formData, action } = e.data;
               if (formData) {
                 router.replace({
                   pathname: '/redirect',
@@ -159,6 +160,11 @@ const App = ({ Component, pageProps }: AppProps) => {
                 router.replace({
                   pathname: '/app/detail',
                   query: { name }
+                });
+              } else if (action) {
+                router.replace({
+                  pathname: '/redirect',
+                  query: { action }
                 });
               }
             }
