@@ -126,7 +126,27 @@ export function userCanMerge(
   const canMerge = curTypeList.every((t) => !mergeTypeSet.has(t));
   return canMerge;
 }
-
+export function getPasswordStrength(pw: string) {
+  let pwlength = pw.length;
+  if (pwlength > 5) pwlength = 5;
+  let numnumeric = pw.replace(/[0-9]/g, '');
+  let numeric = pw.length - numnumeric.length;
+  if (numeric > 3) numeric = 3;
+  let symbols = pw.replace(/\W/g, '');
+  let numsymbols = pw.length - symbols.length;
+  if (numsymbols > 3) numsymbols = 3;
+  let numupper = pw.replace(/[A-Z]/g, '');
+  let upper = pw.length - numupper.length;
+  if (upper > 3) upper = 3;
+  let pwstrength = pwlength * 10 - 20 + numeric * 10 + numsymbols * 15 + upper * 10;
+  if (pwstrength < 0) {
+    pwstrength = 0;
+  }
+  if (pwstrength > 100) {
+    pwstrength = 100;
+  }
+  return pwstrength;
+}
 export function identityCodeValid(code: string): boolean {
   const city: { [key: number]: string } = {
     11: '北京',

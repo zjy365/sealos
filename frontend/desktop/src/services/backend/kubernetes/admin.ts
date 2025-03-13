@@ -249,6 +249,7 @@ export const getUserCr = async (kc: KubeConfig, name: string) => {
     .getClusterCustomObject(group, version, plural, name)
     .then((res) => res.body as UserCR);
 };
+
 // for enter user state
 export const getUserKubeconfigNotPatch = async (name: string) => {
   const kc = K8sApiDefault();
@@ -382,7 +383,7 @@ export const setUserWorkspaceLock = async (namespace: string) => {
     throw e;
   }
 };
-
+export const findUserCr = async (name: string) => !!(await getUserKubeconfigNotPatch(name));
 enum WorkspaceDebtStatus {
   Normal = 'Normal',
   Suspend = 'Suspend',

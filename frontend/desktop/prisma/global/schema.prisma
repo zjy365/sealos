@@ -25,12 +25,13 @@ model OauthProvider {
 }
 
 model Region {
-  uid         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  displayName String
-  location    String
-  domain      String
-  description String?
-  txDetail    TransactionDetail[]
+  uid            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  displayName    String
+  location       String
+  domain         String
+  description    String?
+  txDetail       TransactionDetail[]
+  WorkspaceUsage WorkspaceUsage[]
 }
 
 model Account {
@@ -47,15 +48,19 @@ model Account {
 model AccountTransaction {
   id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type                     String
-  userUid                  String   @db.Uuid
   deduction_balance        BigInt
-  deduction_balance_before BigInt?
   balance                  BigInt
-  balance_before           BigInt?
   message                  String?
   created_at               DateTime @default(now()) @db.Timestamptz(3)
   updated_at               DateTime @default(now()) @db.Timestamptz(3)
   billing_id               String   @db.Uuid
+  userUid                  String   @db.Uuid
+  balance_before           BigInt?
+  deduction_balance_before BigInt?
+  region                   String?  @db.Uuid
+  deduction_credit         BigInt?
+  billing_id_list          String[]
+  credit_id_list           String[]
 }
 
 model ErrorPaymentCreate {
@@ -88,6 +93,11 @@ model Payment {
   invoiced_at     Boolean? @default(false)
   remark          String?
   message         String
+  activityType    String?
+  metadata        String?
+  card_uid        String?  @db.Uuid
+  type            String?
+  charge_source   String?
 }
 
 model User {
@@ -98,13 +108,15 @@ model User {
   nickname                    String
   id                          String                     @unique
   name                        String                     @unique
-  oauthProvider               OauthProvider[]
   status                      UserStatus                 @default(NORMAL_USER)
+  oauthProvider               OauthProvider[]
   oldMergeUserTransactionInfo MergeUserTransactionInfo[] @relation("oldUser")
   newMergeUserTransactionInfo MergeUserTransactionInfo[] @relation("newUser")
   DeleteUserTransactionInfo   DeleteUserTransactionInfo?
   deleteUserLog               DeleteUserLog?
   userTasks                   UserTask[]
+  WorkspaceUsage              WorkspaceUsage[]
+  userInfo                    UserInfo?
 }
 
 model Transfer {
@@ -154,9 +166,9 @@ model PrecommitTransaction {
 
 model ErrorPreCommitTransaction {
   uid                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  transactionUid       String               @unique @db.Uuid
   reason               String?
   createdAt            DateTime             @default(now()) @db.Timestamptz(3)
+  transactionUid       String               @unique @db.Uuid
   precommitTransaction PrecommitTransaction @relation(fields: [transactionUid], references: [uid])
 }
 
@@ -218,7 +230,6 @@ model EventLog {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   mainId    String
   eventName String
-  // json 
   data      String
 }
 
@@ -273,18 +284,6 @@ model RestrictedUser {
   @@map("RestrictedUser")
 }
 
-model RealNameAuthProvider {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  backend        String
-  authType       String
-  maxFailedTimes Int
-  config         Json?
-  createdAt      DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
-
-  @@map("RealNameAuthProvider")
-}
-
 model UserSemChannel {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userUid        String   @unique @db.Uuid
@@ -306,6 +305,224 @@ model GiftCode {
   createdAt    DateTime  @default(now())
   expiredAt    DateTime?
   comment      String?
+}
+
+model Task {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title         String
+  description   String
+  reward        BigInt
+  order         Int
+  isActive      Boolean    @default(true)
+  isNewUserTask Boolean    @default(false)
+  taskType      TaskType
+  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime   @updatedAt @db.Timestamptz(3)
+  userTasks     UserTask[]
+}
+
+model UserTask {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userUid      String     @db.Uuid
+  taskId       String     @db.Uuid
+  status       TaskStatus
+  rewardStatus TaskStatus
+  completedAt  DateTime
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+  user         User       @relation(fields: [userUid], references: [uid])
+  task         Task       @relation(fields: [taskId], references: [id])
+
+  @@unique([userUid, taskId])
+  @@index([taskId])
+}
+
+model CardInfo {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_uid               String    @db.Uuid
+  card_no                String?
+  card_brand             String?
+  card_token             String?
+  created_at             DateTime? @default(now()) @db.Timestamptz(3)
+  network_transaction_id String?
+  default                Boolean?  @default(false)
+  last_payment_status    String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Configs {
+  type String? @db.String(255)
+  data Json?
+
+  @@ignore
+}
+
+model Credits {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_uid    String?   @db.Uuid
+  amount      BigInt?
+  used_amount BigInt?
+  expire_at   DateTime? @db.Timestamp(6)
+  created_at  DateTime? @default(now()) @db.Timestamptz(3)
+  start_at    DateTime? @db.Timestamp(6)
+  status      String?
+}
+
+model CreditsTransaction {
+  id                     String    @id
+  user_uid               String?
+  account_transaction_id String?
+  region_uid             String?
+  credits_id             String?
+  used_amount            BigInt?
+  created_at             DateTime? @db.Timestamptz(6)
+  reason                 String?
+
+  @@ignore
+}
+
+model Invoice {
+  id           String    @id
+  user_id      String
+  created_at   DateTime? @default(now()) @db.Timestamptz(3)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(3)
+  detail       String
+  remark       String?
+  total_amount BigInt
+  status       String
+}
+
+model InvoicePayment {
+  invoice_id String?
+  payment_id String  @id
+  amount     BigInt
+}
+
+model PaymentOrder {
+  id              String    @id
+  userUid         String    @db.Uuid
+  regionUid       String    @db.Uuid
+  created_at      DateTime? @default(now()) @db.Timestamptz(3)
+  regionUserOwner String
+  method          String
+  amount          BigInt
+  gift            BigInt?
+  trade_no        String    @unique
+  code_url        String?
+  invoiced_at     Boolean?  @default(false)
+  remark          String?
+  activityType    String?
+  message         String
+  card_uid        String?   @db.Uuid
+  type            String?
+  charge_source   String?
+  status          String
+}
+
+model Subscription {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  plan_id         String?   @db.Uuid
+  plan_name       String?   @db.String(50)
+  user_uid        String    @unique @db.Uuid
+  status          String?   @db.String(50)
+  start_at        DateTime? @db.Timestamptz(6)
+  update_at       DateTime? @db.Timestamptz(6)
+  expire_at       DateTime? @db.Timestamptz(6)
+  card_id         String?   @db.Uuid
+  next_cycle_date DateTime? @db.Timestamptz(6)
+}
+
+model SubscriptionPlan {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String    @unique
+  description         String?
+  amount              String?   @db.String(50)
+  gift_amount         String?   @db.String(50)
+  period              String?   @db.String(50)
+  upgrade_plan_list   String[]
+  downgrade_plan_list String[]
+  max_seats           BigInt
+  max_workspaces      BigInt
+  max_resources       String?
+  created_at          DateTime? @db.Timestamptz(6)
+  updated_at          DateTime? @db.Timestamptz(6)
+  most_popular        Boolean?
+}
+
+model WorkspaceUsage {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userUid      String   @db.Uuid
+  workspaceUid String   @db.Uuid
+  regionUid    String   @db.Uuid
+  seat         Int
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  region Region @relation(fields: [regionUid], references: [uid])
+  user   User   @relation(fields: [userUid], references: [uid])
+
+  @@unique([regionUid, userUid, workspaceUid])
+  @@index([userUid])
+}
+
+model UserInfo {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userUid         String  @unique @db.Uuid
+  firstname       String  @default("")
+  lastname        String  @default("")
+  signUpRegionUid String  @db.Uuid
+  isInited        Boolean @default(false)
+  enSubEmail      Boolean @default(false)
+
+  user User @relation(fields: [userUid], references: [uid])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model SubscriptionTransaction {
+  subscription_id  String    @db.Uuid
+  user_uid         String    @db.Uuid
+  old_plan_id      String?   @db.Uuid
+  new_plan_id      String?   @db.Uuid
+  old_plan_name    String?   @db.String(50)
+  new_plan_name    String?   @db.String(50)
+  old_status       String?   @db.String(50)
+  new_status       String?   @db.String(50)
+  transaction_type String?   @db.String(50)
+  transaction_at   DateTime? @db.Timestamptz(6)
+  effective_at     DateTime? @db.Timestamptz(6)
+  expire_at        DateTime? @db.Timestamptz(6)
+  created_at       DateTime? @db.Timestamptz(6)
+  updated_at       DateTime? @db.Timestamptz(6)
+
+  @@index([subscription_id], map: "idx_SubscriptionTransaction_subscription_id")
+  @@index([user_uid], map: "idx_SubscriptionTransaction_user_uid")
+  @@ignore
+}
+
+model UserTransfer {
+  id          String
+  uid         String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromUserUid String    @db.Uuid
+  fromUserId  String
+  toUserUid   String    @db.Uuid
+  toUserId    String
+  amount      BigInt
+  remark      String
+  created_at  DateTime? @default(now()) @db.Timestamptz(3)
+
+  @@id([id, uid])
+}
+
+model RealNameAuthProvider {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  backend        String
+  authType       String
+  maxFailedTimes Int
+  config         Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @db.Timestamptz(3)
 }
 
 enum ProviderType {
@@ -341,37 +558,6 @@ enum UserStatus {
   NORMAL_USER
   LOCK_USER
   DELETE_USER
-}
-
-model Task {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title         String
-  description   String
-  reward        BigInt
-  order         Int
-  isActive      Boolean    @default(true)
-  isNewUserTask Boolean    @default(false)
-  taskType      TaskType
-  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime   @updatedAt @db.Timestamptz(3)
-  userTasks     UserTask[]
-}
-
-model UserTask {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userUid      String     @db.Uuid
-  taskId       String     @db.Uuid
-  status       TaskStatus
-  rewardStatus TaskStatus
-  completedAt  DateTime
-  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
-
-  user User @relation(fields: [userUid], references: [uid])
-  task Task @relation(fields: [taskId], references: [id])
-
-  @@unique([userUid, taskId])
-  @@index([taskId])
 }
 
 enum TaskType {

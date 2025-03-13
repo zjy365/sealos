@@ -3,7 +3,7 @@ import useSessionStore, { OauthAction } from '@/stores/session';
 import { OauthProvider } from '@/types/user';
 import { Center, Image, Text } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { BINDING_STATE_MODIFY_BEHAVIOR, BindingModifyButton } from './BindingModifyButton';
 import { ConfigItem } from './ConfigItem';
@@ -21,6 +21,7 @@ export function AuthModifyList({
   GITHUBIsBinding: boolean;
   WECHATIsBinding: boolean;
 }) {
+  const router = useRouter();
   const { authConfig: conf, layoutConfig } = useConfigStore();
   const { setProvider, generateState } = useSessionStore();
   const { t } = useTranslation();

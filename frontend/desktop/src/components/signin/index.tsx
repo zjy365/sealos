@@ -9,6 +9,7 @@ import useSessionStore from '@/stores/session';
 import { LoginType } from '@/types';
 import {
   Box,
+  BoxProps,
   Button,
   Flex,
   Tab,
@@ -29,7 +30,7 @@ import useWechat from './auth/useWechat';
 import { HiddenCaptchaComponent, TCaptchaInstance } from './Captcha';
 import { captcha } from 'tencentcloud-sdk-nodejs';
 
-export default function SigninComponent() {
+export default function SigninComponent({ ...props }: BoxProps) {
   const conf = useConfigStore();
   const hasBaiduToken = conf.authConfig?.hasBaiduToken;
   const needPassword = conf.authConfig?.idp.password?.enabled;
@@ -144,14 +145,15 @@ export default function SigninComponent() {
       overflow={'hidden'}
       w="100vw"
       h="100vh"
-      backgroundImage={`url(${conf.layoutConfig?.backgroundImage || ''})`}
+      // backgroundImage={`url(${conf.layoutConfig?.backgroundImage || ''})`}
       backgroundRepeat={'no-repeat'}
       backgroundSize={'cover'}
+      {...props}
     >
-      <Head>
+      {/* <Head>
         <title>{conf.layoutConfig?.meta.title || ''}</title>
         <meta name="description" content={conf.layoutConfig?.meta.description} />
-      </Head>
+      </Head> */}
 
       <Flex h="full" w="full" flexDir={'column'} justifyContent={'center'} alignItems={'center'}>
         {needTabsCount > 0 && (

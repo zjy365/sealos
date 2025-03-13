@@ -4,6 +4,7 @@ import { ProviderType, UserStatus } from 'prisma/global/generated/client';
 import { globalPrisma } from '../db/init';
 import { getGlobalToken } from '../globalAuth';
 import { jsonRes } from '../response';
+import { HttpStatusCode } from 'axios';
 
 export const getGlobalTokenSvc =
   (
@@ -29,12 +30,12 @@ export const getGlobalTokenSvc =
     });
     if (!data)
       return jsonRes(res, {
-        code: 401,
+        code: HttpStatusCode.Unauthorized,
         message: 'Unauthorized'
       });
     return jsonRes(res, {
       data,
-      code: 200,
+      code: HttpStatusCode.Ok,
       message: 'Successfully'
     });
   };

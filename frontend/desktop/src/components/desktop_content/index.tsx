@@ -22,12 +22,14 @@ import SearchBox from './searchBox';
 import Warn from './warn';
 import NeedToMerge from '../account/AccountCenter/mergeUser/NeedToMergeModal';
 import { useRealNameAuthNotification } from '../account/RealNameModal';
-import useSessionStore from '@/stores/session';
+import useSessionStore, { OauthAction } from '@/stores/session';
 import { useQuery } from '@tanstack/react-query';
 import { UserInfo } from '@/api/auth';
 import TaskModal from '../task/taskModal';
 import FloatingTaskButton from '../task/floatButton';
 import OnlineServiceButton from './serviceButton';
+import { OauthProvider } from '@/types/user';
+import { useRouter } from 'next/router';
 
 const AppDock = dynamic(() => import('../AppDock'), { ssr: false });
 const FloatButton = dynamic(() => import('@/components/floating_button'), { ssr: false });
@@ -49,11 +51,12 @@ export default function Desktop(props: any) {
   const { message } = useMessage();
   const { realNameAuthNotification } = useRealNameAuthNotification();
   const [showAccount, setShowAccount] = useState(false);
-  const { layoutConfig } = useConfigStore();
   const { session } = useSessionStore();
   const { commonConfig } = useConfigStore();
   const realNameAuthNotificationIdRef = useRef<string | number | undefined>();
   const [isClient, setIsClient] = useState(false);
+  const { authConfig: conf, layoutConfig } = useConfigStore();
+  const { setProvider, generateState } = useSessionStore();
 
   useEffect(() => {
     setIsClient(true);
@@ -111,7 +114,60 @@ export default function Desktop(props: any) {
     },
     [apps, openApp, runningInfo, setToHighestLayerById]
   );
-
+  const router = useRouter();
+  const actionCbGen =
+    <T extends OauthAction>({
+      url,
+      provider,
+      clientId,
+      proxyAddress
+    }: {
+      url: string;
+      provider: OauthProvider;
+      clientId: string;
+      proxyAddress?: string;
+    }) =>
+    (action: T) => {
+      if (!conf) return;
+      const state = generateState(action);
+      setProvider(provider);
+      if (proxyAddress) {
+        const target = new URL(proxyAddress);
+        const callback = new URL(conf.callbackURL);
+        target.searchParams.append(
+          'oauthProxyState',
+          encodeURIComponent(callback.toString()) + '_' + state
+        );
+        target.searchParams.append('oauthProxyClientID', clientId);
+        target.searchParams.append('oauthProxyProvider', provider);
+        router.replace(target.toString());
+      } else {
+        const target = new URL(url);
+        target.searchParams.append('state', state);
+        router.replace(target);
+      }
+    };
+  const bindGithub = () => {
+    if (!conf?.idp.github.enabled) return;
+    const githubConf = conf.idp.github;
+    actionCbGen({
+      provider: 'GITHUB',
+      clientId: githubConf.clientID,
+      proxyAddress: githubConf?.proxyAddress,
+      url: `https://github.com/login/oauth/authorize?client_id=${githubConf?.clientID}&redirect_uri=${conf?.callbackURL}&scope=user:email%20read:user`
+    })('BIND');
+  };
+  const bindGmail = () => {
+    if (!conf?.idp.google.enabled) return;
+    const googleConf = conf.idp.google;
+    const scope = encodeURIComponent(`https://www.googleapis.com/auth/userinfo.profile openid`);
+    return actionCbGen({
+      provider: 'GOOGLE',
+      clientId: googleConf.clientID,
+      proxyAddress: googleConf?.proxyAddress,
+      url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&scope=${scope}&include_granted_scopes=true`
+    })('BIND');
+  };
   const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
   // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
 
@@ -124,7 +180,14 @@ export default function Desktop(props: any) {
     const cleanup = masterApp?.addEventListen('openDesktopApp', openDesktopApp);
     return cleanup;
   }, [openDesktopApp]);
-
+  useEffect(() => {
+    const cleanup = masterApp?.addEventListen('bindGmail', bindGmail);
+    return cleanup;
+  }, [bindGmail]);
+  useEffect(() => {
+    const cleanup = masterApp?.addEventListen('bindGithub', bindGithub);
+    return cleanup;
+  }, [bindGithub]);
   useEffect(() => {
     if (infoData.isSuccess && commonConfig?.realNameAuthEnabled) {
       if (!infoData?.data?.realName && !infoData?.data?.enterpriseRealName) {
