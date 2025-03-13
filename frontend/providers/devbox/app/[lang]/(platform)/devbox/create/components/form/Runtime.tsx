@@ -181,9 +181,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
     <VStack alignItems={'center'} gap={'24px'}>
       <Flex className="guide-runtimes" gap={'24px'} flexDir={'column'} w={'full'}>
         <Flex w="full" justify={'space-between'}>
-          <Label w={100} alignSelf={'flex-start'}>
-            {t('runtime_environment')}
-          </Label>
+          <Label w={100}>{t('runtime_environment')}</Label>
           <TemplateRepositoryListNav />
         </Flex>
 
@@ -217,7 +215,7 @@ export default function Runtime({ isEdit }: RuntimeProps) {
                 borderRadius={'lg'}
                 p={'12px 16px'}
                 isDisabled={isEdit}
-                fontSize={'12px'}
+                fontSize={'16px'}
                 fontWeight={currentCategory === item.key ? '500' : '400'}
                 cursor={'pointer'}
                 bg={currentCategory === item.key ? '#F5F7FF' : 'white'}

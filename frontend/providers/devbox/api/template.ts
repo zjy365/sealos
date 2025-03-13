@@ -87,12 +87,6 @@ export const listPrivateTemplateRepository = ({
         tag: Tag;
       }[];
     }[];
-    page: {
-      page: number;
-      pageSize: number;
-      totalItems: number;
-      totalPage: number;
-    };
   }>(`/api/templateRepository/listPrivate?${searchParams.toString()}`);
 };
 

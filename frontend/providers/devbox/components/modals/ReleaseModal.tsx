@@ -100,7 +100,7 @@ const ReleaseModal = ({
     <Box>
       <Modal isOpen onClose={onClose} lockFocusAcrossFrames={false}>
         <ModalOverlay />
-        <ModalContent minW={'450px'} mt={'100px'} minH={'300px'} top={'50px'}>
+        <ModalContent minW={'450px'} mt={'100px'} minH={'300px'} my={'auto'}>
           <ModalHeader
             bgColor={'white'}
             px={'24px'}

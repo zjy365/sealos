@@ -1,8 +1,3 @@
-import MyIcon from '@/components/Icon';
-import { ProtocolList } from '@/constants/devbox';
-import { useEnvStore } from '@/stores/env';
-import { DevboxEditTypeV2 } from '@/types/devbox';
-import { nanoid } from '@/utils/tools';
 import {
   Box,
   BoxProps,
@@ -12,13 +7,23 @@ import {
   IconButton,
   Input,
   Switch,
-  useTheme
+  useTheme,
+  Text,
+  Divider
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { MySelect, useMessage } from '@sealos/ui';
 import { useFieldArray, useFormContext } from 'react-hook-form';
+
+import MyIcon from '@/components/Icon';
+import { nanoid } from '@/utils/tools';
+import { useEnvStore } from '@/stores/env';
+import { ProtocolList } from '@/constants/devbox';
+import { DevboxEditTypeV2 } from '@/types/devbox';
+
 import Label from './Label';
 
 export type CustomAccessModalParams = {
@@ -33,6 +38,7 @@ const AppendNetworksButton = (props: ButtonProps) => {
     <Button
       boxShadow={'none'}
       w={'110px'}
+      h={'40px'}
       variant={'outline'}
       fontWeight={'normal'}
       color={'grayModern.900'}
@@ -70,22 +76,32 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
       customDomain: ''
     });
   };
-  // const networks = watch('networks')
   return (
     <>
       <Box id={'baseInfo'} {...props}>
-        <Box h={'30px'}>
-          <Label w={100}>{t('network_settings')}</Label>
-        </Box>
-        <Box py={'8px'} userSelect={'none'}>
+        <Flex h={'40px'} alignItems={'center'} w={'full'}>
+          <Label w={180}>{t('network_settings')}</Label>
+          <Box
+            fontSize={'12px'}
+            color={'#2563EB'}
+            fontWeight={'500'}
+            borderRadius={'100px'}
+            bg="#EFF6FF"
+            py={'5px'}
+            px={'10px'}
+            w={'95px'}
+            h={'28px'}
+          >
+            $0.008/each
+          </Box>
+        </Flex>
+        <Box pt={'8px'} userSelect={'none'}>
           {networks.length === 0 && <AppendNetworksButton onClick={() => appendNetworks()} />}
           {networks.map((network, i) => (
             <Box key={network.id}>
               <Flex
                 className="guide-network-configuration"
                 alignItems={'flex-start'}
-                // key={network.id}
-                _notLast={{ pb: 6, borderBottom: theme.borders.base }}
                 _notFirst={{ pt: 6 }}
               >
                 <Box>
@@ -99,7 +115,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                     {t('Container Port')}
                   </Box>
                   <Input
-                    h={'35px'}
+                    h={'40px'}
                     type={'number'}
                     w={'110px'}
                     bg={'white'}
@@ -139,7 +155,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                   >
                     {t('Open Public Access')}
                   </Box>
-                  <Flex alignItems={'center'} h={'35px'}>
+                  <Flex alignItems={'center'} h={'40px'}>
                     <Switch
                       className="driver-deploy-network-switch"
                       size={'lg'}
@@ -163,19 +179,30 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                         });
                       }}
                     />
+                    {network.openPublicDomain ? (
+                      <Text fontSize={'14px'} ml={2}>
+                        {t('enabled')}
+                      </Text>
+                    ) : (
+                      <Text fontSize={'14px'} ml={2} color={'#71717A'}>
+                        {t('disabled')}
+                      </Text>
+                    )}
                   </Flex>
                 </Box>
                 {network.openPublicDomain && (
                   <>
                     <Box flex={'1 0 0'}>
                       <Box mb={'8px'} h={'20px'}></Box>
-                      <Flex alignItems={'center'} h={'35px'}>
+                      <Flex alignItems={'center'} h={'40px'}>
                         <MySelect
                           width={'100px'}
-                          height={'35px'}
+                          height={'40px'}
                           bg={'white'}
                           borderTopRightRadius={0}
+                          boxShadow={'none'}
                           borderBottomRightRadius={0}
+                          color={'black'}
                           value={network.protocol}
                           // border={theme.borders.base}
                           list={ProtocolList}
@@ -191,18 +218,24 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                           maxW={'350px'}
                           flex={'1 0 0'}
                           alignItems={'center'}
-                          h={'35px'}
+                          h={'40px'}
                           px={2}
                           border={theme.borders.base}
                           borderLeft={0}
                           borderTopRightRadius={'md'}
                           borderBottomRightRadius={'md'}
                         >
-                          <Box flex={1} userSelect={'all'} className="textEllipsis">
+                          <Box
+                            flex={1}
+                            userSelect={'all'}
+                            className="textEllipsis"
+                            color={'#71717A'}
+                            p={'0 8px'}
+                          >
                             {network.customDomain ? network.customDomain : network.publicDomain!}
                           </Box>
                           <Box
-                            fontSize={'11px'}
+                            fontSize={'14px'}
                             color={'#224EF5'}
                             cursor={'pointer'}
                             whiteSpace={'nowrap'}
@@ -221,11 +254,12 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                   </>
                 )}
                 {networks.length >= 1 && (
-                  <Box ml={3}>
+                  <Box ml={'12px'}>
                     <Box mb={'8px'} h={'20px'}></Box>
                     <IconButton
-                      height={'35px'}
-                      width={'35px'}
+                      height={'40px'}
+                      width={'40px'}
+                      boxShadow={'none'}
                       aria-label={'button'}
                       variant={'outline'}
                       bg={'#FFF'}
@@ -233,12 +267,13 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                         color: 'red.600',
                         bg: 'rgba(17, 24, 36, 0.05)'
                       }}
-                      icon={<MyIcon name={'delete'} w={'16px'} fill={'#485264'} />}
+                      icon={<Trash2 size={16} color={'#737373'} />}
                       onClick={() => removeNetworks(i)}
                     />
                   </Box>
                 )}
               </Flex>
+              <Divider my={'16px'} />
               {i === networks.length - 1 && networks.length < 5 && (
                 <Box mt={3}>
                   <AppendNetworksButton onClick={() => appendNetworks()} />

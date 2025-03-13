@@ -22,7 +22,7 @@ export default function TemplateRepositoryNameField({
         bg="white"
         w={'full'}
         borderColor="grayModern.200"
-        size="sm"
+        h={'40px'}
         isDisabled={isDisabled}
       />
     </Flex>

@@ -34,7 +34,7 @@ export default function PrivatePanel({ search }: { search: string }) {
   const listPrivateTemplateRepositoryQuery = useQuery(
     ['template-repository-list', 'template-repository-private', queryBody],
     () => {
-      return listPrivateTemplateRepository(queryBody);
+      return listPrivateTemplateRepository(queryBody) as any;
     }
   );
 
@@ -75,7 +75,7 @@ export default function PrivatePanel({ search }: { search: string }) {
             inset={0}
             gridAutoRows={'max-content'}
           >
-            {privateTempalteRepositoryList.map((tr) => (
+            {privateTempalteRepositoryList.map((tr: any) => (
               <TemplateCard
                 key={tr.uid}
                 isPublic={tr.isPublic}
@@ -85,7 +85,7 @@ export default function PrivatePanel({ search }: { search: string }) {
                 templateRepositoryDescription={tr.description}
                 templateRepositoryUid={tr.uid}
                 inPublicStore={false}
-                tags={tr.templateRepositoryTags.map((t) => t.tag)}
+                tags={tr.templateRepositoryTags.map((t: any) => t.tag)}
               />
             ))}
           </Grid>

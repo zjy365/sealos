@@ -11,8 +11,10 @@ export default function CpuSelector(props: FlexProps) {
   const t = useTranslations();
   const { watch, setValue } = useFormContext<DevboxEditTypeV2>();
   return (
-    <Flex mb={10} pr={3} alignItems={'flex-start'} {...props}>
-      <Text w={100}>{t('cpu')}</Text>
+    <Flex mb={'40px'} pr={3} alignItems={'flex-start'} {...props}>
+      <Text w={100} fontWeight={'bold'}>
+        {t('cpu')}
+      </Text>
       <MySlider
         markList={CpuSlideMarkList}
         activeVal={watch('cpu')}
@@ -23,9 +25,6 @@ export default function CpuSelector(props: FlexProps) {
         min={0}
         step={1}
       />
-      <Box ml={5} transform={'translateY(10px)'} color={'grayModern.600'}>
-        {t('core')}
-      </Box>
     </Flex>
   );
 }

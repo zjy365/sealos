@@ -77,8 +77,15 @@ const PriceBox = ({
   }, [components, sourcePrice.cpu, sourcePrice.memory, sourcePrice.nodeports, sourcePrice.gpu]);
 
   return (
-    <Box bg={'#FFF'} borderRadius={'base'} className="guide-cost" border={theme.borders.base}>
-      <Flex py={3} px={'20px'} borderBottom={theme.borders.base} gap={'8px'} bg={'#FAFAFA'}>
+    <Box bg={'#FFF'} className="guide-cost" border={theme.borders.base} borderRadius={'12px'}>
+      <Flex
+        py={3}
+        px={'20px'}
+        borderBottom={theme.borders.base}
+        gap={'8px'}
+        bg={'#FAFAFA'}
+        borderTopRadius={'12px'}
+      >
         <Text color={'grayModern.900'} fontWeight={500}>
           {t('estimated_price')}
         </Text>

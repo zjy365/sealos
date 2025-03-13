@@ -11,12 +11,12 @@ import {
   ModalOverlay,
   Text
 } from '@chakra-ui/react';
+import { Loader } from 'lucide-react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
 import { delDevbox } from '@/api/devbox';
-import MyIcon from '@/components/Icon';
 import { useIDEStore } from '@/stores/ide';
 import { DevboxDetailTypeV2, DevboxListItemTypeV2 } from '@/types/devbox';
 
@@ -119,6 +119,9 @@ const DelModal = ({
             color={'white'}
             bg={'#DC2626'}
             isLoading={loading}
+            spinner={<Loader size={'16px'} />}
+            loadingText="Deleting..."
+            _hover={{ bg: '#DC2626' }}
             onClick={handleDelDevbox}
             isDisabled={inputValue !== devbox.name}
           >

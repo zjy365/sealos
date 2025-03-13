@@ -124,23 +124,13 @@ const SshConnectDrawer = ({
         maxWidth={'500px'}
         overflow={'hidden'}
         minH={'785px'}
-        my={'32px'}
-        mr={'32px'}
+        my={'16px'}
+        mr={'16px'}
         borderRadius={'16px'}
         position={'relative'}
       >
         <DrawerHeader pl={6}>{t('jetbrains_guide_config_ssh')}</DrawerHeader>
-        <DrawerBody
-          pb={6}
-          px={0}
-          borderTopWidth={1}
-          bg={'#F8F8F9'}
-          sx={{
-            '&::-webkit-scrollbar': {
-              display: 'none'
-            }
-          }}
-        >
+        <DrawerBody pb={6} px={0} pt={0} borderTopWidth={1} bg={'#F8F8F9'}>
           <Tabs
             onChange={(index) => setActiveTab(index)}
             my={4}
@@ -195,7 +185,7 @@ const SshConnectDrawer = ({
                       <Flex
                         borderRadius={'8px'}
                         p={2}
-                        gap={2}
+                        gap={'1px'}
                         h={'96px'}
                         boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
                         borderWidth={1}
@@ -224,7 +214,7 @@ const SshConnectDrawer = ({
                           }
                         }}
                       >
-                        <MyIcon name="download" color={'white'} w={'24px'} h={'24px'} />
+                        <MyIcon name="download" color={'white'} w={'20px'} h={'20px'} />
                         <Text fontSize={'14px'} color={'grayModern.900'} fontWeight={'500'}>
                           {t('jetbrains_guide_click_to_download')}
                         </Text>

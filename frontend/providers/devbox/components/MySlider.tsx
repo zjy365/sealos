@@ -50,12 +50,12 @@ export const MySlider = ({
           </Box>
         </SliderMark>
       ))}
-      <SliderTrack bg={'#EAEDF3'} borderRadius={'4px'} overflow={'hidden'} h={'4px'}>
-        <SliderFilledTrack bg={'#224EF5'} />
+      <SliderTrack bg={'#EAEDF3'} borderRadius={'4px'} overflow={'hidden'} h={'6px'}>
+        <SliderFilledTrack bg={'#1C4EF5'} />
       </SliderTrack>
       <SliderThumb
         bg={'white'}
-        border={'1px solid #224EF5'}
+        border={'1px solid #1C4EF5'}
         _active={{ bg: 'white' }}
         _focus={{ bg: 'white' }}
       ></SliderThumb>

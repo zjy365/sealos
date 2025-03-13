@@ -124,7 +124,7 @@ export default function TemplateRepositoryItem({
             borderWidth: '1px'
           }
         : {
-            bg: '#F7F8FA',
+            bg: '#FAFAFA',
             borderColor: 'grayModern.200',
             _hover: {
               borderColor: '#85ccff'
@@ -156,7 +156,7 @@ export default function TemplateRepositoryItem({
           setValue('templateRepositoryUid', item.uid);
         }}
       >
-        <Text textAlign={'center'} noOfLines={1}>
+        <Text textAlign={'center'} noOfLines={1} fontSize={'16px'}>
           {item.name}
         </Text>
         <Img

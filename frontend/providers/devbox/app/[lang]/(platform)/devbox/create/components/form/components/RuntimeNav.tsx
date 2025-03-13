@@ -13,7 +13,7 @@ const TemplateRepositoryListNav = () => {
     <Flex
       // margin="0 auto"
       // width="168px"
-      height="18px"
+      height="30px"
       gap="12px"
       alignItems="center"
     >

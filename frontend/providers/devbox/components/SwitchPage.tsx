@@ -23,9 +23,11 @@ export default function SwitchPage({
     width: '24px',
     height: '24px',
     minW: '0',
-    background: 'grayModern.250',
+    background: 'transparent',
     flexGrow: '0',
     borderRadius: 'full',
+    borderWidth: 'none',
+    boxShadow: 'none',
     _hover: {
       background: 'grayModern.150',
       minW: '0'
@@ -60,7 +62,6 @@ export default function SwitchPage({
           <Button
             {...switchStyle}
             isDisabled={currentPage === 1}
-            bg={currentPage !== 1 ? 'neutral.400' : 'black'}
             p="0"
             minW="0"
             boxSize="32px"
@@ -80,6 +81,7 @@ export default function SwitchPage({
               isDisabled={currentPage === index + 1}
               bg={currentPage === index + 1 ? '#F4F4F5' : 'none'}
               p="0"
+              color={'black'}
               boxSize="32px"
               onClick={(e) => {
                 e.preventDefault();

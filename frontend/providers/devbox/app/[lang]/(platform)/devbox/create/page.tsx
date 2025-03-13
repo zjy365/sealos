@@ -300,7 +300,7 @@ const DevboxCreatePage = () => {
               )()
             }
           />
-          <Box flex={'1 0 0'} h={0} w={'100%'} pb={4}>
+          <Box flex={'1 0 0'} h={0} w={'100%'} pb={4} pt={'32px'}>
             {tabType === 'form' ? (
               <Form pxVal={pxVal} isEdit={isEdit} countGpuInventory={countGpuInventory} />
             ) : (

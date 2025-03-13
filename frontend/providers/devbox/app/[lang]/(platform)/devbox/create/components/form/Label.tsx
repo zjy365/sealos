@@ -12,6 +12,7 @@ const Label = ({
     flex={`0 0 ${w === 'auto' ? 'auto' : `${w}px`}`}
     color={'grayModern.900'}
     fontWeight={'bold'}
+    fontSize={'20px'}
     userSelect={'none'}
     {...props}
   >

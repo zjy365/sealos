@@ -8,7 +8,8 @@ import {
   useDisclosure,
   Button,
   Checkbox,
-  Box
+  Box,
+  Flex
 } from '@chakra-ui/react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useRef, useState } from 'react';
@@ -81,20 +82,19 @@ export const useConfirm = ({
       () => (
         <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
           <AlertDialogOverlay>
-            <AlertDialogContent>
+            <AlertDialogContent p={'16px'} gap={'16px'}>
               <AlertDialogHeader
-                fontSize="lg"
+                fontSize="20px"
                 fontWeight="bold"
                 bg={'white'}
                 borderBottom={'none'}
-                pl={10}
-                pb={0}
+                p={0}
               >
                 {t(title)}
               </AlertDialogHeader>
 
-              <AlertDialogBody>
-                <Box>{t(content)}</Box>
+              <AlertDialogBody p={0} alignItems={'center'}>
+                <Box h={'full'}>{t(content)}</Box>
                 <Box mt={'12px'}>
                   {showCheckbox && (
                     <ConfirmCheckbox
@@ -107,22 +107,11 @@ export const useConfirm = ({
                 </Box>
               </AlertDialogBody>
 
-              <AlertDialogFooter>
+              <AlertDialogFooter p={0} mr={'auto'} gap={'16px'}>
                 <Button
-                  variant={'outline'}
-                  _hover={{
-                    bg: 'grayModern.50'
-                  }}
-                  onClick={() => {
-                    onClose();
-                    typeof cancelCb.current === 'function' && cancelCb.current();
-                  }}
-                >
-                  {t(cancelText)}
-                </Button>
-                <Button
-                  ml={3}
                   variant={'solid'}
+                  h={'40px'}
+                  w={'90px'}
                   onClick={() => {
                     onClose();
                     if (showCheckbox) {
@@ -134,6 +123,20 @@ export const useConfirm = ({
                   }}
                 >
                   {t(confirmText)}
+                </Button>
+                <Button
+                  variant={'outline'}
+                  h={'40px'}
+                  w={'90px'}
+                  _hover={{
+                    bg: 'grayModern.50'
+                  }}
+                  onClick={() => {
+                    onClose();
+                    typeof cancelCb.current === 'function' && cancelCb.current();
+                  }}
+                >
+                  {t(cancelText)}
                 </Button>
               </AlertDialogFooter>
             </AlertDialogContent>

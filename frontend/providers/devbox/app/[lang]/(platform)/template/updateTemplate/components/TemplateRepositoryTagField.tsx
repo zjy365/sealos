@@ -137,6 +137,7 @@ export default function TemplateRepositoryTagField() {
                 rightIcon={<MyIcon name="arrowDown" w={'16px'} h={'16px'} />}
                 width="full"
                 mb="12px"
+                h={'40px'}
                 variant="outline"
                 textAlign="left"
                 justifyContent="space-between"

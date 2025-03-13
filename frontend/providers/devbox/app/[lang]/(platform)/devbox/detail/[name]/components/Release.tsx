@@ -1,12 +1,12 @@
 'use client';
 
 import { customAlphabet } from 'nanoid';
-import { Box, Button, Flex, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { SealosMenu, useMessage } from '@sealos/ui';
 import { useCallback, useEffect, useState } from 'react';
+import { Box, Button, Flex, Img, MenuButton, Text, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -28,9 +28,7 @@ import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
 
 import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template';
 
-import CreateTemplateDrawer from './CreateTemplateDrawer';
-import SelectTemplateModal from '@/app/[lang]/(platform)/template/updateTemplate/SelectActionModal';
-import UpdateTemplateRepositoryModal from '@/app/[lang]/(platform)/template/updateTemplate/UpdateTemplateRepositoryModal';
+import TemplateDrawer from './TemplateDrawer';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -54,9 +52,7 @@ const Version = () => {
     | null
     | Awaited<ReturnType<typeof listPrivateTemplateRepository>>['templateRepositoryList'][number]
   >(null);
-  const createTemplateModalHandler = useDisclosure();
-  const selectTemplalteModalHandler = useDisclosure();
-  const updateTemplateModalHandler = useDisclosure();
+  const templateDrawerHandler = useDisclosure();
   const { openConfirm, ConfirmChild } = useConfirm({
     content: 'delete_version_confirm_info'
   });
@@ -66,9 +62,7 @@ const Version = () => {
     {
       refetchInterval:
         devboxVersionList.length > 0 &&
-        !createTemplateModalHandler.isOpen &&
-        !updateTemplateModalHandler.isOpen &&
-        !selectTemplalteModalHandler.isOpen &&
+        !templateDrawerHandler.isOpen &&
         devboxVersionList[0].status.value === DevboxReleaseStatusEnum.Pending
           ? 3000
           : false,
@@ -94,8 +88,10 @@ const Version = () => {
       });
     }
   );
+
   const templateRepositoryList =
     listPrivateTemplateRepositoryQuery.data?.templateRepositoryList || [];
+
   const handleDeploy = useCallback(
     async (version: DevboxVersionListItemType) => {
       if (!devbox) return;
@@ -215,7 +211,7 @@ const Version = () => {
       title: t('status'),
       key: 'status',
       render: (item: DevboxVersionListItemType) => (
-        <DevboxStatusTag status={item.status} h={'27px'} thinMode />
+        <DevboxStatusTag status={item.status} h={'27px'} />
       )
     },
     {
@@ -320,25 +316,22 @@ const Version = () => {
                 },
                 onClick: () => {
                   setCurrentVersion(item);
-                  // onOpenEdit()
-                  // openTemplateModal({templateState: })
-                  if (templateRepositoryList.length > 0) {
-                    selectTemplalteModalHandler.onOpen();
-                  } else {
-                    createTemplateModalHandler.onOpen();
-                  }
+                  templateDrawerHandler.onOpen();
                 }
               },
               {
                 child: (
                   <>
-                    <MyIcon name={'delete'} w={'16px'} />
+                    <MyIcon name={'delete'} w={'16px'} color={'#737373'} />
                     <Box ml={2}>{t('delete')}</Box>
                   </>
                 ),
                 menuItemStyle: {
                   _hover: {
                     color: 'red.600',
+                    '& > svg': {
+                      color: 'red.600'
+                    },
                     bg: 'rgba(17, 24, 36, 0.05)'
                   }
                 },
@@ -384,26 +377,30 @@ const Version = () => {
         </Button>
       </Flex>
       <Loading loading={!initialized} fixed={false} />
-      {devboxVersionList.length === 0 && initialized ? (
+
+      <MyTable
+        columns={columns}
+        data={devboxVersionList}
+        needRadius
+        gridTemplateColumns={'105px 105px 144px minmax(0, 1fr) 160px'}
+      />
+      {devboxVersionList.length === 0 && initialized && (
         <Flex
-          justifyContent={'center'}
-          alignItems={'center'}
-          mt={10}
-          flexDirection={'column'}
-          gap={4}
+          w={'full'}
+          flex={1}
+          py={'24px'}
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
         >
-          <MyIcon name="empty" w={'40px'} h={'40px'} color={'white'} />
-          <Box textAlign={'center'} color={'grayModern.600'}>
-            {t('no_versions')}
+          <Img src={'/images/empty/release-empty.png'} alt="empty" width={50} height={50} />
+          <Text fontSize={'18px'} fontWeight={'600'} color={'grayModern.900'} mt={'12px'}>
+            {t('no_release')}
+          </Text>
+          <Box pb={8} w={300} textAlign={'center'}>
+            {t('no_release_desc')}
           </Box>
         </Flex>
-      ) : (
-        <MyTable
-          columns={columns}
-          data={devboxVersionList}
-          needRadius
-          gridTemplateColumns={'105px 105px 144px minmax(0, 1fr) 160px'}
-        />
       )}
       {!!currentVersion && (
         <EditVersionDesModal
@@ -432,32 +429,12 @@ const Version = () => {
         />
       )}
       <ConfirmChild />
-      <CreateTemplateDrawer
-        isOpen={createTemplateModalHandler.isOpen}
-        onClose={createTemplateModalHandler.onClose}
+      <TemplateDrawer
+        isOpen={templateDrawerHandler.isOpen}
+        onClose={templateDrawerHandler.onClose}
         devboxReleaseName={currentVersion?.name || ''}
+        templateRepositoryList={templateRepositoryList}
       />
-      {templateRepositoryList.length > 0 && (
-        <SelectTemplateModal
-          onOpenCreate={createTemplateModalHandler.onOpen}
-          onOpenUdate={(uid) => {
-            const repo = templateRepositoryList.find((item) => item.uid === uid);
-            setUpdateTemplateRepo(repo || null);
-            updateTemplateModalHandler.onOpen();
-          }}
-          templateRepositoryList={templateRepositoryList}
-          isOpen={selectTemplalteModalHandler.isOpen}
-          onClose={selectTemplalteModalHandler.onClose}
-        />
-      )}
-      {!!updateTemplateRepo && (
-        <UpdateTemplateRepositoryModal
-          templateRepository={updateTemplateRepo}
-          isOpen={updateTemplateModalHandler.isOpen}
-          onClose={updateTemplateModalHandler.onClose}
-          devboxReleaseName={currentVersion?.name || ''}
-        />
-      )}
     </Box>
   );
 };

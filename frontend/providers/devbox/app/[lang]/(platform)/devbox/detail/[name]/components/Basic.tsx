@@ -70,15 +70,15 @@ const BasicInfo = () => {
 
   return (
     <Flex borderRadius="lg" bg={'white'} p={4} flexDirection={'column'} h={'100%'}>
-      <Flex mb={3} mt={2} px={4}>
-        <Box color={'grayModern.900'} fontSize={'medium'} fontWeight={'bold'}>
+      <Flex mb={3} mt={2} px={2}>
+        <Box color={'grayModern.900'} fontSize={'20px'} fontWeight={'bold'}>
           {t('basic_info')}
         </Box>
       </Flex>
-      <Grid p={4} borderRadius={'lg'} gap={4} templateColumns={'1fr 1fr'}>
+      <Grid py={4} px={2} borderRadius={'lg'} gap={4} templateColumns={'1fr 1fr'}>
         {/* name */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             {t('name')}
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -87,7 +87,7 @@ const BasicInfo = () => {
         </Flex>
         {/* status */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             {t('status')}
           </Text>
           <Flex width={'60%'} color={'grayModern.900'} mr={'10'}>
@@ -96,7 +96,7 @@ const BasicInfo = () => {
         </Flex>
         {/* Image */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             {t('image_info')}
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -108,7 +108,7 @@ const BasicInfo = () => {
         </Flex>
         {/* Runtime */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             {t('start_runtime')}
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -119,7 +119,7 @@ const BasicInfo = () => {
         </Flex>
         {/* Create At  */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             {t('create_time')}
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -128,7 +128,7 @@ const BasicInfo = () => {
         </Flex>
         {/* Start Time */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             {t('start_time')}
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -137,10 +137,10 @@ const BasicInfo = () => {
         </Flex>
       </Grid>
       <Divider />
-      <Grid p={4} borderRadius={'lg'} gap={4} templateColumns={'1fr 1fr'}>
+      <Grid py={4} px={2} borderRadius={'lg'} gap={4} templateColumns={'1fr 1fr'}>
         {/* CPU Limit */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             CPU Limit
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -149,7 +149,7 @@ const BasicInfo = () => {
         </Flex>
         {/* Memory Limit */}
         <Flex>
-          <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+          <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
             Memory Limit
           </Text>
           <Flex width={'60%'} color={'grayModern.900'}>
@@ -159,7 +159,7 @@ const BasicInfo = () => {
         {/* GPU */}
         {sourcePrice?.gpu && (
           <Flex>
-            <Text mr={2} width={'40%'} fontSize={'12px'} color={'grayModern.500'}>
+            <Text mr={2} width={'120px'} fontSize={'12px'} color={'grayModern.500'}>
               GPU
             </Text>
             <Flex width={'60%'} color={'grayModern.900'}>
@@ -170,8 +170,8 @@ const BasicInfo = () => {
       </Grid>
       <Divider />
       {/* ssh Connection */}
-      <Flex p={4} borderRadius={'lg'}>
-        <Text w={'20%'} fontSize={'12px'} color={'grayModern.500'}>
+      <Flex py={4} px={2} borderRadius={'lg'}>
+        <Text w={'130px'} fontSize={'12px'} color={'grayModern.500'}>
           {t('ssh_connect_info')}
         </Text>
         <Flex color={'grayModern.900'} w={'80%'} role="group">
@@ -195,7 +195,7 @@ const BasicInfo = () => {
           />
         </Flex>
       </Flex>
-      <Flex px={4} alignItems={'center'} justify={'start'} gap={4}>
+      <Flex px={2} alignItems={'center'} justify={'start'} gap={4}>
         <Button
           h={'40px'}
           leftIcon={<MyIcon name="download" w={'16px'} color={'white'} />}

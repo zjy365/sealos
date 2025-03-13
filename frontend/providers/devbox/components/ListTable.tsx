@@ -28,6 +28,8 @@ export function BaseTable<T extends unknown>({
                     <Th
                       textTransform={'unset'}
                       py="11px"
+                      fontWeight={'400'}
+                      fontSize={'12px'}
                       px={'24px'}
                       top={'0'}
                       {...(!pinState

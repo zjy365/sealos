@@ -47,9 +47,9 @@ type State = {
   intervalLoadPods: (devboxName: string, updateDetail: boolean) => Promise<any>;
   loadDetailMonitorData: (
     devboxName: string,
-    step: string,
-    start: number,
-    end: number
+    step?: string,
+    start?: number,
+    end?: number
   ) => Promise<any>;
 };
 
