@@ -1,11 +1,13 @@
 import { getDBByName } from '@/api/db';
 import { useGlobalStore } from '@/store/global';
+import { useGuideStore } from '@/store/guide';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 const RedirectPage = () => {
   const router = useRouter();
   const { setLastRoute } = useGlobalStore();
+  const { resetGuideState } = useGuideStore();
 
   useEffect(() => {
     const handleRedirect = (name?: string) => {
@@ -26,7 +28,8 @@ const RedirectPage = () => {
     };
 
     if (router.isReady) {
-      const { name } = router.query as { name?: string };
+      const { name, action } = router.query as { name?: string; action?: string };
+      // to do action === 'guide'
       handleRedirect(name);
     }
   }, [router, router.isReady, router.query]);

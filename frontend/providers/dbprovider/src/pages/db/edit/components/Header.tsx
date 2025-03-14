@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, Flex, Button } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import MyIcon from '@/components/Icon';
@@ -9,6 +9,8 @@ import dayjs from 'dayjs';
 import { useGlobalStore } from '@/store/global';
 import { useTranslation } from 'next-i18next';
 import { I18nCommonKey } from '@/types/i18next';
+import { startDriver, createAppDriverObj } from '@/hooks/driver';
+import { useGuideStore } from '@/store/guide';
 
 const Header = ({
   dbName,
@@ -40,6 +42,13 @@ const Header = ({
     );
   }, [dbName, yamlList]);
 
+  const { applistCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!applistCompleted) {
+      startDriver(createAppDriverObj());
+    }
+  }, [applistCompleted]);
+
   return (
     <Flex w={'100%'} px={10} h={'86px'} alignItems={'center'}>
       <Flex alignItems={'center'} cursor={'pointer'} onClick={() => router.replace(lastRoute)}>
@@ -53,7 +62,7 @@ const Header = ({
         {t('Export')} Yaml
       </Button>
       <Button
-        className="driver-deploy-button"
+        id="create-db-button"
         flex={'0 0 114px'}
         h={'40px'}
         variant={'solid'}

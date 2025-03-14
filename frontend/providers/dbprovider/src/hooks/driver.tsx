@@ -20,99 +20,10 @@ export function startDriver(config: Config, openDesktopApp?: any) {
   return driverObj;
 }
 
-export const createAppDriverObj = (openDesktopApp?: any): Config => ({
-  showProgress: true,
-  allowClose: false,
-  allowClickMaskNextStep: true,
-  isShowButtons: false,
-  allowKeyboardControl: false,
-  disableActiveInteraction: false,
-  overlayColor: 'transparent',
-
-  steps: [
-    {
-      element: '.driver-deploy-button',
-      popover: {
-        side: 'left',
-        align: 'start',
-        borderRadius: '12px 12px 12px 12px',
-        PopoverBody: (
-          <Box
-            width={'250px'}
-            bg={'rgba(28, 46, 245, 0.9)'}
-            p={'12px'}
-            borderRadius={'12px'}
-            color={'#fff'}
-          >
-            <Flex alignItems={'center'} justifyContent={'space-between'}>
-              <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
-                Configure Launchpad
-              </Text>
-              <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                3/4
-              </Text>
-            </Flex>
-            <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
-              Define image settings, and adjust CPU & memory as needed
-            </Text>
-            <Center
-              color={'#fff'}
-              fontSize={'14px'}
-              fontWeight={500}
-              cursor={'pointer'}
-              mt={'16px'}
-              borderRadius={'8px'}
-              background={'rgba(255, 255, 255, 0.20)'}
-              w={'fit-content'}
-              h={'32px'}
-              p={'8px'}
-              onClick={() => {
-                startDriver(quitGuideDriverObj);
-              }}
-            >
-              Quit Guide
-            </Center>
-          </Box>
-        )
-      }
-    }
-  ],
-  onHighlightStarted: (element) => {
-    const el = element as any;
-    if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
-      el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
-
-      el.addEventListener(
-        'click',
-        () => {
-          if (currentDriver) {
-            currentDriver.destroy();
-            currentDriver = null;
-          }
-        },
-        { once: true }
-      );
-    }
-  },
-  onDeselected: (element?: Element) => {
-    if (element) {
-      const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
-    }
-  },
-  onDestroyed: () => {}
-});
-
 export const applistDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -200,10 +111,10 @@ export const applistDriverObj = (openDesktopApp?: any): Config => ({
   onDestroyed: () => {}
 });
 
-export const detailDriverObj = (openDesktopApp?: any): Config => ({
+export const createAppDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -211,7 +122,96 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
 
   steps: [
     {
-      element: '.system-template',
+      element: '#create-db-button',
+      popover: {
+        side: 'left',
+        align: 'start',
+        borderRadius: '12px 12px 12px 12px',
+        PopoverBody: (
+          <Box
+            width={'250px'}
+            bg={'rgba(28, 46, 245, 0.9)'}
+            p={'12px'}
+            borderRadius={'12px'}
+            color={'#fff'}
+          >
+            <Flex alignItems={'center'} justifyContent={'space-between'}>
+              <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
+                Deploy a New Database
+              </Text>
+              <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
+                3/4
+              </Text>
+            </Flex>
+            <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
+              Choose a database type, and adjust CPU & memory as needed
+            </Text>
+            <Center
+              color={'#fff'}
+              fontSize={'14px'}
+              fontWeight={500}
+              cursor={'pointer'}
+              mt={'16px'}
+              borderRadius={'8px'}
+              background={'rgba(255, 255, 255, 0.20)'}
+              w={'fit-content'}
+              h={'32px'}
+              p={'8px'}
+              onClick={() => {
+                startDriver(quitGuideDriverObj);
+              }}
+            >
+              Quit Guide
+            </Center>
+          </Box>
+        )
+      }
+    }
+  ],
+  onHighlightStarted: (element) => {
+    const el = element as any;
+    if (el) {
+      // 保存原始样式以便稍后恢复
+      el._originalBorderRadius = el.style.borderRadius;
+      el._originalBorder = el.style.border;
+      // 应用新的边框样式
+      el.style.borderRadius = '8px';
+      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
+
+      el.addEventListener(
+        'click',
+        () => {
+          if (currentDriver) {
+            currentDriver.destroy();
+            currentDriver = null;
+          }
+        },
+        { once: true }
+      );
+    }
+  },
+  onDeselected: (element?: Element) => {
+    if (element) {
+      const el = element as any;
+      el.style.borderRadius = el._originalBorderRadius || '';
+      el.style.border = el._originalBorder || '';
+    }
+  },
+  onDestroyed: () => {}
+});
+
+export const detailDriverObj = (openDesktopApp?: any): Config => ({
+  showProgress: true,
+  allowClose: false,
+  allowClickMaskNextStep: false,
+  isShowButtons: false,
+  allowKeyboardControl: false,
+  disableActiveInteraction: false,
+  overlayColor: 'transparent',
+
+  steps: [
+    {
+      element: '#network-detail',
       popover: {
         side: 'right',
         align: 'center',
@@ -303,97 +303,6 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
   onDestroyed: () => {
     startDriver(quitGuideDriverObj);
   }
-});
-
-export const doneDriverObj = (openDesktopApp?: any): Config => ({
-  showProgress: true,
-  allowClose: false,
-  allowClickMaskNextStep: true,
-  isShowButtons: false,
-  allowKeyboardControl: false,
-  disableActiveInteraction: false,
-  overlayColor: 'transparent',
-
-  steps: [
-    {
-      popover: {
-        side: 'right',
-        align: 'center',
-        borderRadius: '12px 12px 12px 12px',
-        PopoverBody: (
-          <Box
-            color={'black'}
-            borderRadius={'20px'}
-            bg={'#FFF'}
-            boxShadow={
-              '0px 16px 48px -5px rgba(0, 0, 0, 0.12), 0px 8px 12px -5px rgba(0, 0, 0, 0.08)'
-            }
-            p={'4px'}
-            w={'460px'}
-          >
-            <Box w={'100%'} border={'1px solid #B0CBFF'} borderRadius={'16px'}>
-              <Box px={'24px'}>
-                <Text mt={'32px'} color={'#000'} fontSize={'20px'} fontWeight={600}>
-                  We’re still here!
-                </Text>
-                <Text mt={'8px'} color={'#404040'} fontSize={'14px'} fontWeight={400}>
-                  You can always find your way back to this guide in the top navigation bar. Happy
-                  exploring!
-                </Text>
-                <Image mt={'20px'} src={'/guide-image.png'} alt="guide" />
-              </Box>
-
-              <Center
-                cursor={'pointer'}
-                mt={'20px'}
-                borderTop={'1px solid #E4E4E7'}
-                py={'20px'}
-                px={'24px'}
-                onClick={() => {
-                  if (currentDriver) {
-                    currentDriver.destroy();
-                    currentDriver = null;
-                  }
-                }}
-              >
-                Got it
-              </Center>
-            </Box>
-          </Box>
-        )
-      }
-    }
-  ],
-  onHighlightStarted: (element) => {
-    const el = element as any;
-    if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
-      el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
-
-      el.addEventListener(
-        'click',
-        (e: any) => {
-          if (currentDriver) {
-            currentDriver.destroy();
-            currentDriver = null;
-          }
-        },
-        { once: true }
-      );
-    }
-  },
-  onDeselected: (element?: Element) => {
-    if (element) {
-      const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
-    }
-  },
-  onDestroyed: () => {}
 });
 
 export const quitGuideDriverObj: Config = {

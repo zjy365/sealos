@@ -314,10 +314,10 @@ const DBList = ({
 
   const { applistCompleted } = useGuideStore();
   useEffect(() => {
-    if (!applistCompleted && dbList.length > 0) {
+    if (!applistCompleted) {
       startDriver(applistDriverObj());
     }
-  }, [applistCompleted, dbList.length]);
+  }, [applistCompleted]);
 
   return (
     <Box
@@ -350,6 +350,7 @@ const DBList = ({
         </Center>
         <Box flex={1}></Box>
         <Button
+          className="create-app-btn"
           minW={'95px'}
           h={'full'}
           variant={'solid'}
