@@ -82,9 +82,9 @@ export default function SigninComponent() {
 
       const token = result.data?.token;
       if (!token) throw Error('get token error');
-      setToken(token);
+
+      setToken(token, rememberMe);
       console.log(result);
-      // 成功提示
 
       if (result.data?.needInit) {
         toast({

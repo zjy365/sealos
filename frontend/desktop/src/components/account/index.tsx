@@ -77,7 +77,6 @@ export default function Account() {
     delSession();
     queryclient.clear();
     router.replace('/signin');
-    setToken('');
   };
 
   const openWorkOrderApp = () => {
