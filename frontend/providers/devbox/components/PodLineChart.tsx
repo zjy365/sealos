@@ -139,6 +139,18 @@ const PodLineChart = ({
   const Dom = useRef<HTMLDivElement>(null);
   const myChart = useRef<echarts.ECharts>();
 
+  const handleChartClick = (e: MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleMouseLeave = () => {
+    if (myChart.current) {
+      myChart.current.dispatchAction({
+        type: 'hideTip'
+      });
+    }
+  };
+
   const optionStyle = useMemo(
     () => ({
       areaStyle: {
@@ -195,6 +207,8 @@ const PodLineChart = ({
         type: 'line'
       },
       appendToBody: true,
+      enterable: false,
+      hideDelay: 100,
       formatter: (params: any[]) => {
         const axisValue = params[0]?.axisValue;
         return `
@@ -233,6 +247,18 @@ const PodLineChart = ({
     if (!Dom.current || myChart?.current?.getOption()) return;
     myChart.current = echarts.init(Dom.current);
     myChart.current && myChart.current.setOption(option.current);
+
+    if (Dom.current) {
+      Dom.current.addEventListener('click', handleChartClick);
+      Dom.current.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (Dom.current) {
+        Dom.current.removeEventListener('click', handleChartClick);
+        Dom.current.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
   }, [Dom]);
 
   // data changed, update
@@ -258,6 +284,15 @@ const PodLineChart = ({
     if (!myChart.current || !myChart.current.getOption()) return;
     myChart.current.resize();
   }, [screenWidth]);
+
+  useEffect(() => {
+    return () => {
+      if (myChart.current) {
+        myChart.current.dispose();
+        myChart.current = undefined;
+      }
+    };
+  }, []);
 
   return <div ref={Dom} style={{ width: '100%', height: '100%' }} />;
 };
