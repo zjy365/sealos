@@ -1,32 +1,64 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Button, Box } from '@chakra-ui/react';
-import styles from './empty.module.scss';
-import MyIcon from '@/components/Icon';
+import { Button, Box, Center, Flex, Text, Image } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
+import { startDriver, applistDriverObj } from '@/hooks/driver';
+import { useGuideStore } from '@/store/guide';
 
 const Empty = () => {
   const router = useRouter();
   const { t } = useTranslation();
+
+  const { listCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!listCompleted) {
+      startDriver(applistDriverObj());
+    }
+  }, [listCompleted]);
+
   return (
-    <Box
-      className={styles.empty}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      bg={'#F3F4F5'}
-    >
-      <MyIcon name={'noEvents'} color={'transparent'} width={'80px'} height={'80px'} />
-      <Box py={8}>{t("You haven't created any application yet")}</Box>
-      <Button
-        w={155}
-        mt={5}
-        onClick={() => router.push('/app/edit')}
-        leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#FFF'} />}
+    <Box>
+      <Flex h={'96px'} alignItems={'center'} px={'44px'}>
+        <Box fontSize={'xl'} color={'grayModern.900'} fontWeight={'bold'}>
+          {t('Applications')}
+        </Box>
+        <Box flex={1}></Box>
+        <Button
+          className="create-app-btn"
+          position={'relative'}
+          h={'40px'}
+          minW={'106px'}
+          flex={'0 0 auto'}
+          onClick={() => router.push('/app/edit')}
+        >
+          {t('Create Application')}
+        </Button>
+      </Flex>
+      <Center
+        border={'1px dashed #5688FF'}
+        mx={'48px'}
+        height={'380px'}
+        mt={'12px'}
+        overflow={'hidden'}
+        position={'relative'}
+        borderRadius={'16px'}
       >
-        {t('Create Application')}
-      </Button>
+        <Image
+          width={'775px'}
+          height={'775px'}
+          objectFit={'contain'}
+          src="/launchpad-empty.png"
+          alt="empty"
+        />
+        <Box position={'absolute'} bottom={'20px'} left={'50%'} transform={'translateX(-50%)'}>
+          <Text fontSize={'18px'} fontWeight={600} textAlign={'center'}>
+            Deploy your first app
+          </Text>
+          <Text color={'#4D4D4D'} fontSize={'14px'} fontWeight={400} textAlign={'center'}>
+            Click here to deploy an application from docker image in just a few steps
+          </Text>
+        </Box>
+      </Center>
     </Box>
   );
 };

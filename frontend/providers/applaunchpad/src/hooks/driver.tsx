@@ -23,7 +23,7 @@ export function startDriver(config: Config, openDesktopApp?: any) {
 export const createAppDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -112,7 +112,7 @@ export const createAppDriverObj = (openDesktopApp?: any): Config => ({
 export const applistDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -197,7 +197,9 @@ export const applistDriverObj = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
-  onDestroyed: () => {}
+  onDestroyed: () => {
+    useGuideStore.getState().setListCompleted(true);
+  }
 });
 
 export const detailDriverObj = (openDesktopApp?: any): Config => ({
@@ -308,7 +310,7 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
 export const doneDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -399,7 +401,7 @@ export const doneDriverObj = (openDesktopApp?: any): Config => ({
 export const quitGuideDriverObj: Config = {
   showProgress: false,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: true,
