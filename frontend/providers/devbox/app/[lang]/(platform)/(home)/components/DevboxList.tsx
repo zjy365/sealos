@@ -398,7 +398,7 @@ const DevboxList = ({
           currentPage={page}
           setCurrentPage={setPage}
           totalPage={total}
-          totalItem={DevboxList.length}
+          totalItem={devboxList.length}
           pageSize={pageSize}
         />
       </Box>
