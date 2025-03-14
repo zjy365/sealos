@@ -11,6 +11,7 @@ import Router from 'next/router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { useEffect } from 'react';
+import useSessionStore from '@/stores/session';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,9 +29,11 @@ Router.events.on('routeChangeError', () => NProgress.done());
 const App = ({ Component, pageProps }: AppProps) => {
   const { i18n } = useTranslation();
   const { initAppConfig } = useConfigStore();
+  const { initTokenFromStorage } = useSessionStore();
 
   useEffect(() => {
     initAppConfig();
+    initTokenFromStorage();
   }, []);
 
   useEffect(() => {

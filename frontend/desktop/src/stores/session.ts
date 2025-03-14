@@ -20,7 +20,7 @@ type SessionState = {
   setFirstUse: (d: Date | null) => void;
   isUserLogin: () => boolean;
   /*
-			when proxy oauth2.0 ,the domainState need to be used 
+			when proxy oauth2.0 ,the domainState need to be used
 	*/
   generateState: (action?: OauthAction, domainState?: string) => string;
   compareState: (state: string) => {
@@ -30,9 +30,10 @@ type SessionState = {
   };
 
   setProvider: (provider?: OauthProvider) => void;
-  setToken: (token: string) => void;
+  setToken: (token: string, rememberMe?: boolean) => void;
   lastWorkSpaceId: string;
   setWorkSpaceId: (id: string) => void;
+  initTokenFromStorage: () => void;
 };
 
 const useSessionStore = create<SessionState>()(
@@ -58,7 +59,12 @@ const useSessionStore = create<SessionState>()(
         });
       },
       delSession: () => {
-        set({ session: undefined });
+        set({ session: undefined, token: '' });
+
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_token');
+          sessionStorage.removeItem('auth_token');
+        }
       },
       isUserLogin: () => !!get().session?.user,
       // [LOGIN/UNBIND/BIND]_STATE
@@ -87,11 +93,35 @@ const useSessionStore = create<SessionState>()(
       setProvider: (provider?: OauthProvider) => {
         set({ provider });
       },
-      setToken: (token) => {
+      setToken: (token, rememberMe = false) => {
         set({ token });
+
+        if (typeof window !== 'undefined') {
+          if (rememberMe) {
+            localStorage.setItem('auth_token', token);
+            sessionStorage.removeItem('auth_token');
+          } else {
+            sessionStorage.setItem('auth_token', token);
+            localStorage.removeItem('auth_token');
+          }
+        }
       },
       setWorkSpaceId: (id) => {
         set({ lastWorkSpaceId: id });
+      },
+      initTokenFromStorage: () => {
+        if (typeof window !== 'undefined') {
+          const localToken = localStorage.getItem('auth_token');
+          if (localToken) {
+            set({ token: localToken });
+            return;
+          }
+
+          const sessionToken = sessionStorage.getItem('auth_token');
+          if (sessionToken) {
+            set({ token: sessionToken });
+          }
+        }
       }
     })),
     {
