@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Grid, VStack } from '@chakra-ui/react';
 
-import useDriver from '@/hooks/useDriver';
 import { useDevboxStore } from '@/stores/devbox';
 import { DevboxEditTypeV2 } from '@/types/devbox';
 import { TemplateRepository } from '@/types/template';
@@ -26,15 +25,13 @@ export default function Runtime({ isEdit }: RuntimeProps) {
 
   const t = useTranslations();
   const [currentCategory, setCurrentCategory] = useState<TemplateRepositoryKind>('LANGUAGE');
-  const { handleUserGuide } = useDriver();
+
   const searchParams = useSearchParams();
   const templateRepositoryQuery = useQuery(
     ['list-official-template-repository'],
     listOfficialTemplateRepository,
     {
-      onSuccess(res) {
-        handleUserGuide();
-      },
+      onSuccess(res) {},
       staleTime: Infinity,
       cacheTime: 1000 * 60 * 30
     }

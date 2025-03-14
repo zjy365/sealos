@@ -13,14 +13,12 @@ import BasicInfo from './components/Basic';
 import { useEnvStore } from '@/stores/env';
 import { useLoading } from '@/hooks/useLoading';
 import { useDevboxStore } from '@/stores/devbox';
-import useDetailDriver from '@/hooks/useDetailDriver';
 import Monitor from './components/Monitor';
 const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
   const t = useTranslations();
 
   const devboxName = params.name;
   const { Loading } = useLoading();
-  const { handleUserGuide } = useDetailDriver();
   const { env } = useEnvStore();
   const { devboxDetail, setDevboxDetail, loadDetailMonitorData, intervalLoadPods } =
     useDevboxStore();
@@ -35,9 +33,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
       onSettled() {
         setInitialized(true);
       },
-      onSuccess: () => {
-        handleUserGuide();
-      }
+      onSuccess: () => {}
     }
   );
   useQuery(

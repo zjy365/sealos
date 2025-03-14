@@ -11,7 +11,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import DevboxHeader from './DevboxHeader';
 import DevboxList from './DevboxList';
 import Empty from './Empty';
-import useListDriver from '@/hooks/useListDriver';
 
 function useDevboxList() {
   const router = useRouter();
@@ -126,13 +125,6 @@ function useDevboxList() {
 
 export default function DevboxListContainer({ ...props }: FlexProps) {
   const { list, isLoading, refetchList } = useDevboxList();
-  const { handleUserGuide } = useListDriver();
-
-  useEffect(() => {
-    if (list.length > 0) {
-      handleUserGuide();
-    }
-  }, [list.length]);
 
   return (
     <Flex flexDir={'column'} backgroundColor={'white'} px={10} h="100vh" {...props}>

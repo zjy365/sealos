@@ -17,6 +17,8 @@ import { BaseTable } from '@/components/ListTable';
 import PodLineChart from '@/components/PodLineChart';
 import SwitchPage from '@/components/SwitchDevboxPage';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
+import { startDriver, guideIDEDriverObj, listDriverObj } from '@/hooks/driver';
+import { useGuideStore } from '@/stores/guide';
 
 const DelModal = dynamic(() => import('@/components/modals/DelModal'));
 
@@ -214,9 +216,11 @@ const DevboxList = ({
         enablePinning: true,
         cell(props) {
           const item = props.row.original;
+
           return (
             <Flex>
               <IDEButton
+                className={props.row.index === 0 ? 'guide-ide' : ''}
                 devboxName={item.name}
                 sshPort={item.sshPort}
                 status={item.status}
@@ -236,6 +240,7 @@ const DevboxList = ({
                 runtimeType={item.template.templateRepository.iconId as string}
                 onClick={(e) => e.stopPropagation()}
               />
+
               {/* <Button
                 mr={'8px'}
                 size={'sm'}
@@ -378,6 +383,21 @@ const DevboxList = ({
     columns,
     getCoreRowModel: getCoreRowModel()
   });
+
+  const totalRow = table.getRowModel().rows.length;
+  const { ideCompleted, listCompleted } = useGuideStore();
+
+  useEffect(() => {
+    if (!ideCompleted && totalRow > 0) {
+      startDriver(guideIDEDriverObj());
+    }
+  }, [ideCompleted, totalRow]);
+
+  useEffect(() => {
+    if (!listCompleted && ideCompleted && totalRow > 0) {
+      startDriver(listDriverObj());
+    }
+  }, [ideCompleted, listCompleted, totalRow]);
 
   return (
     <>
