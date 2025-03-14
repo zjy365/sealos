@@ -7,7 +7,7 @@ import {
   TrackingConfigType
 } from '@/types';
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 type State = {
@@ -21,23 +21,28 @@ type State = {
 
 export const useConfigStore = create<State>()(
   devtools(
-    immer((set, get) => ({
-      cloudConfig: undefined,
-      authConfig: undefined,
-      commonConfig: undefined,
-      layoutConfig: undefined,
-      trackingConfig: undefined,
-      async initAppConfig() {
-        const data = await getAppConfig();
-        console.log('initAppConfig', data.data);
-        set((state) => {
-          state.trackingConfig = data.data.tracking;
-          state.layoutConfig = data.data.desktop.layout;
-          state.authConfig = data.data.desktop.auth;
-          state.cloudConfig = data.data.cloud;
-          state.commonConfig = data.data.common;
-        });
+    persist(
+      immer((set, get) => ({
+        cloudConfig: undefined,
+        authConfig: undefined,
+        commonConfig: undefined,
+        layoutConfig: undefined,
+        trackingConfig: undefined,
+        async initAppConfig() {
+          const data = await getAppConfig();
+          console.log('initAppConfig', data.data);
+          set((state) => {
+            state.trackingConfig = data.data.tracking;
+            state.layoutConfig = data.data.desktop.layout;
+            state.authConfig = data.data.desktop.auth;
+            state.cloudConfig = data.data.cloud;
+            state.commonConfig = data.data.common;
+          });
+        }
+      })),
+      {
+        name: 'desktop-app-config'
       }
-    }))
+    )
   )
 );

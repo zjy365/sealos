@@ -76,7 +76,6 @@ export default function SigninComponent() {
   };
 
   const onSignin = async (data: ILoginParams) => {
-    console.log('signiiii');
     try {
       setIsLoading(true);
       const result = await ccEmailSignIn(data);
@@ -86,19 +85,27 @@ export default function SigninComponent() {
       setToken(token);
       console.log(result);
       // 成功提示
-      toast({
-        title: t('cc:sign_in_success'),
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
+
       if (result.data?.needInit) {
+        toast({
+          title: t('cc:sign_in_success'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
+        });
         await router.push('/unlockcard');
       } else {
         const regionTokenRes = await getRegionToken();
         if (regionTokenRes?.data) {
           await sessionConfig(regionTokenRes.data);
+          toast({
+            title: t('cc:sign_in_success'),
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+            position: 'top'
+          });
           await router.replace('/');
         }
       }

@@ -721,8 +721,11 @@ export function MinimizeIcon(props: IconProps) {
         d="M8.55556 7H5.44444C5.19898 7 5 7.19898 5 7.44444V10.5556C5 10.801 5.19898 11 5.44444 11H8.55556C8.80102 11 9 10.801 9 10.5556V7.44444C9 7.19898 8.80102 7 8.55556 7Z"
         stroke="currentColor"
         strokeLinecap="round"
-        strokeLinejoin="round" />
-    </Icon>}
+        strokeLinejoin="round"
+      />
+    </Icon>
+  );
+}
 export function ClawCloudIcon(props: IconProps) {
   return (
     <Icon

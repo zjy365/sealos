@@ -24,6 +24,7 @@ import { useCustomToast } from '@/hooks/useCustomToast';
 import { useConfigStore } from '@/stores/config';
 import useSessionStore from '@/stores/session';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
+import { SwitchRegionType } from '@/constants/account';
 
 export default function Workspace() {
   const { t } = useTranslation();
@@ -51,13 +52,21 @@ export default function Workspace() {
   });
   const handleStartDeploying = async () => {
     try {
-      if (!selectedRegionUid || !workspaceName || !mutation.isIdle) {
+      if (!selectedRegionUid || !workspaceName || mutation.isLoading) {
         toast({
           status: 'error',
           title: t('cc:please_select_region_and_workspace_name')
         });
         return;
       }
+      console.log(
+        'inii',
+        selectedRegionUid,
+        cloudConfig?.regionUID,
+        token,
+        workspaceName,
+        cloudConfig
+      );
       if (selectedRegionUid !== cloudConfig?.regionUID) {
         const region = regionList.find((r) => r.uid === selectedRegionUid);
         if (!region) return;
@@ -65,7 +74,7 @@ export default function Workspace() {
         if (!token) throw Error('No token found');
         target.searchParams.append('token', token);
         target.searchParams.append('workspaceName', encodeURIComponent(workspaceName));
-        target.searchParams.append('switchType', 'init');
+        target.searchParams.append('switchRegionType', SwitchRegionType.INIT);
         await router.replace(target);
         return;
       }
@@ -138,7 +147,7 @@ export default function Workspace() {
               mt={4}
               rightIcon={<ArrowRight />}
               w={'full'}
-              isDisabled={mutation.status === 'loading'}
+              isLoading={mutation.status === 'loading'}
               onClick={() => handleStartDeploying()}
             >
               {t('cc:start_deploying')}

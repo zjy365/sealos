@@ -53,6 +53,7 @@ const Callback: NextPage = () => {
     const switchRegionType = query.switchRegionType;
     const globalToken = router.query.token;
     if (!isString(globalToken)) throw new Error('failed to get globalToken');
+    console.log(router.query);
     if (switchRegionType === SwitchRegionType.INIT) {
       (async () => {
         try {
@@ -73,7 +74,7 @@ const Callback: NextPage = () => {
             throw new Error('No result data');
           }
           await sessionConfig(initRegionTokenResult.data);
-          await router.replace('/signin');
+          await router.replace('/');
           return;
         } catch (error) {
           console.error(error);

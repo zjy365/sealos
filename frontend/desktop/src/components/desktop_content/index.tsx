@@ -115,39 +115,41 @@ export default function Desktop(props: any) {
     [apps, openApp, runningInfo, setToHighestLayerById]
   );
   const router = useRouter();
-  const actionCbGen =
+  const actionCbGen = useCallback(
     <T extends OauthAction>({
-      url,
-      provider,
-      clientId,
-      proxyAddress
-    }: {
-      url: string;
-      provider: OauthProvider;
-      clientId: string;
-      proxyAddress?: string;
-    }) =>
-    (action: T) => {
-      if (!conf) return;
-      const state = generateState(action);
-      setProvider(provider);
-      if (proxyAddress) {
-        const target = new URL(proxyAddress);
-        const callback = new URL(conf.callbackURL);
-        target.searchParams.append(
-          'oauthProxyState',
-          encodeURIComponent(callback.toString()) + '_' + state
-        );
-        target.searchParams.append('oauthProxyClientID', clientId);
-        target.searchParams.append('oauthProxyProvider', provider);
-        router.replace(target.toString());
-      } else {
-        const target = new URL(url);
-        target.searchParams.append('state', state);
-        router.replace(target);
-      }
-    };
-  const bindGithub = () => {
+        url,
+        provider,
+        clientId,
+        proxyAddress
+      }: {
+        url: string;
+        provider: OauthProvider;
+        clientId: string;
+        proxyAddress?: string;
+      }) =>
+      (action: T) => {
+        if (!conf) return;
+        const state = generateState(action);
+        setProvider(provider);
+        if (proxyAddress) {
+          const target = new URL(proxyAddress);
+          const callback = new URL(conf.callbackURL);
+          target.searchParams.append(
+            'oauthProxyState',
+            encodeURIComponent(callback.toString()) + '_' + state
+          );
+          target.searchParams.append('oauthProxyClientID', clientId);
+          target.searchParams.append('oauthProxyProvider', provider);
+          router.replace(target.toString());
+        } else {
+          const target = new URL(url);
+          target.searchParams.append('state', state);
+          router.replace(target);
+        }
+      },
+    [conf?.callbackURL]
+  );
+  const bindGithub = useCallback(() => {
     if (!conf?.idp.github.enabled) return;
     const githubConf = conf.idp.github;
     actionCbGen({
@@ -156,8 +158,8 @@ export default function Desktop(props: any) {
       proxyAddress: githubConf?.proxyAddress,
       url: `https://github.com/login/oauth/authorize?client_id=${githubConf?.clientID}&redirect_uri=${conf?.callbackURL}&scope=user:email%20read:user`
     })('BIND');
-  };
-  const bindGmail = () => {
+  }, [conf?.callbackURL, conf?.idp.github, actionCbGen]);
+  const bindGmail = useCallback(() => {
     if (!conf?.idp.google.enabled) return;
     const googleConf = conf.idp.google;
     const scope = encodeURIComponent(`https://www.googleapis.com/auth/userinfo.profile openid`);
@@ -167,7 +169,7 @@ export default function Desktop(props: any) {
       proxyAddress: googleConf?.proxyAddress,
       url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&scope=${scope}&include_granted_scopes=true`
     })('BIND');
-  };
+  }, [conf?.callbackURL, conf?.idp.google, actionCbGen]);
   const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
   // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
 
