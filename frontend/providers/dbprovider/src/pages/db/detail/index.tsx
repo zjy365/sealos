@@ -17,7 +17,6 @@ import Monitor from './components/Monitor';
 import Pods from './components/Pods';
 import { I18nCommonKey } from '@/types/i18next';
 import ReconfigureTable from './components/Reconfigure/index';
-import useDetailDriver from '@/hooks/useDetailDriver';
 import ErrorLog from '@/pages/db/detail/components/ErrorLog';
 import MyIcon from '@/components/Icon';
 import { BackupSupportedDBTypeList } from '@/constants/db';
@@ -46,7 +45,6 @@ const AppDetail = ({
   dbType: DBType;
   listType: `${TabEnum}`;
 }) => {
-  useDetailDriver();
   const BackupTableRef = useRef<ComponentRef>(null);
   const ReconfigureTableRef = useRef<ComponentRef>(null);
   const router = useRouter();

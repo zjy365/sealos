@@ -14,9 +14,9 @@ interface GuideState {
 export const useGuideStore = create<GuideState>()(
   persist(
     (set) => ({
-      createCompleted: false,
-      detailCompleted: false,
-      listCompleted: false,
+      createCompleted: true,
+      detailCompleted: true,
+      listCompleted: true,
       setCreateCompleted: (completed) => set({ createCompleted: completed }),
       setDetailCompleted: (completed) => set({ detailCompleted: completed }),
       setListCompleted: (completed) => set({ listCompleted: completed }),

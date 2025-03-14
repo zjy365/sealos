@@ -129,24 +129,19 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
       description: t('cc:launchpad_desc'),
       steps: [
         {
-          title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.',
+          title: 'Create App Launchpad',
+          description: 'Open App Launchpad to deploy a Docker image',
           image: '/images/onboarding/launchpad-1.png'
         },
         {
-          title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.',
+          title: 'Configure Launchpad',
+          description: 'Define image settings, and adjust CPU & memory as needed',
           image: '/images/onboarding/launchpad-2.png'
         },
         {
-          title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.',
+          title: 'Access Application',
+          description: 'Copy the Private or Public Address for access',
           image: '/images/onboarding/launchpad-3.png'
-        },
-        {
-          title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.',
-          image: '/images/onboarding/launchpad-4.png'
         }
       ]
     },
@@ -157,24 +152,14 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
       description: t('cc:template_desc'),
       steps: [
         {
-          title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.',
+          title: 'Choose from template',
+          description: 'Explore App Store to deploy an application from a template',
           image: '/images/onboarding/appstore-1.png'
         },
         {
-          title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.',
+          title: 'Access Application',
+          description: 'Get the private or public address from App Launchpad',
           image: '/images/onboarding/appstore-2.png'
-        },
-        {
-          title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.',
-          image: '/images/onboarding/appstore-3.png'
-        },
-        {
-          title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.',
-          image: '/images/onboarding/appstore-4.png'
         }
       ]
     },
@@ -185,24 +170,19 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
       description: t('cc:database_desc'),
       steps: [
         {
-          title: 'Access DevBox',
-          description: 'Enter the DevBox page and create a new development environment.',
+          title: 'Choose from template',
+          description: 'Open database app to deploy a database',
           image: '/images/onboarding/database-1.png'
         },
         {
-          title: 'Configure Your DevBox',
-          description: 'Set up your development environment with your preferred settings.',
+          title: 'Deploy a New Database',
+          description: 'Choose a database type, and adjust CPU & memory as needed',
           image: '/images/onboarding/database-2.png'
         },
         {
-          title: 'Start Coding in Your IDE',
-          description: 'Begin coding in your preferred IDE with all configurations set.',
+          title: 'Manage & Connect to the Database',
+          description: 'Retrieve connection details and manage the database',
           image: '/images/onboarding/database-3.png'
-        },
-        {
-          title: 'Manage and Deploy',
-          description: 'Manage your development environment and deploy your application.',
-          image: '/images/onboarding/database-4.png'
         }
       ]
     }
@@ -280,6 +260,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
           overflow={'hidden'}
           opacity={isActive ? 1 : 0}
           transition="all 0.5s ease"
+          ml={'auto'}
         >
           <Image
             style={{
