@@ -265,6 +265,7 @@ const DevboxList = ({
                     as={Button}
                     variant={'square'}
                     boxSize={'32px'}
+                    onClick={(e) => e.stopPropagation()}
                     _hover={{
                       bg: 'grayModern.200'
                     }}

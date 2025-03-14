@@ -122,8 +122,8 @@ const Header = ({ refetchDevboxDetail }: { refetchDevboxDetail: () => void }) =>
   return (
     <Flex justify="space-between" align="center" pt={2} flexWrap={'wrap'} gap={5}>
       {/* left back button and title */}
-      <Flex alignItems={'center'} gap={2} p={0}>
-        <ArrowLeft size={'24px'} onClick={() => router.push('/')} cursor={'pointer'} />
+      <Flex alignItems={'center'} gap={2} p={0} cursor={'pointer'} onClick={() => router.push('/')}>
+        <ArrowLeft size={'24px'} />
         <Box fontSize="24px" fontWeight="600">
           {devboxDetail.name}
         </Box>
