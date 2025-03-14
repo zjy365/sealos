@@ -78,10 +78,11 @@ export function BaseTable<T extends unknown>({
             );
           })}
         </Thead>
-        <Tbody whiteSpace={'nowrap'} mb={'0'}>
-          {table.getRowModel().rows.map((item) => {
+        <Tbody whiteSpace={'nowrap'} mb={'0'} position={'relative'}>
+          {table.getRowModel().rows.map((item, index) => {
             return (
               <Tr
+                id={index === 0 ? 'guide-list' : ''}
                 key={item.id}
                 fontSize={'12px'}
                 _hover={{

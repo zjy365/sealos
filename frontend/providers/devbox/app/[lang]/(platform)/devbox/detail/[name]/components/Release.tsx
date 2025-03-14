@@ -21,7 +21,6 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { useLoading } from '@/hooks/useLoading';
 import { useDevboxStore } from '@/stores/devbox';
 import { parseTemplateConfig } from '@/utils/tools';
-import useReleaseDriver from '@/hooks/useReleaseDriver';
 import { DevboxVersionListItemType } from '@/types/devbox';
 import { devboxIdKey, DevboxReleaseStatusEnum } from '@/constants/devbox';
 import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
@@ -29,6 +28,8 @@ import { delDevboxVersionByName, getAppsByDevboxId } from '@/api/devbox';
 import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template';
 
 import TemplateDrawer from './TemplateDrawer';
+import { useGuideStore } from '@/stores/guide';
+import { startDriver, releaseDriverObj } from '@/hooks/driver';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -36,7 +37,6 @@ const Version = () => {
   const t = useTranslations();
   const { message: toast } = useMessage();
   const { Loading, setIsLoading } = useLoading();
-  const { startReleaseGuide } = useReleaseDriver();
   const { isOpen: isOpenEdit, onOpen: onOpenEdit, onClose: onCloseEdit } = useDisclosure();
 
   const { env } = useEnvStore();
@@ -72,12 +72,6 @@ const Version = () => {
       enabled: !!devbox
     }
   );
-
-  useEffect(() => {
-    if (devboxVersionList?.length && devboxVersionList.length > 0) {
-      startReleaseGuide();
-    }
-  }, [devboxVersionList.length]);
 
   const listPrivateTemplateRepositoryQuery = useQuery(
     ['template-repository-list', 'template-repository-private'],
@@ -343,6 +337,14 @@ const Version = () => {
       )
     }
   ];
+
+  const { releaseCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!releaseCompleted) {
+      startDriver(releaseDriverObj());
+    }
+  }, [releaseCompleted]);
+
   return (
     <Box
       borderWidth={1}

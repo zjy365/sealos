@@ -15,13 +15,15 @@ import {
 } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useEnvStore } from '@/stores/env';
 import { versionSchema } from '@/utils/vaildate';
 import { DevboxListItemTypeV2 } from '@/types/devbox';
 import { pauseDevbox, releaseDevbox, startDevbox } from '@/api/devbox';
 import { TagCheckbox } from '@/app/[lang]/(platform)/template/TagCheckbox';
+import { startDriver, releaseDriverObj, releaseDriverObj2 } from '@/hooks/driver';
+import { useGuideStore } from '@/stores/guide';
 
 const ReleaseModal = ({
   onClose,
@@ -37,7 +39,7 @@ const ReleaseModal = ({
 
   const { env } = useEnvStore();
 
-  const [tag, setTag] = useState('');
+  const [tag, setTag] = useState('1.0.0');
   const [loading, setLoading] = useState(false);
   const [tagError, setTagError] = useState(false);
   const [releaseDes, setReleaseDes] = useState('');
@@ -95,6 +97,13 @@ const ReleaseModal = ({
     },
     [devbox.status.value, devbox.name, devbox.id, tag, releaseDes, toast, t, onSuccess, onClose]
   );
+
+  // const { releaseCompleted } = useGuideStore();
+  // useEffect(() => {
+  //   if (!releaseCompleted) {
+  //     startDriver(releaseDriverObj2());
+  //   }
+  // }, [releaseCompleted]);
 
   return (
     <Box>
@@ -157,7 +166,6 @@ const ReleaseModal = ({
                 isReadOnly
               />
             </VStack>
-
             <VStack width={'full'} gap={'8px'} alignItems={'flex-start'}>
               <Box w={'100px'} color="#18181B" fontWeight={500}>
                 {t('version_number')}
@@ -173,6 +181,7 @@ const ReleaseModal = ({
                 border="1px solid var(--base-input, #E4E4E7)"
                 borderColor={tagError ? 'red.500' : undefined}
               />
+
               {tagError && (
                 <Box color="red.500" fontSize="sm">
                   {t('tag_required')}
@@ -196,18 +205,7 @@ const ReleaseModal = ({
             {/* </Flex> */}
           </ModalBody>
           <ModalFooter px={'24px'} pb={'24px'}>
-            <Button
-              variant={'solid'}
-              onClick={handleSubmit}
-              mr={'auto'}
-              ml="0"
-              px={'10px'}
-              py={'16px'}
-              // width={'80px'}
-              isLoading={loading}
-            >
-              {t('Release')}
-            </Button>
+            <div id="release-button">12312312</div>
           </ModalFooter>
         </ModalContent>
       </Modal>
