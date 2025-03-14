@@ -24,9 +24,11 @@ import { getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/r
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { CustomMenu } from '@/components/BaseTable/customMenu';
+import { useGuideStore } from '@/store/guide';
+import { applistDriverObj, startDriver } from '@/hooks/driver';
 
 const DelModal = dynamic(() => import('@/pages/db/detail/components/DelModal'));
 
@@ -309,6 +311,13 @@ const DBList = ({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel()
   });
+
+  const { applistCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!applistCompleted && dbList.length > 0) {
+      startDriver(applistDriverObj());
+    }
+  }, [applistCompleted, dbList.length]);
 
   return (
     <Box

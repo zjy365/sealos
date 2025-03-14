@@ -24,7 +24,6 @@ import { FieldErrors, useForm } from 'react-hook-form';
 import Form from './components/Form';
 import Header from './components/Header';
 import Yaml from './components/Yaml';
-import useDriver from '@/hooks/useDriver';
 import { updateBackupPolicy } from '@/api/backup';
 
 const ErrorModal = dynamic(() => import('@/components/ErrorModal'));
@@ -35,7 +34,6 @@ const defaultEdit = {
 };
 
 const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yaml' }) => {
-  const { startGuide, isGuided } = useDriver();
   const { t } = useTranslation();
   const router = useRouter();
   const [yamlList, setYamlList] = useState<YamlItemType[]>([]);
@@ -68,12 +66,6 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
   const formHook = useForm<DBEditType>({
     defaultValues: defaultEdit
   });
-
-  useEffect(() => {
-    if (isGuided) {
-      formHook.setValue('storage', 1);
-    }
-  }, [isGuided]);
 
   const generateYamlList = (data: DBEditType) => {
     return [
