@@ -16,6 +16,7 @@ export function startDriver(config: Config, openDesktopApp?: any) {
   currentDriver = driverObj;
 
   driverObj.drive();
+  driverObj.refresh();
 
   return driverObj;
 }
@@ -470,18 +471,18 @@ export const releaseDriverObj = (openDesktopApp?: any): Config => ({
     }
   },
   onDestroyed: () => {
-    startDriver(releaseDriverObj2());
+    useGuideStore.getState().setReleaseCompleted(true);
   }
 });
 
-export const releaseDriverObj2 = (openDesktopApp?: any): Config => ({
+export const releaseVersionDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: false,
+  allowClickMaskNextStep: true,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
-  // overlayColor: 'transparent',
+  overlayColor: 'transparent',
 
   steps: [
     {
@@ -560,13 +561,15 @@ export const releaseDriverObj2 = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
-  onDestroyed: () => {}
+  onDestroyed: () => {
+    useGuideStore.getState().setReleaseVersionCompleted(true);
+  }
 });
 
-export const doneDriverObj = (openDesktopApp?: any): Config => ({
+export const deployDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: false,
+  allowClickMaskNextStep: true,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -574,49 +577,47 @@ export const doneDriverObj = (openDesktopApp?: any): Config => ({
 
   steps: [
     {
+      element: '#guide-online-button',
       popover: {
-        side: 'right',
-        align: 'center',
+        side: 'top',
+        align: 'start',
         borderRadius: '12px 12px 12px 12px',
         PopoverBody: (
           <Box
-            color={'black'}
-            borderRadius={'20px'}
-            bg={'#FFF'}
-            boxShadow={
-              '0px 16px 48px -5px rgba(0, 0, 0, 0.12), 0px 8px 12px -5px rgba(0, 0, 0, 0.08)'
-            }
-            p={'4px'}
-            w={'460px'}
+            width={'250px'}
+            bg={'rgba(28, 46, 245, 0.9)'}
+            p={'12px'}
+            borderRadius={'12px'}
+            color={'#fff'}
           >
-            <Box w={'100%'} border={'1px solid #B0CBFF'} borderRadius={'16px'}>
-              <Box px={'24px'}>
-                <Text mt={'32px'} color={'#000'} fontSize={'20px'} fontWeight={600}>
-                  We’re still here!
-                </Text>
-                <Text mt={'8px'} color={'#404040'} fontSize={'14px'} fontWeight={400}>
-                  You can always find your way back to this guide in the top navigation bar. Happy
-                  exploring!
-                </Text>
-                <Image mt={'20px'} src={'/guide-image.png'} alt="guide" />
-              </Box>
-
-              <Center
-                cursor={'pointer'}
-                mt={'20px'}
-                borderTop={'1px solid #E4E4E7'}
-                py={'20px'}
-                px={'24px'}
-                onClick={() => {
-                  if (currentDriver) {
-                    currentDriver.destroy();
-                    currentDriver = null;
-                  }
-                }}
-              >
-                Got it
-              </Center>
-            </Box>
+            <Flex alignItems={'center'} justifyContent={'space-between'}>
+              <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
+                Manage and deploy
+              </Text>
+              <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
+                8/8
+              </Text>
+            </Flex>
+            <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
+              Click &quot;Deploy&quot; to launch the application to production
+            </Text>
+            <Center
+              color={'#fff'}
+              fontSize={'14px'}
+              fontWeight={500}
+              cursor={'pointer'}
+              mt={'16px'}
+              borderRadius={'8px'}
+              background={'rgba(255, 255, 255, 0.20)'}
+              w={'fit-content'}
+              h={'32px'}
+              p={'8px'}
+              onClick={() => {
+                startDriver(quitGuideDriverObj);
+              }}
+            >
+              Quit Guide
+            </Center>
           </Box>
         )
       }
@@ -651,7 +652,9 @@ export const doneDriverObj = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
-  onDestroyed: () => {}
+  onDestroyed: () => {
+    startDriver(quitGuideDriverObj);
+  }
 });
 
 export const quitGuideDriverObj: Config = {

@@ -22,17 +22,19 @@ import { versionSchema } from '@/utils/vaildate';
 import { DevboxListItemTypeV2 } from '@/types/devbox';
 import { pauseDevbox, releaseDevbox, startDevbox } from '@/api/devbox';
 import { TagCheckbox } from '@/app/[lang]/(platform)/template/TagCheckbox';
-import { startDriver, releaseDriverObj, releaseDriverObj2 } from '@/hooks/driver';
+import { startDriver, releaseVersionDriverObj } from '@/hooks/driver';
 import { useGuideStore } from '@/stores/guide';
 
 const ReleaseModal = ({
   onClose,
   onSuccess,
-  devbox
+  devbox,
+  isOpen
 }: {
   devbox: Omit<DevboxListItemTypeV2, 'template'>;
   onClose: () => void;
   onSuccess: () => void;
+  isOpen: boolean;
 }) => {
   const t = useTranslations();
   const { message: toast } = useMessage();
@@ -98,16 +100,24 @@ const ReleaseModal = ({
     [devbox.status.value, devbox.name, devbox.id, tag, releaseDes, toast, t, onSuccess, onClose]
   );
 
-  // const { releaseCompleted } = useGuideStore();
-  // useEffect(() => {
-  //   if (!releaseCompleted) {
-  //     startDriver(releaseDriverObj2());
-  //   }
-  // }, [releaseCompleted]);
+  const { releaseVersionCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!releaseVersionCompleted && isOpen) {
+      requestAnimationFrame(() => {
+        // 触发多次 resize，增加可靠性
+        for (let i = 0; i < 3; i++) {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, i * 500);
+        }
+        startDriver(releaseVersionDriverObj());
+      });
+    }
+  }, [releaseVersionCompleted, isOpen]);
 
   return (
     <Box>
-      <Modal isOpen onClose={onClose} lockFocusAcrossFrames={false}>
+      <Modal isOpen={isOpen} onClose={onClose} lockFocusAcrossFrames={false}>
         <ModalOverlay />
         <ModalContent minW={'450px'} mt={'100px'} minH={'300px'} my={'auto'}>
           <ModalHeader
@@ -205,7 +215,19 @@ const ReleaseModal = ({
             {/* </Flex> */}
           </ModalBody>
           <ModalFooter px={'24px'} pb={'24px'}>
-            <div id="release-button">12312312</div>
+            <Button
+              id="release-button"
+              variant={'solid'}
+              onClick={handleSubmit}
+              mr={'auto'}
+              ml="0"
+              px={'10px'}
+              py={'16px'}
+              width={'80px'}
+              isLoading={loading}
+            >
+              {t('release')}
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

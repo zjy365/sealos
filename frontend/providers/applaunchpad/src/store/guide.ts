@@ -11,7 +11,7 @@ interface GuideState {
   resetGuideState: (completed: boolean) => void;
 }
 
-// true = guide is completed
+// true = guide is completed, dev mode edit this to false
 export const useGuideStore = create<GuideState>()(
   persist(
     (set) => ({
@@ -26,7 +26,7 @@ export const useGuideStore = create<GuideState>()(
     }),
     {
       name: 'user-guide',
-      storage: createJSONStorage(() => localStorage)
+      storage: createJSONStorage(() => sessionStorage)
     }
   )
 );

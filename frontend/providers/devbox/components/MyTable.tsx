@@ -5,7 +5,7 @@ interface Props extends BoxProps {
     title: string;
     dataIndex?: string;
     key: string;
-    render?: (item: any) => JSX.Element;
+    render?: (item: any, index: number) => JSX.Element;
     minWidth?: string;
     width?: string;
   }[];
@@ -80,7 +80,11 @@ const MyTable = ({
               color={'grayModern.900'}
               minWidth={col.minWidth || '100px'}
             >
-              {col.render ? col.render(item) : col.dataIndex ? `${item[col.dataIndex]}` : ''}
+              {col.render
+                ? col.render(item, index1)
+                : col.dataIndex
+                ? `${item[col.dataIndex]}`
+                : ''}
             </Flex>
           ))}
         </Grid>
