@@ -103,6 +103,12 @@ export default function AppList({
     }
   }, [listCompleted, filterData?.length, filterData]);
 
+  useEffect(() => {
+    if (router.query?.action === 'guide') {
+      useGuideStore.getState().resetGuideState(false);
+    }
+  }, [router.query?.action]);
+
   return (
     <Box
       flexDirection={'column'}
