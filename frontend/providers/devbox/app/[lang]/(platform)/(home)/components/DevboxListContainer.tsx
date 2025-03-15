@@ -11,6 +11,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import DevboxHeader from './DevboxHeader';
 import DevboxList from './DevboxList';
 import Empty from './Empty';
+import { useSearchParams } from 'next/navigation';
+import { useGuideStore } from '@/stores/guide';
 
 function useDevboxList() {
   const router = useRouter();
@@ -125,6 +127,14 @@ function useDevboxList() {
 
 export default function DevboxListContainer({ ...props }: FlexProps) {
   const { list, isLoading, refetchList } = useDevboxList();
+  const searchParams = useSearchParams();
+  const action = searchParams.get('action');
+
+  useEffect(() => {
+    if (action === 'guide') {
+      useGuideStore.getState().resetGuideState(false);
+    }
+  }, [action]);
 
   return (
     <Flex flexDir={'column'} backgroundColor={'white'} px={10} h="100vh" {...props}>

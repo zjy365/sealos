@@ -29,7 +29,7 @@ import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template
 
 import TemplateDrawer from './TemplateDrawer';
 import { useGuideStore } from '@/stores/guide';
-import { startDriver, releaseDriverObj } from '@/hooks/driver';
+import { startDriver, releaseDriverObj, deployDriverObj } from '@/hooks/driver';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -190,7 +190,7 @@ const Version = () => {
     key: string;
     width?: string;
     minWidth?: string;
-    render?: (item: DevboxVersionListItemType) => JSX.Element;
+    render?: (item: DevboxVersionListItemType, index: number) => JSX.Element;
   }[] = [
     {
       title: t('name'),
@@ -243,10 +243,10 @@ const Version = () => {
     {
       title: '',
       key: 'control',
-      render: (item: DevboxVersionListItemType) => (
+      render: (item: DevboxVersionListItemType, index: number) => (
         <Flex alignItems={'center'}>
           <Button
-            className="guide-online-button"
+            id={index === 0 ? 'guide-online-button' : ''}
             height={'27px'}
             size={'sm'}
             h="32px"
@@ -338,12 +338,20 @@ const Version = () => {
     }
   ];
 
-  const { releaseCompleted } = useGuideStore();
+  const { releaseCompleted, deployCompleted, releaseVersionCompleted } = useGuideStore();
+
   useEffect(() => {
     if (!releaseCompleted) {
       startDriver(releaseDriverObj());
     }
   }, [releaseCompleted]);
+
+  useEffect(() => {
+    console.log(123123, deployCompleted, releaseVersionCompleted);
+    if (!deployCompleted && releaseVersionCompleted && devboxVersionList.length > 0) {
+      startDriver(deployDriverObj());
+    }
+  }, [deployCompleted, releaseVersionCompleted, devboxVersionList]);
 
   return (
     <Box
@@ -414,6 +422,7 @@ const Version = () => {
       )}
       {!!onOpenRelease && !!devbox && (
         <ReleaseModal
+          isOpen={!!onOpenRelease && !!devbox}
           onSuccess={refetch}
           onClose={() => {
             setOnOpenRelease(false);

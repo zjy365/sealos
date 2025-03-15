@@ -26,7 +26,7 @@ export const useGuideStore = create<GuideState>()(
     }),
     {
       name: 'user-guide',
-      storage: createJSONStorage(() => localStorage)
+      storage: createJSONStorage(() => sessionStorage)
     }
   )
 );

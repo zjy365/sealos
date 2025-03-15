@@ -388,6 +388,8 @@ const DevboxList = ({
   const totalRow = table.getRowModel().rows.length;
   const { ideCompleted, listCompleted } = useGuideStore();
 
+  console.log(ideCompleted, listCompleted, totalRow);
+
   useEffect(() => {
     if (!ideCompleted && totalRow > 0) {
       startDriver(guideIDEDriverObj());
@@ -396,7 +398,13 @@ const DevboxList = ({
 
   useEffect(() => {
     if (!listCompleted && ideCompleted && totalRow > 0) {
-      startDriver(listDriverObj());
+      setTimeout(() => {
+        startDriver(listDriverObj());
+        setTimeout(() => {
+          const event = new Event('resize');
+          window.dispatchEvent(event);
+        }, 1000);
+      }, 1000);
     }
   }, [ideCompleted, listCompleted, totalRow]);
 
