@@ -660,7 +660,7 @@ export const deployDriverObj = (openDesktopApp?: any): Config => ({
 export const quitGuideDriverObj: Config = {
   showProgress: false,
   allowClose: false,
-  allowClickMaskNextStep: false,
+  allowClickMaskNextStep: true,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: true,

@@ -93,6 +93,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
       description: string;
       image: string;
     }[];
+    stepNumbers: number;
   }[] = [
     {
       key: 'system-devbox',
@@ -120,7 +121,8 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
           description: 'Manage your development environment and deploy your application.',
           image: '/images/onboarding/devbox-4.png'
         }
-      ]
+      ],
+      stepNumbers: 8
     },
     {
       key: 'system-applaunchpad',
@@ -143,7 +145,8 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
           description: 'Copy the Private or Public Address for access',
           image: '/images/onboarding/launchpad-3.png'
         }
-      ]
+      ],
+      stepNumbers: 4
     },
     {
       key: 'system-template',
@@ -161,31 +164,33 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
           description: 'Get the private or public address from App Launchpad',
           image: '/images/onboarding/appstore-2.png'
         }
-      ]
-    },
-    {
-      key: 'system-dbprovider',
-      icon: installedApps.find((app) => app.key === 'system-dbprovider')?.icon || '',
-      title: t('cc:database_title'),
-      description: t('cc:database_desc'),
-      steps: [
-        {
-          title: 'Choose from template',
-          description: 'Open database app to deploy a database',
-          image: '/images/onboarding/database-1.png'
-        },
-        {
-          title: 'Deploy a New Database',
-          description: 'Choose a database type, and adjust CPU & memory as needed',
-          image: '/images/onboarding/database-2.png'
-        },
-        {
-          title: 'Manage & Connect to the Database',
-          description: 'Retrieve connection details and manage the database',
-          image: '/images/onboarding/database-3.png'
-        }
-      ]
+      ],
+      stepNumbers: 4
     }
+    // {
+    //   key: 'system-dbprovider',
+    //   icon: installedApps.find((app) => app.key === 'system-dbprovider')?.icon || '',
+    //   title: t('cc:database_title'),
+    //   description: t('cc:database_desc'),
+    //   steps: [
+    //     {
+    //       title: 'Choose from template',
+    //       description: 'Open database app to deploy a database',
+    //       image: '/images/onboarding/database-1.png'
+    //     },
+    //     {
+    //       title: 'Deploy a New Database',
+    //       description: 'Choose a database type, and adjust CPU & memory as needed',
+    //       image: '/images/onboarding/database-2.png'
+    //     },
+    //     {
+    //       title: 'Manage & Connect to the Database',
+    //       description: 'Retrieve connection details and manage the database',
+    //       image: '/images/onboarding/database-3.png'
+    //     }
+    //   ],
+    //   stepNumbers: 4
+    // }
   ];
 
   const StepCard = ({
@@ -464,7 +469,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                         mt={'auto'}
                         fontWeight={'500'}
                       >
-                        {t('cc:guide_steps', { count: item.steps.length })}
+                        {t('cc:guide_steps', { count: item.stepNumbers })}
                       </Text>
                     </Box>
                   </Flex>
