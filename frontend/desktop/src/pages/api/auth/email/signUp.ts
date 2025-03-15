@@ -4,6 +4,7 @@ import { strongPassword } from '@/utils/crypto';
 import { enableEmailSms, enablePassword } from '@/services/enable';
 import { getGlobalToken, signUpByEmail } from '@/services/backend/globalAuth';
 import { ProviderType } from 'prisma/global/generated/client';
+import { generateAuthenticationToken } from '@/services/backend/auth';
 import { ErrorHandler } from '@/services/backend/middleware/error';
 import { registerParamsSchema } from '@/schema/email';
 import { HttpStatusCode } from 'axios';
@@ -33,9 +34,13 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
       code: HttpStatusCode.Unauthorized,
       message: 'Unauthorized'
     });
+  const globalToken = generateAuthenticationToken({
+    userUid: data.user.uid,
+    userId: data.user.id
+  });
   return jsonRes(res, {
     data: {
-      token: data,
+      token: globalToken,
       needInit: true
     },
     code: 200,
