@@ -7,8 +7,8 @@ import { globalPrisma, prisma } from '@/services/backend/db/init';
 import { validate } from 'uuid';
 import { JoinStatus } from 'prisma/region/generated/client';
 import { verifyAccessToken } from '@/services/backend/auth';
-import { getTeamInviteLimit } from '@/services/enable';
-const TEAM_INVITE_LIMIT = getTeamInviteLimit();
+import { getRegionUid, getTeamInviteLimit } from '@/services/enable';
+// const TEAM_INVITE_LIMIT = getTeamInviteLimit();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -57,8 +57,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!vaild) return jsonRes(res, { code: 403, message: 'you are not manager' });
     if (queryResults.length === 0)
       return jsonRes(res, { code: 404, message: 'there are not user in the namespace ' });
-    if (queryResults.length >= TEAM_INVITE_LIMIT)
-      return jsonRes(res, { code: 403, message: 'the invited users are too many' });
+    // check plan
+    const userState = await globalPrisma.user.findUnique({
+      where: {
+        uid: payload.userUid
+      },
+      select: {
+        WorkspaceUsage: true,
+        subscription: {
+          select: {
+            subscriptionPlan: {
+              select: {
+                max_seats: true,
+                max_workspaces: true
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!userState) return jsonRes(res, { code: 404, message: 'The targetUser is not found' });
+
+    if (!userState.subscription)
+      return jsonRes(res, { code: 403, message: 'The targetUser is not subscribed' });
+    if (
+      userState.WorkspaceUsage.filter((usage) => usage.regionUid === getRegionUid()).length >=
+      userState.subscription.subscriptionPlan.max_workspaces
+    )
+      return jsonRes(res, {
+        code: 403,
+        message: 'The targetUser has reached the maximum number of workspaces'
+      });
+    if (queryResults.length >= userState.subscription.subscriptionPlan.max_workspaces) {
+      return jsonRes(res, {
+        code: 403,
+        message: 'The targetUser has reached the maximum number of workspaces'
+      });
+    }
+    // if (queryResults.length >= TEAM_INVITE_LIMIT)
+    //   return jsonRes(res, { code: 403, message: 'the invited users are too many' });
 
     const tItem = queryResults.find((item) => item.userCr.uid === targetRegionUser.uid);
     if (tItem) return jsonRes(res, { code: 403, message: 'target user is already invite' });

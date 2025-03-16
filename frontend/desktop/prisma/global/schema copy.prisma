@@ -94,10 +94,10 @@ model Payment {
   remark          String?
   message         String
   activityType    String?
+  metadata        String?
   card_uid        String?  @db.Uuid
   type            String?
   charge_source   String?
-  metadata        String?
 }
 
 model User {
@@ -343,7 +343,7 @@ model CardInfo {
   user_uid               String    @db.Uuid
   card_no                String?
   card_brand             String?
-  card_token             String?   @unique
+  card_token             String?
   created_at             DateTime? @default(now()) @db.Timestamptz(3)
   network_transaction_id String?
   default                Boolean?  @default(false)
@@ -365,8 +365,6 @@ model Credits {
   user_uid    String?   @db.Uuid
   amount      BigInt?
   used_amount BigInt?
-  from_id     String?
-  from_type   String?
   expire_at   DateTime? @db.Timestamp(6)
   created_at  DateTime? @default(now()) @db.Timestamptz(3)
   start_at    DateTime? @db.Timestamp(6)
@@ -437,16 +435,14 @@ model Subscription {
   next_cycle_date  DateTime?        @db.Timestamptz(6)
   user             User             @relation(fields: [user_uid], references: [uid])
   subscriptionPlan SubscriptionPlan @relation(fields: [plan_id], references: [id])
-
-  @@index([plan_id])
 }
 
 model SubscriptionPlan {
   id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                String         @unique
   description         String?
-  amount              BigInt?
-  gift_amount         BigInt?
+  amount              String?        @db.String(50)
+  gift_amount         String?        @db.String(50)
   period              String?        @db.String(50)
   upgrade_plan_list   String[]
   downgrade_plan_list String[]
@@ -467,8 +463,9 @@ model WorkspaceUsage {
   seat         Int
   createdAt    DateTime @default(now()) @db.Timestamptz(3)
   updatedAt    DateTime @updatedAt @db.Timestamptz(3)
-  region       Region   @relation(fields: [regionUid], references: [uid])
-  user         User     @relation(fields: [userUid], references: [uid])
+
+  region Region @relation(fields: [regionUid], references: [uid])
+  user   User   @relation(fields: [userUid], references: [uid])
 
   @@unique([regionUid, userUid, workspaceUid])
   @@index([userUid])
@@ -482,27 +479,26 @@ model UserInfo {
   signUpRegionUid String  @db.Uuid
   isInited        Boolean @default(false)
   enSubEmail      Boolean @default(false)
-  user            User    @relation(fields: [userUid], references: [uid])
+
+  user User @relation(fields: [userUid], references: [uid])
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model SubscriptionTransaction {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  subscription_id String    @db.Uuid
-  user_uid        String    @db.Uuid
-  old_plan_id     String?   @db.Uuid
-  new_plan_id     String?   @db.Uuid
-  old_plan_name   String?   @db.String(50)
-  new_plan_name   String?   @db.String(50)
-  old_plan_status String?   @db.String(50)
-  operator        String?   @db.String(50)
-  start_at        DateTime? @db.Timestamptz(6)
-  created_at      DateTime? @db.Timestamptz(6)
-  updated_at      DateTime? @db.Timestamptz(6)
-  status          String?   @db.String(50)
-  pay_status      String?   @db.String(50)
-  pay_id          String?
-  amount          BigInt?
+  subscription_id  String    @db.Uuid
+  user_uid         String    @db.Uuid
+  old_plan_id      String?   @db.Uuid
+  new_plan_id      String?   @db.Uuid
+  old_plan_name    String?   @db.String(50)
+  new_plan_name    String?   @db.String(50)
+  old_status       String?   @db.String(50)
+  new_status       String?   @db.String(50)
+  transaction_type String?   @db.String(50)
+  transaction_at   DateTime? @db.Timestamptz(6)
+  effective_at     DateTime? @db.Timestamptz(6)
+  expire_at        DateTime? @db.Timestamptz(6)
+  created_at       DateTime? @db.Timestamptz(6)
+  updated_at       DateTime? @db.Timestamptz(6)
 
   @@index([subscription_id], map: "idx_SubscriptionTransaction_subscription_id")
   @@index([user_uid], map: "idx_SubscriptionTransaction_user_uid")
@@ -531,11 +527,6 @@ model RealNameAuthProvider {
   config         Json?
   createdAt      DateTime @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime @db.Timestamptz(3)
-}
-
-model subscription_processor_locks {
-  id         String   @id
-  lock_until DateTime @db.Timestamptz(6)
 }
 
 enum ProviderType {

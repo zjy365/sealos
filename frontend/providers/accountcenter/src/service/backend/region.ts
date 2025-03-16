@@ -73,6 +73,7 @@ export function makeAPIClient(
     userCrName: payload.userCrName,
     regionUid: payload.regionUid
   });
+  console.log('token', token);
   return axios.create({
     baseURL,
     headers: {

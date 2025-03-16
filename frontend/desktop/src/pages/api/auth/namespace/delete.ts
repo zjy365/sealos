@@ -2,10 +2,11 @@ import { setUserTeamDelete } from '@/services/backend/kubernetes/admin';
 import { jsonRes } from '@/services/backend/response';
 import { applyDeleteRequest } from '@/services/backend/team';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '@/services/backend/db/init';
+import { globalPrisma, prisma } from '@/services/backend/db/init';
 import { validate } from 'uuid';
 import { Role } from 'prisma/region/generated/client';
 import { verifyAccessToken } from '@/services/backend/auth';
+import { getRegionUid } from '@/services/enable';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -49,9 +50,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (results.count < 1)
       return jsonRes(res, { code: 404, message: 'fail to remove users of ns' });
+    const regionUid = getRegionUid();
+    // sync status, user add 1,
+    await globalPrisma.$transaction([
+      globalPrisma.workspaceUsage.delete({
+        where: {
+          regionUid_userUid_workspaceUid: {
+            userUid: payload.userUid,
+            workspaceUid: ns_uid,
+            regionUid
+          }
+        }
+      })
+    ]);
     jsonRes(res, { code: 200, message: 'Successfully' });
+    return;
   } catch (e) {
     console.log(e);
     jsonRes(res, { code: 500, message: 'fail to remove ns' });
+    return;
   }
 }
