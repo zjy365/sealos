@@ -1,11 +1,19 @@
+import { AccessTokenPayload } from '@/service/auth';
 import { authSession } from '@/service/backend/auth';
 import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
+import { HttpStatusCode } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const payload = await authSession(req.headers);
+    let payload: AccessTokenPayload;
+    try {
+      payload = await authSession(req.headers);
+    } catch {
+      jsonRes(res, { code: HttpStatusCode.Unauthorized, message: HttpStatusCode[401] });
+      return;
+    }
     const region = await getRegionByUid();
     const client = makeAPIClient(region, payload);
     if (!client) throw Error('get api client error');

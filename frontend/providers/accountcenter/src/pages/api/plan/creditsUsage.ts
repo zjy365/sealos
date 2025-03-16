@@ -7,10 +7,18 @@ import {
 } from '@/schema/plan';
 import { jsonRes } from '@/service/backend/response';
 import { authSession } from '@/service/backend/auth';
+import { AxiosError, HttpStatusCode } from 'axios';
+import { AccessTokenPayload } from '@/service/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const payload = await authSession(req.headers);
+    let payload: AccessTokenPayload;
+    try {
+      payload = await authSession(req.headers);
+    } catch {
+      jsonRes(res, { code: HttpStatusCode.Unauthorized, message: HttpStatusCode[401] });
+      return;
+    }
     const region = await getRegionByUid(req.body.regionUid);
     const client = makeAPIClient(region, payload);
     const response = await client.post('/payment/v1alpha1/credits/info');
@@ -43,6 +51,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: transformResponse(creditsData)
     });
   } catch (error) {
+    if (error instanceof AxiosError) {
+      return jsonRes(res, { code: error.status, message: error.response?.data.error });
+    }
     console.error(error);
     return jsonRes(res, { code: 500, message: 'Failed to fetch credits usage' });
   }

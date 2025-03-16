@@ -56,3 +56,24 @@ export const CreditsUsageResponse = z.object({
 });
 export type TCreditsUsageApiResponse = z.infer<typeof CreditsUsageApiResponse>;
 export type TCreditsUsageResponse = z.infer<typeof CreditsUsageResponse>;
+
+export const updatePlanApiRequestSchema = z.object({
+  planName: z.string(),
+  planID: z.string().optional(),
+  payMethod: z.enum(['CARD']),
+  planType: z.enum(['upgrade', 'downgrade'])
+});
+export const updatePlanRequestSchema = z.object({
+  planName: z.string(),
+  planID: z.string(),
+  planType: z.enum(['upgrade', 'downgrade'])
+});
+export const updatePlanResponseSchema = z.object({
+  success: z.boolean(),
+  redirectUrl: z.string(),
+  error: z.string().optional()
+});
+
+export type TUpdatePlanApiRequest = z.infer<typeof updatePlanApiRequestSchema>;
+export type TUpdatePlanRequest = z.infer<typeof updatePlanRequestSchema>;
+export type TUpdatePlanResponse = z.infer<typeof updatePlanResponseSchema>;

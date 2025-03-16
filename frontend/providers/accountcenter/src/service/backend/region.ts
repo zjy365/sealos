@@ -1,7 +1,12 @@
 import { Region } from '@/types/region';
 import axios, { AxiosInstance } from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AccessTokenPayload, generateBillingToken, verifyInternalToken } from '../auth';
+import {
+  AccessTokenPayload,
+  generateBillingToken,
+  generateRegionalToken,
+  verifyInternalToken
+} from '../auth';
 import { jsonRes } from './response';
 export async function getRegionList() {
   const regionUrl = process.env.ACCOUNT_SVC + '/account/v1alpha1/regions';
@@ -21,6 +26,7 @@ export async function getRegionList() {
   return regions;
 }
 export async function getRegionByUid(regionUid?: string) {
+  if (process.env.NODE_ENV === 'development') return null;
   const regions = await getRegionList();
   if (!regions) {
     return null;
@@ -67,6 +73,34 @@ export function makeAPIClient(
     userCrName: payload.userCrName,
     regionUid: payload.regionUid
   });
+  return axios.create({
+    baseURL,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept-Encoding': 'gzip,deflate,compress'
+    }
+  });
+}
+export function makeDesktopAPIClient(
+  // region: Region | undefined | null,
+  payload?: AccessTokenPayload
+): AxiosInstance {
+  // const baseURL = region?. ? `http://${region?.accountSvc}` : process.env.ACCOUNT_SVC;
+  // console.log(baseURL);
+  const baseURL = process.env.SEALOS_SVC;
+  console.log(baseURL);
+  if (!baseURL) throw Error('get apiClent error');
+  if (!payload) {
+    return axios.create({
+      baseURL,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip,deflate,compress'
+      }
+    });
+  }
+  const token = generateRegionalToken(payload);
   return axios.create({
     baseURL,
     headers: {

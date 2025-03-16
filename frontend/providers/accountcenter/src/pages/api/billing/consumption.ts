@@ -1,12 +1,21 @@
+import { AccessTokenPayload } from '@/service/auth';
 import { authSession } from '@/service/backend/auth';
 import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
+import { AxiosError, HttpStatusCode } from 'axios';
+import { formatISO } from 'date-fns';
+import subDays from 'date-fns/esm/fp/subDays';
 import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
+  // 获取时间段内的所有消费总额
   try {
     const {
-      endTime,
-      startTime,
+      endTime = formatISO(new Date(), {
+        representation: 'complete'
+      }),
+      startTime = formatISO(new Date(), {
+        representation: 'complete'
+      }),
       appType = '',
       namespace = '',
       appName = '',
@@ -19,16 +28,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       appName?: string;
       regionUid?: string;
     };
-    if (!endTime)
-      return jsonRes(resp, {
-        code: 400,
-        message: 'endTime is invalid'
-      });
-    if (!startTime)
-      return jsonRes(resp, {
-        code: 400,
-        message: 'startTime is invalid'
-      });
     const bodyRaw = {
       endTime,
       startTime,
@@ -36,7 +35,13 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       appName,
       namespace
     };
-    const payload = await authSession(req.headers);
+    let payload: AccessTokenPayload;
+    try {
+      payload = await authSession(req.headers);
+    } catch {
+      jsonRes(resp, { code: HttpStatusCode.Unauthorized, message: HttpStatusCode[401] });
+      return;
+    }
     const region = await getRegionByUid(regionUid);
     const client = makeAPIClient(region, payload);
     if (!client) throw Error('get api client error');
@@ -51,6 +56,9 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       data
     });
   } catch (error) {
+    if (error instanceof AxiosError) {
+      return jsonRes(resp, { code: error.status, message: error.response?.data.error });
+    }
     console.log(error);
     jsonRes(resp, { code: 500, message: 'get consumption error' });
   }

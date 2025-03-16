@@ -24,9 +24,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     payload = await authSession(req.headers);
   } catch {
-    return jsonRes(res, {
-      code: HttpStatusCode.Unauthorized
-    });
+    jsonRes(res, { code: HttpStatusCode.Unauthorized, message: HttpStatusCode[401] });
+    return;
   }
 
   try {

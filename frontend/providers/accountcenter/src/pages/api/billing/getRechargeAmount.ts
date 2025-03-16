@@ -1,6 +1,7 @@
 import { authSession } from '@/service/backend/auth';
 import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
+import { AxiosError } from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
@@ -35,6 +36,9 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       data: result
     });
   } catch (error) {
+    if (error instanceof AxiosError) {
+      return jsonRes(resp, { code: error.status, message: error.response?.data.error });
+    }
     console.log(error);
     jsonRes(resp, { code: 500, message: 'get recharge error' });
   }
