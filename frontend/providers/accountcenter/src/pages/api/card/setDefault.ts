@@ -2,6 +2,7 @@ import { SetDefaultCardSchema } from '@/schema/card';
 import { authSession } from '@/service/backend/auth';
 import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
+import { AxiosError } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
@@ -37,6 +38,9 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       }
     });
   } catch (error) {
+    if (error instanceof AxiosError) {
+      return jsonRes(resp, { code: error.status, message: error.response?.data.error });
+    }
     console.error(error);
     return jsonRes(resp, { code: 500, message: 'Failed to set card as default' });
   }

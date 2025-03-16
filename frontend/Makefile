@@ -27,6 +27,7 @@ buildTargets := \
 	providers/kubepanel \
 	providers/objectstorage \
 	providers/devbox \
+	providers/accountcenter \
 	providers/workorder
 
 buildTargets-all := $(addprefix image-build-,$(buildTargets))

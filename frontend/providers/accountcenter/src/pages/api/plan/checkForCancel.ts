@@ -4,12 +4,20 @@ import { authSession } from '@/service/backend/auth';
 import { globalPrisma as prisma } from '@/service/backend/db/init';
 import { UserStatus } from 'prsima/global/generated/client';
 import { every } from 'lodash';
+import { AccessTokenPayload } from '@/service/auth';
+import { AxiosError, HttpStatusCode } from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // 校验请求体
-    const { userUid } = await authSession(req.headers);
-
+    let payload: AccessTokenPayload;
+    try {
+      payload = await authSession(req.headers);
+    } catch {
+      jsonRes(res, { code: HttpStatusCode.Unauthorized, message: HttpStatusCode[401] });
+      return;
+    }
+    const userUid = payload.userUid;
     // 查询当前用户的SubscriptionPlan，获取maximum workspace和seat限制
     const userResult = await prisma.user.findUnique({
       where: { uid: userUid },
@@ -68,6 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
   } catch (error) {
+    if (error instanceof AxiosError) {
+      return jsonRes(res, { code: error.status, message: error.response?.data.error });
+    }
     console.error('Failed to check subscription cancellation:', error);
     return jsonRes(res, { code: 500, message: 'Internal Server Error' });
   }
