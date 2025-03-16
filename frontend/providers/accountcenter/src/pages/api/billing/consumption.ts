@@ -4,7 +4,6 @@ import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
 import { AxiosError, HttpStatusCode } from 'axios';
 import { formatISO } from 'date-fns';
-import subDays from 'date-fns/esm/fp/subDays';
 import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
   // 获取时间段内的所有消费总额

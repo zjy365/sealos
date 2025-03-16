@@ -40,6 +40,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     });
   } catch (error) {
     if (error instanceof AxiosError) {
+      console.log(error);
       return jsonRes(resp, { code: error.status, message: error.response?.data.error });
     }
     console.error(error);

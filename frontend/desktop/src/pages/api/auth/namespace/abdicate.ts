@@ -1,7 +1,9 @@
+import Workspace from '@/components/cc/Workspace';
 import { verifyAccessToken } from '@/services/backend/auth';
-import { prisma } from '@/services/backend/db/init';
+import { globalPrisma, prisma } from '@/services/backend/db/init';
 import { jsonRes } from '@/services/backend/response';
 import { modifyWorkspaceRole } from '@/services/backend/team';
+import { getRegionUid } from '@/services/enable';
 import { UserRole } from '@/types/team';
 import { retrySerially } from '@/utils/tools';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -40,8 +42,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (own.isPrivate) return jsonRes(res, { code: 403, message: 'Invaild namespace' });
     if (own.role !== Role.OWNER) return jsonRes(res, { code: 403, message: 'you are not owner' });
     const target = workspaceToRegionUsers.find((item) => item.userCrUid === targetUserCrUid);
+
     if (!target || target.status !== JoinStatus.IN_WORKSPACE)
       return jsonRes(res, { code: 404, message: 'The targetUser is not in namespace' });
+    // 校验target user 套餐
+    const targetUser = await globalPrisma.user.findUnique({
+      where: {
+        uid: target.userCr.userUid
+      },
+      select: {
+        WorkspaceUsage: true,
+        subscription: {
+          select: {
+            subscriptionPlan: {
+              select: {
+                max_seats: true,
+                max_workspaces: true
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!targetUser) return jsonRes(res, { code: 404, message: 'The targetUser is not found' });
+
+    if (!targetUser.subscription)
+      return jsonRes(res, { code: 403, message: 'The targetUser is not subscribed' });
+    if (
+      targetUser.WorkspaceUsage.filter((usage) => usage.regionUid === getRegionUid()).length >=
+      targetUser.subscription.subscriptionPlan.max_workspaces
+    )
+      return jsonRes(res, {
+        code: 403,
+        message: 'The targetUser has reached the maximum number of workspaces'
+      });
+    const seat = workspaceToRegionUsers.length;
+    if (seat >= targetUser.subscription.subscriptionPlan.max_seats) {
+      return jsonRes(res, {
+        code: 403,
+        message: 'The targetUser has reached the maximum number of seats'
+      });
+    }
     // modify K8S
     await modifyWorkspaceRole({
       action: 'Change',
@@ -81,6 +122,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }),
       3
     );
+    const regionUid = getRegionUid();
+    // sync status, targetUser add 1, user sub 1
+    await globalPrisma.$transaction([
+      globalPrisma.workspaceUsage.create({
+        data: {
+          userUid: payload.userUid,
+          workspaceUid: ns_uid,
+          seat,
+          regionUid
+        }
+      }),
+      globalPrisma.workspaceUsage.delete({
+        where: {
+          regionUid_userUid_workspaceUid: {
+            userUid: payload.userUid,
+            workspaceUid: ns_uid,
+            regionUid
+          }
+        }
+      })
+    ]);
     jsonRes(res, {
       code: 200,
       message: 'Successfully'
