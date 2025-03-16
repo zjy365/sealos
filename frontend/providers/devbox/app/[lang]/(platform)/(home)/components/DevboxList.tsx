@@ -258,116 +258,94 @@ const DevboxList = ({
               >
                 <MyIcon name={'detail'} w={'16px'} />
               </Button> */}
-              <SealosMenu
-                width={100}
-                Button={
-                  <MenuButton
-                    as={Button}
-                    variant={'square'}
-                    boxSize={'32px'}
-                    onClick={(e) => e.stopPropagation()}
-                    _hover={{
-                      bg: 'grayModern.200'
-                    }}
-                    bgColor={'rgba(244, 244, 245, 1)'}
-                  >
-                    <MyIcon name={'more'} />
-                  </MenuButton>
-                }
-                menuList={[
-                  // {
-                  //   child: (
-                  //     <>
-                  //       <MyIcon name={'version'} w={'16px'} color={'white'} />
-                  //       <Box ml={2}>{t('publish')}</Box>
-                  //     </>
-                  //   ),
-                  //   onClick: () => handleOpenRelease(item)
-                  // },
-                  // {
-                  //   child: (
-                  //     <>
-                  //       <MyIcon name={'terminal'} w={'16px'} color={'white'} />
-                  //       <Box ml={2}>{t('terminal')}</Box>
-                  //     </>
-                  //   ),
-                  //   onClick: () => handleGoToTerminal(item),
-                  //   menuItemStyle: {
-                  //     borderBottomLeftRadius: '0px',
-                  //     borderBottomRightRadius: '0px',
-                  //     borderBottom: '1px solid #F0F1F6'
-                  //   }
-                  // },
-                  {
-                    child: (
-                      <>
-                        <FilePen size={'16px'} />
-                        <Box ml={2}>{t('update')}</Box>
-                      </>
-                    ),
-                    onClick: () => router.push(`/devbox/create?name=${item.name}`)
-                  },
-                  ...(item.status.value === 'Stopped'
-                    ? [
-                        {
-                          child: (
-                            <>
-                              <MyIcon name={'start'} w={'16px'} />
-                              <Box ml={2}>{t('start')}</Box>
-                            </>
-                          ),
-                          onClick: () => handleStartDevbox(item)
-                        }
-                      ]
-                    : []),
-                  // maybe Error or other status,all can restart
-                  ...(item.status.value === 'Running'
-                    ? [
-                        {
-                          child: (
-                            <>
-                              <Pause size={'16px'} />
-                              <Box ml={2}>Pause</Box>
-                            </>
-                          ),
-                          onClick: () => handlePauseDevbox(item)
-                        }
-                      ]
-                    : []),
-
-                  ...(item.status.value !== 'Stopped'
-                    ? [
-                        {
-                          child: (
-                            <>
-                              <IterationCw size={'16px'} />
-                              <Box ml={2}>{t('restart')}</Box>
-                            </>
-                          ),
-                          onClick: () => handleRestartDevbox(item)
-                        }
-                      ]
-                    : []),
-                  {
-                    child: (
-                      <>
-                        <Trash2 size={'16px'} color="#DC2626" />
-                        <Box ml={2} color={'#DC2626'}>
-                          {t('delete')}
-                        </Box>
-                      </>
-                    ),
-                    menuItemStyle: {
-                      borderTop: 'border: 1px solid var(--base-muted, #F4F4F5)',
-                      _hover: {
-                        color: 'red.600',
-                        bg: 'rgba(17, 24, 36, 0.05)'
-                      }
-                    },
-                    onClick: () => setDelDevbox(item)
+              <Box onClick={(e) => e.stopPropagation()}>
+                <SealosMenu
+                  width={100}
+                  Button={
+                    <MenuButton
+                      as={Button}
+                      variant={'square'}
+                      boxSize={'32px'}
+                      _hover={{
+                        bg: 'grayModern.200'
+                      }}
+                      bgColor={'rgba(244, 244, 245, 1)'}
+                    >
+                      <MyIcon name={'more'} />
+                    </MenuButton>
                   }
-                ]}
-              />
+                  menuList={[
+                    {
+                      child: (
+                        <>
+                          <FilePen size={'16px'} />
+                          <Box ml={2}>{t('update')}</Box>
+                        </>
+                      ),
+                      onClick: () => router.push(`/devbox/create?name=${item.name}`)
+                    },
+                    ...(item.status.value === 'Stopped'
+                      ? [
+                          {
+                            child: (
+                              <>
+                                <MyIcon name={'start'} w={'16px'} />
+                                <Box ml={2}>{t('start')}</Box>
+                              </>
+                            ),
+                            onClick: () => handleStartDevbox(item)
+                          }
+                        ]
+                      : []),
+                    // maybe Error or other status,all can restart
+                    ...(item.status.value === 'Running'
+                      ? [
+                          {
+                            child: (
+                              <>
+                                <Pause size={'16px'} />
+                                <Box ml={2}>Pause</Box>
+                              </>
+                            ),
+                            onClick: () => handlePauseDevbox(item)
+                          }
+                        ]
+                      : []),
+
+                    ...(item.status.value !== 'Stopped'
+                      ? [
+                          {
+                            child: (
+                              <>
+                                <IterationCw size={'16px'} />
+                                <Box ml={2}>{t('restart')}</Box>
+                              </>
+                            ),
+                            onClick: () => handleRestartDevbox(item)
+                          }
+                        ]
+                      : []),
+                    {
+                      child: (
+                        <>
+                          <Trash2 size={'16px'} color="#DC2626" />
+                          <Box ml={2} color={'#DC2626'}>
+                            {t('delete')}
+                          </Box>
+                        </>
+                      ),
+                      menuItemStyle: {
+                        borderTop: 'border: 1px solid var(--base-muted, #F4F4F5)',
+                        _hover: {
+                          color: 'red.600',
+                          bg: 'rgba(17, 24, 36, 0.05)'
+                        }
+                      },
+                      onClick: () => setDelDevbox(item)
+                    }
+                  ]}
+                />
+              </Box>
             </Flex>
           );
         }
