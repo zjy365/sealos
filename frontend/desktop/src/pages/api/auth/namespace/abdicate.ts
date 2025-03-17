@@ -83,66 +83,80 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         message: 'The targetUser has reached the maximum number of seats'
       });
     }
-    // modify K8S
-    await modifyWorkspaceRole({
-      action: 'Change',
-      pre_k8s_username: payload.userCrName,
-      k8s_username: target.userCr.crName,
-      role: UserRole.Owner,
-      workspaceId: target.workspace.id
-    });
+
+    const regionUid = getRegionUid();
     // modify db
     await retrySerially(
-      () =>
-        prisma.$transaction(async (tx) => {
-          const result1 = await tx.userWorkspace.update({
-            where: {
-              workspaceUid_userCrUid: {
-                workspaceUid: ns_uid,
-                userCrUid: targetUserCrUid
-              }
+      async () => {
+        const needUpdateRegionalDb = !(await prisma.userWorkspace.findUnique({
+          where: {
+            workspaceUid_userCrUid: {
+              workspaceUid: ns_uid,
+              userCrUid: targetUserCrUid
             },
-            data: {
-              role: Role.OWNER
-            }
-          });
-          if (!result1) throw Error();
-          const result2 = await tx.userWorkspace.update({
-            where: {
-              workspaceUid_userCrUid: {
-                workspaceUid: ns_uid,
-                userCrUid: payload.userCrUid
+            role: Role.OWNER
+          }
+        }));
+        if (needUpdateRegionalDb)
+          await prisma.$transaction(async (tx) => {
+            const result1 = await tx.userWorkspace.update({
+              where: {
+                workspaceUid_userCrUid: {
+                  workspaceUid: ns_uid,
+                  userCrUid: targetUserCrUid
+                }
+              },
+              data: {
+                role: Role.OWNER
               }
-            },
-            data: {
-              role: Role.DEVELOPER
-            }
+            });
+            if (!result1) throw Error();
+            const result2 = await tx.userWorkspace.update({
+              where: {
+                workspaceUid_userCrUid: {
+                  workspaceUid: ns_uid,
+                  userCrUid: payload.userCrUid
+                }
+              },
+              data: {
+                role: Role.DEVELOPER
+              }
+            });
+            if (!result2) throw Error();
           });
-          if (!result2) throw Error();
-        }),
+        // sync status, targetUser add 1, user sub 1
+        // modify K8S
+        await modifyWorkspaceRole({
+          action: 'Change',
+          pre_k8s_username: payload.userCrName,
+          k8s_username: target.userCr.crName,
+          role: UserRole.Owner,
+          workspaceId: target.workspace.id
+        });
+        await globalPrisma.$transaction([
+          globalPrisma.workspaceUsage.create({
+            data: {
+              userUid: payload.userUid,
+              workspaceUid: ns_uid,
+              seat,
+              regionUid
+            }
+          }),
+          globalPrisma.workspaceUsage.delete({
+            where: {
+              regionUid_userUid_workspaceUid: {
+                userUid: payload.userUid,
+                workspaceUid: ns_uid,
+                regionUid
+              }
+            }
+          })
+        ]);
+      },
+
       3
     );
-    const regionUid = getRegionUid();
-    // sync status, targetUser add 1, user sub 1
-    await globalPrisma.$transaction([
-      globalPrisma.workspaceUsage.create({
-        data: {
-          userUid: payload.userUid,
-          workspaceUid: ns_uid,
-          seat,
-          regionUid
-        }
-      }),
-      globalPrisma.workspaceUsage.delete({
-        where: {
-          regionUid_userUid_workspaceUid: {
-            userUid: payload.userUid,
-            workspaceUid: ns_uid,
-            regionUid
-          }
-        }
-      })
-    ]);
+
     jsonRes(res, {
       code: 200,
       message: 'Successfully'
