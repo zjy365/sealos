@@ -85,6 +85,12 @@ export default function Account() {
     openApp(workorder);
   };
 
+  const openAccountCenterApp = () => {
+    const accountCenter = installedApps.find((t) => t.key === 'system-account-center');
+    if (!accountCenter) return;
+    openApp(accountCenter);
+  };
+
   return (
     <Box position={'relative'} flex={1}>
       <Flex justifyContent={'space-between'} alignItems={'center'} height={'100%'} zIndex={3}>
@@ -94,7 +100,6 @@ export default function Account() {
           </Center>
 
           <RegionToggle />
-
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="8"
@@ -110,7 +115,6 @@ export default function Account() {
               strokeLinecap="round"
             />
           </svg>
-
           <WorkspaceToggle />
         </Flex>
 
@@ -155,7 +159,10 @@ export default function Account() {
               background:
                 'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
             }}
-            onClick={upgradePlanDisclosure.onOpen}
+            onClick={() => {
+              console.log('open');
+              openAccountCenterApp();
+            }}
           >
             <Sparkles size={16} color="#1C4EF5" />
             <Text color="#1C4EF5" fontWeight="medium">
@@ -259,7 +266,10 @@ export default function Account() {
                     px="8px"
                     borderRadius="8px"
                     _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                    onClick={() => accountCenterRef.current?.openModal()}
+                    onClick={() => {
+                      console.log('open');
+                      openAccountCenterApp();
+                    }}
                   >
                     <Flex alignItems="center" gap="8px">
                       <Center w="20px" h="20px">
@@ -278,7 +288,10 @@ export default function Account() {
                   px="8px"
                   borderRadius="8px"
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                  onClick={() => router.push('/account/usage')}
+                  onClick={() => {
+                    console.log('open');
+                    openAccountCenterApp();
+                  }}
                 >
                   <Flex alignItems="center" gap="8px">
                     <Center w="20px" h="20px">
@@ -295,7 +308,10 @@ export default function Account() {
                   px="8px"
                   borderRadius="8px"
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                  onClick={() => router.push('/account/billing')}
+                  onClick={() => {
+                    console.log('open');
+                    openAccountCenterApp();
+                  }}
                 >
                   <Flex alignItems="center" gap="8px">
                     <Center w="20px" h="20px">
@@ -312,7 +328,10 @@ export default function Account() {
                   px="8px"
                   borderRadius="8px"
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                  onClick={() => router.push('/account/settings')}
+                  onClick={() => {
+                    console.log('open');
+                    openAccountCenterApp();
+                  }}
                 >
                   <Flex alignItems="center" gap="8px">
                     <Center w="20px" h="20px">
