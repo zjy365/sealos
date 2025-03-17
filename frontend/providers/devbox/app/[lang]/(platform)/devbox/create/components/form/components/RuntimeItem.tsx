@@ -48,8 +48,6 @@ export default function TemplateRepositoryItem({
 
   const isThisTemplateRepository = watch('templateRepositoryUid') === item.uid;
 
-  // const currentTemplateId = watch('templateUid');
-
   const afterUpdateTemplate = (uid: string) => {
     const template = templateList.find((v) => v.uid === uid)!;
     setValue('templateConfig', template.config as string);
@@ -80,23 +78,33 @@ export default function TemplateRepositoryItem({
     );
   };
 
+  const curTemplateRepository = watch('templateRepositoryUid');
+
   useEffect(() => {
-    if (!templateListQuery.isSuccess || !templateList.length || !templateListQuery.isFetched)
+    if (
+      !templateListQuery.isSuccess ||
+      !templateList.length ||
+      !templateListQuery.isFetched ||
+      !isThisTemplateRepository
+    )
+      // 只有当被选中的模板库的表单项目才应用逻辑
       return;
-    const curTemplate = templateList.find((t) => t.uid === field.value);
+
+    const curTemplate = templateList.find((t) => t.uid === watch('templateUid'));
     const isExist = !!curTemplate;
 
     if (!isExist) {
-      // default template
-      const defaultTemplate = templateList[0];
+      const defaultTemplate = templateList[0]; // 如果当前选中的模板库不存在，就用默认模板更新
       setValue('templateUid', defaultTemplate.uid);
       afterUpdateTemplate(defaultTemplate.uid);
       resetNetwork();
-    } else {
-      setValue('templateUid', curTemplate.uid);
-      afterUpdateTemplate(curTemplate.uid);
     }
-  }, [templateListQuery.isSuccess, templateList, templateListQuery.isFetched, isEdit]);
+  }, [
+    templateListQuery.isSuccess,
+    templateList,
+    templateListQuery.isFetched,
+    isThisTemplateRepository // 只有当前模板库被选中时，才执行更新逻辑
+  ]);
 
   const actualValue = useMemo(() => {
     // need to keep value when switch other template
