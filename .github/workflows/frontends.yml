@@ -71,6 +71,7 @@ jobs:
             providers/kubepanel,
             providers/workorder,
             providers/devbox,
+            providers/accountcenter,
             desktop,
           ]
     with:
