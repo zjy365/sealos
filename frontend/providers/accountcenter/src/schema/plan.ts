@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+type LowerFirst<S extends string> = S extends `${infer P1}${infer P2}`
+  ? `${Lowercase<P1>}${P2}`
+  : S;
+
+type KeysToLowerFirst<T> = {
+  [K in keyof T as LowerFirst<string & K>]: T[K] extends {} ? KeysToLowerFirst<T[K]> : T[K];
+};
 export const PlanSchema = z.object({
   ID: z.string(),
   Name: z.string(),
@@ -17,7 +24,10 @@ export const PlanSchema = z.object({
   MostPopular: z.boolean().optional()
 });
 export const PlanListSchema = z.array(PlanSchema);
-
+export type TPlanApiResponse = KeysToLowerFirst<Omit<z.infer<typeof PlanSchema>, 'ID'>> & {
+  id: string;
+};
+export type TPlanMaxResourcesObject = { cpu?: string; memory?: string; storage?: string };
 export const SubscriptionApiResponse = z.object({
   subscription: z.object({
     ID: z.string(),

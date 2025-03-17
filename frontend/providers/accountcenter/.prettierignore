@@ -1,7 +1,9 @@
-node_modules
-dist
 build
 coverage
 .next
 .vscode
 deploy
+dist
+.vscode
+**/.DS_Store
+node_modules
