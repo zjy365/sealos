@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       pageSize
     };
     // const body = JSON.stringify(bodyRaw);
-    const response = await client.post('/account/v1alpha1/costs/app', bodyRaw);
+    const response = await client.post('/account/v1alpha1/costs/app-type', bodyRaw);
     const res = response.data;
     if (response.status !== 200) {
       console.log(res);
