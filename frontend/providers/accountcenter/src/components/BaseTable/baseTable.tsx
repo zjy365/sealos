@@ -138,7 +138,6 @@ export function BaseTable<T extends unknown>({
                   {table.getPageOptions().map((page, index) => {
                     const total = table.getPageCount();
                     const curPage = table.getState().pagination.pageIndex;
-                    console.log(curPage, index, total);
                     return index === 0 ||
                       index === total - 1 ||
                       Math.abs(curPage - index) <=

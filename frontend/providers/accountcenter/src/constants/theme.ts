@@ -152,6 +152,16 @@ export const theme = extendTheme(SealosTheme, {
             fontSize: '14px',
             lineHeight: '20px'
           }
+        },
+        warning: {
+          container: {
+            bg: 'rgb(255, 247, 237)',
+            color: 'rgb(234, 88, 12)'
+          },
+          description: {
+            fontSize: '14px',
+            lineHeight: '20px'
+          }
         }
       }
     }
