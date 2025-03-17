@@ -36,4 +36,5 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
         });
       })
   );
+  if (process.env.test_google_proxy) console.log('req', req, 'res', res);
 });
