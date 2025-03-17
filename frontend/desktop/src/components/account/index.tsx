@@ -115,6 +115,8 @@ export default function Account() {
         </Flex>
 
         <Flex gap={'12px'} position={'relative'} zIndex={3} height={'100%'} alignItems={'center'}>
+          <LangSelectSimple visibility={'hidden'} />
+
           <AccountCenter ref={accountCenterRef} variant={'white-bg-icon'} p="4px" />
 
           {/* {layoutConfig?.common.workorderEnabled && (

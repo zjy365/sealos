@@ -176,6 +176,49 @@ export default function AppDock() {
         p={'12px'}
       >
         {AppMenuLists.map((item: AppInfo, index: number) => {
+          if (item.key === 'system-sealos-home') {
+            return (
+              <Flex key={item?.key} flexDirection={'column'} alignItems={'center'}>
+                <Center
+                  mb={'6px'}
+                  key={item?.key}
+                  w="54px"
+                  h="54px"
+                  borderRadius={'50%'}
+                  bg={'rgba(255, 255, 255, 0.85)'}
+                  backdropFilter={'blur(25px)'}
+                  boxShadow={
+                    '0px 0.875px 3.5px 0px rgba(0, 0, 0, 0.08), 0px 14px 35px 0px rgba(0, 0, 0, 0.06)'
+                  }
+                >
+                  <Image
+                    src={item?.icon}
+                    fallbackSrc={logo || '/logo.svg'}
+                    alt={item?.name}
+                    w="30px"
+                    h="30px"
+                    draggable={false}
+                  />
+                </Center>
+                {index === 0 && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="45"
+                    height="2"
+                    viewBox="0 0 45 2"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 0.5C0.723858 0.5 0.5 0.723858 0.5 1C0.5 1.27614 0.723858 1.5 1 1.5V0.5ZM1 1.5H45V0.5H1V1.5Z"
+                      fill="black"
+                      fillOpacity="0.2"
+                    />
+                  </svg>
+                )}
+              </Flex>
+            );
+          }
+
           return (
             <Flex
               flexDirection={'column'}
@@ -185,21 +228,21 @@ export default function AppDock() {
               onClick={(e) => handleNavItem(e, item)}
             >
               <Center
-                w="56px"
-                h="56px"
+                w="54px"
+                h="54px"
                 borderRadius={'50%'}
-                bg={'rgba(255, 255, 255, 0.85)'}
-                backdropFilter={'blur(25px)'}
-                boxShadow={
-                  '0px 0.875px 3.5px 0px rgba(0, 0, 0, 0.08), 0px 14px 35px 0px rgba(0, 0, 0, 0.06)'
-                }
+                // bg={'rgba(255, 255, 255, 0.85)'}
+                // backdropFilter={'blur(25px)'}
+                // boxShadow={
+                //   '0px 0.875px 3.5px 0px rgba(0, 0, 0, 0.08), 0px 14px 35px 0px rgba(0, 0, 0, 0.06)'
+                // }
               >
                 <Image
                   src={item?.icon}
                   fallbackSrc={logo || '/logo.svg'}
                   alt={item?.name}
-                  w="32px"
-                  h="32px"
+                  w="56px"
+                  h="56px"
                   draggable={false}
                 />
               </Center>
