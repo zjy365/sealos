@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 import { BoxProps, Flex, Box } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
-import { I18nCommonKey } from '@/types/i18next';
 
 interface Props extends BoxProps {
-  text: I18nCommonKey;
+  text: any;
   icon?: JSX.Element;
   theme?: 'blue';
   size?: 'sm' | 'md' | 'lg';

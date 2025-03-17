@@ -2,7 +2,8 @@ import { useLoading } from '@/hooks/useLoading';
 import { useEffect, useState } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import Layout from '@/components/Layout';
-import Usage from './components/usage';
+import dynamic from 'next/dynamic';
+
 import {
   Flex,
   Select,
@@ -32,6 +33,7 @@ import type { PaginationState } from '@tanstack/react-table';
 import type { Region } from '@/types/region';
 import { displayMoney, formatMoney } from '@/utils/format';
 import { debounce } from 'lodash';
+import Usage from '@/components/usage';
 
 function DatePickerWithRange({
   date,

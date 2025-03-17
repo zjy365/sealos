@@ -11,7 +11,7 @@ import { CardSchema } from '@/schema/card';
 import z from 'zod';
 
 const Payment = ({
-  cardList,
+  cardList = [],
   handleSetDefault,
   handleDelete,
   ...props

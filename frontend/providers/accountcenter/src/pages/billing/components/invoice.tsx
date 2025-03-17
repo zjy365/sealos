@@ -15,7 +15,7 @@ import { BaseTable } from '@/components/BaseTable/baseTable';
 import Empty from './empty';
 import type { InvoicePayload } from '@/types/invoice';
 
-const Invoice = ({ invoiceList }: { invoiceList: InvoicePayload[] }) => {
+const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
   const { t } = useTranslation();
   const columns: ColumnDef<InvoicePayload>[] = React.useMemo(
     () => [

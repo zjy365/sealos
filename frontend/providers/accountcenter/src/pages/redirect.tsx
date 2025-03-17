@@ -1,4 +1,3 @@
-import { getDBByName } from '@/api/db';
 import { useGlobalStore } from '@/store/global';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -8,22 +7,7 @@ const RedirectPage = () => {
   const { setLastRoute } = useGlobalStore();
 
   useEffect(() => {
-    const handleRedirect = (name?: string) => {
-      if (name) {
-        getDBByName(name)
-          .then((app) => {
-            router.replace({
-              pathname: '/db/detail',
-              query: { name: app.dbName, dbType: app.dbType }
-            });
-          })
-          .catch((err) => {
-            router.replace('/dbs');
-          });
-      } else {
-        router.replace('/dbs');
-      }
-    };
+    const handleRedirect = (name?: string) => {};
 
     if (router.isReady) {
       const { name } = router.query as { name?: string };

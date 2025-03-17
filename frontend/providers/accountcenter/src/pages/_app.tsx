@@ -1,5 +1,4 @@
 import { theme } from '@/constants/theme';
-import { useConfirm } from '@/hooks/useConfirm';
 import { useLoading } from '@/hooks/useLoading';
 import { useGlobalStore } from '@/store/global';
 import { getLangStore, setLangStore } from '@/utils/cookieUtils';
@@ -42,10 +41,6 @@ function App({ Component, pageProps }: AppProps) {
   const { setScreenWidth, loading, setLastRoute } = useGlobalStore();
   const { Loading } = useLoading();
   const [refresh, setRefresh] = useState(false);
-  const { openConfirm, ConfirmChild } = useConfirm({
-    title: 'jump_prompt',
-    content: 'not_allow_standalone_use'
-  });
 
   useEffect(() => {
     const response = createSealosApp();
@@ -171,7 +166,7 @@ function App({ Component, pageProps }: AppProps) {
             changeLanguage
           </button> */}
           <Component {...pageProps} />
-          <ConfirmChild />
+
           <Loading loading={loading} />
         </ChakraProvider>
       </QueryClientProvider>

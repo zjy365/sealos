@@ -1,14 +1,13 @@
 import { NextApiRequest } from 'next';
 import { AxiosInstance } from 'axios';
 import crypto from 'crypto';
-import { I18nCommonKey } from '@/types/i18next';
+
 import { useMessage } from '@sealos/ui';
 import { addHours, format, set, startOfDay } from 'date-fns';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import yaml from 'js-yaml';
 import ini from 'ini';
-import { DBType } from '@/types/db';
 
 export const formatTime = (time: string | number | Date, format = 'YYYY-MM-DD HH:mm:ss') => {
   return dayjs(time).format(format);
@@ -22,7 +21,7 @@ export const useCopyData = () => {
   const { t } = useTranslation();
 
   return {
-    copyData: (data: string, title: I18nCommonKey = 'copy_success') => {
+    copyData: (data: string, title = 'copy_success') => {
       try {
         const textarea = document.createElement('textarea');
         textarea.value = data;
@@ -329,30 +328,6 @@ export const convertBytes = (bytes: number, unit: 'kb' | 'mb' | 'gb' | 'tb') => 
   }
 };
 
-// formatTime second to day, hour or minute
-export const formatTimeToDay = (seconds: number): { time: string; unit: I18nCommonKey } => {
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(seconds / 3600);
-  const days = Math.floor(seconds / (3600 * 24));
-
-  if (days > 0) {
-    return {
-      unit: 'Day',
-      time: (seconds / (3600 * 24)).toFixed(1)
-    };
-  } else if (hours > 0) {
-    return {
-      unit: 'Hour',
-      time: (seconds / 3600).toFixed(1)
-    };
-  } else {
-    return {
-      unit: 'start_minute',
-      time: (seconds / 60).toFixed(1)
-    };
-  }
-};
-
 export function encodeToHex(input: string) {
   const encoded = Buffer.from(input).toString('hex');
   return encoded;
@@ -392,25 +367,6 @@ export const flattenObject = (ob: any, prefix: string = ''): { key: string; valu
   }
 
   return result;
-};
-
-export const adjustDifferencesForIni = (
-  differences: { path: string; oldValue: any; newValue: any }[],
-  type: 'ini' | 'yaml',
-  dbType: DBType
-): { path: string; newValue: string; oldValue: string }[] => {
-  if (type !== 'ini' || dbType === 'postgresql') {
-    return differences;
-  }
-  return differences.map((diff) => {
-    const pathParts = diff.path.split('.');
-    const adjustedPath = pathParts.slice(1).join('.');
-    return {
-      path: adjustedPath,
-      newValue: diff.newValue,
-      oldValue: diff.oldValue
-    };
-  });
 };
 
 export const formatMoney = (mone: number) => {
