@@ -178,7 +178,12 @@ export default function AppDock() {
         {AppMenuLists.map((item: AppInfo, index: number) => {
           if (item.key === 'system-sealos-home') {
             return (
-              <Flex key={item?.key} flexDirection={'column'} alignItems={'center'}>
+              <Flex
+                key={item?.key}
+                flexDirection={'column'}
+                alignItems={'center'}
+                cursor={'pointer'}
+              >
                 <Center
                   mb={'6px'}
                   key={item?.key}
@@ -190,6 +195,7 @@ export default function AppDock() {
                   boxShadow={
                     '0px 0.875px 3.5px 0px rgba(0, 0, 0, 0.08), 0px 14px 35px 0px rgba(0, 0, 0, 0.06)'
                   }
+                  onClick={(e) => handleNavItem(e, item)}
                 >
                   <Image
                     src={item?.icon}

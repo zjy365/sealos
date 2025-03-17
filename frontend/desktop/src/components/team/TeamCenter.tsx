@@ -37,9 +37,11 @@ import { CopyIcon, ListIcon, SettingIcon, StorageIcon } from '@sealos/ui';
 import NsListItem from '@/components/team/NsListItem';
 import RenameTeam from './RenameTeam';
 import { Plus } from 'lucide-react';
+import useAppStore from '@/stores/app';
 
 export default function TeamCenter(props: StackProps) {
   const session = useSessionStore((s) => s.session);
+  const { installedApps, openApp } = useAppStore();
   const { t } = useTranslation();
   const user = session?.user;
   const default_ns_uid = user?.ns_uid || '';
@@ -103,6 +105,12 @@ export default function TeamCenter(props: StackProps) {
       setNsid(defaultNamespace.id);
     }
   }, [_namespaces, ns_uid]);
+
+  const openAccountCenterApp = () => {
+    const accountCenter = installedApps.find((t) => t.key === 'system-account-center');
+    if (!accountCenter) return;
+    openApp(accountCenter);
+  };
 
   return (
     <>
@@ -226,6 +234,7 @@ export default function TeamCenter(props: StackProps) {
                     borderRadius={'full'}
                     background={'#18181B'}
                     color={'#FFF'}
+                    onClick={openAccountCenterApp}
                   >
                     {t('cc:upgrade')}
                   </Button>
