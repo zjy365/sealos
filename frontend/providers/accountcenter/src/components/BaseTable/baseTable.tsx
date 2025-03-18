@@ -122,7 +122,7 @@ export function BaseTable<T extends unknown>({
           <Tfoot>
             <Tr>
               <Th>
-                {t('Total')} {table.getRowCount()}
+                {t('Total')} {table?.getFilteredRowModel().rows.length}
               </Th>
               <Th colSpan={table.getAllColumns().length - 1} isNumeric>
                 <Flex justify="flex-end" gap={'8px'}>

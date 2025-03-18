@@ -14,8 +14,7 @@ import {
 import { BaseTable } from '@/components/BaseTable/baseTable';
 import Empty from '@/components/Empty';
 import type { InvoicePayload } from '@/types/invoice';
-import Pdf from '@/components/Pdf';
-import { PDFDownloadLink } from '@react-pdf/renderer';
+
 import { createRoot } from 'react-dom/client';
 import { serviceSideProps } from '@/utils/i18n';
 
@@ -64,12 +63,7 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
         header: '',
         cell: ({ row }) => (
           <Flex justifyContent="flex-end">
-            <IconButton
-              onClick={() => downloadPdf(row.original.status)}
-              aria-label="Download"
-              icon={<Download size={'16px'} />}
-              variant={'ghost'}
-            />
+            <IconButton aria-label="Download" icon={<Download size={'16px'} />} variant={'ghost'} />
           </Flex>
         )
       }
@@ -97,12 +91,7 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
         <Text fontSize={'18px'} fontWeight={600} lineHeight={'28px'}>
           {t('InvoiceHistory')}
         </Text>
-        <Button
-          onClick={() => downloadAll(invoiceList)}
-          isDisabled={invoiceList.length === 0}
-          variant={'outline'}
-          colorScheme={'gray'}
-        >
+        <Button isDisabled={invoiceList.length === 0} variant={'outline'} colorScheme={'gray'}>
           {t('DownloadAll')}
         </Button>
       </Flex>

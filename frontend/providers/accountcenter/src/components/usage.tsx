@@ -159,8 +159,7 @@ const Usage = ({
     },
     onPaginationChange: (set) => {
       setPagination(set);
-    },
-    rowCount: total
+    }
   });
 
   return (

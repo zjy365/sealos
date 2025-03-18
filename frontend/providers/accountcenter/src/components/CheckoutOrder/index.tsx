@@ -63,6 +63,7 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({ summary: propSummary, onCheckou
       );
     }
   };
+
   useEffect(() => {
     getCardList()
       .catch(() => ({ cardList: [] }))
@@ -73,7 +74,9 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({ summary: propSummary, onCheckou
         setCardID(cardList[0]?.id || newCardValue);
       });
     fetchSummaryIfNeeded();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const renderTotalAmount = (label: string, value: string | undefined) => {
     return (
       <Flex justifyContent="space-between" mb="24px" alignItems="center">

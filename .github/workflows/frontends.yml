@@ -59,6 +59,7 @@ jobs:
       matrix:
         module:
           [
+            desktop,
             providers/license,
             providers/cronjob,
             providers/template,
@@ -72,7 +73,6 @@ jobs:
             providers/workorder,
             providers/devbox,
             providers/accountcenter,
-            desktop,
           ]
     with:
       module: ${{ matrix.module }}
