@@ -88,6 +88,13 @@ export const theme = extendTheme(SealosTheme, {
     },
     Modal: {
       baseStyle: {
+        closeButton: {
+          color: 'rgb(24, 24, 27)',
+          zIndex: 10,
+          _focusVisible: {
+            boxShadow: 'none'
+          }
+        },
         dialog: {
           border: '1px solid #E4E4E7',
           boxShadow: '0px 2px 4px -1px #0000000F,0px 4px 6px -1px #0000001A',

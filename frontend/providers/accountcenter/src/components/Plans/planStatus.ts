@@ -4,5 +4,5 @@ export function isPlanCancelling(lastTransaction: TLastTransactionResponse | und
   return lastTransaction?.Status === 'pending' && lastTransaction?.Operator === 'downgraded';
 }
 export function isPlanRenewFailed(lastTransaction: TLastTransactionResponse | undefined) {
-  return lastTransaction?.Status !== 'failed' && lastTransaction?.Operator === 'renewed';
+  return lastTransaction?.Status === 'failed' && lastTransaction?.Operator === 'renewed';
 }

@@ -11,6 +11,7 @@ import ActionButton from '../ActionButton';
 import { useAPIErrorMessage } from '@/hooks/useToastAPIResult';
 import { RepeatIcon } from '@chakra-ui/icons';
 import RadioOptionGroup from '../RadioOption/Group';
+import BorderGradient from '../Gradient/Border';
 
 interface SummaryItems {
   amount: string;
@@ -166,79 +167,79 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({ summary: propSummary, onCheckou
     )
   });
   return (
-    <Flex
-      border="1px solid transparent"
-      bg="linear-gradient(#fff, #fff) padding-box, linear-gradient(180deg, #B0CBFF 0%, #D8D1FE 100%) border-box"
-      backgroundClip="border-box"
+    <BorderGradient
+      borderGradientWidth={1}
+      borderRadius={16}
       boxShadow="0px 1px 2px 0px rgba(0, 0, 0, 0.05)"
-      borderRadius="16px"
-      color="rgb(24, 24, 27)"
-      minH={minHeight}
+      borderGradient={
+        <linearGradient x1="448" y1="1" x2="448" y2="473" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#B0CBFF" />
+          <stop offset="1" stopColor="#D8D1FE" />
+        </linearGradient>
+      }
     >
-      <Flex
-        p="32px 40px"
-        w="50%"
-        flexDirection="column"
-        // justifyContent='space-between'
-      >
-        <Box>
-          <FormControl position="relative">
-            <FormLabel fontSize="16px" fontWeight="600" lineHeight="1" mb="16px">
-              {t('PaymentDetails')}
-            </FormLabel>
-            {loading.cards ? (
-              <Loading fixed={false} loading />
-            ) : (
-              <RadioOptionGroup
-                options={cardOptions}
-                value={cardID}
-                onChange={setCardID}
-                name="cardID"
+      <Flex color="rgb(24, 24, 27)" minH={minHeight}>
+        <Flex p="32px 40px" w="50%" flexDirection="column">
+          <Box>
+            <FormControl position="relative">
+              <FormLabel fontSize="16px" fontWeight="600" lineHeight="1" mb="16px">
+                {t('PaymentDetails')}
+              </FormLabel>
+              {loading.cards ? (
+                <Loading fixed={false} loading />
+              ) : (
+                <RadioOptionGroup
+                  options={cardOptions}
+                  value={cardID}
+                  onChange={setCardID}
+                  name="cardID"
+                />
+              )}
+            </FormControl>
+          </Box>
+          <Box>
+            <ActionButton
+              w="100%"
+              borderRadius="8px"
+              display="block"
+              mt="50px"
+              mb="24px"
+              isDisabled={loading.cards || loading.summary || loadSummaryError}
+              onClick={handleCheckout}
+            >
+              {t('Checkout')}
+            </ActionButton>
+            <Text fontSize="12px" lineHeight="16px" fontWeight="400" color="rgb(115, 115, 115)">
+              <Trans
+                i18nKey={t('ReadTermsConditionsAndPrivacyPolicy')}
+                components={{
+                  Link: (
+                    <Link
+                      href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
+                      textDecoration="underline"
+                      target="_blank"
+                    />
+                  )
+                }}
               />
-            )}
-          </FormControl>
-        </Box>
-        <Box>
-          <ActionButton
-            w="100%"
-            borderRadius="8px"
-            display="block"
-            mt="50px"
-            mb="24px"
-            onClick={handleCheckout}
-          >
-            {t('Checkout')}
-          </ActionButton>
-          <Text fontSize="12px" lineHeight="16px" fontWeight="400" color="rgb(115, 115, 115)">
-            <Trans
-              i18nKey={t('ReadTermsConditionsAndPrivacyPolicy')}
-              components={{
-                Link: (
-                  <Link
-                    href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
-                    textDecoration="underline"
-                    target="_blank"
-                  />
-                )
-              }}
-            />
+            </Text>
+          </Box>
+        </Flex>
+        <Box
+          p="32px"
+          bg="rgb(240, 245, 255)"
+          w="50%"
+          borderTopRightRadius="16px"
+          borderBottomRightRadius="16px"
+          position="relative"
+        >
+          <Text fontSize="16px" fontWeight="600" lineHeight="1">
+            {t('OrderSummary')}
           </Text>
+          {renderSummary()}
         </Box>
       </Flex>
-      <Box
-        p="32px"
-        bg="rgb(240, 245, 255)"
-        w="50%"
-        borderTopRightRadius="16px"
-        borderBottomRightRadius="16px"
-        position="relative"
-      >
-        <Text fontSize="16px" fontWeight="600" lineHeight="1">
-          {t('OrderSummary')}
-        </Text>
-        {renderSummary()}
-      </Box>
-    </Flex>
+    </BorderGradient>
   );
 };
 

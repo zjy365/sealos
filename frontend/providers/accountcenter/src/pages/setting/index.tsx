@@ -17,8 +17,7 @@ import {
   FormErrorMessage,
   Grid,
   GridItem,
-  Image,
-  useToast
+  Image
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { useForm } from 'react-hook-form';
@@ -28,11 +27,13 @@ import upperFirst from '@/utils/upperFirst';
 import DeleteAccount from './components/deleteAccount';
 import { getUserInfo, updateUserInfo } from '@/api/user';
 import { TUserInfoReponse } from '@/schema/user';
+import useToastAPIResult, { useAPIErrorMessage } from '@/hooks/useToastAPIResult';
+import Alert from '@/components/Alert';
 
 function AccountSettings() {
-  const toast = useToast();
   const [initialized, setInitialized] = useState(false);
-  const { data } = useQuery(['userInfo'], getUserInfo, {
+  const { toastAPIError, toastSuccess, getAPIErrorMessage } = useToastAPIResult();
+  const { data, error } = useQuery(['userInfo'], getUserInfo, {
     onSettled() {
       setInitialized(true);
     }
@@ -56,14 +57,14 @@ function AccountSettings() {
       ...formData,
       email: undefined
     };
-    return updateUserInfo(requestData).then(() => {
-      toast({
-        title: t('UpdateSuccess'),
-        status: 'success',
-        duration: 2000,
-        isClosable: true
-      });
-    });
+    return updateUserInfo(requestData).then(
+      () => {
+        toastSuccess(t('UpdateSuccess'));
+      },
+      (e) => {
+        toastAPIError(e);
+      }
+    );
   });
   const renderThirdPartyAccount = (
     nameKey: string,
@@ -96,15 +97,12 @@ function AccountSettings() {
       </Flex>
     );
   };
-  return (
-    <Layout>
-      <Flex
-        filter={initialized ? undefined : 'blur(3px)'}
-        transition="filter .3s"
-        direction="column"
-        rowGap="16px"
-        pointerEvents={initialized ? undefined : 'none'}
-      >
+  const renderMain = () => {
+    if (error) {
+      return <Alert type="error" text={getAPIErrorMessage(error)} />;
+    }
+    return (
+      <>
         <Card variant="outline">
           <CardHeader>{t('AccountInfomation')}</CardHeader>
           <CardBody>
@@ -184,7 +182,20 @@ function AccountSettings() {
             </Flex>
           </CardBody>
         </Card>
-        <DeleteAccount userName="22jack" />
+        <DeleteAccount userName={`${data?.user.firstname || ''} ${data?.user.lastname || ''}`} />
+      </>
+    );
+  };
+  return (
+    <Layout>
+      <Flex
+        filter={initialized ? undefined : 'blur(3px)'}
+        transition="filter .3s"
+        direction="column"
+        rowGap="16px"
+        pointerEvents={initialized ? undefined : 'none'}
+      >
+        {renderMain()}
       </Flex>
     </Layout>
   );

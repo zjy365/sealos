@@ -1,12 +1,13 @@
 import Sidebar from '@/components/Sidebar';
 import { Flex, Box, Text, Center } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
-import MyIcon from '@/components/Icon';
 import { useTranslation } from 'next-i18next';
 import { GeistSans } from '@/fonts';
+import { useLoading } from '@/hooks/useLoading';
 
-function Layout({ children }: { children?: ReactNode }) {
+function Layout({ children, loading }: { children?: ReactNode; loading?: boolean }) {
   const { t } = useTranslation();
+  const { Loading } = useLoading();
   return (
     <div className={GeistSans.className}>
       <Flex
@@ -40,7 +41,10 @@ function Layout({ children }: { children?: ReactNode }) {
         <Box w={'266px'} position={'relative'}>
           <Sidebar position={'sticky'} top={'120px'} />
         </Box>
-        <Box w={'886px'}>{children}</Box>
+        <Box w={'886px'} position="relative">
+          {children}
+          <Loading loading={loading} fixed={false} />
+        </Box>
       </Flex>
     </div>
   );

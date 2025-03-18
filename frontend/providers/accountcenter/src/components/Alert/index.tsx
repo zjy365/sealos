@@ -1,4 +1,4 @@
-import { Flex, Text, Box } from '@chakra-ui/react';
+import { Flex, Text, Box, FlexProps } from '@chakra-ui/react';
 import { type ReactNode } from 'react';
 import MyIcon from '../Icon';
 
@@ -7,7 +7,7 @@ export default function Alert({
   text,
   children,
   ...props
-}: { type: 'warn' | 'error'; text: 'string'; children?: ReactNode } & any) {
+}: { type: 'warn' | 'error'; text: ReactNode; children?: ReactNode } & FlexProps) {
   return (
     <Flex
       {...props}

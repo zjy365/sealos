@@ -18,7 +18,7 @@ import useGetPlanOrderSummary from '../CheckoutOrder/useGetPlanOrderSummary';
 import { getUpgradePlanAmount, updatePlan } from '@/api/plan';
 import useToastAPIResult from '@/hooks/useToastAPIResult';
 
-interface UpgradePlanModalProps extends Omit<PlanSelectorProps, 'minHeight'> {
+export interface UpgradePlanModalProps extends Omit<PlanSelectorProps, 'minHeight'> {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -107,7 +107,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent maxW="1112px">
-        <ModalCloseButton zIndex={10} color="rgb(24, 24, 27)" />
+        <ModalCloseButton />
         <ModalBody borderRadius="16px" py="32px">
           <Text fontSize="24px" fontWeight="600" textAlign="center">
             {t('UpgradePlan')}
