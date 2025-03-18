@@ -42,7 +42,7 @@ const Header = ({
     );
   }, [dbName, yamlList]);
 
-  const { applistCompleted } = useGuideStore();
+  const { createCompleted } = useGuideStore();
 
   return (
     <Flex w={'100%'} px={10} h={'86px'} alignItems={'center'}>
@@ -58,16 +58,22 @@ const Header = ({
       </Button>
 
       <Box position={'relative'}>
-        <Button
-          id="create-db-button"
-          flex={'0 0 114px'}
-          h={'40px'}
-          variant={'solid'}
-          onClick={applyCb}
+        <Box
+          p={'1px'}
+          borderRadius={'8px'}
+          border={!createCompleted ? '1px solid #1C4EF5' : 'none'}
         >
-          {t(applyBtnText)}
-        </Button>
-        {!applistCompleted && (
+          <Button
+            id="create-db-button"
+            flex={'0 0 114px'}
+            h={'40px'}
+            variant={'solid'}
+            onClick={applyCb}
+          >
+            {t(applyBtnText)}
+          </Button>
+        </Box>
+        {!createCompleted && (
           <Box
             zIndex={1000}
             position={'absolute'}

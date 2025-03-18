@@ -9,7 +9,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
 import { startDriver } from '@/hooks/driver';
-import { createAppDriverObj, quitGuideDriverObj } from '@/hooks/driver';
+import { quitGuideDriverObj } from '@/hooks/driver';
 
 const Header = ({
   appName,
@@ -69,25 +69,32 @@ const Header = ({
         {t('Export')} Yaml
       </Button>
       <Box position={'relative'}>
-        <Button
-          className="driver-deploy-button"
-          minW={'120px'}
-          h={'40px'}
-          onClick={applyCb}
-          style={{
-            borderRadius: '8px',
-            position: 'relative'
-          }}
-          _focusVisible={{ boxShadow: '' }}
+        <Box
+          p={'1px'}
+          borderRadius={'8px'}
+          border={!createCompleted ? '1px solid #1C4EF5' : 'none'}
         >
-          {t(applyBtnText)}
-        </Button>
+          <Button
+            className="driver-deploy-button"
+            minW={'120px'}
+            h={'40px'}
+            onClick={applyCb}
+            style={{
+              borderRadius: '8px',
+              position: 'relative'
+            }}
+            _focusVisible={{ boxShadow: '' }}
+          >
+            {t(applyBtnText)}
+          </Button>
+        </Box>
+
         {!createCompleted && (
           <Box
             zIndex={1000}
             position={'absolute'}
             left={'-180px'}
-            bottom={'-180px'}
+            bottom={'-170px'}
             width={'250px'}
             bg={'rgba(28, 46, 245, 0.9)'}
             p={'16px'}

@@ -275,12 +275,32 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
     }
   };
 
-  const { detailCompleted } = useGuideStore();
+  const { detailCompleted, applistCompleted } = useGuideStore();
   useEffect(() => {
-    if (detailCompleted) {
-      startDriver(detailDriverObj());
+    if (!detailCompleted && applistCompleted) {
+      const checkAndStartGuide = () => {
+        const guideListElement = document.getElementById('network-detail');
+        if (guideListElement) {
+          startDriver(detailDriverObj());
+          return true;
+        }
+        return false;
+      };
+      if (!checkAndStartGuide()) return;
+      const observer = new MutationObserver((mutations, obs) => {
+        if (checkAndStartGuide()) {
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      return () => {
+        observer.disconnect();
+      };
     }
-  }, [detailCompleted, secret]);
+  }, [applistCompleted, detailCompleted, secret]);
 
   return (
     <Flex position={'relative'} gap={'8px'}>

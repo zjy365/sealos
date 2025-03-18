@@ -50,7 +50,14 @@ const Empty = () => {
           src="/launchpad-empty.png"
           alt="empty"
         />
-        <Box position={'absolute'} bottom={'20px'} left={'50%'} transform={'translateX(-50%)'}>
+        <Box
+          position={'absolute'}
+          bottom={'20px'}
+          left={'50%'}
+          transform={'translateX(-50%)'}
+          onClick={() => router.push('/app/edit')}
+          cursor={'pointer'}
+        >
           <Text fontSize={'18px'} fontWeight={600} textAlign={'center'}>
             Deploy your first app
           </Text>

@@ -316,16 +316,22 @@ const Header = ({
         {t('Export')} Yaml
       </Button>
       <Box position={'relative'}>
-        <Button
-          className="create-app-btn"
-          px={4}
-          minW={'120px'}
-          h={'40px'}
-          variant={'solid'}
-          onClick={applyCb}
+        <Box
+          p={'1px'}
+          borderRadius={'8px'}
+          border={!createCompleted ? '1px solid #1C4EF5' : 'none'}
         >
-          {t(applyBtnText)}
-        </Button>
+          <Button
+            className="create-app-btn"
+            px={4}
+            minW={'120px'}
+            h={'40px'}
+            variant={'solid'}
+            onClick={applyCb}
+          >
+            {t(applyBtnText)}
+          </Button>
+        </Box>
         {!createCompleted && (
           <Box
             zIndex={1000}

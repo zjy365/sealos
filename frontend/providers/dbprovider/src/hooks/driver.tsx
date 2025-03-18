@@ -108,7 +108,9 @@ export const applistDriverObj = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
-  onDestroyed: () => {}
+  onDestroyed: () => {
+    useGuideStore.getState().setApplistCompleted(true);
+  }
 });
 
 export const detailDriverObj = (openDesktopApp?: any): Config => ({
@@ -174,30 +176,12 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
   onHighlightStarted: (element) => {
     const el = element as any;
     if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
       el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
+      el.style.border = '1.5px solid #1C4EF5';
 
       el.addEventListener(
         'click',
         (e: any) => {
-          e.stopPropagation();
-
-          if (openDesktopApp) {
-            openDesktopApp({
-              appKey: 'system-template',
-              pathname: '/',
-              query: {
-                action: 'guide'
-              },
-              messageData: {},
-              appSize: 'maximize'
-            });
-          }
-
           if (currentDriver) {
             currentDriver.destroy();
             currentDriver = null;
@@ -210,11 +194,12 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {
+    useGuideStore.getState().setDetailCompleted(true);
     startDriver(quitGuideDriverObj);
   }
 });

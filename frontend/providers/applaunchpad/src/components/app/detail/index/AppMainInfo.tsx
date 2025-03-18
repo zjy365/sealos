@@ -43,7 +43,30 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
   const { detailCompleted } = useGuideStore();
   useEffect(() => {
     if (!detailCompleted) {
-      startDriver(detailDriverObj());
+      const checkAndStartGuide = () => {
+        const guideListElement = document.getElementById('driver-detail-network');
+        if (guideListElement) {
+          startDriver(detailDriverObj());
+          return true;
+        }
+        return false;
+      };
+
+      if (!checkAndStartGuide()) return;
+
+      const observer = new MutationObserver((mutations, obs) => {
+        if (checkAndStartGuide()) {
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      return () => {
+        observer.disconnect();
+      };
     }
   }, [detailCompleted]);
 

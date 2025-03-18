@@ -276,20 +276,6 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
       el.addEventListener(
         'click',
         (e: any) => {
-          e.stopPropagation();
-
-          if (openDesktopApp) {
-            openDesktopApp({
-              appKey: 'system-template',
-              pathname: '/',
-              query: {
-                action: 'guide'
-              },
-              messageData: {},
-              appSize: 'maximize'
-            });
-          }
-
           if (currentDriver) {
             currentDriver.destroy();
             currentDriver = null;
