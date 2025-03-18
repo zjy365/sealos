@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "link-sdk": "rm -rf node_modules/sealos-desktop-sdk && yalc link sealos-desktop-sdk",
-    "unlink-sdk": "yalc remove --all && pnpm install sealos-desktop-sdk"
+    "unlink-sdk": "yalc remove --all && pnpm install sealos-desktop-sdk",
+    "ts:check": "tsc --noEmit"
   },
   "dependencies": {
     "@alicloud/dysmsapi20170525": "^2.0.24",

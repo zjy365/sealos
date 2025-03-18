@@ -1,4 +1,4 @@
-import React, { use, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import MyIcon from '@/components/Icon';
 import { useTranslation } from 'next-i18next';
@@ -6,7 +6,6 @@ import Card from '@/components/Card';
 import {
   Flex,
   Text,
-  IconButton,
   Button,
   Center,
   Box,
@@ -16,13 +15,8 @@ import {
   DrawerOverlay,
   DrawerFooter,
   DrawerHeader,
-  Table,
-  Tr,
-  Td,
-  Tbody,
   Highlight
 } from '@chakra-ui/react';
-import { Ellipsis } from 'lucide-react';
 import {
   ColumnDef,
   useReactTable,
@@ -37,9 +31,9 @@ import type { AppOverviewBilling, APPBillingItem } from '@/types/billing';
 import { displayMoney, formatMoney } from '@/utils/format';
 import { getUsageDetail } from '@/api/usage';
 import type { Region } from '@/types/region';
-import type { RecordType } from 'zod';
+import { serviceSideProps } from '@/utils/i18n';
 
-export const valuationMap = [
+const valuationMap = [
   ['cpu', { unit: 'Core', scale: 1000, bg: '#33BABB', idx: 0 }],
   ['memory', { unit: 'GB', scale: 1024, bg: '#36ADEF', idx: 1 }],
   ['storage', { unit: 'GB', scale: 1024, bg: '#9A8EE0', idx: 2 }],
@@ -47,6 +41,20 @@ export const valuationMap = [
   ['network', { unit: 'M', scale: 1, bg: '#F182AA', idx: 4 }],
   ['services.nodeports', { unit: 'port_unit', scale: 1000, bg: '#F182AA', idx: 5 }]
 ] as const;
+
+const icons = {
+  1: <MyIcon name={'db'} w={'24px'} h={'24px'} />,
+  2: <MyIcon name={'app'} w={'24px'} h={'24px'} />,
+  3: <MyIcon name={'terminal'} w={'24px'} h={'24px'} />,
+  4: <MyIcon name={'job'} w={'24px'} h={'24px'} />,
+  5: null,
+  6: <MyIcon name={'objectStorage'} w={'24px'} h={'24px'} />,
+  7: null,
+  8: <MyIcon name={'appStore'} w={'24px'} h={'24px'} />,
+  9: null,
+  10: <MyIcon name={'devBox'} w={'24px'} h={'24px'} />,
+  11: null
+};
 
 const Usage = ({
   total,
@@ -85,6 +93,7 @@ const Usage = ({
         setSelectDetail(res.costs);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const columns: ColumnDef<AppOverviewBilling>[] = React.useMemo(
@@ -100,7 +109,9 @@ const Usage = ({
               setIsOpen(true);
               setSelectApp(row.original);
             }}
+            gap={'4px'}
           >
+            {icons[row.original.appType as keyof typeof icons]}
             <Text>{row.original.appName}</Text>
           </Flex>
         )
@@ -134,7 +145,7 @@ const Usage = ({
         )
       }
     ],
-    [t]
+    [t, appType]
   );
   const table = useReactTable<AppOverviewBilling>({
     columns,
@@ -184,7 +195,15 @@ const Usage = ({
           <DrawerBody borderBottom={'1px solid #E4E4E7'} bg={'#F7F7F9'} padding={'24px'}>
             {selectDetail.map((item) => (
               <Box key={item.order_id}>
-                <Text mb={'16px'} fontSize={'16px'} fontWeight={500}>
+                <Text
+                  display={'flex'}
+                  alignItems={'center'}
+                  gap={'8px'}
+                  mb={'16px'}
+                  fontSize={'16px'}
+                  fontWeight={500}
+                >
+                  {icons[item.app_type as keyof typeof icons]}
                   {appType[item.app_type]}
                 </Text>
                 <Box
@@ -236,11 +255,9 @@ const Usage = ({
                           textAlign="right"
                         >
                           <Highlight styles={{ fontWeight: '600' }} query={'$'}>
-                            {`$ ${displayMoney(
-                              formatMoney(
-                                item.used_amount[String(index) as '0' | '1' | '2' | '3' | '4' | '5']
-                              )
-                            )}`}
+                            {`$ ${formatMoney(
+                              item.used_amount[String(index) as '0' | '1' | '2' | '3' | '4' | '5']
+                            ).toFixed(6)}`}
                           </Highlight>
                         </Box>
                       </>
@@ -261,5 +278,13 @@ const Usage = ({
     </Card>
   );
 };
+
+export async function getServerSideProps(content: any) {
+  return {
+    props: {
+      ...(await serviceSideProps(content))
+    }
+  };
+}
 
 export default Usage;

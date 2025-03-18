@@ -1,14 +1,29 @@
 import React from 'react';
-import { useRouter } from 'next/router';
-import { Button, Text, Flex, Tag, TagLabel, IconButton, Tooltip, Center } from '@chakra-ui/react';
+import {
+  Button,
+  Text,
+  Flex,
+  Tag,
+  TagLabel,
+  IconButton,
+  Tooltip,
+  Center,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter
+} from '@chakra-ui/react';
 import Card from '@/components/Card';
 import MyIcon from '@/components/Icon';
 import { useTranslation } from 'next-i18next';
 import { Ellipsis, Settings, Trash2 } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent, PopoverBody } from '@chakra-ui/react';
-import Empty from './empty';
+import Empty from '@/components/Empty';
 import { CardSchema } from '@/schema/card';
 import z from 'zod';
+import { serviceSideProps } from '@/utils/i18n';
 
 const Payment = ({
   cardList = [],
@@ -22,6 +37,23 @@ const Payment = ({
 } & any) => {
   const { t } = useTranslation();
   const handleAddCard = () => {};
+  const [isOpen, setIsOpen] = React.useState(false);
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
+  const [selectedCard, setSelectedCard] = React.useState('');
+  const onOpen = (id: string) => {
+    setIsOpen(true);
+    setSelectedCard(id);
+  };
+  const onClose = () => {
+    setIsOpen(false);
+    setSelectedCard('');
+  };
+  const onDelete = () => {
+    if (selectedCard !== '') {
+      handleDelete(selectedCard);
+    }
+    onClose();
+  };
 
   return (
     <Card {...props}>
@@ -129,7 +161,7 @@ const Payment = ({
                       }
                     >
                       <Button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => onOpen(item.id)}
                         variant={'ghost'}
                         w={'100%'}
                         justifyContent={'flex-start'}
@@ -144,6 +176,37 @@ const Payment = ({
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
+              <AlertDialog
+                isOpen={isOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onClose}
+                isCentered
+              >
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                      {t('DeleteCard')}
+                    </AlertDialogHeader>
+
+                    <AlertDialogBody>{t('DeleteCardConfirm')}</AlertDialogBody>
+
+                    <AlertDialogFooter>
+                      <Button mt={'16px'} colorScheme="red" onClick={onDelete}>
+                        {t('Delete')}
+                      </Button>
+                      <Button
+                        mt={'16px'}
+                        variant={'outline'}
+                        ml={3}
+                        ref={cancelRef}
+                        onClick={onClose}
+                      >
+                        {t('Cancel')}
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
             </Flex>
           ))
         ) : (
@@ -164,5 +227,13 @@ const Payment = ({
     </Card>
   );
 };
+
+export async function getServerSideProps(content: any) {
+  return {
+    props: {
+      ...(await serviceSideProps(content))
+    }
+  };
+}
 
 export default Payment;

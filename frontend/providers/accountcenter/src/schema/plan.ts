@@ -76,7 +76,8 @@ export const updatePlanApiRequestSchema = z.object({
 export const updatePlanRequestSchema = z.object({
   planName: z.string(),
   planID: z.string(),
-  planType: z.enum(['upgrade', 'downgrade'])
+  planType: z.enum(['upgrade', 'downgrade']),
+  cardID: z.string().optional()
 });
 export const updatePlanResponseSchema = z.object({
   success: z.boolean(),

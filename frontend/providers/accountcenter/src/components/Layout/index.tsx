@@ -15,36 +15,32 @@ function Layout({ children }: { children?: ReactNode }) {
         borderY={'1px solid #EFEFEF'}
         align={'center'}
         h={'96px'}
+        position={'fixed'}
+        w={'100%'}
+        zIndex={100}
+        bg={'#fff'}
+        top={0}
       >
         <Flex align={'center'} gap={'12px'}>
-          <Center
-            w={'48px'}
-            h={'48px'}
-            borderRadius={'8px'}
-            border={'0.86px solid #EDEDED'}
-            shadow={'0px 1px 2px 0px #0000000D'}
-          >
-            <MyIcon name="logo" w={'28px'} h={'28px'} />
-          </Center>
           <Text fontSize={'24px'} fontWeight={600} lineHeight={'32px'}>
             {t('AccountCenter')}
           </Text>
         </Flex>
       </Flex>
       <Flex
-        h={'calc(100vh - 96px)'}
+        mt={'96px'}
         justify={'center'}
         mx={'auto'}
         maxW={'1440px'}
         columnGap={'24px'}
         minW={'1280px'}
         p={'24px 12px'}
-        overflow={'hidden'}
+        position={'relative'}
       >
-        <Sidebar />
-        <Box w={'886px'} h={'calc(100vh - 96px)'} overflowY={'scroll'}>
-          {children}
+        <Box w={'266px'} position={'relative'}>
+          <Sidebar position={'sticky'} top={'120px'} />
         </Box>
+        <Box w={'886px'}>{children}</Box>
       </Flex>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useLoading } from '@/hooks/useLoading';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import Layout from '@/components/Layout';
 import dynamic from 'next/dynamic';
@@ -44,7 +44,7 @@ function DatePickerWithRange({
 }) {
   return (
     <Box display={'grid'}>
-      <Popover>
+      <Popover placement="bottom-end">
         <PopoverTrigger>
           <Button id="date" variant={'outline'} gap={'8px'}>
             <CalendarIcon size={'16px'} />
@@ -108,7 +108,7 @@ function Home() {
 
   useEffect(() => {
     getNamespaceList({
-      endTime: date?.to,
+      endTime: date?.to || new Date(),
       startTime: date?.from,
       regionUid: region
     }).then((res) => {
@@ -116,53 +116,56 @@ function Home() {
     });
   }, [date?.from, date?.to, region]);
 
-  const fetchUsageList = async () => {
-    setInitialized(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchUsageList = useCallback(
+    debounce(async (data: any) => {
+      setInitialized(true);
+      const res = await getUsageList(data);
+      setUsageList(res?.overviews || []);
+      setTotal(res?.total || 0);
+      if (Math.ceil(res.total / pagination.pageSize) < pagination.pageIndex) {
+        setPagination({
+          ...pagination,
+          pageIndex: 0
+        });
+      }
+      setInitialized(true);
+    }, 500),
+    []
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchComsumption = useCallback(
+    debounce(async (data: any) => {
+      const res = await getConsumption(data);
+      setConsumptions(res?.amount || 0);
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    const data = {
+      endTime: date?.to,
+      startTime: date?.from ? date.from : date?.to ? new Date() : undefined,
+      regionUid: region,
+      namespace
+    };
+    fetchComsumption(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, namespace, date?.from, date?.to]);
+
+  useEffect(() => {
     const data = {
       page: pagination.pageIndex + 1,
       pageSize: pagination.pageSize,
       endTime: date?.to,
-      startTime: date?.from,
+      startTime: date?.from ? date.from : date?.to ? new Date() : undefined,
       regionUid: region,
       namespace
     };
-    // console.log(data);
-    const res = await getUsageList(data);
-    setUsageList(res?.overviews || []);
-    setTotal(res?.total || 0);
-    if (Math.ceil(res.total / pagination.pageSize) < pagination.pageIndex) {
-      setPagination({
-        ...pagination,
-        pageIndex: 0
-      });
-    }
-    setInitialized(true);
-  };
-
-  const fetchComsumption = async () => {
-    const data = {
-      page: pagination.pageIndex + 1,
-      pageSize: pagination.pageSize,
-      endTime: date?.to,
-      startTime: date?.from,
-      regionUid: region,
-      namespace
-    };
-    const res = await getConsumption(data);
-    setConsumptions(res?.amount || 0);
-  };
-
-  useEffect(() => {
-    fetchComsumption();
-  }, [region, namespace, date?.from, date?.to]);
-
-  useEffect(() => {
-    debounce(fetchUsageList, 500)();
-  }, [region, namespace, date?.from, date?.to]);
-
-  useEffect(() => {
-    fetchUsageList();
-  }, [pagination.pageIndex, pagination.pageSize]);
+    fetchUsageList(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, namespace, date?.from, date?.to, pagination.pageIndex, pagination.pageSize]);
 
   const handleCostHelp = () => {};
 
