@@ -42,7 +42,6 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
 
   const { detailCompleted } = useGuideStore();
   useEffect(() => {
-    console.log(1, detailCompleted);
     if (!detailCompleted) {
       startDriver(detailDriverObj());
     }
@@ -102,6 +101,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
         border={'1px solid #E4E4E7'}
         bg={'#FFF'}
         boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
+        id="driver-detail-network"
       >
         <Flex alignItems={'center'} fontSize={'14px'} fontWeight={'bold'}>
           <Text fontSize={'20px'} fontWeight={500} color={'grayModern.900'}>
@@ -111,12 +111,6 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
             ({networks.length})
           </Text>
           <Flex ml="auto" alignItems="center" gap={2}>
-            <Flex alignItems="center">
-              <HelpCircle size={16} color="#1C4EF5"></HelpCircle>
-              <Text ml={'8px'} color="#1C4EF5">
-                {t('Public address unavailable')}
-              </Text>
-            </Flex>
             <Button
               bg={'white'}
               color={'#18181B'}
@@ -132,7 +126,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
             </Button>
           </Flex>
         </Flex>
-        <Flex mt={'16px'} className="driver-detail-network">
+        <Flex mt={'16px'}>
           <table className={'table-cross'}>
             <thead>
               <tr>

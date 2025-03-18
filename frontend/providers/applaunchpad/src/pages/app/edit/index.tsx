@@ -335,6 +335,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
           yamlList={yamlList}
           applyBtnText={applyBtnText}
           applyCb={() => {
+            console.log(isSubmitting, 'isSubmitting');
             if (isSubmitting) return;
             setIsSubmitting(true);
             formHook.handleSubmit(async (data) => {

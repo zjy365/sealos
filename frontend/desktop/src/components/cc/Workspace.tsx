@@ -31,7 +31,7 @@ export default function Workspace() {
   const router = useRouter();
   const { toast } = useCustomToast();
   const bg = useColorModeValue('white', 'gray.700');
-  const { workspaceName, setWorkspaceName, setSelectedRegionUid, selectedRegionUid } =
+  const { workspaceName, setWorkspaceName, setSelectedRegionUid, selectedRegionUid, setInitGuide } =
     useInitWorkspaceStore();
   // const [workspaceName, setWorkspaceName] = useState('');
   // const [selectedRegion, setSelectedRegion] = useState<string>('');
@@ -48,6 +48,9 @@ export default function Workspace() {
   const mutation = useMutation({
     mutationFn(data: { regionUid: string; workspaceName: string }) {
       return initRegionToken(data);
+    },
+    onSuccess: (data) => {
+      setInitGuide(true);
     }
   });
   const handleStartDeploying = async () => {

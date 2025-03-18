@@ -7,7 +7,9 @@ import { getResourceUsage } from '@/utils/usage';
 import {
   Avatar,
   AvatarGroup,
+  Box,
   Button,
+  Center,
   Divider,
   Flex,
   FlexProps,
@@ -28,7 +30,7 @@ import PriceBox, { usePriceCalculation } from './PriceBox';
 import { CurrencySymbol } from '@sealos/ui';
 import { useSystemConfigStore } from '@/store/config';
 import { useGuideStore } from '@/store/guide';
-import { deployDriverObj, startDriver } from '@/hooks/driver';
+import { deployDriverObj, quitGuideDriverObj, startDriver } from '@/hooks/driver';
 
 const Header = ({
   appName,
@@ -116,12 +118,6 @@ const Header = ({
   const priceList = usePriceCalculation(usage);
 
   const { createCompleted } = useGuideStore();
-  useEffect(() => {
-    console.log(1, createCompleted);
-    if (!createCompleted) {
-      startDriver(deployDriverObj());
-    }
-  }, [createCompleted]);
 
   return (
     <Flex w={'100%'} h={'80px'} alignItems={'center'} backgroundColor={'rgba(255, 255, 255, 0.90)'}>
@@ -319,16 +315,78 @@ const Header = ({
       >
         {t('Export')} Yaml
       </Button>
-      <Button
-        className="create-app-btn"
-        px={4}
-        minW={'120px'}
-        h={'40px'}
-        variant={'solid'}
-        onClick={applyCb}
-      >
-        {t(applyBtnText)}
-      </Button>
+      <Box position={'relative'}>
+        <Button
+          className="create-app-btn"
+          px={4}
+          minW={'120px'}
+          h={'40px'}
+          variant={'solid'}
+          onClick={applyCb}
+        >
+          {t(applyBtnText)}
+        </Button>
+        {!createCompleted && (
+          <Box
+            zIndex={1000}
+            position={'absolute'}
+            left={'-180px'}
+            bottom={'-190px'}
+            width={'250px'}
+            bg={'rgba(28, 46, 245, 0.9)'}
+            p={'16px'}
+            borderRadius={'12px'}
+            color={'#fff'}
+          >
+            <Flex alignItems={'center'} justifyContent={'space-between'}>
+              <Text fontSize={'14px'} fontWeight={600}>
+                One click deploy
+              </Text>
+              <Text fontSize={'13px'} fontWeight={500}>
+                3/4
+              </Text>
+            </Flex>
+            <Text
+              textAlign={'start'}
+              whiteSpace={'wrap'}
+              mt={'8px'}
+              color={'#FFFFFFCC'}
+              fontSize={'14px'}
+              fontWeight={400}
+            >
+              Before clicking, review the app details, pricing, and resource requirements
+            </Text>
+            <Center
+              w={'86px'}
+              color={'#fff'}
+              fontSize={'14px'}
+              fontWeight={500}
+              cursor={'pointer'}
+              mt={'16px'}
+              borderRadius={'8px'}
+              background={'rgba(255, 255, 255, 0.20)'}
+              h={'32px'}
+              p={'px'}
+              onClick={() => {
+                startDriver(quitGuideDriverObj);
+              }}
+            >
+              Quit Guide
+            </Center>
+            <Box
+              position={'absolute'}
+              top={'-10px'}
+              right={'16px'}
+              width={0}
+              height={0}
+              borderLeft={'8px solid transparent'}
+              borderRight={'8px solid transparent'}
+              borderTop={'10px solid rgba(28, 46, 245, 0.9)'}
+              transform={'rotate(180deg)'}
+            />
+          </Box>
+        )}
+      </Box>
     </Flex>
   );
 };

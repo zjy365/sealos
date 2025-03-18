@@ -7,7 +7,9 @@ import {
 } from '@/api/db';
 import MyIcon from '@/components/Icon';
 import { DBTypeEnum, DBTypeSecretMap, defaultDBDetail } from '@/constants/db';
+import { startDriver, detailDriverObj } from '@/hooks/driver';
 import useEnvStore from '@/store/env';
+import { useGuideStore } from '@/store/guide';
 import { SOURCE_PRICE } from '@/store/static';
 import type { DBDetailType } from '@/types/db';
 import { I18nCommonKey } from '@/types/i18next';
@@ -36,7 +38,7 @@ import { CurrencySymbol, MyTooltip, useMessage } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import { pick } from 'lodash';
 import { useTranslation } from 'next-i18next';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 
 const CopyBox = ({
@@ -273,6 +275,13 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
     }
   };
 
+  const { detailCompleted } = useGuideStore();
+  useEffect(() => {
+    if (detailCompleted) {
+      startDriver(detailDriverObj());
+    }
+  }, [detailCompleted, secret]);
+
   return (
     <Flex position={'relative'} gap={'8px'}>
       <Box flex={'0 1 37%'} bg={'white'} borderRadius={'8px'} px={'32px'} py={'28px'}>
@@ -364,7 +373,14 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
         ))}
       </Box>
       {secret ? (
-        <Box flex={'0 1 63%'} bg={'white'} borderRadius={'8px'} px={'24px'} py={'16px'}>
+        <Box
+          flex={'0 1 63%'}
+          bg={'white'}
+          borderRadius={'8px'}
+          px={'24px'}
+          py={'16px'}
+          id="network-detail"
+        >
           <Flex fontSize={'base'} gap={'8px'} alignItems={'center'} color={'grayModern.600'}>
             <Box fontSize={'16px'} fontWeight={'bold'} color={'grayModern.900'}>
               {t('connection_info')}
@@ -418,7 +434,6 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
               ))}
             </Flex>
           )}
-
           <Box mt={'24px'} position={'relative'} fontSize={'base'}>
             <Text fontWeight={500} fontSize={'14px'} color={'grayModern.900'}>
               {t('intranet_address')}
@@ -434,7 +449,6 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
               ))}
             </Flex>
           </Box>
-
           <Box mt={'24px'} position={'relative'} fontSize={'base'}>
             <Flex alignItems={'center'}>
               <Text fontWeight={500} fontSize={'14px'} color={'grayModern.900'}>
@@ -477,7 +491,6 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
               </Center>
             )}
           </Box>
-
           <Modal isOpen={isOpen} onClose={onClose} lockFocusAcrossFrames={false}>
             <ModalOverlay />
             <ModalContent minW={'430px'}>

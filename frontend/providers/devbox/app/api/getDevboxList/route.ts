@@ -7,7 +7,10 @@ import { devboxDB } from '@/services/db/init';
 import { KBDevboxTypeV2 } from '@/types/k8s';
 
 export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
+  console.log(11111);
+
   try {
     const headerList = req.headers;
     const { ROOT_RUNTIME_NAMESPACE } = process.env;
@@ -50,6 +53,7 @@ export async function GET(req: NextRequest) {
 
     return jsonRes({ data: resp });
   } catch (err: any) {
+    console.log(err, 'err');
     return jsonRes({
       code: 500,
       error: err

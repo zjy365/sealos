@@ -33,6 +33,7 @@ import { useTemplateStore } from '@/stores/template';
 import { generateYamlList } from '@/utils/json2Yaml';
 import { patchYamlList } from '@/utils/tools';
 import { debounce } from 'lodash';
+import { useGuideStore } from '@/stores/guide';
 
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'));
 const DevboxCreatePage = () => {
@@ -48,6 +49,7 @@ const DevboxCreatePage = () => {
   const { sourcePrice, setSourcePrice } = usePriceStore();
   const { checkQuotaAllow } = useUserStore();
   const { setDevboxDetail, devboxList } = useDevboxStore();
+  const { setAppName } = useGuideStore();
 
   const crOldYamls = useRef<DevboxKindsType[]>([]);
   const formOldYamls = useRef<YamlItemType[]>([]);
@@ -249,6 +251,7 @@ const DevboxCreatePage = () => {
       if (sourcePrice?.gpu) {
         refetchPrice();
       }
+      setAppName(formData.name);
       router.push(lastRoute);
     } catch (error) {
       console.log('error', error);

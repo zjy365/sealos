@@ -3,13 +3,13 @@ import { useGlobalStore } from '@/store/global';
 import { useGuideStore } from '@/store/guide';
 import type { YamlItemType } from '@/types/index';
 import { downLoadBold } from '@/utils/tools';
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, Center } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
 import { startDriver } from '@/hooks/driver';
-import { createAppDriverObj } from '@/hooks/driver';
+import { createAppDriverObj, quitGuideDriverObj } from '@/hooks/driver';
 
 const Header = ({
   appName,
@@ -39,12 +39,6 @@ const Header = ({
   }, [appName, yamlList]);
 
   const { createCompleted } = useGuideStore();
-  useEffect(() => {
-    console.log(1, createCompleted);
-    if (!createCompleted) {
-      startDriver(createAppDriverObj());
-    }
-  }, [createCompleted]);
 
   return (
     <Flex w={'100%'} px={10} h={'96px'} alignItems={'center'} borderBottom={'1px solid #E4E4E7'}>
@@ -74,18 +68,81 @@ const Header = ({
       >
         {t('Export')} Yaml
       </Button>
-      <Button
-        className="driver-deploy-button"
-        minW={'120px'}
-        h={'40px'}
-        onClick={applyCb}
-        style={{
-          borderRadius: '8px'
-        }}
-        _focusVisible={{ boxShadow: '' }}
-      >
-        {t(applyBtnText)}
-      </Button>
+      <Box position={'relative'}>
+        <Button
+          className="driver-deploy-button"
+          minW={'120px'}
+          h={'40px'}
+          onClick={applyCb}
+          style={{
+            borderRadius: '8px',
+            position: 'relative'
+          }}
+          _focusVisible={{ boxShadow: '' }}
+        >
+          {t(applyBtnText)}
+        </Button>
+        {!createCompleted && (
+          <Box
+            zIndex={1000}
+            position={'absolute'}
+            left={'-180px'}
+            bottom={'-180px'}
+            width={'250px'}
+            bg={'rgba(28, 46, 245, 0.9)'}
+            p={'16px'}
+            borderRadius={'12px'}
+            color={'#fff'}
+          >
+            <Flex alignItems={'center'} justifyContent={'space-between'}>
+              <Text fontSize={'14px'} fontWeight={600}>
+                Configure Launchpad
+              </Text>
+              <Text fontSize={'13px'} fontWeight={500}>
+                3/4
+              </Text>
+            </Flex>
+            <Text
+              textAlign={'start'}
+              whiteSpace={'wrap'}
+              mt={'8px'}
+              color={'#FFFFFFCC'}
+              fontSize={'14px'}
+              fontWeight={400}
+            >
+              Define image settings, and adjust CPU & memory as needed
+            </Text>
+            <Center
+              w={'86px'}
+              color={'#fff'}
+              fontSize={'14px'}
+              fontWeight={500}
+              cursor={'pointer'}
+              mt={'16px'}
+              borderRadius={'8px'}
+              background={'rgba(255, 255, 255, 0.20)'}
+              h={'32px'}
+              p={'px'}
+              onClick={() => {
+                startDriver(quitGuideDriverObj);
+              }}
+            >
+              Quit Guide
+            </Center>
+            <Box
+              position={'absolute'}
+              top={'-10px'}
+              right={'16px'}
+              width={0}
+              height={0}
+              borderLeft={'8px solid transparent'}
+              borderRight={'8px solid transparent'}
+              borderTop={'10px solid rgba(28, 46, 245, 0.9)'}
+              transform={'rotate(180deg)'}
+            />
+          </Box>
+        )}
+      </Box>
     </Flex>
   );
 };

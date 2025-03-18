@@ -104,52 +104,55 @@ export default function Apps() {
           className="apps-container"
         >
           {paginatedApps &&
-            paginatedApps.map((item: TApp, index) => (
-              <Flex
-                flexDirection={'column'}
-                alignItems={'center'}
-                w="100%"
-                h="136px"
-                key={index}
-                userSelect="none"
-                cursor={'pointer'}
-                onClick={(e) => handleDoubleClick(e, item)}
-                className={item.key}
-              >
-                <Box
-                  mt={'10px'}
-                  w="72px"
-                  h="72px"
-                  borderRadius={'full'}
-                  // p={'16px'}
-                  // boxShadow={
-                  //   '0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 16px 40px 0px rgba(0, 0, 0, 0.06)'
-                  // }
-                  // backgroundColor={'rgba(255, 255, 255, 0.90)'}
+            paginatedApps.map((item: TApp, index) => {
+              return (
+                <Flex
+                  display={item.key === 'system-account-center' ? 'none' : 'flex'}
+                  flexDirection={'column'}
+                  alignItems={'center'}
+                  w="100%"
+                  h="136px"
+                  key={index}
+                  userSelect="none"
+                  cursor={'pointer'}
+                  onClick={(e) => handleDoubleClick(e, item)}
+                  className={item.key}
                 >
-                  <Image
-                    width="100%"
-                    height="100%"
-                    src={item?.icon}
-                    fallbackSrc={logo}
-                    draggable={false}
-                    alt="app logo"
-                  />
-                </Box>
-                <Text
-                  mt="12px"
-                  color={'rgba(0, 0, 0, 0.90)'}
-                  fontSize={'14px'}
-                  fontWeight={'bold'}
-                  textAlign={'center'}
-                  lineHeight={'16px'}
-                >
-                  {item?.i18n?.[i18n?.language]?.name
-                    ? item?.i18n?.[i18n?.language]?.name
-                    : item?.name}
-                </Text>
-              </Flex>
-            ))}
+                  <Box
+                    mt={'10px'}
+                    w="72px"
+                    h="72px"
+                    borderRadius={'full'}
+                    // p={'16px'}
+                    // boxShadow={
+                    //   '0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 16px 40px 0px rgba(0, 0, 0, 0.06)'
+                    // }
+                    // backgroundColor={'rgba(255, 255, 255, 0.90)'}
+                  >
+                    <Image
+                      width="100%"
+                      height="100%"
+                      src={item?.icon}
+                      fallbackSrc={logo}
+                      draggable={false}
+                      alt="app logo"
+                    />
+                  </Box>
+                  <Text
+                    mt="12px"
+                    color={'rgba(0, 0, 0, 0.90)'}
+                    fontSize={'14px'}
+                    fontWeight={'bold'}
+                    textAlign={'center'}
+                    lineHeight={'16px'}
+                  >
+                    {item?.i18n?.[i18n?.language]?.name
+                      ? item?.i18n?.[i18n?.language]?.name
+                      : item?.name}
+                  </Text>
+                </Flex>
+              );
+            })}
         </Grid>
         {totalPages !== 1 && (
           <Button

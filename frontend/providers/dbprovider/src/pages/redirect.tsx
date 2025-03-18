@@ -30,6 +30,9 @@ const RedirectPage = () => {
     if (router.isReady) {
       const { name, action } = router.query as { name?: string; action?: string };
       // to do action === 'guide'
+      if (action === 'guide') {
+        resetGuideState(false);
+      }
       handleRedirect(name);
     }
   }, [router, router.isReady, router.query]);

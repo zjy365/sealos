@@ -25,6 +25,7 @@ const Callback: NextPage = () => {
   const { cloudConfig } = useConfigStore();
   const { lastWorkSpaceId } = useSessionStore();
   const { setAutoLaunch } = useAppStore();
+  const { setInitGuide } = useInitWorkspaceStore();
   const mutation = useMutation({
     mutationFn: switchRequest,
     async onSuccess(data) {
@@ -42,6 +43,9 @@ const Callback: NextPage = () => {
   const initMutation = useMutation({
     mutationFn(data: { regionUid: string; workspaceName: string }) {
       return initRegionToken(data);
+    },
+    onSuccess(data) {
+      setInitGuide(true);
     }
   });
   useEffect(() => {

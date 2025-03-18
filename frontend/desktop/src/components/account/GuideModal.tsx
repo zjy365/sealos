@@ -33,6 +33,7 @@ import {
 } from './driver';
 import { WindowSize } from '@/types';
 import { Image } from '@chakra-ui/react';
+import { useInitWorkspaceStore } from '@/stores/initWorkspace';
 
 interface GuideModalProps {
   isOpen: boolean;
@@ -45,6 +46,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
   const [selectedGuide, setSelectedGuide] = useState<number | null>(null);
   const [activeStep, setActiveStep] = useState(0);
   const { installedApps, runningInfo, openApp, setToHighestLayerById } = useAppStore();
+  const { initGuide, setInitGuide } = useInitWorkspaceStore();
 
   const infoData = useQuery({
     queryFn: UserInfo,
@@ -166,31 +168,31 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
         }
       ],
       stepNumbers: 4
+    },
+    {
+      key: 'system-dbprovider',
+      icon: installedApps.find((app) => app.key === 'system-dbprovider')?.icon || '',
+      title: t('cc:database_title'),
+      description: t('cc:database_desc'),
+      steps: [
+        {
+          title: 'Access Database',
+          description: 'Open database app to deploy a database',
+          image: '/images/onboarding/database-1.png'
+        },
+        {
+          title: 'Deploy a New Database',
+          description: 'Choose a database type, and adjust CPU & memory as needed',
+          image: '/images/onboarding/database-2.png'
+        },
+        {
+          title: 'Manage & Connect to the Database',
+          description: 'Retrieve connection details and manage the database',
+          image: '/images/onboarding/database-3.png'
+        }
+      ],
+      stepNumbers: 4
     }
-    // {
-    //   key: 'system-dbprovider',
-    //   icon: installedApps.find((app) => app.key === 'system-dbprovider')?.icon || '',
-    //   title: t('cc:database_title'),
-    //   description: t('cc:database_desc'),
-    //   steps: [
-    //     {
-    //       title: 'Choose from template',
-    //       description: 'Open database app to deploy a database',
-    //       image: '/images/onboarding/database-1.png'
-    //     },
-    //     {
-    //       title: 'Deploy a New Database',
-    //       description: 'Choose a database type, and adjust CPU & memory as needed',
-    //       image: '/images/onboarding/database-2.png'
-    //     },
-    //     {
-    //       title: 'Manage & Connect to the Database',
-    //       description: 'Retrieve connection details and manage the database',
-    //       image: '/images/onboarding/database-3.png'
-    //     }
-    //   ],
-    //   stepNumbers: 4
-    // }
   ];
 
   const StepCard = ({
@@ -407,7 +409,9 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
             <>
               <Center mt={'40px'} flexDirection={'column'}>
                 <Text fontSize={'24px'} fontWeight={600} color={'#000'} lineHeight={'24px'}>
-                  {t('cc:guide_title', { name: infoData.data?.nickname || '' })}
+                  {initGuide
+                    ? t('cc:guide_title', { name: infoData.data?.nickname || '' })
+                    : 'Quickstart guide'}
                 </Text>
                 <Text
                   mt={'8px'}
@@ -484,6 +488,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                 mb={'20px'}
                 textAlign={'center'}
                 onClick={() => {
+                  setInitGuide(false);
                   onClose();
                   startDriver(quitGuideDriverObj);
                 }}

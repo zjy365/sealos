@@ -1,7 +1,6 @@
 import { extendTheme } from '@chakra-ui/react';
-import { theme as SealosTheme } from '@sealos/ui';
 
-export const theme = extendTheme(SealosTheme, {
+export const theme = extendTheme({
   styles: {
     global: {
       'html, body': {

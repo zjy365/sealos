@@ -43,6 +43,9 @@ export const applistDriverObj = (openDesktopApp?: any): Config => ({
             p={'12px'}
             borderRadius={'12px'}
             color={'#fff'}
+            position={'fixed'}
+            top={'20px'}
+            right={'20px'}
           >
             <Flex alignItems={'center'} justifyContent={'space-between'}>
               <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
@@ -143,7 +146,7 @@ export const deployDriverObj = (openDesktopApp?: any): Config => ({
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
-              Before clicking, review the app details, pricing, and resource requirements{' '}
+              Before clicking, review the app details, pricing, and resource requirements
             </Text>
             <Center
               color={'#fff'}
@@ -233,7 +236,10 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
-              Get the private or public address from App Launchpad
+              Get the private or public address from App Launchpad.
+            </Text>
+            <Text color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
+              Click anywhere to finish the tutorial.
             </Text>
             <Center
               color={'#fff'}
@@ -303,97 +309,6 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
   onDestroyed: () => {
     startDriver(quitGuideDriverObj);
   }
-});
-
-export const doneDriverObj = (openDesktopApp?: any): Config => ({
-  showProgress: true,
-  allowClose: false,
-  allowClickMaskNextStep: true,
-  isShowButtons: false,
-  allowKeyboardControl: false,
-  disableActiveInteraction: false,
-  overlayColor: 'transparent',
-
-  steps: [
-    {
-      popover: {
-        side: 'right',
-        align: 'center',
-        borderRadius: '12px 12px 12px 12px',
-        PopoverBody: (
-          <Box
-            color={'black'}
-            borderRadius={'20px'}
-            bg={'#FFF'}
-            boxShadow={
-              '0px 16px 48px -5px rgba(0, 0, 0, 0.12), 0px 8px 12px -5px rgba(0, 0, 0, 0.08)'
-            }
-            p={'4px'}
-            w={'460px'}
-          >
-            <Box w={'100%'} border={'1px solid #B0CBFF'} borderRadius={'16px'}>
-              <Box px={'24px'}>
-                <Text mt={'32px'} color={'#000'} fontSize={'20px'} fontWeight={600}>
-                  We’re still here!
-                </Text>
-                <Text mt={'8px'} color={'#404040'} fontSize={'14px'} fontWeight={400}>
-                  You can always find your way back to this guide in the top navigation bar. Happy
-                  exploring!
-                </Text>
-                <Image mt={'20px'} src={'/guide-image.png'} alt="guide" />
-              </Box>
-
-              <Center
-                cursor={'pointer'}
-                mt={'20px'}
-                borderTop={'1px solid #E4E4E7'}
-                py={'20px'}
-                px={'24px'}
-                onClick={() => {
-                  if (currentDriver) {
-                    currentDriver.destroy();
-                    currentDriver = null;
-                  }
-                }}
-              >
-                Got it
-              </Center>
-            </Box>
-          </Box>
-        )
-      }
-    }
-  ],
-  onHighlightStarted: (element) => {
-    const el = element as any;
-    if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
-      el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
-
-      el.addEventListener(
-        'click',
-        (e: any) => {
-          if (currentDriver) {
-            currentDriver.destroy();
-            currentDriver = null;
-          }
-        },
-        { once: true }
-      );
-    }
-  },
-  onDeselected: (element?: Element) => {
-    if (element) {
-      const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
-    }
-  },
-  onDestroyed: () => {}
 });
 
 export const quitGuideDriverObj: Config = {
@@ -475,6 +390,6 @@ export const quitGuideDriverObj: Config = {
   onDestroyed: () => {
     console.log('onDestroyed quitGuideDriverObj');
     // dev = false , prod = true
-    useGuideStore.getState().resetGuideState(false);
+    useGuideStore.getState().resetGuideState(true);
   }
 };

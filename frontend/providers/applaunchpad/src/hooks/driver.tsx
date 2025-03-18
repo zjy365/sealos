@@ -20,95 +20,6 @@ export function startDriver(config: Config, openDesktopApp?: any) {
   return driverObj;
 }
 
-export const createAppDriverObj = (openDesktopApp?: any): Config => ({
-  showProgress: true,
-  allowClose: false,
-  allowClickMaskNextStep: false,
-  isShowButtons: false,
-  allowKeyboardControl: false,
-  disableActiveInteraction: false,
-  overlayColor: 'transparent',
-
-  steps: [
-    {
-      element: '.driver-deploy-button',
-      popover: {
-        side: 'left',
-        align: 'start',
-        borderRadius: '12px 12px 12px 12px',
-        PopoverBody: (
-          <Box
-            width={'250px'}
-            bg={'rgba(28, 46, 245, 0.9)'}
-            p={'12px'}
-            borderRadius={'12px'}
-            color={'#fff'}
-          >
-            <Flex alignItems={'center'} justifyContent={'space-between'}>
-              <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
-                Configure Launchpad
-              </Text>
-              <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                3/4
-              </Text>
-            </Flex>
-            <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
-              Define image settings, and adjust CPU & memory as needed
-            </Text>
-            <Center
-              color={'#fff'}
-              fontSize={'14px'}
-              fontWeight={500}
-              cursor={'pointer'}
-              mt={'16px'}
-              borderRadius={'8px'}
-              background={'rgba(255, 255, 255, 0.20)'}
-              w={'fit-content'}
-              h={'32px'}
-              p={'8px'}
-              onClick={() => {
-                startDriver(quitGuideDriverObj);
-              }}
-            >
-              Quit Guide
-            </Center>
-          </Box>
-        )
-      }
-    }
-  ],
-  onHighlightStarted: (element) => {
-    const el = element as any;
-    if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
-      el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
-
-      el.addEventListener(
-        'click',
-        () => {
-          if (currentDriver) {
-            currentDriver.destroy();
-            currentDriver = null;
-          }
-        },
-        { once: true }
-      );
-    }
-  },
-  onDeselected: (element?: Element) => {
-    if (element) {
-      const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
-    }
-  },
-  onDestroyed: () => {}
-});
-
 export const applistDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
@@ -202,6 +113,106 @@ export const applistDriverObj = (openDesktopApp?: any): Config => ({
   }
 });
 
+export const createAppDriverObj = (openDesktopApp?: any): Config => ({
+  showProgress: true,
+  allowClose: false,
+  allowClickMaskNextStep: false,
+  isShowButtons: false,
+  allowKeyboardControl: false,
+  disableActiveInteraction: false,
+  overlayColor: 'transparent',
+
+  steps: [
+    {
+      element: '.driver-deploy-button',
+      popover: {
+        side: 'left',
+        align: 'end',
+        borderRadius: '12px 12px 12px 12px',
+        PopoverBody: (
+          <Box
+            width={'250px'}
+            bg={'rgba(28, 46, 245, 0.9)'}
+            p={'12px'}
+            borderRadius={'12px'}
+            color={'#fff'}
+          >
+            <Flex alignItems={'center'} justifyContent={'space-between'}>
+              <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
+                Configure Launchpad
+              </Text>
+              <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
+                3/4
+              </Text>
+            </Flex>
+            <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
+              Define image settings, and adjust CPU & memory as needed
+            </Text>
+            <Center
+              color={'#fff'}
+              fontSize={'14px'}
+              fontWeight={500}
+              cursor={'pointer'}
+              mt={'16px'}
+              borderRadius={'8px'}
+              background={'rgba(255, 255, 255, 0.20)'}
+              w={'fit-content'}
+              h={'32px'}
+              p={'8px'}
+              onClick={() => {
+                startDriver(quitGuideDriverObj);
+              }}
+            >
+              Quit Guide
+            </Center>
+          </Box>
+        )
+      }
+    }
+  ],
+  onHighlightStarted: (element) => {
+    const el = element as any;
+    if (el) {
+      // 保存原始样式以便稍后恢复
+      el._originalBorderRadius = el.style.borderRadius;
+      el._originalBorder = el.style.border;
+      // 应用新的边框样式
+      el.style.borderRadius = '8px';
+      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
+
+      el.addEventListener(
+        'click',
+        () => {
+          if (currentDriver) {
+            currentDriver.destroy();
+            currentDriver = null;
+          }
+        },
+        { once: true }
+      );
+    }
+  },
+  onHighlighted: (element?: Element) => {
+    // 移除 driver-active 类
+    document.body.classList.remove('driver-active');
+
+    // 设置遮罩为透明且不拦截点击
+    const overlay = document.querySelector('.driver-overlay') as HTMLElement;
+    console.log('overlay', overlay);
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+  },
+  onDeselected: (element?: Element) => {
+    if (element) {
+      const el = element as any;
+      el.style.borderRadius = el._originalBorderRadius || '';
+      el.style.border = el._originalBorder || '';
+    }
+  },
+  onDestroyed: () => {}
+});
+
 export const detailDriverObj = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
@@ -213,9 +224,9 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
 
   steps: [
     {
-      element: '.system-template',
+      element: '#driver-detail-network',
       popover: {
-        side: 'right',
+        side: 'top',
         align: 'center',
         borderRadius: '12px 12px 12px 12px',
         PopoverBody: (
@@ -236,6 +247,9 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
               Copy the private or public address for access
+            </Text>
+            <Text color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
+              Click anywhere to finish the tutorial.
             </Text>
             <Center
               color={'#fff'}
@@ -295,6 +309,11 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
       );
     }
   },
+  onHighlighted: (element?: Element) => {
+    const event = new Event('resize');
+    window.dispatchEvent(event);
+  },
+
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;

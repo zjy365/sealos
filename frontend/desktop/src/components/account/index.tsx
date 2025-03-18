@@ -22,7 +22,7 @@ import { CopyIcon, DocsIcon, DownloadIcon, LogoutIcon, NotificationIcon } from '
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import LangSelectSimple from '../LangSelect/simple';
 import { blurBackgroundStyles } from '../desktop_content';
 import RegionToggle from '../region/RegionToggle';
@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import UpgradePlanModal from './UpgradePlanModal';
 import GuideModal from './GuideModal';
+import { useInitWorkspaceStore } from '@/stores/initWorkspace';
 
 const baseItemStyle = {
   minW: '40px',
@@ -71,6 +72,7 @@ export default function Account() {
   const onAmount = useCallback((amount: number) => setNotificationAmount(amount), []);
   const upgradePlanDisclosure = useDisclosure();
   const guideDisclosure = useDisclosure();
+  const { setInitGuide, initGuide } = useInitWorkspaceStore();
 
   const logout = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -90,6 +92,12 @@ export default function Account() {
     if (!accountCenter) return;
     openApp(accountCenter);
   };
+
+  useEffect(() => {
+    if (initGuide) {
+      guideDisclosure.onOpen();
+    }
+  }, [guideDisclosure, initGuide]);
 
   return (
     <Box position={'relative'} flex={1}>
@@ -180,7 +188,10 @@ export default function Account() {
               background: 'rgba(0, 0, 0, 0.05);'
             }}
             border={'1px solid transparent'}
-            onClick={guideDisclosure.onOpen}
+            onClick={() => {
+              guideDisclosure.onOpen();
+              setInitGuide(false);
+            }}
           >
             {t('cc:guide')}
           </Center>

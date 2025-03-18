@@ -192,6 +192,17 @@ export const guideDriverObj2 = (openDesktopApp?: any): Config => ({
       );
     }
   },
+  onHighlighted: (element?: Element) => {
+    // 移除 driver-active 类
+    document.body.classList.remove('driver-active');
+
+    // 设置遮罩为透明且不拦截点击
+    const overlay = document.querySelector('.driver-overlay') as HTMLElement;
+    console.log('overlay', overlay);
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+  },
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;

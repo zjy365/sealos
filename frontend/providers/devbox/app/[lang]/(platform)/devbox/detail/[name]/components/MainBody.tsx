@@ -149,19 +149,6 @@ const MainBody = () => {
             </Text>
             <Flex gap={2} alignItems={'center'}>
               <Button
-                variant={'ghost'}
-                size={'sm'}
-                color={'#224EF5'}
-                _hover={{
-                  bg: 'white'
-                }}
-                fontSize={'12px'}
-                onClick={() => {}}
-                leftIcon={<MyIcon name={'question'} w={'16px'} color={'white'} />}
-              >
-                {t('network_unavailable')}
-              </Button>
-              <Button
                 bg={'white'}
                 color={'grayModern.900'}
                 _hover={{ bg: 'grayModern.50' }}

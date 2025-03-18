@@ -150,7 +150,7 @@ const App = ({ Component, pageProps }: AppProps) => {
               router.push({
                 pathname: '/'
               });
-              useGuideStore.getState().setCreateCompleted(true);
+              useGuideStore.getState().resetGuideState(false);
             }
           } catch (error) {
             console.log(error, 'error');

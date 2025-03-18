@@ -6,11 +6,12 @@ interface GuideState {
   createDevboxCompleted: boolean;
   detailCompleted: boolean;
   listCompleted: boolean;
-  isGuideEnabled: boolean;
   releaseCompleted: boolean;
   releaseVersionCompleted: boolean;
   deployCompleted: boolean;
   ideCompleted: boolean;
+  appName: string;
+  isGuideEnabled: boolean;
   setCreateCompleted: (completed: boolean) => void;
   setCreateDevboxCompleted: (completed: boolean) => void;
   setDetailCompleted: (completed: boolean) => void;
@@ -21,6 +22,7 @@ interface GuideState {
   setDeployCompleted: (completed: boolean) => void;
   setIdeCompleted: (completed: boolean) => void;
   resetGuideState: (completed: boolean) => void;
+  setAppName: (name: string) => void;
 }
 
 export const useGuideStore = create<GuideState>()(
@@ -35,6 +37,8 @@ export const useGuideStore = create<GuideState>()(
       deployCompleted: true,
       ideCompleted: true,
       isGuideEnabled: true,
+      appName: '',
+      setAppName: (name: string) => set({ appName: name }),
       setCreateCompleted: (completed) => set({ createCompleted: completed }),
       setCreateDevboxCompleted: (completed) => set({ createDevboxCompleted: completed }),
       setDetailCompleted: (completed) => set({ detailCompleted: completed }),
