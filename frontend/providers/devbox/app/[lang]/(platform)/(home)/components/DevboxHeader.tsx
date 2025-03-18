@@ -7,7 +7,7 @@ import { useRouter } from '@/i18n';
 import { TemplateState } from '@/constants/template';
 import { useTemplateStore } from '@/stores/template';
 import { useGuideStore } from '@/stores/guide';
-import { createAppDriverObj, startDriver } from '@/hooks/driver';
+import { startDriver, startGuide2 } from '@/hooks/driver';
 
 export default function DevboxHeader({ listLength }: { listLength: number }) {
   const { openTemplateModal, config, updateTemplateModalConfig } = useTemplateStore();
@@ -30,12 +30,12 @@ export default function DevboxHeader({ listLength }: { listLength: number }) {
     }
   }, []);
 
-  const { createCompleted } = useGuideStore();
+  const { guide2 } = useGuideStore();
   useEffect(() => {
-    if (!createCompleted && listLength === 0) {
-      startDriver(createAppDriverObj());
+    if (!guide2 && listLength === 0) {
+      startDriver(startGuide2());
     }
-  }, [createCompleted, listLength]);
+  }, [guide2, listLength]);
 
   return (
     <Flex h={'96px'} alignItems={'center'}>

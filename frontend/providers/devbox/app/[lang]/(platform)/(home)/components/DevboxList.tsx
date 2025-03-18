@@ -17,7 +17,7 @@ import { BaseTable } from '@/components/ListTable';
 import PodLineChart from '@/components/PodLineChart';
 import SwitchPage from '@/components/SwitchDevboxPage';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
-import { startDriver, guideIDEDriverObj, listDriverObj } from '@/hooks/driver';
+import { startDriver, startguideIDE, startGuide5 } from '@/hooks/driver';
 import { useGuideStore } from '@/stores/guide';
 
 const DelModal = dynamic(() => import('@/components/modals/DelModal'));
@@ -121,6 +121,8 @@ const DevboxList = ({
     [refetchDevboxList, setLoading, t, toast]
   );
 
+  const { guide2, guideConfigDevbox, guideIDE, guide5, currentGuideApp } = useGuideStore();
+
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<DevboxListItemTypeV2>();
     return [
@@ -220,7 +222,7 @@ const DevboxList = ({
           return (
             <Flex>
               <IDEButton
-                className={props.row.index === 0 ? 'guide-ide' : ''}
+                className={item.name === currentGuideApp ? 'guide-ide' : ''}
                 devboxName={item.name}
                 sshPort={item.sshPort}
                 status={item.status}
@@ -364,32 +366,50 @@ const DevboxList = ({
   });
 
   const totalRow = table.getRowModel().rows.length;
-  const { ideCompleted, listCompleted } = useGuideStore();
-
-  console.log(ideCompleted, listCompleted, totalRow);
 
   useEffect(() => {
-    if (!ideCompleted && totalRow > 0) {
-      startDriver(guideIDEDriverObj());
-    }
-  }, [ideCompleted, totalRow]);
-
-  useEffect(() => {
-    if (!listCompleted && ideCompleted && totalRow > 0) {
+    if (!guideIDE && guide2 && guideConfigDevbox && totalRow > 0) {
       setTimeout(() => {
-        startDriver(listDriverObj());
+        startDriver(startguideIDE());
         setTimeout(() => {
           const event = new Event('resize');
           window.dispatchEvent(event);
         }, 1000);
       }, 1000);
     }
-  }, [ideCompleted, listCompleted, totalRow]);
+  }, [guideIDE, totalRow, guide2, guideConfigDevbox, currentGuideApp]);
+
+  useEffect(() => {
+    if (!guide5 && guide2 && guideIDE && totalRow > 0) {
+      const checkAndStartGuide = () => {
+        const guideListElement = document.getElementById('guide-list');
+        if (guideListElement) {
+          startDriver(startGuide5());
+          return true;
+        }
+        return false;
+      };
+      if (checkAndStartGuide()) return;
+      const observer = new MutationObserver((mutations, obs) => {
+        if (checkAndStartGuide()) {
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [guide2, guide5, guideIDE, totalRow, currentGuideApp]);
 
   return (
     <>
       <Box height={'full'}>
         <BaseTable
+          currentGuideApp={currentGuideApp}
           borderTopRadius={'11px'}
           border={'0.5px solid'}
           borderColor={'#E4E4E7'}

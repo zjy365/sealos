@@ -29,7 +29,7 @@ import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template
 
 import TemplateDrawer from './TemplateDrawer';
 import { useGuideStore } from '@/stores/guide';
-import { startDriver, releaseDriverObj, deployDriverObj } from '@/hooks/driver';
+import { startDriver, startGuide6, startguideRelease } from '@/hooks/driver';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -338,20 +338,51 @@ const Version = () => {
     }
   ];
 
-  const { releaseCompleted, deployCompleted, releaseVersionCompleted } = useGuideStore();
+  const { guide6, guide7, guideRelease, currentGuideApp } = useGuideStore();
 
   useEffect(() => {
-    if (!releaseCompleted) {
-      startDriver(releaseDriverObj());
+    if (!guide6) {
+      startDriver(startGuide6());
     }
-  }, [releaseCompleted]);
+  }, [guide6]);
 
   useEffect(() => {
-    console.log(123123, deployCompleted, releaseVersionCompleted);
-    if (!deployCompleted && releaseVersionCompleted && devboxVersionList.length > 0) {
-      startDriver(deployDriverObj());
+    if (!guideRelease && guide6 && guide7 && devboxVersionList.length > 0) {
+      // 创建一个函数来检查元素
+      const checkAndStartGuide = () => {
+        const onlineButton = document.getElementById('guide-online-button');
+
+        if (onlineButton) {
+          console.log('Online button found, starting guide');
+          startDriver(startguideRelease());
+          return true;
+        }
+        return false;
+      };
+
+      // 先检查一次
+      if (checkAndStartGuide()) return;
+
+      // 如果没找到，设置观察器
+      const observer = new MutationObserver((mutations, obs) => {
+        if (checkAndStartGuide()) {
+          // 如果找到并启动了引导，停止观察
+          obs.disconnect();
+        }
+      });
+
+      // 开始观察 DOM 变化
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // 清理函数
+      return () => {
+        observer.disconnect();
+      };
     }
-  }, [deployCompleted, releaseVersionCompleted, devboxVersionList]);
+  }, [guideRelease, guide6, guide7, devboxVersionList]);
 
   return (
     <Box

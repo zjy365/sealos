@@ -15,14 +15,14 @@ import {
 } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { useEnvStore } from '@/stores/env';
 import { versionSchema } from '@/utils/vaildate';
 import { DevboxListItemTypeV2 } from '@/types/devbox';
 import { pauseDevbox, releaseDevbox, startDevbox } from '@/api/devbox';
 import { TagCheckbox } from '@/app/[lang]/(platform)/template/TagCheckbox';
-import { startDriver, releaseVersionDriverObj } from '@/hooks/driver';
+import { startDriver, startGuide7 } from '@/hooks/driver';
 import { useGuideStore } from '@/stores/guide';
 
 const ReleaseModal = ({
@@ -100,20 +100,44 @@ const ReleaseModal = ({
     [devbox.status.value, devbox.name, devbox.id, tag, releaseDes, toast, t, onSuccess, onClose]
   );
 
-  const { releaseVersionCompleted } = useGuideStore();
+  const { guideRelease } = useGuideStore();
   useEffect(() => {
-    if (!releaseVersionCompleted && isOpen) {
-      requestAnimationFrame(() => {
-        // 触发多次 resize，增加可靠性
-        for (let i = 0; i < 3; i++) {
-          setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-          }, i * 500);
+    if (!guideRelease && isOpen) {
+      // 创建一个函数来检查元素
+      const checkAndStartGuide = () => {
+        const releaseButton = document.getElementById('release-button');
+
+        if (releaseButton) {
+          console.log('Release button found, starting guide');
+          startDriver(startGuide7());
+          return true;
         }
-        startDriver(releaseVersionDriverObj());
+        return false;
+      };
+
+      // 先检查一次
+      if (checkAndStartGuide()) return;
+
+      // 如果没找到，设置观察器
+      const observer = new MutationObserver((mutations, obs) => {
+        if (checkAndStartGuide()) {
+          // 如果找到并启动了引导，停止观察
+          obs.disconnect();
+        }
       });
+
+      // 开始观察 DOM 变化
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // 清理函数
+      return () => {
+        observer.disconnect();
+      };
     }
-  }, [releaseVersionCompleted, isOpen]);
+  }, [guideRelease, isOpen]);
 
   return (
     <Box>

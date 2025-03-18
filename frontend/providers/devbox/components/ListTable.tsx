@@ -12,8 +12,9 @@ import {
 import { Table as ReactTable, flexRender } from '@tanstack/react-table';
 export function BaseTable<T extends unknown>({
   table,
+  currentGuideApp,
   ...styles
-}: { table: ReactTable<T> } & TableContainerProps) {
+}: { table: ReactTable<T>; currentGuideApp?: string } & TableContainerProps) {
   const router = useRouter();
   return (
     <TableContainer w="100%" my="0px" p="0" overflowY={'auto'} {...styles}>
@@ -82,7 +83,8 @@ export function BaseTable<T extends unknown>({
           {table.getRowModel().rows.map((item, index) => {
             return (
               <Tr
-                id={index === 0 ? 'guide-list' : ''}
+                // @ts-ignore
+                id={item?.original?.name === currentGuideApp ? 'guide-list' : ''}
                 key={item.id}
                 fontSize={'12px'}
                 _hover={{

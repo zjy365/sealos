@@ -287,10 +287,12 @@ const PodLineChart = ({
 
   useEffect(() => {
     return () => {
-      if (myChart.current) {
-        myChart.current.dispose();
-        myChart.current = undefined;
-      }
+      try {
+        if (myChart?.current) {
+          myChart?.current?.dispose();
+          myChart.current = undefined;
+        }
+      } catch (error) {}
     };
   }, []);
 

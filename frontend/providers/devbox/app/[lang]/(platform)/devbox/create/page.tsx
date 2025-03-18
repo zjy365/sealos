@@ -49,7 +49,7 @@ const DevboxCreatePage = () => {
   const { sourcePrice, setSourcePrice } = usePriceStore();
   const { checkQuotaAllow } = useUserStore();
   const { setDevboxDetail, devboxList } = useDevboxStore();
-  const { setAppName } = useGuideStore();
+  const { setCurrentGuideApp, setguideConfigDevbox } = useGuideStore();
 
   const crOldYamls = useRef<DevboxKindsType[]>([]);
   const formOldYamls = useRef<YamlItemType[]>([]);
@@ -251,7 +251,8 @@ const DevboxCreatePage = () => {
       if (sourcePrice?.gpu) {
         refetchPrice();
       }
-      setAppName(formData.name);
+      setguideConfigDevbox(true);
+      setCurrentGuideApp(formData.name);
       router.push(lastRoute);
     } catch (error) {
       console.log('error', error);

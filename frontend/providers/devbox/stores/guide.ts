@@ -2,62 +2,62 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface GuideState {
-  createCompleted: boolean;
-  createDevboxCompleted: boolean;
-  detailCompleted: boolean;
-  listCompleted: boolean;
-  releaseCompleted: boolean;
-  releaseVersionCompleted: boolean;
-  deployCompleted: boolean;
-  ideCompleted: boolean;
-  appName: string;
+  guide1: boolean;
+  guide2: boolean;
+  guideConfigDevbox: boolean;
+  guideIDE: boolean;
+  guide5: boolean;
+  guide6: boolean;
+  guide7: boolean;
+  guideRelease: boolean;
+  currentGuideApp: string;
   isGuideEnabled: boolean;
-  setCreateCompleted: (completed: boolean) => void;
-  setCreateDevboxCompleted: (completed: boolean) => void;
-  setDetailCompleted: (completed: boolean) => void;
-  setListCompleted: (completed: boolean) => void;
+  setGuide1: (completed: boolean) => void;
+  setGuide2: (completed: boolean) => void;
+  setguideConfigDevbox: (completed: boolean) => void;
+  setguideIDE: (completed: boolean) => void;
+  setGuide5: (completed: boolean) => void;
+  setGuide6: (completed: boolean) => void;
+  setGuide7: (completed: boolean) => void;
+  setguideRelease: (completed: boolean) => void;
   setGuideEnabled: (enabled: boolean) => void;
-  setReleaseCompleted: (completed: boolean) => void;
-  setReleaseVersionCompleted: (completed: boolean) => void;
-  setDeployCompleted: (completed: boolean) => void;
-  setIdeCompleted: (completed: boolean) => void;
+  setCurrentGuideApp: (name: string) => void;
   resetGuideState: (completed: boolean) => void;
-  setAppName: (name: string) => void;
 }
 
 export const useGuideStore = create<GuideState>()(
   persist(
     (set) => ({
-      createCompleted: true,
-      createDevboxCompleted: true,
-      detailCompleted: true,
-      listCompleted: true,
-      releaseCompleted: true,
-      releaseVersionCompleted: true,
-      deployCompleted: true,
-      ideCompleted: true,
+      guide1: true,
+      guide2: true,
+      guideConfigDevbox: true,
+      guideIDE: true,
+      guide5: true,
+      guide6: true,
+      guide7: true,
+      guideRelease: true,
+      currentGuideApp: '',
       isGuideEnabled: true,
-      appName: '',
-      setAppName: (name: string) => set({ appName: name }),
-      setCreateCompleted: (completed) => set({ createCompleted: completed }),
-      setCreateDevboxCompleted: (completed) => set({ createDevboxCompleted: completed }),
-      setDetailCompleted: (completed) => set({ detailCompleted: completed }),
-      setListCompleted: (completed) => set({ listCompleted: completed }),
-      setReleaseCompleted: (completed) => set({ releaseCompleted: completed }),
-      setReleaseVersionCompleted: (completed) => set({ releaseVersionCompleted: completed }),
+      setGuide1: (completed: boolean) => set({ guide1: completed }),
+      setGuide2: (completed: boolean) => set({ guide2: completed }),
+      setguideConfigDevbox: (completed: boolean) => set({ guideConfigDevbox: completed }),
+      setguideIDE: (completed: boolean) => set({ guideIDE: completed }),
+      setGuide5: (completed: boolean) => set({ guide5: completed }),
+      setGuide6: (completed: boolean) => set({ guide6: completed }),
+      setGuide7: (completed: boolean) => set({ guide7: completed }),
+      setguideRelease: (completed: boolean) => set({ guideRelease: completed }),
       setGuideEnabled: (enabled) => set({ isGuideEnabled: enabled }),
-      setIdeCompleted: (completed) => set({ ideCompleted: completed }),
-      setDeployCompleted: (completed) => set({ deployCompleted: completed }),
-      resetGuideState: (completed) =>
+      setCurrentGuideApp: (name: string) => set({ currentGuideApp: name }),
+      resetGuideState: (completed: boolean) =>
         set({
-          createCompleted: completed,
-          detailCompleted: completed,
-          listCompleted: completed,
-          releaseCompleted: completed,
-          releaseVersionCompleted: completed,
-          ideCompleted: completed,
-          createDevboxCompleted: completed,
-          deployCompleted: completed
+          guide1: completed,
+          guide2: completed,
+          guideConfigDevbox: completed,
+          guideIDE: completed,
+          guide5: completed,
+          guide6: completed,
+          guide7: completed,
+          guideRelease: completed
         })
     }),
     {

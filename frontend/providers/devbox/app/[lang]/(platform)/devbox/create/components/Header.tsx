@@ -10,7 +10,7 @@ import { useGlobalStore } from '@/stores/global';
 import { useTemplateStore } from '@/stores/template';
 import type { YamlItemType } from '@/types/index';
 import { downLoadBlob } from '@/utils/tools';
-import { startDriver, guideDriverObj2, quitGuideDriverObj } from '@/hooks/driver';
+import { startDriver, quitGuideDriverObj } from '@/hooks/driver';
 import { useGuideStore } from '@/stores/guide';
 
 const Header = ({
@@ -37,7 +37,7 @@ const Header = ({
     downLoadBlob(res, 'application/zip', `yaml${dayjs().format('YYYYMMDDHHmmss')}.zip`);
   }, [yamlList]);
 
-  const { createDevboxCompleted } = useGuideStore();
+  const { guideConfigDevbox, setguideConfigDevbox } = useGuideStore();
 
   return (
     <Flex w={'100%'} px={5} h={'86px'} alignItems={'center'} borderBottomWidth={'1px'}>
@@ -73,18 +73,24 @@ const Header = ({
           {t('export_yaml')}
         </Button>
         <Box position={'relative'}>
-          <Button
-            w={'114px'}
-            flex={'0 0 114px'}
-            h={'40px'}
-            variant={'solid'}
-            onClick={applyCb}
-            className="guide-app-button"
+          <Box
+            p={'1px'}
+            borderRadius={'8px'}
+            border={!guideConfigDevbox ? '1px solid #1C4EF5' : 'none'}
           >
-            {t(applyBtnText)}
-          </Button>
+            <Button
+              w={'114px'}
+              flex={'0 0 114px'}
+              h={'40px'}
+              variant={'solid'}
+              onClick={applyCb}
+              className="guide-app-button"
+            >
+              {t(applyBtnText)}
+            </Button>
+          </Box>
 
-          {!createDevboxCompleted && (
+          {!guideConfigDevbox && (
             <Box
               zIndex={1000}
               position={'absolute'}

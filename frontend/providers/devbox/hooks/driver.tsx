@@ -21,7 +21,7 @@ export function startDriver(config: Config, openDesktopApp?: any) {
   return driverObj;
 }
 
-export const createAppDriverObj = (openDesktopApp?: any): Config => ({
+export const startGuide2 = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
   allowClickMaskNextStep: false,
@@ -108,112 +108,12 @@ export const createAppDriverObj = (openDesktopApp?: any): Config => ({
     }
   },
   onDestroyed: () => {
-    useGuideStore.getState().setCreateCompleted(true);
+    useGuideStore.getState().setGuide2(true);
     currentDriver = null;
   }
 });
 
-export const guideDriverObj2 = (openDesktopApp?: any): Config => ({
-  showProgress: true,
-  allowClose: false,
-  allowClickMaskNextStep: false,
-  isShowButtons: false,
-  allowKeyboardControl: false,
-  disableActiveInteraction: false,
-  overlayColor: 'transparent',
-
-  steps: [
-    {
-      element: '.guide-app-button',
-      popover: {
-        side: 'left',
-        align: 'start',
-        borderRadius: '12px 12px 12px 12px',
-        PopoverBody: (
-          <Box
-            width={'250px'}
-            bg={'rgba(28, 46, 245, 0.9)'}
-            p={'12px'}
-            borderRadius={'12px'}
-            color={'#fff'}
-          >
-            <Flex alignItems={'center'} justifyContent={'space-between'}>
-              <Text color={'#fff'} fontSize={'14px'} fontWeight={600}>
-                Configure Devbox
-              </Text>
-              <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                3/8
-              </Text>
-            </Flex>
-            <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
-              Select your environment settings, and adjust CPU & memory as needed
-            </Text>
-            <Center
-              color={'#fff'}
-              fontSize={'14px'}
-              fontWeight={500}
-              cursor={'pointer'}
-              mt={'16px'}
-              borderRadius={'8px'}
-              background={'rgba(255, 255, 255, 0.20)'}
-              w={'fit-content'}
-              h={'32px'}
-              p={'8px'}
-              onClick={() => {
-                startDriver(quitGuideDriverObj);
-              }}
-            >
-              Quit Guide
-            </Center>
-          </Box>
-        )
-      }
-    }
-  ],
-  onHighlightStarted: (element) => {
-    const el = element as any;
-    if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
-      el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
-
-      el.addEventListener(
-        'click',
-        () => {
-          if (currentDriver) {
-            currentDriver.destroy();
-            currentDriver = null;
-          }
-        },
-        { once: true }
-      );
-    }
-  },
-  onHighlighted: (element?: Element) => {
-    // 移除 driver-active 类
-    document.body.classList.remove('driver-active');
-
-    // 设置遮罩为透明且不拦截点击
-    const overlay = document.querySelector('.driver-overlay') as HTMLElement;
-    console.log('overlay', overlay);
-    if (overlay) {
-      overlay.style.display = 'none';
-    }
-  },
-  onDeselected: (element?: Element) => {
-    if (element) {
-      const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
-    }
-  },
-  onDestroyed: () => {}
-});
-
-export const guideIDEDriverObj = (openDesktopApp?: any): Config => ({
+export const startguideIDE = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
   allowClickMaskNextStep: false,
@@ -300,11 +200,11 @@ export const guideIDEDriverObj = (openDesktopApp?: any): Config => ({
     }
   },
   onDestroyed: () => {
-    useGuideStore.getState().setIdeCompleted(true);
+    useGuideStore.getState().setguideIDE(true);
   }
 });
 
-export const listDriverObj = (openDesktopApp?: any): Config => ({
+export const startGuide5 = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
   allowClickMaskNextStep: false,
@@ -385,6 +285,10 @@ export const listDriverObj = (openDesktopApp?: any): Config => ({
       );
     }
   },
+  onHighlighted: (element?: Element) => {
+    const event = new Event('resize');
+    window.dispatchEvent(event);
+  },
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
@@ -392,10 +296,12 @@ export const listDriverObj = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
-  onDestroyed: () => {}
+  onDestroyed: () => {
+    useGuideStore.getState().setGuide5(true);
+  }
 });
 
-export const releaseDriverObj = (openDesktopApp?: any): Config => ({
+export const startGuide6 = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
   allowClickMaskNextStep: false,
@@ -474,6 +380,9 @@ export const releaseDriverObj = (openDesktopApp?: any): Config => ({
       );
     }
   },
+  onHighlighted: (element) => {
+    window.dispatchEvent(new Event('resize'));
+  },
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
@@ -482,14 +391,14 @@ export const releaseDriverObj = (openDesktopApp?: any): Config => ({
     }
   },
   onDestroyed: () => {
-    useGuideStore.getState().setReleaseCompleted(true);
+    useGuideStore.getState().setGuide6(true);
   }
 });
 
-export const releaseVersionDriverObj = (openDesktopApp?: any): Config => ({
+export const startGuide7 = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
-  allowClickMaskNextStep: true,
+  allowClickMaskNextStep: false,
   isShowButtons: false,
   allowKeyboardControl: false,
   disableActiveInteraction: false,
@@ -572,12 +481,15 @@ export const releaseVersionDriverObj = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
+  onHighlighted: (element) => {
+    window.dispatchEvent(new Event('resize'));
+  },
   onDestroyed: () => {
-    useGuideStore.getState().setReleaseVersionCompleted(true);
+    useGuideStore.getState().setGuide7(true);
   }
 });
 
-export const deployDriverObj = (openDesktopApp?: any): Config => ({
+export const startguideRelease = (openDesktopApp?: any): Config => ({
   showProgress: true,
   allowClose: false,
   allowClickMaskNextStep: true,
@@ -611,6 +523,9 @@ export const deployDriverObj = (openDesktopApp?: any): Config => ({
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
               Click &quot;Deploy&quot; to launch the application to production
+            </Text>
+            <Text color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
+              Click anywhere to finish the tutorial.
             </Text>
             <Center
               color={'#fff'}
@@ -664,6 +579,7 @@ export const deployDriverObj = (openDesktopApp?: any): Config => ({
     }
   },
   onDestroyed: () => {
+    useGuideStore.getState().setguideRelease(true);
     startDriver(quitGuideDriverObj);
   }
 });

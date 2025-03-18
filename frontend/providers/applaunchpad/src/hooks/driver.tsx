@@ -108,6 +108,10 @@ export const applistDriverObj = (openDesktopApp?: any): Config => ({
       el.style.border = el._originalBorder || '';
     }
   },
+  onHighlighted: (element?: Element) => {
+    const event = new Event('resize');
+    window.dispatchEvent(event);
+  },
   onDestroyed: () => {
     useGuideStore.getState().setListCompleted(true);
   }
@@ -313,7 +317,6 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
     const event = new Event('resize');
     window.dispatchEvent(event);
   },
-
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
@@ -324,97 +327,6 @@ export const detailDriverObj = (openDesktopApp?: any): Config => ({
   onDestroyed: () => {
     startDriver(quitGuideDriverObj);
   }
-});
-
-export const doneDriverObj = (openDesktopApp?: any): Config => ({
-  showProgress: true,
-  allowClose: false,
-  allowClickMaskNextStep: false,
-  isShowButtons: false,
-  allowKeyboardControl: false,
-  disableActiveInteraction: false,
-  overlayColor: 'transparent',
-
-  steps: [
-    {
-      popover: {
-        side: 'right',
-        align: 'center',
-        borderRadius: '12px 12px 12px 12px',
-        PopoverBody: (
-          <Box
-            color={'black'}
-            borderRadius={'20px'}
-            bg={'#FFF'}
-            boxShadow={
-              '0px 16px 48px -5px rgba(0, 0, 0, 0.12), 0px 8px 12px -5px rgba(0, 0, 0, 0.08)'
-            }
-            p={'4px'}
-            w={'460px'}
-          >
-            <Box w={'100%'} border={'1px solid #B0CBFF'} borderRadius={'16px'}>
-              <Box px={'24px'}>
-                <Text mt={'32px'} color={'#000'} fontSize={'20px'} fontWeight={600}>
-                  We’re still here!
-                </Text>
-                <Text mt={'8px'} color={'#404040'} fontSize={'14px'} fontWeight={400}>
-                  You can always find your way back to this guide in the top navigation bar. Happy
-                  exploring!
-                </Text>
-                <Image mt={'20px'} src={'/guide-image.png'} alt="guide" />
-              </Box>
-
-              <Center
-                cursor={'pointer'}
-                mt={'20px'}
-                borderTop={'1px solid #E4E4E7'}
-                py={'20px'}
-                px={'24px'}
-                onClick={() => {
-                  if (currentDriver) {
-                    currentDriver.destroy();
-                    currentDriver = null;
-                  }
-                }}
-              >
-                Got it
-              </Center>
-            </Box>
-          </Box>
-        )
-      }
-    }
-  ],
-  onHighlightStarted: (element) => {
-    const el = element as any;
-    if (el) {
-      // 保存原始样式以便稍后恢复
-      el._originalBorderRadius = el.style.borderRadius;
-      el._originalBorder = el.style.border;
-      // 应用新的边框样式
-      el.style.borderRadius = '8px';
-      el.style.border = '1.5px solid #1C4EF5'; // 使用蓝色 #1C4EF5
-
-      el.addEventListener(
-        'click',
-        (e: any) => {
-          if (currentDriver) {
-            currentDriver.destroy();
-            currentDriver = null;
-          }
-        },
-        { once: true }
-      );
-    }
-  },
-  onDeselected: (element?: Element) => {
-    if (element) {
-      const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
-    }
-  },
-  onDestroyed: () => {}
 });
 
 export const quitGuideDriverObj: Config = {
