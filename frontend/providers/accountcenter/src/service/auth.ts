@@ -1,4 +1,4 @@
-import subDays from 'date-fns/esm/fp/subDays/index';
+import { subDays } from 'date-fns';
 import { sign, verify } from 'jsonwebtoken';
 
 const internalJwtSecret = () => process.env.INTERNAL_JWT_SECRET || '123456789';
@@ -38,7 +38,7 @@ export const generateBillingToken = (props: AuthenticationTokenPayload) =>
   sign(
     {
       ...props,
-      iat: subDays(1)(new Date())
+      iat: subDays(new Date(), 1)
     },
     internalJwtSecret(),
     {
@@ -54,7 +54,7 @@ export const generateRegionalToken = (props: AccessTokenPayload) =>
   sign(
     {
       ...props,
-      iat: subDays(1)(new Date())
+      iat: subDays(new Date(), 1)
     },
     accessJwtSecret(),
     {
