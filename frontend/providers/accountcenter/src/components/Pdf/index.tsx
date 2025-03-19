@@ -2,11 +2,21 @@ import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Svg, Rect, Path, Font } from '@react-pdf/renderer';
 import { InvoicePayload } from '@/types/invoice';
 import { formatMoney, displayMoney } from '@/utils/format';
+import { TUserInfoReponse } from '@/schema/user';
+
+Font.register({
+  family: 'Geist',
+  fonts: [
+    { src: '/fonts/Geist-Regular.ttf', fontWeight: 400 },
+    { src: '/fonts/Geist-SemiBold.ttf', fontWeight: 600 },
+    { src: '/fonts/Geist-Bold.ttf', fontWeight: 700 }
+  ]
+});
 
 // 创建样式
 const styles = StyleSheet.create({
   page: {
-    // fontFamily: 'Geist',
+    fontFamily: 'Geist',
     backgroundColor: '#F8F8F9',
     paddingHorizontal: 16,
     paddingVertical: 24,
@@ -65,12 +75,12 @@ const styles = StyleSheet.create({
 });
 
 // 创建pdf文档
-const Pdf = ({ data }: { data?: InvoicePayload[] }) => {
+const Pdf = ({ data, user }: { data?: InvoicePayload[]; user?: TUserInfoReponse }) => {
   const item = data?.[0];
   if (!item) return null;
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={[styles.page]}>
         <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginBottom: 32 }}>
           <View style={{ width: 176, flexDirection: 'column', gap: 12 }}>
             <Text style={styles.title}>Invoice</Text>
@@ -106,15 +116,26 @@ const Pdf = ({ data }: { data?: InvoicePayload[] }) => {
           </View>
         </View>
         <View style={styles.section}>
-          <Text style={[styles.p, styles.strong]}>ClawCloud</Text>
-          <Text style={styles.p}>ClawCloud (Singapore) Private Limited</Text>
-          <Text style={styles.p}>10 Collyer Quay</Text>
-          <Text style={styles.p}># 10-01 Ocean Financial Center</Text>
-          <Text style={styles.p}>Singapore 049315</Text>
+          <View style={{ flexDirection: 'row', gap: 40 }}>
+            <View>
+              <Text style={[styles.p, styles.strong]}>ClawCloud</Text>
+              <Text style={styles.p}>ClawCloud (Singapore) Private Limited</Text>
+              <Text style={styles.p}>10 Collyer Quay</Text>
+              <Text style={styles.p}># 10-01 Ocean Financial Center</Text>
+              <Text style={styles.p}>Singapore 049315</Text>
+            </View>
+            <View>
+              <Text style={[styles.p, styles.strong]}>Bill To</Text>
+              <Text style={styles.p}>
+                {user?.user.firstname} {user?.user.lastname}
+              </Text>
+              <Text style={styles.p}>{user?.user.email}</Text>
+            </View>
+          </View>
           <View style={{ marginTop: 22, marginBottom: 28 }}>
             <Text style={styles.p}>Invoice of (USD)</Text>
             <Text style={[styles.title, { fontSize: 20 }]}>
-              ${displayMoney(formatMoney(item.totalAmount))}
+              ${displayMoney(formatMoney(item.Amount))}
             </Text>
           </View>
           <View style={styles.table}>
@@ -137,23 +158,23 @@ const Pdf = ({ data }: { data?: InvoicePayload[] }) => {
             </View>
             <View style={styles.tableRow}>
               <View style={styles.tableCell}>
-                <Text style={[styles.p, styles.strong]}>{item.remark as string}</Text>
-                <Text style={styles.p}>{item.detail}</Text>
+                <Text style={[styles.p, styles.strong]}>{item.Type}</Text>
+                <Text style={styles.p}>{item.ChargeSource}</Text>
               </View>
               <View style={{ width: 100 }}>
                 <Text style={[styles.p, styles.strong]}>
-                  {new Date(item.updatedAt).toLocaleDateString()}
+                  {new Date(item.CreatedAt).toLocaleDateString()}
                 </Text>
               </View>
               <View style={{ width: 100 }}>
-                <Text style={[styles.p, styles.strong]}>{item.remark as string}</Text>
+                <Text style={[styles.p, styles.strong]}>{item.Method as string}</Text>
               </View>
               <View style={styles.tableCell}>
-                <Text style={[styles.p, styles.strong]}>{item.id}</Text>
+                <Text style={[styles.p, styles.strong]}>{item.ID}</Text>
               </View>
               <View style={styles.tableCell}>
                 <Text style={[styles.p, styles.strong, styles.right]}>
-                  ${displayMoney(formatMoney(item.totalAmount))} USD
+                  ${displayMoney(formatMoney(item.Amount))} USD
                 </Text>
               </View>
             </View>

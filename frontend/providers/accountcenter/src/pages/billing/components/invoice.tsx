@@ -18,6 +18,8 @@ import Pdf from '@/components/Pdf';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { createRoot } from 'react-dom/client';
 import { serviceSideProps } from '@/utils/i18n';
+import { formatMoney, displayMoney } from '@/utils/format';
+import { getUserInfo } from '@/api/user';
 
 const Invoice = ({ invoiceList }: { invoiceList: InvoicePayload[] }) => {
   const { t } = useTranslation();
@@ -26,12 +28,12 @@ const Invoice = ({ invoiceList }: { invoiceList: InvoicePayload[] }) => {
       {
         id: 'date',
         header: t('Date'),
-        cell: ({ row }) => <Text>{new Date(row.original.createdAt).toLocaleDateString()}</Text>
+        cell: ({ row }) => <Text>{new Date(row.original.CreatedAt).toLocaleDateString()}</Text>
       },
       {
         id: 'amount',
         header: t('Amount'),
-        accessorKey: 'totalAmount'
+        cell: ({ row }) => <Text>${formatMoney(row.original.Amount).toFixed(0)}</Text>
       },
       {
         id: 'status',
@@ -40,24 +42,25 @@ const Invoice = ({ invoiceList }: { invoiceList: InvoicePayload[] }) => {
           <Tag
             variant={'outline'}
             size={'md'}
-            colorScheme={
-              row.original.status === 'PENDING'
-                ? 'gray'
-                : row.original.status === 'COMPLETED'
-                ? 'green'
-                : 'red'
-            }
+            // colorScheme={
+            //   row.original.status === 'Paid'
+            //     ? 'gray'
+            //     : row.original.status === 'COMPLETED'
+            //     ? 'green'
+            //     : 'red'
+            // }
+            colorScheme="gray"
             borderRadius={'full'}
-            bg={row.original.status === 'REJECTED' ? '#FEF2F2' : undefined}
+            // bg={row.original.status === 'REJECTED' ? '#FEF2F2' : undefined}
           >
-            <TagLabel>{row.original.status}</TagLabel>
+            <TagLabel>Paid</TagLabel>
           </Tag>
         )
       },
       {
         // id: 'desc',
         header: t('Description'),
-        accessorKey: 'desc'
+        accessorKey: 'Type'
       },
       {
         id: 'action',
@@ -95,8 +98,9 @@ const Invoice = ({ invoiceList }: { invoiceList: InvoicePayload[] }) => {
     downloadAll([data]);
   };
   const downloadAll = async (data: InvoicePayload[]) => {
+    const user = await getUserInfo();
     const link = React.createElement(PDFDownloadLink, {
-      document: <Pdf data={data} />,
+      document: <Pdf data={data} user={user} />,
       fileName: `invoice-${new Date().toLocaleDateString()}.pdf`
     });
     const container = document.createElement('div');

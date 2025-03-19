@@ -101,6 +101,7 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
                 lineHeight="16px"
                 fontSize="12px"
                 color="#fff"
+                borderRadius="9999px"
               >
                 {t('MostPopular')}
               </Box>

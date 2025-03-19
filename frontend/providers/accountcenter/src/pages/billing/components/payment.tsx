@@ -127,7 +127,7 @@ const Payment = ({
                   <IconButton aria-label="More" icon={<Ellipsis />} variant={'ghost'} />
                 </PopoverTrigger>
                 <PopoverContent
-                  width={'160px'}
+                  width={'180px'}
                   borderRadius={'xl'}
                   shadow={'0px 4px 12px 0px #00000014'}
                 >
@@ -147,7 +147,9 @@ const Payment = ({
                         variant={'ghost'}
                         w={'100%'}
                         justifyContent={'flex-start'}
-                        disabled={item.default || item.lastPaymentStatus.toLowerCase() === 'failed'}
+                        isDisabled={
+                          item.default || item.lastPaymentStatus.toLowerCase() === 'failed'
+                        }
                       >
                         <Settings size={'16px'} />
                         <Text fontSize={'14px'} lineHeight={'20px'} ml={'8px'}>
@@ -170,7 +172,7 @@ const Payment = ({
                         variant={'ghost'}
                         w={'100%'}
                         justifyContent={'flex-start'}
-                        disabled={item.default || cardList.length === 1}
+                        isDisabled={item.default || cardList.length === 1}
                       >
                         <Trash2 size={'16px'} />
                         <Text fontSize={'14px'} lineHeight={'20px'} ml={'8px'}>

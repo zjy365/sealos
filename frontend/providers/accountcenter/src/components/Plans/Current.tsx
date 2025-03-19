@@ -27,6 +27,7 @@ import upperFirst from '@/utils/upperFirst';
 import CancelPlanButton from './CancelPlanButton';
 import UpgradePlanModal from './UpgradeModal';
 import { isPlanCancelling } from './planStatus';
+import useScene from '@/hooks/useScene';
 
 interface CurrentPlanProps {
   plans: TPlanApiResponse[];
@@ -123,6 +124,16 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
   }, [isFree, isMaxAmountPlan]);
   const isUpgradable = Array.isArray(plan.upgradePlanList) && plan.upgradePlanList.length > 0;
   const isCancelled = isPlanCancelling(lastTransaction);
+  const {
+    isOpen: isUpgradeModalOpen,
+    onOpen: openUpgradeModal,
+    onClose: closeUpgradeModal
+  } = useDisclosure();
+  useScene('upgrade', () => {
+    if (isUpgradable) {
+      openUpgradeModal();
+    }
+  });
   const renderFeature = (text: string, key: string) => {
     return (
       <GridItem key={key}>
@@ -145,11 +156,6 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
       </GridItem>
     );
   };
-  const {
-    isOpen: isUpgradeModalOpen,
-    onOpen: openUpgradeModal,
-    onClose: closeUpgradeModal
-  } = useDisclosure();
   const renderDate = () => {
     if (isCancelled) {
       return (

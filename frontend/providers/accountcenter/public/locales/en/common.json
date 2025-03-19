@@ -295,6 +295,7 @@
   "DeleteAccountTip": "Once deleted, your workspace and contents cannot be recovered.",
   "DeleteAccountConfirmAlert": "This action is not reversible. Please be certain.",
   "DeleteAccountConfirmAlertUserName": "Enter your username <UserName>{{userName}}</UserName> to confirm:",
+  "DeleteAccountInputUsernameNotMatch": "The username you entered does not match {{userName}}",
   "Status": "Status",
   "Total": "Total",
   "TotalApps": "Total Apps",
