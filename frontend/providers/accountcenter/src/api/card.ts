@@ -1,7 +1,6 @@
-import { TCardScheam } from '@/schema/card';
 import { GET, POST } from '@/service/request';
 
-export const getCardList = () => GET<{ cardList: TCardScheam[] }>('/card/list');
+export const getCardList = () => GET('/card/list');
 
 export const setDefaultCard = (cardID: string) => POST('/card/setDefault', { cardID });
 

@@ -9,18 +9,12 @@ import { getInvoiceList } from '@/api/invoice';
 import { CardSchema } from '@/schema/card';
 import type { InvoicePayload } from '@/types/invoice';
 import z from 'zod';
-import { getLastTransaction } from '@/api/plan';
-import { useTranslation } from 'next-i18next';
-import { TLastTransactionResponse } from '@/schema/plan';
-import PlanAlert from '@/components/Alert/PlanAlert';
 
-function Billing() {
-  const { t } = useTranslation();
+function Home() {
   const { Loading } = useLoading();
   const [initialized, setInitialized] = useState(false);
   const [cardList, setCardList] = useState<z.infer<typeof CardSchema>[]>([]);
   const [invoiceList, setInvoiceList] = useState<InvoicePayload[]>([]);
-  const [lastTransaction, setLastTransaction] = useState<TLastTransactionResponse>();
   useEffect(() => {
     async function fetchData() {
       const card = getCardList().then((res) => {
@@ -34,12 +28,6 @@ function Billing() {
     }
     fetchData();
   }, []);
-  useEffect(() => {
-    getLastTransaction().then((res) => {
-      setLastTransaction(res?.transcation);
-    });
-  }, []);
-
   const handleSetDefault = (id: string) => {
     setInitialized(false);
     setDefaultCard(id).then(() => {
@@ -62,13 +50,11 @@ function Billing() {
   return (
     <>
       <Layout>
-        <PlanAlert lastTransaction={lastTransaction} />
         <Payment
           handleDelete={handleDelete}
           handleSetDefault={handleSetDefault}
           cardList={cardList}
           mb={'12px'}
-          mt={'12px'}
         ></Payment>
         <Invoice invoiceList={invoiceList}></Invoice>
       </Layout>
@@ -85,4 +71,4 @@ export async function getServerSideProps(content: any) {
   };
 }
 
-export default Billing;
+export default Home;

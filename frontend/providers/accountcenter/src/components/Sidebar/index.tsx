@@ -7,7 +7,7 @@ import { BarChart3 } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 
-export default function Sidebar({ ...props }: any) {
+export default function Sidebar() {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -35,7 +35,7 @@ export default function Sidebar({ ...props }: any) {
   ];
 
   return (
-    <Stack {...props} w={'266px'} flexShrink={0} spacing={'4px'}>
+    <Stack w={'266px'} flexShrink={0} spacing={'4px'}>
       {siderbarMap.map((item) => (
         <Center
           key={item.path}

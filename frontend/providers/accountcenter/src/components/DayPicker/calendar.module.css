@@ -115,12 +115,12 @@
 }
 
 .row:first-child {
-  justify-content: flex-end;
+  justify-content: end;
 }
 
 .head_row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
 }
 
 .head_cell {

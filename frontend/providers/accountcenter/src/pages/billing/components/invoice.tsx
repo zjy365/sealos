@@ -12,7 +12,7 @@ import {
   getPaginationRowModel
 } from '@tanstack/react-table';
 import { BaseTable } from '@/components/BaseTable/baseTable';
-import Empty from '@/components/Empty';
+import Empty from './empty';
 import type { InvoicePayload } from '@/types/invoice';
 
 import { createRoot } from 'react-dom/client';
@@ -61,14 +61,13 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
       {
         id: 'action',
         header: '',
-        cell: ({ row }) => (
+        cell: () => (
           <Flex justifyContent="flex-end">
             <IconButton aria-label="Download" icon={<Download size={'16px'} />} variant={'ghost'} />
           </Flex>
         )
       }
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [t]
   );
   const table = useReactTable<InvoicePayload>({
@@ -113,13 +112,5 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
     </Card>
   );
 };
-
-export async function getServerSideProps(content: any) {
-  return {
-    props: {
-      ...(await serviceSideProps(content))
-    }
-  };
-}
 
 export default Invoice;
