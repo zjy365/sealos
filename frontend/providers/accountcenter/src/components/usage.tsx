@@ -89,6 +89,7 @@ const Usage = ({
         regionUid: region.find((item: Region) => item.domain === selectApp.regionDomain)?.uid,
         startTime: data.startTime
       }).then((res) => {
+        console.log(res);
         setSelectDetail(res.costs);
       });
     }
@@ -191,8 +192,8 @@ const Usage = ({
           <DrawerHeader borderBottom={'1px solid #E4E4E7'}>{selectApp?.appName}</DrawerHeader>
 
           <DrawerBody borderBottom={'1px solid #E4E4E7'} bg={'#F7F7F9'} padding={'24px'}>
-            {selectDetail.map((item, index) => (
-              <Box key={index}>
+            {selectDetail.map((item) => (
+              <Box key={item.order_id}>
                 <Text
                   display={'flex'}
                   alignItems={'center'}
@@ -215,49 +216,51 @@ const Usage = ({
                     if (!item.used?.[String(index) as '0' | '1' | '2' | '3' | '4' | '5']) {
                       return null;
                     }
-                    return [
-                      <Box
-                        key={`type-${config[1].idx}`}
-                        p="12px 24px"
-                        bg="white"
-                        borderBottom="1px solid #E4E4E7"
-                      >
-                        <Text>{config[0]}</Text>
-                      </Box>,
-                      <Box
-                        key={`scale-${config[1].idx}`}
-                        p="12px 24px"
-                        bg="white"
-                        borderBottom="1px solid #E4E4E7"
-                        textAlign="right"
-                      >
-                        <Highlight
-                          styles={{ fontWeight: '600' }}
-                          query={`${(
-                            item.used[String(index) as '0' | '1' | '2' | '3' | '4' | '5'] /
-                            config[1].scale
-                          ).toFixed(2)}`}
+                    return (
+                      <>
+                        <Box
+                          key={config[1].idx}
+                          p="12px 24px"
+                          bg="white"
+                          borderBottom="1px solid #E4E4E7"
                         >
-                          {`${(
-                            item.used[String(index) as '0' | '1' | '2' | '3' | '4' | '5'] /
-                            config[1].scale
-                          ).toFixed(2)} ${config[1].unit}`}
-                        </Highlight>
-                      </Box>,
-                      <Box
-                        key={`amount-${config[1].idx}`}
-                        p="12px 24px"
-                        bg="white"
-                        borderBottom="1px solid #E4E4E7"
-                        textAlign="right"
-                      >
-                        <Highlight styles={{ fontWeight: '600' }} query={'$'}>
-                          {`$ ${formatMoney(
-                            item.used_amount[String(index) as '0' | '1' | '2' | '3' | '4' | '5']
-                          ).toFixed(6)}`}
-                        </Highlight>
-                      </Box>
-                    ];
+                          <Text>{config[0]}</Text>
+                        </Box>
+                        <Box
+                          key={config[1].idx}
+                          p="12px 24px"
+                          bg="white"
+                          borderBottom="1px solid #E4E4E7"
+                          textAlign="right"
+                        >
+                          <Highlight
+                            styles={{ fontWeight: '600' }}
+                            query={`${(
+                              item.used[String(index) as '0' | '1' | '2' | '3' | '4' | '5'] /
+                              config[1].scale
+                            ).toFixed(2)}`}
+                          >
+                            {`${(
+                              item.used[String(index) as '0' | '1' | '2' | '3' | '4' | '5'] /
+                              config[1].scale
+                            ).toFixed(2)} ${config[1].unit}`}
+                          </Highlight>
+                        </Box>
+                        <Box
+                          key={config[1].idx}
+                          p="12px 24px"
+                          bg="white"
+                          borderBottom="1px solid #E4E4E7"
+                          textAlign="right"
+                        >
+                          <Highlight styles={{ fontWeight: '600' }} query={'$'}>
+                            {`$ ${formatMoney(
+                              item.used_amount[String(index) as '0' | '1' | '2' | '3' | '4' | '5']
+                            ).toFixed(6)}`}
+                          </Highlight>
+                        </Box>
+                      </>
+                    );
                   })}
                 </Box>
               </Box>

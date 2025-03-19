@@ -30,6 +30,5 @@ const PlanAlert: FC<PlanAlertProps> = ({ lastTransaction, includeCancelling }) =
       </Alert>
     );
   }
-  return null;
 };
 export default PlanAlert;

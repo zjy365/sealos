@@ -70,7 +70,7 @@ const planStyleConfig = {
       }
     } as HTMLChakraProps<'div'>,
     feature: {
-      tickColor: 'rgb(28, 78, 245)',
+      tickColor: '#1C4EF5',
       color: '#71717A'
     },
     upgradeButton: {}
@@ -87,7 +87,7 @@ const planStyleConfig = {
       color: '#FAFAFA'
     },
     feature: {
-      tickColor: 'rgba(255, 255, 255, 0.6)',
+      tickColor: '#fff',
       color: '#fff'
     },
     upgradeButton: {
@@ -127,12 +127,7 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
     return (
       <GridItem key={key}>
         <Flex columnGap="8px" alignItems="center">
-          <CircleCheck
-            width="16"
-            height="16"
-            stroke={styleConfig.feature.tickColor}
-            strokeWidth="1.33"
-          />
+          <CircleCheck width="16" height="16" stroke={styleConfig.feature.tickColor} />
           <Text
             lineHeight="20px"
             fontSize="14px"

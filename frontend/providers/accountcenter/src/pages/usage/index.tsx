@@ -1,3 +1,4 @@
+import { useLoading } from '@/hooks/useLoading';
 import { useCallback, useEffect, useState } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import Layout from '@/components/Layout';
@@ -6,6 +7,7 @@ import dynamic from 'next/dynamic';
 import {
   Flex,
   Select,
+  Input,
   Text,
   Button,
   Popover,
@@ -16,7 +18,7 @@ import {
 import Card from '@/components/Card';
 import { CircleHelp } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
-import { format, addDays, startOfDay } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Calendar } from '@/components/DayPicker/calendar';
@@ -75,6 +77,7 @@ function DatePickerWithRange({
 }
 
 function Home() {
+  const { Loading } = useLoading();
   const [initialized, setInitialized] = useState(false);
   const { t } = useTranslation();
   const [pagination, setPagination] = useState<PaginationState>({
@@ -86,8 +89,8 @@ function Home() {
   const [regionList, setRegionList] = useState<Region[]>([]);
   const [namespaceList, setNamespaceList] = useState([]);
   const [date, setDate] = useState<DateRange>({
-    from: startOfDay(new Date()),
-    to: addDays(startOfDay(new Date()), 1)
+    from: addDays(new Date(), -1),
+    to: new Date()
   });
   const [confumptions, setConsumptions] = useState(0);
   const [namespace, setNamespace] = useState('');
@@ -105,7 +108,7 @@ function Home() {
 
   useEffect(() => {
     getNamespaceList({
-      endTime: date?.to || startOfDay(new Date()),
+      endTime: date?.to || new Date(),
       startTime: date?.from,
       regionUid: region
     }).then((res) => {
@@ -116,7 +119,7 @@ function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUsageList = useCallback(
     debounce(async (data: any) => {
-      setInitialized(false);
+      setInitialized(true);
       const res = await getUsageList(data);
       setUsageList(res?.overviews || []);
       setTotal(res?.total || 0);
@@ -143,7 +146,7 @@ function Home() {
   useEffect(() => {
     const data = {
       endTime: date?.to,
-      startTime: date?.from ? date.from : date?.to ? startOfDay(new Date()) : undefined,
+      startTime: date?.from ? date.from : date?.to ? new Date() : undefined,
       regionUid: region,
       namespace
     };
@@ -156,7 +159,7 @@ function Home() {
       page: pagination.pageIndex + 1,
       pageSize: pagination.pageSize,
       endTime: date?.to,
-      startTime: date?.from ? date.from : date?.to ? startOfDay(new Date()) : undefined,
+      startTime: date?.from ? date.from : date?.to ? new Date() : undefined,
       regionUid: region,
       namespace
     };
@@ -167,95 +170,97 @@ function Home() {
   const handleCostHelp = () => {};
 
   return (
-    <Layout loading={!initialized}>
-      <Flex justifyContent={'space-between'} mb={'12px'}>
-        <Flex w={'334px'}>
-          <Select
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-            borderRightRadius={'0px'}
-            size={'lg'}
-            placeholder={t('SelectRegion')}
-          >
-            {regionList.map((item: Region) => {
-              return (
-                <option key={item.uid} value={item.uid}>
-                  {item.name.en}
-                </option>
-              );
-            })}
-          </Select>
-          <Select
-            value={namespace}
-            onChange={(e) => setNamespace(e.target.value)}
-            borderLeftRadius={'0px'}
-            size={'lg'}
-            placeholder={t('SelectWorkspace')}
-          >
-            {namespaceList.map((item: any) => {
-              return (
-                <option key={item[0]} value={item[0]}>
-                  {item[1]}
-                </option>
-              );
-            })}
-          </Select>
-        </Flex>
-        <Flex alignItems={'center'}>
-          <DatePickerWithRange date={date} setDate={setDate}></DatePickerWithRange>
-        </Flex>
-      </Flex>
-      <Flex mb={'12px'} gap={'12px'}>
-        <Card width={'full'}>
-          <Flex justifyContent={'space-between'}>
-            <Text fontSize={'18px'} lineHeight={'28px'} fontWeight={600}>
-              {t('TotalCost')}
-            </Text>
-            <Flex
-              onClick={handleCostHelp}
-              cursor={'pointer'}
-              alignItems={'center'}
-              color={'#1C4EF5'}
-              visibility={'hidden'}
+    <>
+      <Layout>
+        <Flex justifyContent={'space-between'} mb={'12px'}>
+          <Flex w={'334px'}>
+            <Select
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              borderRightRadius={'0px'}
+              size={'lg'}
+              placeholder={t('SelectRegion')}
             >
-              <CircleHelp size={'16px'} />
-              <Text ml={'4px'} fontSize={'14px'} lineHeight={'20px'} fontWeight={500}>
-                {t('CostMetrics')}
+              {regionList.map((item: Region) => {
+                return (
+                  <option key={item.uid} value={item.uid}>
+                    {item.name.en}
+                  </option>
+                );
+              })}
+            </Select>
+            <Select
+              value={namespace}
+              onChange={(e) => setNamespace(e.target.value)}
+              borderLeftRadius={'0px'}
+              size={'lg'}
+              placeholder={t('SelectWorkspace')}
+            >
+              {namespaceList.map((item: any) => {
+                return (
+                  <option key={item[0]} value={item[0]}>
+                    {item[1]}
+                  </option>
+                );
+              })}
+            </Select>
+          </Flex>
+          <Flex alignItems={'center'}>
+            <DatePickerWithRange date={date} setDate={setDate}></DatePickerWithRange>
+          </Flex>
+        </Flex>
+        <Flex mb={'12px'} gap={'12px'}>
+          <Card width={'full'}>
+            <Flex justifyContent={'space-between'}>
+              <Text fontSize={'18px'} lineHeight={'28px'} fontWeight={600}>
+                {t('TotalCost')}
+              </Text>
+              <Flex
+                onClick={handleCostHelp}
+                cursor={'pointer'}
+                alignItems={'center'}
+                color={'#1C4EF5'}
+              >
+                <CircleHelp size={'16px'} />
+                <Text ml={'4px'} fontSize={'14px'} lineHeight={'20px'} fontWeight={500}>
+                  {t('CostMetrics')}
+                </Text>
+              </Flex>
+            </Flex>
+            <Text mt={'16px'} fontSize={'36px'} lineHeight={'36px'} fontWeight={600}>
+              ${displayMoney(formatMoney(confumptions))}
+            </Text>
+          </Card>
+          <Card width={'full'}>
+            <Flex>
+              <Text fontSize={'18px'} lineHeight={'28px'} fontWeight={600}>
+                {t('TotalApps')}
               </Text>
             </Flex>
-          </Flex>
-          <Text mt={'16px'} fontSize={'36px'} lineHeight={'36px'} fontWeight={600}>
-            ${displayMoney(formatMoney(confumptions))}
-          </Text>
-        </Card>
-        <Card width={'full'}>
-          <Flex>
-            <Text fontSize={'18px'} lineHeight={'28px'} fontWeight={600}>
-              {t('TotalApps')}
+            <Text mt={'16px'} fontSize={'36px'} lineHeight={'36px'} fontWeight={600}>
+              {total}
             </Text>
-          </Flex>
-          <Text mt={'16px'} fontSize={'36px'} lineHeight={'36px'} fontWeight={600}>
-            {total}
-          </Text>
-        </Card>
-      </Flex>
-      <Usage
-        data={{
-          page: pagination.pageIndex + 1,
-          pageSize: pagination.pageSize,
-          endTime: date?.to,
-          startTime: date?.from,
-          regionUid: region,
-          namespace
-        }}
-        region={regionList}
-        appType={appType}
-        usageList={usageList}
-        total={total}
-        pagination={pagination}
-        setPagination={setPagination}
-      />
-    </Layout>
+          </Card>
+        </Flex>
+        <Usage
+          data={{
+            page: pagination.pageIndex + 1,
+            pageSize: pagination.pageSize,
+            endTime: date?.to,
+            startTime: date?.from,
+            regionUid: region,
+            namespace
+          }}
+          region={regionList}
+          appType={appType}
+          usageList={usageList}
+          total={total}
+          pagination={pagination}
+          setPagination={setPagination}
+        />
+      </Layout>
+      <Loading loading={!initialized} />
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useLoading } from '@/hooks/useLoading';
 import { useMemo, useState } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import Layout from '@/components/Layout';
@@ -11,9 +12,9 @@ import Alert from '@/components/Alert';
 import { formatDate } from '@/utils/format';
 import { useAPIErrorMessage } from '@/hooks/useToastAPIResult';
 import PlanAlert from '@/components/Alert/PlanAlert';
-import CreditsAlert from '@/components/Alert/CreditsAlert';
 
-function PlanPage() {
+function Home() {
+  const { Loading } = useLoading();
   const [initialized, setInitialized] = useState({
     plans: false,
     usage: false,
@@ -99,20 +100,7 @@ function PlanPage() {
     if (!currentPlan || !plans) return null;
     return (
       <Flex flexDirection="column" rowGap="16px" pb="20px">
-        <CreditsAlert
-          creditsUsage={creditsUsage}
-          plans={plans}
-          currentPlan={currentPlan}
-          freePlan={freePlan}
-          lastTransaction={lastTransactionResponse?.transcation}
-          onPaySuccess={refresh}
-        />
-        <PlanAlert
-          plans={plans}
-          lastTransaction={lastTransactionResponse?.transcation}
-          onPaySuccess={refresh}
-          includeCancelling
-        />
+        <PlanAlert lastTransaction={lastTransactionResponse?.transcation} includeCancelling />
         <CurrentPlan
           plans={plans}
           plan={currentPlan}
@@ -126,7 +114,12 @@ function PlanPage() {
       </Flex>
     );
   };
-  return <Layout loading={!isLoadingEnd}>{renderMain()}</Layout>;
+  return (
+    <>
+      <Layout>{renderMain()}</Layout>
+      <Loading loading={!isLoadingEnd} />
+    </>
+  );
 }
 
 export async function getServerSideProps(content: any) {

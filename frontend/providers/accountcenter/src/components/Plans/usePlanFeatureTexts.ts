@@ -24,7 +24,7 @@ export function useGetPlanFeatureTexts() {
     if (opts.inlcudeCredits) {
       res.push({
         text: t('PlanIncludesCredits', {
-          amount: formatMoneyStr(plan.giftAmount)
+          amount: plan.amount === 0 ? 5 : formatMoneyStr(plan.amount)
         }),
         key: 'credits'
       });

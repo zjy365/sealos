@@ -1,3 +1,4 @@
+import { useLoading } from '@/hooks/useLoading';
 import { useEffect, useState } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import Layout from '@/components/Layout';
@@ -9,10 +10,13 @@ import { CardSchema } from '@/schema/card';
 import type { InvoicePayload } from '@/types/invoice';
 import z from 'zod';
 import { getLastTransaction } from '@/api/plan';
+import { useTranslation } from 'next-i18next';
 import { TLastTransactionResponse } from '@/schema/plan';
 import PlanAlert from '@/components/Alert/PlanAlert';
 
 function Billing() {
+  const { t } = useTranslation();
+  const { Loading } = useLoading();
   const [initialized, setInitialized] = useState(false);
   const [cardList, setCardList] = useState<z.infer<typeof CardSchema>[]>([]);
   const [invoiceList, setInvoiceList] = useState<InvoicePayload[]>([]);
@@ -25,7 +29,8 @@ function Billing() {
       const invoice = getInvoiceList().then((res) => {
         setInvoiceList(res?.payments || []);
       });
-      Promise.all([card, invoice]).finally(() => setInitialized(true));
+      await Promise.all([card, invoice]);
+      setInitialized(true);
     }
     fetchData();
   }, []);
@@ -38,35 +43,26 @@ function Billing() {
   const handleSetDefault = (id: string) => {
     setInitialized(false);
     setDefaultCard(id).then(() => {
-      getCardList()
-        .then((res) => {
-          setCardList(res?.cardList || []);
-        })
-        .finally(() => setInitialized(true));
+      getCardList().then((res) => {
+        setCardList(res?.cardList || []);
+        setInitialized(true);
+      });
     });
   };
   const handleDelete = (id: string) => {
     setInitialized(false);
     deleteCard(id).then(() => {
-      getCardList()
-        .then((res) => {
-          setCardList(res?.cardList || []);
-        })
-        .finally(() => setInitialized(true));
+      getCardList().then((res) => {
+        setCardList(res?.cardList || []);
+        setInitialized(true);
+      });
     });
   };
-  const handlePaySuccess = () => {
-    setInitialized(false);
-    getLastTransaction()
-      .then((res) => {
-        setLastTransaction(res?.transcation);
-      })
-      .finally(() => setInitialized(true));
-  };
+
   return (
     <>
-      <Layout loading={!initialized}>
-        <PlanAlert lastTransaction={lastTransaction} onPaySuccess={handlePaySuccess} />
+      <Layout>
+        <PlanAlert lastTransaction={lastTransaction} />
         <Payment
           handleDelete={handleDelete}
           handleSetDefault={handleSetDefault}
@@ -76,6 +72,7 @@ function Billing() {
         ></Payment>
         <Invoice invoiceList={invoiceList}></Invoice>
       </Layout>
+      <Loading loading={!initialized} />
     </>
   );
 }
