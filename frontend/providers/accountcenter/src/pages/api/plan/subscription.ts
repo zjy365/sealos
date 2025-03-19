@@ -38,7 +38,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error) {
     if (error instanceof AxiosError) {
-      return jsonRes(res, { code: error.status, message: error.response?.data.error });
+      return jsonRes(res, {
+        code: error.status,
+        message: error.response?.data.error,
+        data: error.response?.data
+      });
     }
     console.error(error);
     return jsonRes(res, { code: 500, message: 'Failed to fetch subscription status' });

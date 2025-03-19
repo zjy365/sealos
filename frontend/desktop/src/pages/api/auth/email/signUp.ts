@@ -8,6 +8,7 @@ import { generateAuthenticationToken } from '@/services/backend/auth';
 import { ErrorHandler } from '@/services/backend/middleware/error';
 import { registerParamsSchema } from '@/schema/email';
 import { HttpStatusCode } from 'axios';
+import { globalPrisma } from '@/services/backend/db/init';
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!enableEmailSms()) {
     throw new Error('SMS is not enabled');
@@ -21,6 +22,20 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
   }
   const { email: name, password, firstName: firstname, lastName: lastname } = result.data;
   console.log('get params success');
+  const oauthProvider = await globalPrisma.oauthProvider.findUnique({
+    where: {
+      providerId_providerType: {
+        providerId: name,
+        providerType: 'EMAIL'
+      }
+    }
+  });
+  if (!!oauthProvider) {
+    return jsonRes(res, {
+      code: 409,
+      message: 'Email already exists'
+    });
+  }
   const data = await signUpByEmail({
     id: name,
     password,
@@ -28,7 +43,6 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
     firstname,
     lastname
   });
-  console.log('signUp success');
   if (!data)
     return jsonRes(res, {
       code: HttpStatusCode.Unauthorized,

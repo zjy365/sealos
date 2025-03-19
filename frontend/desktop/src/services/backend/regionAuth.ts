@@ -8,6 +8,8 @@ import { AccessTokenPayload } from '@/types/token';
 import { JoinStatus, Role } from 'prisma/region/generated/client';
 import { generateAccessToken, generateAppToken } from '@/services/backend/auth';
 import Workspace from '@/components/cc/Workspace';
+import { v4 } from 'uuid';
+import { iss } from 'tencentcloud-sdk-nodejs';
 
 const LetterBytes = 'abcdefghijklmnopqrstuvwxyz0123456789';
 const HostnameLength = 8;
@@ -44,28 +46,47 @@ export async function getRegionToken({
     }
   });
   if (!region) throw Error('The REGION_UID is undefined');
-  const userResult = await globalPrisma.user.findUnique({
-    where: {
-      uid: userUid
-    },
-    select: {
-      userInfo: {
-        select: {
-          isInited: true
-        }
-      },
-      WorkspaceUsage: true
-    }
-  });
-  // 没有该user
-  if (!userResult?.userInfo) {
-    return null;
-  }
-  // 还没初始化，不应该允许调用该接口
-  if (!userResult.userInfo.isInited || userResult.WorkspaceUsage.length === 0) return null;
   const result = await retrySerially(async () => {
-    // 标记是否需要更新 wokrspaceUsage
-    let needUpdateUsage = false;
+    const userResult = await globalPrisma.user.findUnique({
+      where: {
+        uid: userUid
+      },
+      select: {
+        userInfo: {
+          select: {
+            isInited: true
+          }
+        },
+        WorkspaceUsage: true
+      }
+    });
+    // 没有该user
+    if (!userResult?.userInfo) {
+      return null;
+    }
+    // 还没初始化，不应该允许调用该接口
+    if (!userResult.userInfo.isInited) return null;
+    let workspaceUid = v4();
+    let curRegionWorkspaceUsage = userResult.WorkspaceUsage.filter(
+      (u) => u.regionUid == region.uid
+    );
+    let needCreating = curRegionWorkspaceUsage.length === 0;
+    // 先处理全局状态
+    if (!needCreating) {
+      curRegionWorkspaceUsage[0];
+      // 当前可用区初始化中，用幂等逻辑
+      workspaceUid = curRegionWorkspaceUsage[0].workspaceUid;
+    } else {
+      await globalPrisma.workspaceUsage.create({
+        data: {
+          workspaceUid,
+          userUid,
+          regionUid: region.uid,
+          seat: 1
+        }
+      });
+    }
+
     const payload = await prisma.$transaction(async (tx): Promise<AccessTokenPayload | null> => {
       let userCrResult = await tx.userCr.findUnique({
         where: {
@@ -79,11 +100,15 @@ export async function getRegionToken({
           }
         }
       });
-      // console.log('userCrResult', userCrResult,)
       if (userCrResult) {
         // get a exist user
         const relations = userCrResult.userWorkspace!;
         const privateRelation = relations.find((r) => r.isPrivate);
+        if (privateRelation?.workspaceUid !== workspaceUid) {
+          // 不匹配的未知错误
+          console.error('workspaceUid not match, workspaceUid:', workspaceUid);
+          return null;
+        }
         return {
           userUid: userCrResult.userUid,
           userCrUid: userCrResult.uid,
@@ -109,6 +134,7 @@ export async function getRegionToken({
             role: Role.OWNER,
             workspace: {
               create: {
+                uid: workspaceUid,
                 id: workspaceId,
                 displayName: 'private team'
               }
@@ -138,8 +164,6 @@ export async function getRegionToken({
             }
           }
         });
-        // 更新标记
-        needUpdateUsage = true;
         return {
           userCrName: result.userCr.crName,
           userCrUid: result.userCr.uid,
@@ -159,23 +183,12 @@ export async function getRegionToken({
     if (!kubeconfig) {
       throw new Error('Failed to get user from k8s');
     }
-    if (needUpdateUsage) {
-      // commit init
-      await globalPrisma.workspaceUsage.create({
-        data: {
-          workspaceUid: payload.workspaceUid,
-          userUid,
-          regionUid: region.uid,
-          seat: 1
-        }
-      });
-    }
     return {
       kubeconfig,
       payload
     };
   }, 3);
-  if (!userResult) return null;
+  if (!result) return null;
   const { kubeconfig, payload } = result;
   return {
     kubeconfig,
@@ -224,95 +237,134 @@ export async function initRegionToken({
       console.log(`user  not found userUid:${userUid}`);
       return null;
     }
+    // 先更新状态再操作，避免并发问题
+    // isInited 是成功的时候， 考虑到 创建 workspce-user 步骤过多，
+    // 先把状态同步到WorkspaceUsage,
+    // 再执行操作，最后再标记为 isInited
     // 已经初始化，不应该允许调用该接口
-    if (!!userResult.userInfo.isInited || userResult.WorkspaceUsage.length > 0) {
+    if (!!userResult.userInfo.isInited) {
       console.log(`user  already initialized userUid:${userUid}`);
       return null;
     }
-    const userInfo = userResult.userInfo;
-    // db操作 做不到事务，只能用幂等解决
-    const regionalDbResult = await prisma.$transaction(async (tx): Promise<AccessTokenPayload> => {
-      let userCrResult = await tx.userCr.findUnique({
-        where: {
-          userUid
-        },
-        include: {
-          userWorkspace: {
-            include: {
-              workspace: true
-            }
-          }
+    // initalizing or error
+    let isInitalizing = userResult.WorkspaceUsage.length > 0;
+    let workspaceUid = v4();
+    if (isInitalizing) {
+      // 正在初始化中，还未完成/挂掉
+      let workspaceUsage = userResult.WorkspaceUsage[0];
+      if (workspaceUsage.regionUid !== region.uid) {
+        // 其他可用区正在初始化
+        console.log('other region is initializing');
+        return null;
+      } else {
+        // 当前可用区初始化中，用幂等逻辑
+        workspaceUid = workspaceUsage.workspaceUid;
+      }
+    } else {
+      // 没开始，
+      await globalPrisma.workspaceUsage.create({
+        data: {
+          workspaceUid,
+          userUid,
+          regionUid: region.uid,
+          seat: 1
         }
       });
-      // global db 可能没更上状态，regional db 已经创建出来
-      if (userCrResult) {
-        const relations = userCrResult.userWorkspace!;
-        const privateRelation = relations.find((r) => r.isPrivate);
-        return {
-          userUid: userCrResult.userUid,
-          userCrUid: userCrResult.uid,
-          userCrName: userCrResult.crName,
-          regionUid: region.uid,
-          userId,
-          workspaceId: privateRelation!.workspace.id,
-          workspaceUid: privateRelation!.workspace.uid
-        };
-      } else {
-        const crName = nanoid();
-        const workspaceId = GetUserDefaultNameSpace(crName);
-        const result = await tx.userWorkspace.create({
-          data: {
-            status: JoinStatus.IN_WORKSPACE,
-            role: Role.OWNER,
-            workspace: {
-              create: {
-                id: workspaceId,
-                displayName: workspaceName
-              }
-            },
-            userCr: {
-              create: {
-                crName,
-                userUid
-              }
-            },
-            joinAt: new Date(),
-            isPrivate: true
+    }
+    // try {
+    // db操作 做不到事务，只能用幂等解决
+    const regionalDbResult = await prisma.$transaction(
+      async (tx): Promise<AccessTokenPayload | null> => {
+        //
+        let userCrResult = await tx.userCr.findUnique({
+          where: {
+            userUid
           },
           include: {
-            userCr: {
-              select: {
-                uid: true,
-                crName: true,
-                userUid: true
-              }
-            },
-            workspace: {
-              select: {
-                id: true,
-                uid: true
+            userWorkspace: {
+              include: {
+                workspace: true
               }
             }
           }
         });
-        // await globalPrisma.
-        return {
-          userCrName: result.userCr.crName,
-          userCrUid: result.userCr.uid,
-          userUid: result.userCr.userUid,
-          regionUid: region.uid,
-          userId,
-          // there is only one private workspace
-          workspaceId: result.workspace.id,
-          workspaceUid: result.workspace.uid
-        };
+        // userCrResult 隐含了最新的 isInitalizing 状态，停机导致异常也能包含在内
+        if (userCrResult) {
+          const relations = userCrResult.userWorkspace!;
+          const privateRelation = relations.find((r) => r.isPrivate);
+          if (privateRelation?.workspaceUid !== workspaceUid) {
+            // 和workspaceUsage 记录的不一致, 未知错误
+            console.error('workspaceUid not match, workspaceUid:', workspaceUid);
+            return null;
+          }
+          return {
+            userUid: userCrResult.userUid,
+            userCrUid: userCrResult.uid,
+            userCrName: userCrResult.crName,
+            regionUid: region.uid,
+            userId,
+            workspaceId: privateRelation!.workspace.id,
+            workspaceUid: privateRelation!.workspace.uid
+          };
+        } else {
+          const crName = nanoid();
+          const workspaceId = GetUserDefaultNameSpace(crName);
+          const result = await tx.userWorkspace.create({
+            data: {
+              status: JoinStatus.IN_WORKSPACE,
+              role: Role.OWNER,
+              // workspaceUid,
+              workspace: {
+                create: {
+                  // 保证和状态中的那个一样
+                  uid: workspaceUid,
+                  id: workspaceId,
+                  displayName: workspaceName
+                }
+              },
+              userCr: {
+                create: {
+                  crName,
+                  userUid
+                }
+              },
+              joinAt: new Date(),
+              isPrivate: true
+            },
+            include: {
+              userCr: {
+                select: {
+                  uid: true,
+                  crName: true,
+                  userUid: true
+                }
+              },
+              workspace: {
+                select: {
+                  id: true,
+                  uid: true
+                }
+              }
+            }
+          });
+          // await globalPrisma.
+          return {
+            userCrName: result.userCr.crName,
+            userCrUid: result.userCr.uid,
+            userUid: result.userCr.userUid,
+            regionUid: region.uid,
+            userId,
+            // there is only one private workspace
+            workspaceId: result.workspace.id,
+            workspaceUid: result.workspace.uid
+          };
+        }
       }
-    });
-
+    );
     if (!regionalDbResult) {
       throw new Error('Failed to get user from regional database');
     }
-    // k8s 操作会自动创建
+    // k8s 操作会自动创建, 幂等
     const kubeconfig = await getUserKubeconfig(
       regionalDbResult.userCrUid,
       regionalDbResult.userCrName
@@ -320,26 +372,16 @@ export async function initRegionToken({
     if (!kubeconfig) {
       throw new Error('Failed to get user from k8s');
     }
-    // commit init
-    await globalPrisma.$transaction([
-      globalPrisma.userInfo.update({
-        where: {
-          userUid,
-          isInited: false
-        },
-        data: {
-          isInited: true
-        }
-      }),
-      globalPrisma.workspaceUsage.create({
-        data: {
-          workspaceUid: regionalDbResult.workspaceUid,
-          userUid,
-          regionUid: region.uid,
-          seat: 1
-        }
-      })
-    ]);
+
+    await globalPrisma.userInfo.update({
+      where: {
+        userUid,
+        isInited: false
+      },
+      data: {
+        isInited: true
+      }
+    });
     return {
       kubeconfig,
       payload: regionalDbResult
@@ -349,6 +391,7 @@ export async function initRegionToken({
     console.log('Failed to init workspace for new user');
     return null;
   }
+
   const { kubeconfig, payload } = result;
   return {
     kubeconfig,

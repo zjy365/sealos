@@ -37,34 +37,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     if (!queryResult) return jsonRes(res, { code: 404, message: 'the namespace is not found' });
     const creator = queryResult.workspace.id.replace('ns-', '');
-    const res1 = await setUserTeamDelete(creator);
-    if (!res1) throw new Error('fail to update user ');
-    const res2 = await applyDeleteRequest(creator);
-    if (!res2) throw new Error('fail to delete namespace ');
-    const results = await prisma.userWorkspace.deleteMany({
-      where: {
-        workspaceUid: ns_uid,
-        isPrivate: false
-      }
-    });
 
-    if (results.count < 1)
-      return jsonRes(res, { code: 404, message: 'fail to remove users of ns' });
     const regionUid = getRegionUid();
     // sync status, user add 1,
-    await globalPrisma.$transaction([
-      globalPrisma.workspaceUsage.delete({
-        where: {
-          regionUid_userUid_workspaceUid: {
-            userUid: payload.userUid,
-            workspaceUid: ns_uid,
-            regionUid
-          }
+    await globalPrisma.workspaceUsage.delete({
+      where: {
+        regionUid_userUid_workspaceUid: {
+          userUid: payload.userUid,
+          workspaceUid: ns_uid,
+          regionUid
         }
-      })
-    ]);
-    jsonRes(res, { code: 200, message: 'Successfully' });
-    return;
+      }
+    });
+    try {
+      const res1 = await setUserTeamDelete(creator);
+      if (!res1) throw new Error('fail to update user ');
+      const res2 = await applyDeleteRequest(creator);
+      if (!res2) throw new Error('fail to delete namespace ');
+      const results = await prisma.userWorkspace.deleteMany({
+        where: {
+          workspaceUid: ns_uid,
+          isPrivate: false
+        }
+      });
+      if (results.count < 1)
+        return jsonRes(res, { code: 404, message: 'fail to remove users of ns' });
+      return jsonRes(res, { code: 200, message: 'Successfully' });
+    } catch (e) {
+      await globalPrisma.workspaceUsage.create({
+        data: {
+          userUid: payload.userUid,
+          workspaceUid: ns_uid,
+          regionUid,
+          seat: 1
+        }
+      });
+      throw Error(String(e));
+    }
   } catch (e) {
     console.log(e);
     jsonRes(res, { code: 500, message: 'fail to remove ns' });

@@ -6,7 +6,8 @@ import axios, {
 } from 'axios';
 import type { ApiResp } from './kubernet';
 import { isApiResp } from './kubernet';
-import { getUserKubeConfig } from '@/utils/user';
+import { getUserKubeConfig, getUserSession } from '@/utils/user';
+import { getToken } from '@chakra-ui/system';
 
 const showStatus = (status: number) => {
   let message = '';
@@ -51,7 +52,7 @@ const showStatus = (status: number) => {
 };
 
 const request = axios.create({
-  baseURL: '/api/test',
+  baseURL: process.env.NODE_ENV === 'development' ? '/api/test' : '/api',
   withCredentials: true,
   timeout: 60000
 });
@@ -64,11 +65,14 @@ request.interceptors.request.use(
       config.url = '' + config.url;
     }
     let _headers: AxiosHeaders = config.headers;
-
+    const token = getUserSession()?.token || '';
     //获取token，并将其添加至请求头中
     _headers['Authorization'] = config.headers.Authorization
       ? config.headers.Authorization
-      : encodeURIComponent(getUserKubeConfig());
+      : `Bearer ${token}`;
+    // encodeURIComponent(
+    //   getUserKubeConfig()
+    // );
 
     if (!config.headers || config.headers['Content-Type'] === '') {
       _headers['Content-Type'] = 'application/json';

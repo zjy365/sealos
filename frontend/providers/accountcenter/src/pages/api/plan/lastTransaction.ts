@@ -1,4 +1,8 @@
-import { PlanListSchema } from '@/schema/plan';
+import {
+  PlanListSchema,
+  TLastTransactionResponse,
+  lastTransactionApiResponseSchema
+} from '@/schema/plan';
 import { AccessTokenPayload } from '@/service/auth';
 import { authSession } from '@/service/backend/auth';
 import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
@@ -16,37 +20,16 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     }
     const region = await getRegionByUid(req.body.regionUid);
     const client = makeAPIClient(region, payload);
-    const res = await client.post('/payment/v1alpha1/subscription/plan-list');
-    const appMap = res.data.plans;
-    const validation = await PlanListSchema.safeParseAsync(appMap);
-    if (!validation.success) {
-      console.log(validation.error.message);
-      return jsonRes(resp, {
-        code: 500,
-        message: 'Invalid response format'
-      });
-    }
+    const res = await client.post<{ transaction: TLastTransactionResponse }>(
+      'payment/v1alpha1/subscription/last-transaction'
+    );
 
-    const planList = validation.data.map((plan) => ({
-      id: plan.ID,
-      name: plan.Name,
-      description: plan.Description,
-      amount: plan.Amount,
-      giftAmount: plan.GiftAmount,
-      period: plan.Period,
-      upgradePlanList: plan.UpgradePlanList || [],
-      downgradePlanList: plan.DowngradePlanList || [],
-      maxSeats: plan.MaxSeats,
-      maxWorkspaces: plan.MaxWorkspaces,
-      maxResources: plan.MaxResources,
-      createdAt: plan.CreatedAt,
-      updatedAt: plan.UpdatedAt,
-      mostPopular: plan.MostPopular
-    }));
+    const transcation = res.data.transaction;
+
     return jsonRes(resp, {
       code: 200,
       data: {
-        planList
+        transcation
       }
     });
   } catch (error) {
