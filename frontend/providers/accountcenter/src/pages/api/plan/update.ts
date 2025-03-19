@@ -26,10 +26,10 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     }
 
     const { planName, planID, planType } = validation.data;
-
+    console.log('getregion');
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
-
+    console.log('ready for');
     const res = await client.post<TUpdatePlanResponse>('payment/v1alpha1/subscription/pay', {
       planName,
       planID,
@@ -45,8 +45,13 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
 
     return jsonRes<TUpdatePlanResponse>(resp, { code: 200, data: res.data });
   } catch (error) {
+    console.log(error);
     if (error instanceof AxiosError) {
-      return jsonRes(resp, { code: error.status, message: error.response?.data.error });
+      return jsonRes(resp, {
+        code: error.status,
+        message: error.response?.data.error,
+        data: error.response?.data
+      });
     }
     console.error(error);
     return jsonRes(resp, { code: 500, message: 'Failed to update plan' });

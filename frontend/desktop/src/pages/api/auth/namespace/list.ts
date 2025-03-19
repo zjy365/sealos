@@ -1,10 +1,11 @@
 import { jsonRes } from '@/services/backend/response';
 import { NamespaceDto, NSType } from '@/types/team';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '@/services/backend/db/init';
+import { globalPrisma, prisma } from '@/services/backend/db/init';
 import { roleToUserRole } from '@/utils/tools';
 import { JoinStatus } from 'prisma/region/generated/client';
 import { verifyAccessToken } from '@/services/backend/auth';
+import { getRegionUid } from '@/services/enable';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -16,11 +17,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userCrUid: payload.userCrUid
       },
       include: {
-        workspace: true
+        workspace: {
+          include: {
+            userWorkspace: true
+          }
+        }
       }
     });
     const privateIdx = queryResults.findIndex((x) => x.isPrivate);
-    if (privateIdx < 0) throw Error('Namespace is invalid');
+    if (privateIdx < 0) {
+      return jsonRes(res, {
+        code: 404,
+        message: 'private workspace not found'
+      });
+    }
+
+    // sync wokspacestatus
+    // sort private workspace to the first
     queryResults.unshift(queryResults.splice(privateIdx, 1)[0]);
     const namespaces = queryResults.map<NamespaceDto>((x) => ({
       id: x.workspace.id,
@@ -30,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       teamName: x.workspace.displayName,
       role: roleToUserRole(x.role)
     }));
-    jsonRes(res, {
+    return jsonRes(res, {
       code: 200,
       message: 'Successfully',
       data: {

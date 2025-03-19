@@ -71,13 +71,13 @@ export const updatePlanApiRequestSchema = z.object({
   planName: z.string(),
   planID: z.string().optional(),
   payMethod: z.enum(['CARD']),
-  planType: z.enum(['upgrade', 'downgrade'])
+  planType: z.enum(['upgrade', 'downgrade', 'renewal'])
 });
 export const updatePlanRequestSchema = z.object({
+  cardID: z.string().optional(),
   planName: z.string(),
   planID: z.string(),
-  planType: z.enum(['upgrade', 'downgrade', 'renewal']),
-  cardID: z.string().optional()
+  planType: z.enum(['upgrade', 'downgrade', 'renewal'])
 });
 export const updatePlanResponseSchema = z.object({
   success: z.boolean(),
@@ -106,3 +106,14 @@ export type TLastTransactionResponse = z.infer<typeof lastTransactionApiResponse
 export type TUpdatePlanApiRequest = z.infer<typeof updatePlanApiRequestSchema>;
 export type TUpdatePlanRequest = z.infer<typeof updatePlanRequestSchema>;
 export type TUpdatePlanResponse = z.infer<typeof updatePlanResponseSchema>;
+
+export const UpgradeAmountRequestSchema = z.object({
+  planName: z.string()
+});
+
+// const UpgradeAmountResponseSchema = z.object({
+//   planName: z.string()
+// });
+
+export type TUpgradeAmountRequest = z.infer<typeof UpgradeAmountRequestSchema>;
+// export type TUpgradeAmountResponse = z.infer<typeof UpgradeAmountResponseSchema>;
