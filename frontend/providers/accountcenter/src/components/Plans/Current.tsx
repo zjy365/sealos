@@ -1,30 +1,41 @@
-import { TPlanApiResponse, TPlanMaxResourcesObject, TSubscriptionApiResponse } from '@/schema/plan';
+import {
+  TLastTransactionResponse,
+  TPlanApiResponse,
+  TSubscriptionApiResponse
+} from '@/schema/plan';
 import {
   Box,
   Card,
   Flex,
   Text,
-  Image,
   Button,
   Divider,
   Grid,
   GridItem,
   CardBody,
-  HTMLChakraProps
+  HTMLChakraProps,
+  useDisclosure
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { FC, useMemo } from 'react';
-import StarIcon from '../../../public/images/star.svg';
-import UpgradeStarIcon from '../../../public/images/upgrade-plan-star.svg';
-import CircleCheck from '../../../public/images/circle-check.svg';
+import StarIcon from '@/components/Icon/icons/star.svg';
+import UpgradeStarIcon from '@/components/Icon/icons/upgradePlanStar.svg';
+import CircleCheck from '@/components/Icon/icons/circleCheck.svg';
 import usePlanFeatureTexts from './usePlanFeatureTexts';
 import { formatDate, formatMoney } from '@/utils/format';
 import upperFirst from '@/utils/upperFirst';
+import CancelPlanButton from './CancelPlanButton';
+import UpgradePlanModal from './UpgradeModal';
+import { isPlanCancelling } from './planStatus';
 
 interface CurrentPlanProps {
+  plans: TPlanApiResponse[];
   plan: TPlanApiResponse;
+  freePlan: TPlanApiResponse | undefined;
   isMaxAmountPlan?: boolean;
+  lastTransaction: TLastTransactionResponse | undefined;
   subscriptionResponse: TSubscriptionApiResponse | undefined;
+  refresh: () => void;
 }
 const planStyleConfig = {
   free: {
@@ -59,7 +70,7 @@ const planStyleConfig = {
       }
     } as HTMLChakraProps<'div'>,
     feature: {
-      tickColor: '#1C4EF5',
+      tickColor: 'rgb(28, 78, 245)',
       color: '#71717A'
     },
     upgradeButton: {}
@@ -76,7 +87,7 @@ const planStyleConfig = {
       color: '#FAFAFA'
     },
     feature: {
-      tickColor: '#fff',
+      tickColor: 'rgba(255, 255, 255, 0.6)',
       color: '#fff'
     },
     upgradeButton: {
@@ -93,7 +104,15 @@ const planStyleConfig = {
     }
   }
 };
-const CurrentPlan: FC<CurrentPlanProps> = ({ plan, isMaxAmountPlan, subscriptionResponse }) => {
+const CurrentPlan: FC<CurrentPlanProps> = ({
+  plan,
+  isMaxAmountPlan,
+  subscriptionResponse,
+  lastTransaction,
+  freePlan,
+  refresh,
+  plans
+}) => {
   const { t } = useTranslation();
   const featurTexts = usePlanFeatureTexts(plan);
   const isFree = plan.amount === 0;
@@ -103,13 +122,17 @@ const CurrentPlan: FC<CurrentPlanProps> = ({ plan, isMaxAmountPlan, subscription
     return planStyleConfig.normal;
   }, [isFree, isMaxAmountPlan]);
   const isUpgradable = Array.isArray(plan.upgradePlanList) && plan.upgradePlanList.length > 0;
-  const isCancellable =
-    Array.isArray(plan.downgradePlanList) && plan.downgradePlanList.includes('Free');
+  const isCancelled = isPlanCancelling(lastTransaction);
   const renderFeature = (text: string, key: string) => {
     return (
       <GridItem key={key}>
         <Flex columnGap="8px" alignItems="center">
-          <CircleCheck width="16" height="16" stroke={styleConfig.feature.tickColor} />
+          <CircleCheck
+            width="16"
+            height="16"
+            stroke={styleConfig.feature.tickColor}
+            strokeWidth="1.33"
+          />
           <Text
             lineHeight="20px"
             fontSize="14px"
@@ -122,93 +145,133 @@ const CurrentPlan: FC<CurrentPlanProps> = ({ plan, isMaxAmountPlan, subscription
       </GridItem>
     );
   };
+  const {
+    isOpen: isUpgradeModalOpen,
+    onOpen: openUpgradeModal,
+    onClose: closeUpgradeModal
+  } = useDisclosure();
+  const renderDate = () => {
+    if (isCancelled) {
+      return (
+        <GridItem>
+          <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
+            {t('CancelsAt')}
+          </Text>
+          <Text color="#09090B" fontSize="16px" fontWeight="600">
+            {formatDate(lastTransaction?.StartAt)}
+          </Text>
+        </GridItem>
+      );
+    }
+    if (isFree || !subscriptionResponse?.subscription) {
+      return null;
+    }
+    return (
+      <GridItem>
+        <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
+          {t('NextPaymentDate')}
+        </Text>
+        <Text color="#09090B" fontSize="16px" fontWeight="600">
+          {formatDate(subscriptionResponse.subscription.NextCycleDate)}
+        </Text>
+      </GridItem>
+    );
+  };
   return (
-    <Card variant="outline">
-      <CardBody p="8px">
-        <Box
-          border="1px"
-          borderColor="transparent"
-          borderRadius="12px"
-          p="24px"
-          {...styleConfig.card}
-        >
-          <Box position="relative" zIndex={3}>
-            <Flex justifyContent="space-between" alignItems="center">
-              <Flex fontWeight="600" fontSize="24px" lineHeight="32px" alignItems="flex-start">
-                <Text>{plan.name}</Text>
-                {isFree ? null : <StarIcon width="12" height="12" fill="#fff" />}
+    <>
+      <Card variant="outline">
+        <CardBody p="8px">
+          <Box
+            border="1px"
+            borderColor="transparent"
+            borderRadius="12px"
+            p="24px"
+            {...styleConfig.card}
+          >
+            <Box position="relative" zIndex={3}>
+              <Flex justifyContent="space-between" alignItems="center">
+                <Flex fontWeight="600" fontSize="24px" lineHeight="32px" alignItems="flex-start">
+                  <Text>{plan.name}</Text>
+                  {isFree ? null : <StarIcon width="12" height="12" fill="#fff" />}
+                </Flex>
+                <Flex columnGap="12px">
+                  {isUpgradable && (
+                    <Button
+                      h="36px"
+                      leftIcon={<UpgradeStarIcon width="13" height="13" stroke="currentColor" />}
+                      {...styleConfig.upgradeButton}
+                      onClick={openUpgradeModal}
+                    >
+                      {t('UpgradePlan')}
+                    </Button>
+                  )}
+                  <CancelPlanButton
+                    plan={plan}
+                    lastTransaction={lastTransaction}
+                    freePlan={freePlan}
+                    onCancelSuccess={refresh}
+                  />
+                </Flex>
               </Flex>
-              <Flex columnGap="12px">
-                {isUpgradable && (
-                  <Button
-                    h="36px"
-                    leftIcon={<UpgradeStarIcon width="13" height="13" stroke="currentColor" />}
-                    {...styleConfig.upgradeButton}
-                  >
-                    {t('UpgradePlan')}
-                  </Button>
-                )}
-                {isCancellable && (
-                  <Button
-                    variant="outline"
-                    h="36px"
-                    border="1px solid #E4E4E766"
-                    bg="transparent"
-                    color="#fff"
-                    _hover={{
-                      color: '#fff'
-                    }}
-                    _active={{
-                      color: '#fff'
-                    }}
-                  >
-                    {t('CancelPlan')}
-                  </Button>
-                )}
-              </Flex>
-            </Flex>
-            <Divider m="18px 0" borderColor="#F4F4F5" />
-            <Grid templateColumns="auto auto auto" rowGap="8px" columnGap="48px">
-              {featurTexts.map(({ text, key }) => renderFeature(text, key))}
-            </Grid>
+              <Divider m="18px 0" borderColor="#F4F4F5" />
+              <Grid templateColumns="auto auto auto" rowGap="8px" columnGap="48px">
+                {featurTexts.map(({ text, key }) => renderFeature(text, key))}
+              </Grid>
+            </Box>
           </Box>
-        </Box>
-        <Grid p="20px 24px" templateColumns="1fr 1fr 1fr" gap="16px">
-          <GridItem>
-            <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
-              {t('PeriodPrice', {
-                period: t(`Per${upperFirst(plan.period)}`, { defaultValue: '' })
-              })}
-            </Text>
-            <Text color="#09090B" fontSize="16px" fontWeight="600">
-              {typeof plan.amount === 'number' && plan.amount >= 0
-                ? `\$${formatMoney(plan.amount)}`
-                : ''}
-            </Text>
-          </GridItem>
-          <GridItem>
-            <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
-              {t('MonthlyGiftCredits')}
-            </Text>
-            <Text color="#09090B" fontSize="16px" fontWeight="600">
-              {typeof plan.giftAmount === 'number' && plan.giftAmount > 0
-                ? `\$${formatMoney(plan.giftAmount)}`
-                : ''}
-            </Text>
-          </GridItem>
-          {isFree || !subscriptionResponse?.subscription ? null : (
+          <Grid p="20px 24px" templateColumns="1fr 1fr 1fr" gap="16px">
             <GridItem>
               <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
-                {t('NextPaymentDate')}
+                {t('PeriodPrice', {
+                  period: t(`Per${upperFirst(plan.period)}`, { defaultValue: '' })
+                })}
               </Text>
               <Text color="#09090B" fontSize="16px" fontWeight="600">
-                {formatDate(subscriptionResponse.subscription.NextCycleDate)}
+                {typeof plan.amount === 'number' && plan.amount >= 0
+                  ? `\$${formatMoney(plan.amount)}`
+                  : ''}
               </Text>
             </GridItem>
-          )}
-        </Grid>
-      </CardBody>
-    </Card>
+            <GridItem>
+              <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
+                {t('MonthlyGiftCredits')}
+              </Text>
+              <Flex gap="8px">
+                <Text color="#09090B" fontSize="16px" fontWeight="600">
+                  {typeof plan.giftAmount === 'number' && plan.giftAmount > 0
+                    ? `\$${formatMoney(plan.giftAmount)}`
+                    : ''}
+                </Text>
+                <Text
+                  p="6px 8px"
+                  border="1px solid rgb(52, 211, 153)"
+                  fontSize="12px"
+                  fontWeight="400"
+                  lineHeight={1}
+                  color="rgb(6, 95, 70)"
+                  borderRadius="100px"
+                  bg="rgb(220, 252, 231)"
+                >
+                  {t('Sent')}
+                </Text>
+              </Flex>
+            </GridItem>
+            {renderDate()}
+          </Grid>
+        </CardBody>
+      </Card>
+      {isUpgradable ? (
+        <UpgradePlanModal
+          plans={plans}
+          currentPlan={plan}
+          freePlan={freePlan}
+          lastTransaction={lastTransaction}
+          isOpen={isUpgradeModalOpen}
+          onClose={closeUpgradeModal}
+          onPaySuccess={refresh}
+        />
+      ) : null}
+    </>
   );
 };
 export default CurrentPlan;

@@ -12,13 +12,14 @@ import {
   getPaginationRowModel
 } from '@tanstack/react-table';
 import { BaseTable } from '@/components/BaseTable/baseTable';
-import Empty from './empty';
+import Empty from '@/components/Empty';
 import type { InvoicePayload } from '@/types/invoice';
-
+import Pdf from '@/components/Pdf';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { createRoot } from 'react-dom/client';
 import { serviceSideProps } from '@/utils/i18n';
 
-const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
+const Invoice = ({ invoiceList }: { invoiceList: InvoicePayload[] }) => {
   const { t } = useTranslation();
   const columns: ColumnDef<InvoicePayload>[] = React.useMemo(
     () => [
@@ -61,13 +62,19 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
       {
         id: 'action',
         header: '',
-        cell: () => (
+        cell: ({ row }) => (
           <Flex justifyContent="flex-end">
-            <IconButton aria-label="Download" icon={<Download size={'16px'} />} variant={'ghost'} />
+            <IconButton
+              onClick={() => downloadPdf(row.original)}
+              aria-label="Download"
+              icon={<Download size={'16px'} />}
+              variant={'ghost'}
+            />
           </Flex>
         )
       }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [t]
   );
   const table = useReactTable<InvoicePayload>({
@@ -83,6 +90,30 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
       }
     }
   });
+  // const [timer, setTimer] = React.useState<NodeJS.Timeout>();
+  const downloadPdf = (data: InvoicePayload) => {
+    downloadAll([data]);
+  };
+  const downloadAll = async (data: InvoicePayload[]) => {
+    const link = React.createElement(PDFDownloadLink, {
+      document: <Pdf data={data} />,
+      fileName: `invoice-${new Date().toLocaleDateString()}.pdf`
+    });
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container!);
+    root.render(link);
+    const down = () => {
+      try {
+        const domNode: HTMLAnchorElement | null = container.firstChild as HTMLAnchorElement;
+        domNode?.click();
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    setTimeout(down, 1000);
+    document.body.removeChild(container);
+  };
 
   return (
     <Card>
@@ -90,7 +121,13 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
         <Text fontSize={'18px'} fontWeight={600} lineHeight={'28px'}>
           {t('InvoiceHistory')}
         </Text>
-        <Button isDisabled={invoiceList.length === 0} variant={'outline'} colorScheme={'gray'}>
+        <Button
+          visibility={'hidden'}
+          // onClick={() => downloadAll(invoiceList)}
+          isDisabled={invoiceList.length === 0}
+          variant={'outline'}
+          colorScheme={'gray'}
+        >
           {t('DownloadAll')}
         </Button>
       </Flex>
@@ -112,5 +149,13 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
     </Card>
   );
 };
+
+export async function getServerSideProps(content: any) {
+  return {
+    props: {
+      ...(await serviceSideProps(content))
+    }
+  };
+}
 
 export default Invoice;

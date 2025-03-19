@@ -76,7 +76,8 @@ export const updatePlanApiRequestSchema = z.object({
 export const updatePlanRequestSchema = z.object({
   planName: z.string(),
   planID: z.string(),
-  planType: z.enum(['upgrade', 'downgrade'])
+  planType: z.enum(['upgrade', 'downgrade', 'renewal']),
+  cardID: z.string().optional()
 });
 export const updatePlanResponseSchema = z.object({
   success: z.boolean(),
@@ -91,7 +92,7 @@ export const lastTransactionApiResponseSchema = z.object({
   NewPlanID: z.string(), // 新计划 ID，必须是有效的 UUID
   OldPlanName: z.string(), // 原计划名称
   NewPlanName: z.string(), // 新计划名称
-  OldPlanStatus: z.enum(['NORMAL', 'NORMAL']), // 原计划状态，枚举类型
+  OldPlanStatus: z.enum(['NORMAL', 'DEBT']), // 原计划状态，枚举类型
   Operator: z.enum(['created', 'upgraded', 'downgraded', 'canceled', 'renewed']), // 操作类型，枚举类型
   StartAt: z.string().datetime(), // 开始时间，
   CreatedAt: z.string().datetime(), // 创建时间
@@ -101,14 +102,6 @@ export const lastTransactionApiResponseSchema = z.object({
   PayID: z.string(), // 支付 ID
   Amount: z.number().int().positive() // 金额，必须是正整数
 });
-export const UpgradeAmountRequestSchema = z.object({
-  planName: z.string()
-});
-
-export const UpgradeAmountResponseSchema = z.object({
-  amount: z.number()
-});
-export type TUpgradeAmountResponseSchema = z.infer<typeof UpgradeAmountResponseSchema>;
 export type TLastTransactionResponse = z.infer<typeof lastTransactionApiResponseSchema>;
 export type TUpdatePlanApiRequest = z.infer<typeof updatePlanApiRequestSchema>;
 export type TUpdatePlanRequest = z.infer<typeof updatePlanRequestSchema>;

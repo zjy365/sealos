@@ -36,13 +36,13 @@ export const verifyJWT = <T extends Object = AccessTokenPayload>(token: string, 
 
 export const generateBillingToken = (props: AuthenticationTokenPayload) =>
   sign(
-    // {
-    props,
-    // iat: new Date().getTime()
-    // },
+    {
+      ...props,
+      iat: subDays(1)(new Date())
+    },
     internalJwtSecret(),
     {
-      expiresIn: process.env.NODE_ENV === 'development' ? '1000d' : '10d'
+      expiresIn: process.env.NODE_ENV === 'development' ? '1000d' : '2d'
     }
   );
 
@@ -53,8 +53,8 @@ export const verifyInternalToken = (token: string) => {
 export const generateRegionalToken = (props: AccessTokenPayload) =>
   sign(
     {
-      ...props
-      // iat: subDays(4)(new Date()).getTime()
+      ...props,
+      iat: subDays(1)(new Date())
     },
     accessJwtSecret(),
     {

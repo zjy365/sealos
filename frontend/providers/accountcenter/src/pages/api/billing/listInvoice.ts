@@ -3,18 +3,15 @@ import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
 import { RechargeBillingData } from '@/types';
 import { AxiosError } from 'axios';
-import { formatISO, subDays } from 'date-fns';
+import sub from 'date-fns/esm/fp/sub';
+import subDays from 'date-fns/esm/fp/subDays/index.js';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
   try {
     const {
-      endTime = formatISO(new Date(), {
-        representation: 'complete'
-      }),
-      startTime = formatISO(new Date(), {
-        representation: 'complete'
-      }),
+      endTime = new Date(),
+      startTime = subDays(1)(new Date()),
       paymentID,
       page = 1,
       pageSize = 100,
