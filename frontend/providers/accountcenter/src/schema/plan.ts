@@ -106,3 +106,14 @@ export type TLastTransactionResponse = z.infer<typeof lastTransactionApiResponse
 export type TUpdatePlanApiRequest = z.infer<typeof updatePlanApiRequestSchema>;
 export type TUpdatePlanRequest = z.infer<typeof updatePlanRequestSchema>;
 export type TUpdatePlanResponse = z.infer<typeof updatePlanResponseSchema>;
+
+export const UpgradeAmountRequestSchema = z.object({
+  planName: z.string()
+});
+
+// const UpgradeAmountResponseSchema = z.object({
+//   planName: z.string()
+// });
+
+export type TUpgradeAmountRequest = z.infer<typeof UpgradeAmountRequestSchema>;
+// export type TUpgradeAmountResponse = z.infer<typeof UpgradeAmountResponseSchema>;

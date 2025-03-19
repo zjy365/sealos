@@ -1,7 +1,7 @@
 import {
-  TUpgradeAmountResponseSchema,
-  UpgradeAmountRequestSchema,
-  UpgradeAmountResponseSchema
+  // TUpgradeAmountResponseSchema,
+  UpgradeAmountRequestSchema
+  // UpgradeAmountResponseSchema
 } from '@/schema/plan';
 import { AccessTokenPayload } from '@/service/auth';
 import { authSession } from '@/service/backend/auth';
@@ -31,25 +31,22 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
 
     const region = await getRegionByUid(req.body.regionUid);
     const client = makeAPIClient(region, payload);
-    const res = await client.post<TUpgradeAmountResponseSchema>(
-      '/payment/v1alpha1/subscription/upgrade-amount',
-      {
-        planName
-      }
-    );
+    const res = await client.post('/payment/v1alpha1/subscription/upgrade-amount', {
+      planName
+    });
 
-    const upgradeAmountResponseValidation = UpgradeAmountResponseSchema.safeParse(res.data);
-    if (!upgradeAmountResponseValidation.success) {
-      console.log(upgradeAmountResponseValidation.error);
-      return jsonRes(resp, {
-        code: 500,
-        message: 'Invalid response format'
-      });
-    }
+    // const upgradeAmountResponseValidation = UpgradeAmountResponseSchema.safeParse(res.data);
+    // if (!upgradeAmountResponseValidation.success) {
+    //   console.log(upgradeAmountResponseValidation.error);
+    //   return jsonRes(resp, {
+    //     code: 500,
+    //     message: 'Invalid response format'
+    //   });
+    // }
 
     return jsonRes(resp, {
       code: 200,
-      data: upgradeAmountResponseValidation.data
+      data: res.data
     });
   } catch (error) {
     if (error instanceof AxiosError) {
