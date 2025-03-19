@@ -6,6 +6,7 @@ import { modifyWorkspaceRole } from '@/services/backend/team';
 import { getRegionUid } from '@/services/enable';
 import { UserRole } from '@/types/team';
 import { retrySerially } from '@/utils/tools';
+import { Cat } from 'lucide-react';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { JoinStatus, Role } from 'prisma/region/generated/client';
 import { validate as uuidValidate } from 'uuid';
@@ -85,77 +86,82 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const regionUid = getRegionUid();
-    // modify db
-    await retrySerially(
-      async () => {
-        const needUpdateRegionalDb = !(await prisma.userWorkspace.findUnique({
+    // 先标记状态
+    const globalState = await globalPrisma.$transaction([
+      globalPrisma.workspaceUsage.create({
+        data: {
+          userUid: target.userCr.userUid,
+          workspaceUid: ns_uid,
+          seat,
+          regionUid
+        }
+      }),
+      globalPrisma.workspaceUsage.delete({
+        where: {
+          regionUid_userUid_workspaceUid: {
+            userUid: payload.userUid,
+            workspaceUid: ns_uid,
+            regionUid
+          }
+        }
+      })
+    ]);
+    try {
+      // sync status, targetUser add 1, user sub 1
+      // modify K8S
+      await modifyWorkspaceRole({
+        action: 'Change',
+        pre_k8s_username: payload.userCrName,
+        k8s_username: target.userCr.crName,
+        role: UserRole.Owner,
+        workspaceId: target.workspace.id
+      });
+      await prisma.$transaction([
+        prisma.userWorkspace.update({
           where: {
             workspaceUid_userCrUid: {
               workspaceUid: ns_uid,
               userCrUid: targetUserCrUid
-            },
+            }
+          },
+          data: {
             role: Role.OWNER
           }
-        }));
-        if (needUpdateRegionalDb)
-          await prisma.$transaction(async (tx) => {
-            const result1 = await tx.userWorkspace.update({
-              where: {
-                workspaceUid_userCrUid: {
-                  workspaceUid: ns_uid,
-                  userCrUid: targetUserCrUid
-                }
-              },
-              data: {
-                role: Role.OWNER
-              }
-            });
-            if (!result1) throw Error();
-            const result2 = await tx.userWorkspace.update({
-              where: {
-                workspaceUid_userCrUid: {
-                  workspaceUid: ns_uid,
-                  userCrUid: payload.userCrUid
-                }
-              },
-              data: {
-                role: Role.DEVELOPER
-              }
-            });
-            if (!result2) throw Error();
-          });
-        // sync status, targetUser add 1, user sub 1
-        // modify K8S
-        await modifyWorkspaceRole({
-          action: 'Change',
-          pre_k8s_username: payload.userCrName,
-          k8s_username: target.userCr.crName,
-          role: UserRole.Owner,
-          workspaceId: target.workspace.id
-        });
-        await globalPrisma.$transaction([
-          globalPrisma.workspaceUsage.create({
-            data: {
-              userUid: payload.userUid,
+        }),
+        prisma.userWorkspace.update({
+          where: {
+            workspaceUid_userCrUid: {
               workspaceUid: ns_uid,
-              seat,
+              userCrUid: payload.userCrUid
+            }
+          },
+          data: {
+            role: Role.DEVELOPER
+          }
+        })
+      ]);
+    } catch (e) {
+      // 补偿事务
+      await globalPrisma.$transaction([
+        globalPrisma.workspaceUsage.create({
+          data: {
+            userUid: payload.userUid,
+            workspaceUid: ns_uid,
+            seat,
+            regionUid
+          }
+        }),
+        globalPrisma.workspaceUsage.delete({
+          where: {
+            regionUid_userUid_workspaceUid: {
+              userUid: target.userCr.userUid,
+              workspaceUid: ns_uid,
               regionUid
             }
-          }),
-          globalPrisma.workspaceUsage.delete({
-            where: {
-              regionUid_userUid_workspaceUid: {
-                userUid: payload.userUid,
-                workspaceUid: ns_uid,
-                regionUid
-              }
-            }
-          })
-        ]);
-      },
-
-      3
-    );
+          }
+        })
+      ]);
+    }
 
     jsonRes(res, {
       code: 200,

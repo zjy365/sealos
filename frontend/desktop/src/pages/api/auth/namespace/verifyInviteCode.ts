@@ -88,38 +88,81 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           code: 403,
           message: 'The owner has reached the maximum number of workspaces'
         });
-
-      await modifyWorkspaceRole({
-        k8s_username: payload.userCrName,
-        role: linkResults.role,
-        workspaceId: inviterStatus.workspace.id,
-        action: 'Grant'
-      });
-      const result = await prisma.userWorkspace.create({
-        data: {
-          status: JoinStatus.IN_WORKSPACE,
-          role: UserRoleToRole(linkResults.role),
-          isPrivate: false,
-          workspaceUid: linkResults.workspaceUid,
-          userCrUid: payload.userCrUid,
-          joinAt: new Date(),
-          handlerUid: linkResults.inviterUid
+      await globalPrisma.$transaction(async (tx) => {
+        const ownerStatus = await tx.workspaceUsage.findUnique({
+          where: {
+            regionUid_userUid_workspaceUid: {
+              regionUid,
+              userUid: ownerResult.userCr.userUid,
+              workspaceUid: ownerResult.workspace.uid
+            }
+          }
+        });
+        if (!ownerStatus) {
+          throw new Error('no owner status in workspace');
         }
+        await globalPrisma.workspaceUsage.update({
+          where: {
+            regionUid_userUid_workspaceUid: {
+              userUid: payload.userUid,
+              workspaceUid: linkResults.workspaceUid,
+              regionUid
+            }
+          },
+          data: {
+            seat: ownerStatus.seat + 1
+          }
+        });
       });
       // sync status, user add 1,
-      await globalPrisma.workspaceUsage.update({
-        where: {
-          regionUid_userUid_workspaceUid: {
-            userUid: payload.userUid,
+
+      try {
+        await modifyWorkspaceRole({
+          k8s_username: payload.userCrName,
+          role: linkResults.role,
+          workspaceId: inviterStatus.workspace.id,
+          action: 'Grant'
+        });
+        await prisma.userWorkspace.create({
+          data: {
+            status: JoinStatus.IN_WORKSPACE,
+            role: UserRoleToRole(linkResults.role),
+            isPrivate: false,
             workspaceUid: linkResults.workspaceUid,
-            regionUid
+            userCrUid: payload.userCrUid,
+            joinAt: new Date(),
+            handlerUid: linkResults.inviterUid
           }
-        },
-        data: {
-          seat: seat - 1 > 0 ? seat - 1 : 0
-        }
-      });
-      if (!result) throw new Error('failed to change Status');
+        });
+      } catch (e) {
+        await globalPrisma.$transaction(async (tx) => {
+          const ownerStatus = await tx.workspaceUsage.findUnique({
+            where: {
+              regionUid_userUid_workspaceUid: {
+                regionUid,
+                userUid: ownerResult.userCr.userUid,
+                workspaceUid: ownerResult.workspace.uid
+              }
+            }
+          });
+          if (!ownerStatus) {
+            throw new Error('no owner status in workspace');
+          }
+          await globalPrisma.workspaceUsage.update({
+            where: {
+              regionUid_userUid_workspaceUid: {
+                userUid: payload.userUid,
+                workspaceUid: linkResults.workspaceUid,
+                regionUid
+              }
+            },
+            data: {
+              seat: ownerStatus.seat > 1 ? ownerStatus.seat - 1 : 1
+            }
+          });
+        });
+        throw Error(String(e));
+      }
     }
     return jsonRes(res, {
       code: 200,

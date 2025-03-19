@@ -53,7 +53,11 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     });
   } catch (error) {
     if (error instanceof AxiosError) {
-      return jsonRes(resp, { code: error.status, message: error.response?.data.error });
+      return jsonRes(resp, {
+        code: error.status,
+        message: error.response?.data.error,
+        data: error.response?.data
+      });
     }
     console.log(error);
     return jsonRes(resp, { code: 500, message: 'Failed to fetch upgrade amount' });

@@ -46,7 +46,7 @@ export type TDeleteCardRequest = z.infer<typeof DeleteCardSchema>;
 // }
 export const rechargeApiSchema = z
   .object({
-    cardID: z.string().uuid('Invalid card ID format'),
+    cardID: z.string().optional(),
     amount: z.number().min(1_000_000).max(10_000_000_000),
     method: z.enum(['CARD'])
   })
