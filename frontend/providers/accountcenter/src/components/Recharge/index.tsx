@@ -15,15 +15,18 @@ import {
   FormErrorMessage,
   useDisclosure,
   GridItemProps,
-  Flex
+  Flex,
+  Box
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { FC, SyntheticEvent, useState } from 'react';
+import RechargeCheckoutModal from './CheckoutModal';
 
 interface RechargeProps {
-  onRecharge?: (amount: number) => void;
+  onPaySuccess?: () => void;
 }
 const minCustomAmount = 10;
+const maxCustomAmount = 10000;
 const amounts = [10, 20, 30];
 const gridItemStyle: GridItemProps = {
   bg: 'rgba(249, 249, 249, 1)',
@@ -35,20 +38,37 @@ const gridItemStyle: GridItemProps = {
   color: 'rgba(24, 24, 27, 1)',
   cursor: 'pointer'
 };
-const Recharge: FC<RechargeProps> = (props) => {
+function isInvalidAmount(numberValue: number) {
+  return (
+    isNaN(numberValue) ||
+    numberValue < minCustomAmount ||
+    numberValue > maxCustomAmount ||
+    !Number.isInteger(numberValue)
+  );
+}
+const Recharge: FC<RechargeProps> = ({ onPaySuccess }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [inputValue, setInputValue] = useState(String(minCustomAmount));
   const [inputErrorKey, setInputErrorKey] = useState('');
-  const recharge = (amount: number) => {};
+  const {
+    isOpen: isCheckoutModalOpen,
+    onOpen: openCheckoutModal,
+    onClose: closeCheckoutModal
+  } = useDisclosure();
+  const [checkoutAmount, setCheckoutAmount] = useState(0);
+  const recharge = (amount: number) => {
+    setCheckoutAmount(amount);
+    openCheckoutModal();
+  };
   const handleCustomAmountClick = () => {
-    // setInputValue(String(minCustomAmount));
-    // setInputErrorKey('');
-    // onOpen();
+    setInputValue(String(minCustomAmount));
+    setInputErrorKey('');
+    onOpen();
   };
   const handleCustomAmountConfirm = () => {
     const amount = Number(inputValue);
-    if (isNaN(amount) || amount < minCustomAmount) return;
+    if (isInvalidAmount(amount)) return;
     onClose();
     recharge(amount);
   };
@@ -60,7 +80,7 @@ const Recharge: FC<RechargeProps> = (props) => {
       return;
     }
     const numberValue = Number(value);
-    if (isNaN(numberValue) || numberValue < 10 || !Number.isInteger(numberValue)) {
+    if (isInvalidAmount(numberValue)) {
       setInputErrorKey('RechargeCustomAmountFormatMessage');
       return;
     }
@@ -86,25 +106,28 @@ const Recharge: FC<RechargeProps> = (props) => {
           </Flex>
         </GridItem>
       </Grid>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW="456px">
           <ModalHeader>{t('RechargeCustomAmountModalTitle')}</ModalHeader>
-          <ModalBody></ModalBody>
-          <FormControl>
-            <FormLabel>{t('RechargeCustomAmountHint')}</FormLabel>
-            <Input
-              type="number"
-              min="10"
-              max="10000"
-              step={1}
-              value={inputValue}
-              onChange={handleCustomAmountInputChange}
-            />
-            {inputErrorKey ? (
-              <FormErrorMessage>{t(inputErrorKey, { label: t('Amount') })}</FormErrorMessage>
-            ) : null}
-          </FormControl>
+          <ModalBody>
+            <FormControl isInvalid={Boolean(inputErrorKey)}>
+              <FormLabel>{t('RechargeCustomAmountHint')}</FormLabel>
+              <Input
+                type="number"
+                min={minCustomAmount}
+                max={maxCustomAmount}
+                step={1}
+                value={inputValue}
+                onChange={handleCustomAmountInputChange}
+              />
+              <Box minH="21px" overflow="hidden">
+                <FormErrorMessage>
+                  {inputErrorKey ? t(inputErrorKey, { label: t('Amount') }) : ''}
+                </FormErrorMessage>
+              </Box>
+            </FormControl>
+          </ModalBody>
           <ModalFooter>
             <Button onClick={handleCustomAmountConfirm}>{t('Confirm')}</Button>
             <Button variant="ghost" onClick={onClose}>
@@ -113,6 +136,12 @@ const Recharge: FC<RechargeProps> = (props) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <RechargeCheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={closeCheckoutModal}
+        amount={checkoutAmount}
+        onPaySuccess={onPaySuccess}
+      />
     </>
   );
 };

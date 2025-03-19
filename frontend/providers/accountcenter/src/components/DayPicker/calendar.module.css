@@ -74,7 +74,7 @@
 }
 
 .caption_label {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
@@ -115,12 +115,12 @@
 }
 
 .row:first-child {
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .head_row {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .head_cell {
@@ -128,7 +128,7 @@
   border-radius: 0.25rem;
   width: 2rem;
   font-weight: 400;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
 }
 
 .row {
@@ -141,12 +141,12 @@
   position: relative;
   padding: 0;
   text-align: center;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   z-index: 20;
 }
 
 .cell[aria-selected] {
-  background-color: hsl(var(--accent));
+  background-color: #f6f6f8;
 }
 
 .cell[aria-selected].day-range-end {
@@ -172,6 +172,7 @@
   font-weight: 400;
   opacity: 1;
   border-radius: 0.25rem;
+  transition: all 0.1s;
 }
 
 .day[aria-selected] {
@@ -199,22 +200,35 @@
   color: #fefefe;
 }
 
-.day_today {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+.day_outside {
+  background-color: #1a1a1d;
+  color: #fefefe;
 }
 
-.day_outside {
-  color: hsl(var(--text-muted-foreground));
+.day:hover {
+  background-color: #1a1a1d;
+  color: #fefefe;
 }
 
 .day_outside[aria-selected] {
-  color: hsl(var(--text-muted-foreground));
+  background-color: #1a1a1d;
+  color: #fefefe;
 }
 
 .day_disabled {
-  color: hsl(var(--text-muted-foreground));
-  opacity: 0.5;
+  background-color: #1a1a1d;
+  color: #fefefe;
+}
+
+.day_today {
+  background-color: #f6f6f8;
+  color: #1a1a1d;
+}
+
+.day_range_end.day_today,
+.day_range_start.day_today {
+  background-color: #1a1a1d;
+  color: #fefefe;
 }
 
 .day_range_middle {

@@ -18,5 +18,6 @@
   "i18n-ally.extract.targetPickingStrategy": "most-similar-by-key",
   "i18n-ally.translate.engines": [
     "google",
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

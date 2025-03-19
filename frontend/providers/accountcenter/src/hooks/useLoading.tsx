@@ -6,6 +6,7 @@ export const useLoading = (props?: { defaultLoading: boolean }) => {
 
   const Loading = useCallback(
     ({ loading, fixed = true }: { loading?: boolean; fixed?: boolean }): JSX.Element | null => {
+      if (!loading) return null;
       return (
         <Flex
           position={fixed ? 'fixed' : 'absolute'}
@@ -17,7 +18,6 @@ export const useLoading = (props?: { defaultLoading: boolean }) => {
           bottom={0}
           alignItems={'center'}
           justifyContent={'center'}
-          visibility={isLoading || loading ? 'visible' : 'hidden'}
         >
           <Spinner
             thickness="4px"

@@ -58,6 +58,7 @@ export const theme = extendTheme(SealosTheme, {
       },
       variants: {
         danger: {
+          borderRadius: '8px',
           bg: '#DC2626',
           color: '#fff',
           _hover: {
@@ -66,6 +67,15 @@ export const theme = extendTheme(SealosTheme, {
           _active: {
             bg: colors.red['700']
           }
+        },
+        solid: {
+          borderRadius: '8px'
+        },
+        square: {
+          borderRadius: '8px'
+        },
+        outline: {
+          borderRadius: '8px'
         }
       }
     }),
@@ -88,6 +98,13 @@ export const theme = extendTheme(SealosTheme, {
     },
     Modal: {
       baseStyle: {
+        closeButton: {
+          color: 'rgb(24, 24, 27)',
+          zIndex: 10,
+          _focusVisible: {
+            boxShadow: 'none'
+          }
+        },
         dialog: {
           border: '1px solid #E4E4E7',
           boxShadow: '0px 2px 4px -1px #0000000F,0px 4px 6px -1px #0000001A',
@@ -147,6 +164,16 @@ export const theme = extendTheme(SealosTheme, {
           container: {
             bg: '#FEF2F2',
             color: '#DC2626'
+          },
+          description: {
+            fontSize: '14px',
+            lineHeight: '20px'
+          }
+        },
+        warning: {
+          container: {
+            bg: 'rgb(255, 247, 237)',
+            color: 'rgb(234, 88, 12)'
           },
           description: {
             fontSize: '14px',

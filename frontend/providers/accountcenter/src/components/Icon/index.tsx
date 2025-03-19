@@ -22,7 +22,6 @@ export const IconMap = {
   noEvents: require('./icons/noEvents.svg').default,
   warning: require('./icons/warning.svg').default,
   analyze: require('./icons/analyze.svg').default,
-  terminal: require('./icons/terminal.svg').default,
   log: require('./icons/log.svg').default,
   statusDetail: require('./icons/statusDetail.svg').default,
   read: require('./icons/read.svg').default,
@@ -64,7 +63,14 @@ export const IconMap = {
   mastercard: require('./icons/mastercard.svg').default,
   emptyPayment: require('./icons/emptyPayment.svg').default,
   emptyInvoice: require('./icons/emptyInvoice.svg').default,
-  emptyUsage: require('./icons/emptyUsage.svg').default
+  emptyUsage: require('./icons/emptyUsage.svg').default,
+  app: require('./icons/app.svg').default,
+  appStore: require('./icons/appStore.svg').default,
+  db: require('./icons/db.svg').default,
+  devBox: require('./icons/devBox.svg').default,
+  job: require('./icons/job.svg').default,
+  objectStorage: require('./icons/objectStorage.svg').default,
+  terminal: require('./icons/terminal.svg').default
 };
 
 const MyIcon = ({
