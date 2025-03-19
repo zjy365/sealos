@@ -63,7 +63,10 @@ export default function Apps() {
   }, [calculateMaxAppsPerPage, gridMX, gridColumnGap, gridRowGap]);
 
   const paginatedApps = useMemo(
-    () => renderApps.slice((page - 1) * pageSize, page * pageSize),
+    () =>
+      renderApps
+        .filter((app) => app.key !== 'system-account-center')
+        .slice((page - 1) * pageSize, page * pageSize),
     [renderApps, page, pageSize]
   );
 
@@ -107,7 +110,6 @@ export default function Apps() {
             paginatedApps.map((item: TApp, index) => {
               return (
                 <Flex
-                  display={item.key === 'system-account-center' ? 'none' : 'flex'}
                   flexDirection={'column'}
                   alignItems={'center'}
                   w="100%"

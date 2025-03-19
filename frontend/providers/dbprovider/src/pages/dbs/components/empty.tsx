@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Box } from '@chakra-ui/react';
 import styles from './empty.module.scss';
 import MyIcon from '@/components/Icon';
 import { useTranslation } from 'next-i18next';
+import { startDriver, applistDriverObj } from '@/hooks/driver';
+import { useGuideStore } from '@/store/guide';
 
 const Empty = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { applistCompleted } = useGuideStore();
+  useEffect(() => {
+    if (!applistCompleted) {
+      startDriver(applistDriverObj());
+    }
+  }, [applistCompleted]);
+
   return (
     <Box
       className={styles.empty}
@@ -23,7 +32,13 @@ const Empty = () => {
     >
       <MyIcon name={'noEvents'} color={'transparent'} width={'80px'} height={'80px'} />
       <Box py={8}>{t('database_empty')}</Box>
-      <Button w={155} mt={5} variant={'solid'} onClick={() => router.push('/db/edit')}>
+      <Button
+        className="create-app-btn"
+        w={155}
+        mt={5}
+        variant={'solid'}
+        onClick={() => router.push('/db/edit')}
+      >
         {t('create_db')}
       </Button>
     </Box>

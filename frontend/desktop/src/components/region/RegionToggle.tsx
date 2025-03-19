@@ -63,12 +63,7 @@ export default function RegionToggle() {
             position={'relative'}
             gap={'8px'}
           >
-            <Text cursor={'pointer'}>
-              {t((curRegion?.location as I18nCloudProvidersKey) || 'beijing', {
-                ns: 'cloudProviders'
-              })}
-              {curRegion?.description?.serial}
-            </Text>
+            <Text cursor={'pointer'}>{curRegion?.displayName}</Text>
             <Center
               bg={disclosure.isOpen ? '#FFF' : ''}
               transform={disclosure.isOpen ? 'rotate(-90deg)' : 'rotate(0deg)'}
@@ -126,10 +121,7 @@ export default function RegionToggle() {
                           bgColor: '#F4F4F5'
                         }}
                       >
-                        <Text>
-                          {t(region?.location as I18nCloudProvidersKey, { ns: 'cloudProviders' })}
-                          {region?.description?.serial}
-                        </Text>
+                        <Text>{region?.displayName}</Text>
                         {region.uid === curRegionUid && <CheckIcon size={16} color={'#1C4EF5'} />}
 
                         {/* <Divider bg={'rgba(255, 255, 255, 0.10)'} my={'12px'} /> */}
