@@ -330,6 +330,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                   _hover={{ bg: 'gray.800' }}
                   onClick={() => {
                     onClose();
+                    setInitGuide(false);
                     console.log(guideLinks[selectedGuide]);
                     const cur = guideLinks[selectedGuide];
 
