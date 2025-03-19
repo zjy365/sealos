@@ -84,6 +84,30 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
       }
     }
   });
+  // const [timer, setTimer] = React.useState<NodeJS.Timeout>();
+  const downloadPdf = (data: InvoicePayload) => {
+    downloadAll([data]);
+  };
+  const downloadAll = async (data: InvoicePayload[]) => {
+    const link = React.createElement(PDFDownloadLink, {
+      document: <Pdf data={data} />,
+      fileName: `invoice-${new Date().toLocaleDateString()}.pdf`
+    });
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container!);
+    root.render(link);
+    const down = () => {
+      try {
+        const domNode: HTMLAnchorElement | null = container.firstChild as HTMLAnchorElement;
+        domNode?.click();
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    setTimeout(down, 1000);
+    document.body.removeChild(container);
+  };
 
   return (
     <Card>
@@ -91,7 +115,13 @@ const Invoice = ({ invoiceList = [] }: { invoiceList: InvoicePayload[] }) => {
         <Text fontSize={'18px'} fontWeight={600} lineHeight={'28px'}>
           {t('InvoiceHistory')}
         </Text>
-        <Button isDisabled={invoiceList.length === 0} variant={'outline'} colorScheme={'gray'}>
+        <Button
+          visibility={'hidden'}
+          // onClick={() => downloadAll(invoiceList)}
+          isDisabled={invoiceList.length === 0}
+          variant={'outline'}
+          colorScheme={'gray'}
+        >
           {t('DownloadAll')}
         </Button>
       </Flex>

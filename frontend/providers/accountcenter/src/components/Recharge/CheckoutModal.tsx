@@ -48,7 +48,7 @@ const RechargeCheckoutModal: FC<RechargeCheckoutModalProps> = ({ isOpen, onClose
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent maxW="972px">
-        <ModalCloseButton zIndex={10} color="rgb(24, 24, 27)" />
+        <ModalCloseButton />
         <ModalBody borderRadius="16px" py="32px">
           <Text fontSize="24px" fontWeight="600" textAlign="center" mb="30px">
             {t('RechargeCredit')}

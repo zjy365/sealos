@@ -61,7 +61,12 @@ const Payment = ({
         <Text fontSize={'18px'} fontWeight={600} lineHeight={'28px'}>
           {t('PayMethod')}
         </Text>
-        <Button onClick={handleAddCard} variant={'outline'} colorScheme={'gray'}>
+        <Button
+          visibility={'hidden'}
+          onClick={handleAddCard}
+          variant={'outline'}
+          colorScheme={'gray'}
+        >
           {t('AddPayment')}
         </Button>
       </Flex>
