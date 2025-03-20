@@ -140,6 +140,11 @@ function App({ Component, pageProps }: AppProps) {
       } catch (error) {}
     };
     setupInternalAppCallListener();
+
+    if (router.query.page) {
+      const page = router.query.page as string;
+      router.push(`/${page}`);
+    }
   }, [router]);
 
   return (

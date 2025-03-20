@@ -90,7 +90,11 @@ export default function Account() {
   const openAccountCenterApp = () => {
     const accountCenter = installedApps.find((t) => t.key === 'system-account-center');
     if (!accountCenter) return;
-    openApp(accountCenter);
+    openApp(accountCenter, {
+      query: {
+        page: 'plan'
+      }
+    });
   };
 
   useEffect(() => {
