@@ -25,8 +25,8 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       return jsonRes(resp, { code: 400, message: validation.error.message });
     }
 
-    const { planName, planID, planType } = validation.data;
-    console.log('getregion');
+    const { planName, planID, planType, cardID } = validation.data;
+    console.log('get region');
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
     console.log('ready for');
@@ -34,7 +34,8 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       planName,
       planID,
       payMethod: 'CARD',
-      planType
+      planType,
+      cardID
     });
 
     console.log(res.data);
