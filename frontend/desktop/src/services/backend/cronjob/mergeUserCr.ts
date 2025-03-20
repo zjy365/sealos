@@ -8,34 +8,42 @@ import { TransactionStatus, TransactionType } from 'prisma/global/generated/clie
 import { JoinStatus } from 'prisma/region/generated/client';
 import { generateBillingToken, generateCronJobToken } from '../auth';
 import { globalPrisma, prisma } from '../db/init';
+import {
+  MergeUserTransactionInfo,
+  MergeUserTransactionInfoSchema
+} from '@/types/db/transcationInfo';
+import { privatedns } from 'tencentcloud-sdk-nodejs';
 
 /**
  * |											|	user is exist | user is not exist 			|
  * |mergeUser is exist 		|	merge					|	update mereUser to user	|
  * |mergeUser is not exist| return ok			|			return ok						|
  */
-export class MergeUserCrJob implements CronJobStatus {
-  private mergeUserUid = '';
-  private userUid: string = '';
+export class MergeUserCrJob implements CronJobStatus<MergeUserTransactionInfo> {
+  // private mergeUserUid = '';
+  // private userUid: string = '';
+  private info: MergeUserTransactionInfo;
   UNIT_TIMEOUT = 3000;
   COMMIT_TIMEOUT = 60000;
   transactionType = TransactionType.MERGE_USER;
-  constructor(private transactionUid: string, private infoUid: string) {}
+  constructor(private transactionUid: string, info: unknown) {
+    this.info = MergeUserTransactionInfoSchema.parse(info);
+  }
   async init() {
-    const info = await globalPrisma.mergeUserTransactionInfo.findUnique({
-      where: {
-        uid: this.infoUid
-      }
-    });
-    if (!info) throw new Error('the transaction info not found');
-    const { mergeUserUid, userUid } = info;
-    this.mergeUserUid = mergeUserUid;
-    this.userUid = userUid;
+    // const info = await globalPrisma.mergeUserTransactionInfo.findUnique({
+    //   where: {
+    //     uid: this.infoUid
+    //   }
+    // });
+    // if (!info) throw new Error('the transaction info not found');
+    // const { mergeUserUid, userUid } = info;
+    // this.mergeUserUid = mergeUserUid;
+    // this.userUid = userUid;
+    // MergeUserTransactionInfoSchema.parse(this.info)
   }
   async unit() {
     await this.init();
-    const mergeUserUid = this.mergeUserUid;
-    const userUid = this.userUid;
+    const { mergeUserUid, userUid } = this.info;
     const mergeUserCr = await prisma.userCr.findUnique({
       where: { userUid: mergeUserUid }
     });
@@ -158,8 +166,7 @@ export class MergeUserCrJob implements CronJobStatus {
   }
   async commit() {
     await this.init();
-    const mergeUserUid = this.mergeUserUid;
-    const userUid = this.userUid;
+    const { mergeUserUid, userUid } = this.info;
     if (!mergeUserUid || !userUid) throw Error('uid not found');
     const baseBillingUrl = getBillingUrl();
     const baseWorkorderUrl = getWorkorderUrl();
@@ -242,12 +249,12 @@ export class MergeUserCrJob implements CronJobStatus {
       globalPrisma.eventLog.create({
         data: {
           eventName: MergeUserEvent['<MERGE_USER>_COMMIT'],
-          mainId: this.userUid,
+          mainId: userUid,
           data: JSON.stringify({
             userUid,
             mergeUserUid,
             regionUid: getRegionUid(),
-            message: `from ${mergeUser.id} to ${user.id}, 
+            message: `from ${mergeUser.id} to ${user.id},
 							merge workorder, cloud vm and balance success`
           })
         }

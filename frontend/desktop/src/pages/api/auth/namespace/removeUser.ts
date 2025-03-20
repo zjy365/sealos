@@ -62,6 +62,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!ownerResult) {
         throw new Error('no owner in workspace');
       }
+
+      // try {
+      await modifyWorkspaceRole({
+        k8s_username: tItem.userCr.crName,
+        role: roleToUserRole(tItem.role),
+        action: 'Deprive',
+        workspaceId: own.workspace.id,
+        pre_role: roleToUserRole(tItem.role)
+      });
+      unbinding_result = await unbindingRole({
+        userCrUid: tItem.userCrUid,
+        workspaceUid: ns_uid
+      });
+      // } catch (e) {
+      //   // 补偿事务
+      //   await globalPrisma.$transaction(async (tx) => {
+      //     const ownerStatus = await tx.workspaceUsage.findUnique({
+      //       where: {
+      //         regionUid_userUid_workspaceUid: {
+      //           regionUid,
+      //           userUid: ownerResult.userCr.userUid,
+      //           workspaceUid: ns_uid
+      //         }
+      //       }
+      //     });
+      //     if (!ownerStatus) {
+      //       // 估计workspace 被删了， 只要并发操作，
+      //       // 永远是先删worksapce ，
+      //       // 再同步usage,
+      //       // 都会先在之前报错，可以不管
+      //       return;
+      //       // throw new Error('no owner status in workspace');
+      //     }
+      //     await globalPrisma.workspaceUsage.update({
+      //       where: {
+      //         regionUid_userUid_workspaceUid: {
+      //           userUid: ownerStatus.userUid,
+      //           workspaceUid: ns_uid,
+      //           regionUid
+      //         }
+      //       },
+      //       data: {
+      //         seat: ownerStatus.seat + 1
+      //       }
+      //     });
+      //   });
+      // }
+      // modify role
       const regionUid = getRegionUid();
       await globalPrisma.$transaction(async (tx) => {
         const ownerStatus = await tx.workspaceUsage.findUnique({
@@ -74,7 +122,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
         if (!ownerStatus) {
-          throw new Error('no owner status in workspace');
+          // 被其他的操作删了workspace,本次更新白干
+          return;
         }
         // sync status, owner seat sub 1,
         await tx.workspaceUsage.update({
@@ -90,63 +139,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
       });
-
-      try {
-        await modifyWorkspaceRole({
-          k8s_username: tItem.userCr.crName,
-          role: roleToUserRole(tItem.role),
-          action: 'Deprive',
-          workspaceId: own.workspace.id,
-          pre_role: roleToUserRole(tItem.role)
-        });
-        unbinding_result = await unbindingRole({
-          userCrUid: tItem.userCrUid,
-          workspaceUid: ns_uid
-        });
-      } catch (e) {
-        // 补偿事务
-        await globalPrisma.$transaction(async (tx) => {
-          const ownerStatus = await tx.workspaceUsage.findUnique({
-            where: {
-              regionUid_userUid_workspaceUid: {
-                regionUid,
-                userUid: ownerResult.userCr.userUid,
-                workspaceUid: ns_uid
-              }
-            }
-          });
-          if (!ownerStatus) {
-            throw new Error('no owner status in workspace');
-          }
-          await globalPrisma.workspaceUsage.update({
-            where: {
-              regionUid_userUid_workspaceUid: {
-                userUid: ownerStatus.userUid,
-                workspaceUid: ns_uid,
-                regionUid
-              }
-            },
-            data: {
-              seat: ownerStatus.seat + 1
-            }
-          });
-        });
-      }
-      // modify role
-
-      // sync status, owner seat sub 1,
-      // await globalPrisma.workspaceUsage.update({
-      //   where: {
-      //     regionUid_userUid_workspaceUid: {
-      //       userUid: ownerStatus.userUid,
-      //       workspaceUid: ns_uid,
-      //       regionUid
-      //     }
-      //   },
-      //   data: {
-      //     seat: ownerStatus.seat - 1 > 0 ? ownerStatus.seat - 1 : 0
-      //   }
-      // });
     } else {
       return jsonRes(res, { code: 404, message: 'target user is not in namespace' });
     }

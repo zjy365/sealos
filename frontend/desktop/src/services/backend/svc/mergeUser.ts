@@ -5,6 +5,7 @@ import { TransactionStatus, TransactionType, UserStatus } from 'prisma/global/ge
 import { v4 } from 'uuid';
 import { globalPrisma } from '../db/init';
 import { jsonRes } from '../response';
+import { MergeUserTransactionInfo } from '@/types/db/transcationInfo';
 
 export const mergeUserSvc =
   (userUid: string, mergeUserUid: string) => async (res: NextApiResponse) => {
@@ -32,6 +33,10 @@ export const mergeUserSvc =
         userUid: mergeUserUid
       }
     });
+    const info: MergeUserTransactionInfo = {
+      mergeUserUid,
+      userUid
+    };
     // add task ( catch by outer )
     await globalPrisma.$transaction(async (tx) => {
       // optimistic
@@ -88,7 +93,7 @@ export const mergeUserSvc =
         data: {
           uid: txUid,
           status: TransactionStatus.READY,
-          infoUid,
+          info,
           transactionType: TransactionType.MERGE_USER
         }
       });
@@ -101,13 +106,13 @@ export const mergeUserSvc =
           })
         }
       });
-      await tx.mergeUserTransactionInfo.create({
-        data: {
-          uid: infoUid,
-          mergeUserUid,
-          userUid
-        }
-      });
+      // await tx.mergeUserTransactionInfo.create({
+      //   data: {
+      //     uid: infoUid,
+      //     mergeUserUid,
+      //     userUid
+      //   }
+      // });
       await tx.transactionDetail.createMany({
         data: regionList.map((regionUid) => ({
           status: TransactionStatus.READY,

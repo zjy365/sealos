@@ -8,6 +8,7 @@ import { v4 } from 'uuid';
 import { verifyJWT } from '../auth';
 import { globalPrisma } from '../db/init';
 import { jsonRes } from '../response';
+import { DeleteUserTransactionInfo } from '@/types/db/transcationInfo';
 
 export const deleteUserSvc = (userUid: string) => async (res: NextApiResponse) => {
   const user = await globalPrisma.user.findUnique({
@@ -30,7 +31,6 @@ export const deleteUserSvc = (userUid: string) => async (res: NextApiResponse) =
       code: 404
     });
   const txUid = v4();
-  const infoUid = v4();
   const regionResults = await globalPrisma.region.findMany();
   if (!regionResults) throw Error('region list is null');
   const regionList = regionResults.map((r) => r.uid);
@@ -70,16 +70,19 @@ export const deleteUserSvc = (userUid: string) => async (res: NextApiResponse) =
       data: {
         uid: txUid,
         status: TransactionStatus.READY,
-        infoUid,
+        // infoUid,
+        info: {
+          userUid
+        },
         transactionType: TransactionType.DELETE_USER
       }
     });
-    await tx.deleteUserTransactionInfo.create({
-      data: {
-        uid: infoUid,
-        userUid
-      }
-    });
+    // await tx.deleteUserTransactionInfo.create({
+    //   data: {
+    //     uid: infoUid,
+    //     userUid
+    //   }
+    // });
     await tx.transactionDetail.createMany({
       data: regionList.map((regionUid) => ({
         status: TransactionStatus.READY,
@@ -145,7 +148,9 @@ export const forceDeleteUserSvc =
         userUid,
         message: 'Set lock user'
       };
-
+      const info: DeleteUserTransactionInfo = {
+        userUid
+      };
       await tx.eventLog.create({
         data: {
           eventName,
@@ -166,16 +171,17 @@ export const forceDeleteUserSvc =
         data: {
           uid: txUid,
           status: TransactionStatus.READY,
-          infoUid,
+          // infoUid,
+          info,
           transactionType: TransactionType.DELETE_USER
         }
       });
-      await tx.deleteUserTransactionInfo.create({
-        data: {
-          uid: infoUid,
-          userUid
-        }
-      });
+      // await tx.deleteUserTransactionInfo.create({
+      //   data: {
+      //     uid: infoUid,
+      //     userUid
+      //   }
+      // });
       await tx.transactionDetail.createMany({
         data: regionList.map((regionUid) => ({
           status: TransactionStatus.READY,
@@ -231,7 +237,9 @@ export const simpleDeleteUserSvc = (userUid: string) => async (res: NextApiRespo
       userUid,
       message: 'Set lock user'
     };
-
+    const info: DeleteUserTransactionInfo = {
+      userUid
+    };
     await tx.eventLog.create({
       data: {
         eventName,
@@ -252,16 +260,17 @@ export const simpleDeleteUserSvc = (userUid: string) => async (res: NextApiRespo
       data: {
         uid: txUid,
         status: TransactionStatus.READY,
-        infoUid,
+        // infoUid,
+        info,
         transactionType: TransactionType.DELETE_USER
       }
     });
-    await tx.deleteUserTransactionInfo.create({
-      data: {
-        uid: infoUid,
-        userUid
-      }
-    });
+    // await tx.deleteUserTransactionInfo.create({
+    //   data: {
+    //     uid: infoUid,
+    //     userUid
+    //   }
+    // });
     await tx.transactionDetail.createMany({
       data: regionList.map((regionUid) => ({
         status: TransactionStatus.READY,

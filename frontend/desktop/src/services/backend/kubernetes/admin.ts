@@ -2,6 +2,7 @@ import { StatusCR, UserCR } from '@/types';
 import { k8sFormatTime } from '@/utils/format';
 import * as k8s from '@kubernetes/client-node';
 import { KubeConfig } from '@kubernetes/client-node';
+import { HttpStatusCode } from 'axios';
 
 export function K8sApiDefault(): k8s.KubeConfig {
   const kc = new k8s.KubeConfig();
@@ -351,6 +352,47 @@ export const setUserDelete = async (k8s_username: string) => {
 };
 
 export const setUserWorkspaceLock = async (namespace: string) => {
+  try {
+    const kc = K8sApiDefault();
+    const client = kc.makeApiClient(k8s.CoreV1Api);
+    const res = await client.patchNamespace(
+      namespace,
+      {
+        metadata: {
+          annotations: {
+            'debt.sealos/status': WorkspaceDebtStatus.TerminateSuspend
+          }
+        }
+      },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {
+        headers: {
+          'Content-Type': 'application/strategic-merge-patch+json'
+        }
+      }
+    );
+    return (
+      res.body.metadata?.annotations?.['debt.sealos/status'] ===
+      WorkspaceDebtStatus.TerminateSuspend
+    );
+  } catch (e) {
+    if (
+      e instanceof k8s.HttpError &&
+      e.body instanceof k8s.V1Status &&
+      e.body.code == HttpStatusCode.NotFound
+    ) {
+      // not found namespace
+      return true;
+    }
+    console.log(e);
+    throw e;
+  }
+};
+export const setUserWorkspaceQuota = async (namespace: string) => {
   try {
     const kc = K8sApiDefault();
     const client = kc.makeApiClient(k8s.CoreV1Api);

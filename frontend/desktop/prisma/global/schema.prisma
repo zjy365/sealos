@@ -101,23 +101,25 @@ model Payment {
 }
 
 model User {
-  uid                         String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt                   DateTime                   @default(now()) @db.Timestamptz(3)
-  updatedAt                   DateTime                   @updatedAt @db.Timestamptz(3)
-  avatarUri                   String
-  nickname                    String
-  id                          String                     @unique
-  name                        String                     @unique
-  status                      UserStatus                 @default(NORMAL_USER)
-  oauthProvider               OauthProvider[]
-  oldMergeUserTransactionInfo MergeUserTransactionInfo[] @relation("oldUser")
-  newMergeUserTransactionInfo MergeUserTransactionInfo[] @relation("newUser")
-  DeleteUserTransactionInfo   DeleteUserTransactionInfo?
-  deleteUserLog               DeleteUserLog?
-  userTasks                   UserTask[]
-  WorkspaceUsage              WorkspaceUsage[]
-  userInfo                    UserInfo?
-  subscription                Subscription?
+  uid                     String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt               DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime                  @updatedAt @db.Timestamptz(3)
+  avatarUri               String
+  nickname                String
+  id                      String                    @unique
+  name                    String                    @unique
+  status                  UserStatus                @default(NORMAL_USER)
+  oauthProvider           OauthProvider[]
+  // oldMergeUserTransactionInfo MergeUserTransactionInfo[] @relation("oldUser")
+  // newMergeUserTransactionInfo MergeUserTransactionInfo[] @relation("newUser")
+  // DeleteUserTransactionInfo   DeleteUserTransactionInfo?
+  deleteUserLog           DeleteUserLog?
+  userTasks               UserTask[]
+  WorkspaceUsage          WorkspaceUsage[]
+  userInfo                UserInfo?
+  subscription            Subscription?
+  // TransactionInfo             TransactionInfo?
+  subscriptionTransaction SubscriptionTransaction[]
 }
 
 model Transfer {
@@ -156,13 +158,14 @@ model PrecommitTransaction {
   createdAt                 DateTime                   @default(now()) @db.Timestamptz(3)
   updatedAt                 DateTime                   @updatedAt @db.Timestamptz(3)
   transactionType           TransactionType
-  infoUid                   String
+  // infoUid                   String                     @db.Uuid
   status                    TransactionStatus
   transactionDetail         TransactionDetail[]
   commitTransactionSet      CommitTransactionSet?
   errorPreCommitTransaction ErrorPreCommitTransaction?
+  info                      Json
 
-  @@unique([infoUid, transactionType])
+  // @@unique([infoUid, transactionType])
 }
 
 model ErrorPreCommitTransaction {
@@ -179,7 +182,7 @@ model TransactionDetail {
   updatedAt            DateTime             @updatedAt @db.Timestamptz(3)
   status               TransactionStatus
   regionUid            String
-  transactionUid       String
+  transactionUid       String               @db.Uuid
   region               Region               @relation(fields: [regionUid], references: [uid])
   precommitTransaction PrecommitTransaction @relation(fields: [transactionUid], references: [uid])
 
@@ -187,21 +190,29 @@ model TransactionDetail {
   @@index([regionUid])
 }
 
-model MergeUserTransactionInfo {
-  uid          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  mergeUserUid String @unique
-  userUid      String
-  mergeUser    User?  @relation("oldUser", fields: [mergeUserUid], references: [uid])
-  user         User?  @relation("newUser", fields: [userUid], references: [uid])
+// model MergeUserTransactionInfo {
+//   uid          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   mergeUserUid String @unique
+//   userUid      String
+//   mergeUser    User?  @relation("oldUser", fields: [mergeUserUid], references: [uid])
+//   user         User?  @relation("newUser", fields: [userUid], references: [uid])
 
-  @@index([userUid])
-}
+//   @@index([userUid])
+// }
 
-model DeleteUserTransactionInfo {
-  uid     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userUid String @unique
-  user    User?  @relation(fields: [userUid], references: [uid])
-}
+// model DeleteUserTransactionInfo {
+//   uid     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   userUid String @unique
+//   user    User?  @relation(fields: [userUid], references: [uid])
+// }
+
+// model TransactionInfo {
+//   uid                     String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   precommitTransactionUid String               @db.Uuid
+//   // field                   String
+//   value                   Json
+//   precommitTransaction    PrecommitTransaction @relation(references: [uid], fields: [precommitTransactionUid])
+// }
 
 model DeleteUserLog {
   userUid   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -209,22 +220,22 @@ model DeleteUserLog {
   user      User     @relation(fields: [userUid], references: [uid])
 }
 
-model AuditLog {
-  uid            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  entityUid      String
-  entityName     String
-  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
-  action         AuditAction
-  auditLogDetail AuditLogDetail[]
-}
+// model AuditLog {
+//   uid            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   entityUid      String
+//   entityName     String
+//   createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+//   action         AuditAction
+//   auditLogDetail AuditLogDetail[]
+// }
 
-model AuditLogDetail {
-  auditLogUid String   @id
-  key         String
-  preValue    String
-  newValue    String
-  auditLog    AuditLog @relation(fields: [auditLogUid], references: [uid])
-}
+// model AuditLogDetail {
+//   auditLogUid String   @id
+//   key         String
+//   preValue    String
+//   newValue    String
+//   auditLog    AuditLog @relation(fields: [auditLogUid], references: [uid])
+// }
 
 model EventLog {
   uid       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -442,21 +453,23 @@ model Subscription {
 }
 
 model SubscriptionPlan {
-  id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                String         @unique
+  id                  String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String                    @unique
   description         String?
   amount              BigInt?
   gift_amount         BigInt?
-  period              String?        @db.String(50)
+  period              String?                   @db.String(50)
   upgrade_plan_list   String[]
   downgrade_plan_list String[]
   max_seats           BigInt
   max_workspaces      BigInt
   max_resources       String?
-  created_at          DateTime?      @db.Timestamptz(6)
-  updated_at          DateTime?      @db.Timestamptz(6)
+  created_at          DateTime?                 @db.Timestamptz(6)
+  updated_at          DateTime?                 @db.Timestamptz(6)
   most_popular        Boolean?
-  Subscription        Subscription[]
+  subscription        Subscription[]
+  oldPlanTransaction  SubscriptionTransaction[] @relation("oldPlan")
+  newPlanTransaction  SubscriptionTransaction[] @relation("newPlan")
 }
 
 model WorkspaceUsage {
@@ -485,28 +498,31 @@ model UserInfo {
   user            User    @relation(fields: [userUid], references: [uid])
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model SubscriptionTransaction {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  subscription_id String    @db.Uuid
-  user_uid        String    @db.Uuid
-  old_plan_id     String?   @db.Uuid
-  new_plan_id     String?   @db.Uuid
-  old_plan_name   String?   @db.String(50)
-  new_plan_name   String?   @db.String(50)
-  old_plan_status String?   @db.String(50)
-  operator        String?   @db.String(50)
-  start_at        DateTime? @db.Timestamptz(6)
-  created_at      DateTime? @db.Timestamptz(6)
-  updated_at      DateTime? @db.Timestamptz(6)
-  status          String?   @db.String(50)
-  pay_status      String?   @db.String(50)
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subscription_id String           @db.Uuid
+  user_uid        String           @db.Uuid
+  old_plan_id     String           @db.Uuid
+  new_plan_id     String           @db.Uuid
+  old_plan_name   String?          @db.String(50)
+  new_plan_name   String?          @db.String(50)
+  old_plan_status String?          @db.String(50)
+  operator        String?          @db.String(50)
+  start_at        DateTime?        @db.Timestamptz(6)
+  created_at      DateTime?        @db.Timestamptz(6)
+  updated_at      DateTime?        @db.Timestamptz(6)
+  status          String?          @db.String(50)
+  pay_status      String?          @db.String(50)
   pay_id          String?
   amount          BigInt?
+  user            User             @relation(references: [uid], fields: [user_uid])
+  oldPlan         SubscriptionPlan @relation(name: "oldPlan", references: [id], fields: [old_plan_id])
+  newPlan         SubscriptionPlan @relation(name: "newPlan", references: [id], fields: [new_plan_id])
 
+  @@index([old_plan_id])
+  @@index([new_plan_id])
   @@index([subscription_id], map: "idx_SubscriptionTransaction_subscription_id")
   @@index([user_uid], map: "idx_SubscriptionTransaction_user_uid")
-  @@ignore
 }
 
 model UserTransfer {
@@ -559,6 +575,7 @@ enum TransactionStatus {
 enum TransactionType {
   MERGE_USER
   DELETE_USER
+  SYNC_PLAN
 }
 
 enum AuditAction {
