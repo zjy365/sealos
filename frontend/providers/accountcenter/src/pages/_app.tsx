@@ -123,11 +123,6 @@ function App({ Component, pageProps }: AppProps) {
       return;
     }
 
-    if (router.query.page) {
-      const page = router.query.page as string;
-      router.push(`/${page}`);
-    }
-
     const setupInternalAppCallListener = async () => {
       try {
         const event = async (e: MessageEvent) => {

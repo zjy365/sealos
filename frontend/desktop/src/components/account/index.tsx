@@ -97,7 +97,7 @@ export default function Account() {
       messageData: {
         page: page || 'plan'
       },
-      pathname: '/'
+      pathname: '/redirect'
     });
   };
 
@@ -177,7 +177,7 @@ export default function Account() {
             }}
             onClick={() => {
               console.log('open');
-              openAccountCenterApp();
+              openAccountCenterApp('plan');
             }}
           >
             <Sparkles size={16} color="#1C4EF5" />

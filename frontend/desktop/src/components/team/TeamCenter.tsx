@@ -44,7 +44,7 @@ export default function TeamCenter({
   ...props
 }: { closeWorkspaceToggle: () => void } & StackProps) {
   const session = useSessionStore((s) => s.session);
-  const { installedApps, openApp } = useAppStore();
+  const { installedApps, openApp, openDesktopApp } = useAppStore();
   const { t } = useTranslation();
   const user = session?.user;
   const default_ns_uid = user?.ns_uid || '';
@@ -109,10 +109,17 @@ export default function TeamCenter({
     }
   }, [_namespaces, ns_uid]);
 
-  const openAccountCenterApp = () => {
-    const accountCenter = installedApps.find((t) => t.key === 'system-account-center');
-    if (!accountCenter) return;
-    openApp(accountCenter);
+  const openAccountCenterApp = (page?: string) => {
+    openDesktopApp({
+      appKey: 'system-account-center',
+      query: {
+        page: page || 'plan'
+      },
+      messageData: {
+        page: page || 'plan'
+      },
+      pathname: '/redirect'
+    });
   };
 
   return (
@@ -248,7 +255,7 @@ export default function TeamCenter({
                     onClick={() => {
                       closeWorkspaceToggle();
                       onClose();
-                      openAccountCenterApp();
+                      openAccountCenterApp('plan');
                     }}
                   >
                     {t('cc:upgrade')}
@@ -353,7 +360,7 @@ export default function TeamCenter({
                         onClick={() => {
                           onClose();
                           closeWorkspaceToggle();
-                          openAccountCenterApp();
+                          openAccountCenterApp('plan');
                         }}
                       >
                         Upgrade
