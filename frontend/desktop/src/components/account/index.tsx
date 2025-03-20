@@ -67,7 +67,8 @@ export default function Account() {
   const kubeconfig = session?.kubeconfig || '';
   const showDisclosure = useDisclosure();
   const [notificationAmount, setNotificationAmount] = useState(0);
-  const { installedApps, openApp } = useAppStore();
+  const { installedApps, openApp, runningInfo, setToHighestLayerById, openDesktopApp } =
+    useAppStore();
   const accountCenterRef = useRef<AccountCenterRef>(null);
   const onAmount = useCallback((amount: number) => setNotificationAmount(amount), []);
   const upgradePlanDisclosure = useDisclosure();
@@ -87,13 +88,16 @@ export default function Account() {
     openApp(workorder);
   };
 
-  const openAccountCenterApp = () => {
-    const accountCenter = installedApps.find((t) => t.key === 'system-account-center');
-    if (!accountCenter) return;
-    openApp(accountCenter, {
+  const openAccountCenterApp = (page?: string) => {
+    openDesktopApp({
+      appKey: 'system-account-center',
       query: {
-        page: 'plan'
-      }
+        page: page || 'plan'
+      },
+      messageData: {
+        page: page || 'plan'
+      },
+      pathname: '/'
     });
   };
 
@@ -283,7 +287,7 @@ export default function Account() {
                     _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                     onClick={() => {
                       console.log('open');
-                      openAccountCenterApp();
+                      openAccountCenterApp('setting');
                     }}
                   >
                     <Flex alignItems="center" gap="8px">
@@ -305,7 +309,7 @@ export default function Account() {
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                   onClick={() => {
                     console.log('open');
-                    openAccountCenterApp();
+                    openAccountCenterApp('usage');
                   }}
                 >
                   <Flex alignItems="center" gap="8px">
@@ -324,8 +328,7 @@ export default function Account() {
                   borderRadius="8px"
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                   onClick={() => {
-                    console.log('open');
-                    openAccountCenterApp();
+                    openAccountCenterApp('plan');
                   }}
                 >
                   <Flex alignItems="center" gap="8px">
@@ -345,7 +348,7 @@ export default function Account() {
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                   onClick={() => {
                     console.log('open');
-                    openAccountCenterApp();
+                    openAccountCenterApp('setting');
                   }}
                 >
                   <Flex alignItems="center" gap="8px">

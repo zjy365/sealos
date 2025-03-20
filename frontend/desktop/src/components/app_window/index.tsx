@@ -186,9 +186,9 @@ export default function AppWindow(props: {
               }}
             >
               {wnapp.size === 'maximize' ? (
-                <MaximizeIcon color={'#525252'} width={'16px'} height={'16px'} />
-              ) : (
                 <MinimizeIcon color={'#525252'} width={'16px'} height={'16px'} />
+              ) : (
+                <MaximizeIcon color={'#525252'} width={'16px'} height={'16px'} />
               )}
             </Box>
             <Box

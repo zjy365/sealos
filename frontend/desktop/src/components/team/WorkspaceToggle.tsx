@@ -50,6 +50,10 @@ export default function WorkspaceToggle() {
   const namespaces = data?.data?.namespaces || [];
   const namespace = namespaces.find((x) => x.uid === ns_uid);
 
+  const closeWorkspaceToggle = () => {
+    disclosure.onClose();
+  };
+
   return (
     <HStack position={'relative'}>
       <HStack
@@ -141,7 +145,7 @@ export default function WorkspaceToggle() {
                 </CreateTeam>
 
                 <Divider my={'4px'} borderColor={'#F4F4F5'} />
-                <TeamCenter />
+                <TeamCenter closeWorkspaceToggle={closeWorkspaceToggle} />
               </VStack>
             </Box>
           </Box>

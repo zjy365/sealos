@@ -39,7 +39,10 @@ import RenameTeam from './RenameTeam';
 import { Plus } from 'lucide-react';
 import useAppStore from '@/stores/app';
 
-export default function TeamCenter(props: StackProps) {
+export default function TeamCenter({
+  closeWorkspaceToggle,
+  ...props
+}: { closeWorkspaceToggle: () => void } & StackProps) {
   const session = useSessionStore((s) => s.session);
   const { installedApps, openApp } = useAppStore();
   const { t } = useTranslation();
@@ -131,7 +134,15 @@ export default function TeamCenter(props: StackProps) {
         </Center>
       </HStack>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={false}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          closeWorkspaceToggle();
+          onClose();
+        }}
+        isCentered
+        closeOnOverlayClick={false}
+      >
         <ModalOverlay />
         <ModalContent
           borderRadius={'20px'}
@@ -234,7 +245,11 @@ export default function TeamCenter(props: StackProps) {
                     borderRadius={'full'}
                     background={'#18181B'}
                     color={'#FFF'}
-                    onClick={openAccountCenterApp}
+                    onClick={() => {
+                      closeWorkspaceToggle();
+                      onClose();
+                      openAccountCenterApp();
+                    }}
                   >
                     {t('cc:upgrade')}
                   </Button>
@@ -331,9 +346,18 @@ export default function TeamCenter(props: StackProps) {
                       />
                     </Box>
                     <Center color={'#71717A'} fontSize={'14px'} cursor={'pointer'}>
-                      <Text color={'#18181B'} fontWeight={600} pr={'4px'}>
+                      <Box
+                        color={'#18181B'}
+                        fontWeight={600}
+                        pr={'4px'}
+                        onClick={() => {
+                          onClose();
+                          closeWorkspaceToggle();
+                          openAccountCenterApp();
+                        }}
+                      >
                         Upgrade
-                      </Text>
+                      </Box>
                       to get more seats
                     </Center>
                   </Stack>

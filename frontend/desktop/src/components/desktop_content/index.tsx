@@ -114,6 +114,7 @@ export default function Desktop(props: any) {
     },
     [apps, openApp, runningInfo, setToHighestLayerById]
   );
+
   const router = useRouter();
   const actionCbGen = useCallback(
     <T extends OauthAction>({

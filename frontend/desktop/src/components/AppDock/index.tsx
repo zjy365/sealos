@@ -74,7 +74,9 @@ export default function AppDock() {
 
     return [
       ...mergedApps,
-      ...runningInfo.filter((running) => !initialApps.some((app) => app.key === running.key))
+      ...runningInfo
+        .filter((running) => !initialApps.some((app) => app.key === running.key))
+        .filter((app) => app.key !== 'system-account-center')
     ];
   }, [devboxApp, launchpadApp, runningInfo, templateApp]);
 

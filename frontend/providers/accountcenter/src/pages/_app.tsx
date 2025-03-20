@@ -119,6 +119,15 @@ function App({ Component, pageProps }: AppProps) {
   }, [refresh, router.asPath]);
 
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    if (router.query.page) {
+      const page = router.query.page as string;
+      router.push(`/${page}`);
+    }
+
     const setupInternalAppCallListener = async () => {
       try {
         const event = async (e: MessageEvent) => {
@@ -131,6 +140,11 @@ function App({ Component, pageProps }: AppProps) {
                 }
               });
             }
+            if (e.data?.page) {
+              router.push({
+                pathname: `/${e.data.page}`
+              });
+            }
           } catch (error) {
             console.log(error, 'error');
           }
@@ -139,13 +153,9 @@ function App({ Component, pageProps }: AppProps) {
         return () => window.removeEventListener('message', event);
       } catch (error) {}
     };
-    setupInternalAppCallListener();
 
-    if (router.query.page) {
-      const page = router.query.page as string;
-      router.push(`/${page}`);
-    }
-  }, [router]);
+    setupInternalAppCallListener();
+  }, [router.isReady, router]);
 
   return (
     <>
