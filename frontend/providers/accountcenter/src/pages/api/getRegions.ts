@@ -1,3 +1,4 @@
+import { getRegionUid } from '@/service/auth';
 import { authSession } from '@/service/backend/auth';
 import { getRegionByUid, getRegionList } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
@@ -7,7 +8,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
   try {
     // const payload = await authSession(req.headers);
     const regions = (await getRegionList()) || [];
-    const currentRegionUid = global.AppConfig.cloud.regionUID;
+    const currentRegionUid = getRegionUid();
     const currentRegionIdx = regions.findIndex((region: Region) => region.uid === currentRegionUid);
     if (currentRegionIdx === -1) {
       throw Error('current region not found');
