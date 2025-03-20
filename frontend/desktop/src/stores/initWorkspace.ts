@@ -20,6 +20,7 @@ export const useInitWorkspaceStore = create<SignupState>((set) => ({
   },
   initGuide: false,
   setInitGuide(initGuide: boolean) {
+    console.log('initGuide', initGuide);
     set({ initGuide });
   }
 }));

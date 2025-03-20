@@ -29,13 +29,14 @@ const RedirectPage = () => {
 
     if (router.isReady) {
       const { name, action } = router.query as { name?: string; action?: string };
-      // to do action === 'guide'
       if (action === 'guide') {
         resetGuideState(false);
+        router.replace('/dbs?action=guide');
+        return;
       }
       handleRedirect(name);
     }
-  }, [router, router.isReady, router.query]);
+  }, [resetGuideState, router, router.isReady, router.query]);
 
   return null;
 };

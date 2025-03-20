@@ -26,7 +26,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     }
 
     const { planName, planID, planType, cardID } = validation.data;
-    console.log('get region');
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
     console.log('ready for');

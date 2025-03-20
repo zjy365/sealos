@@ -52,6 +52,8 @@ const RedirectPage = () => {
       if (action === 'guide') {
         console.log('guide', action);
         resetGuideState(false);
+        router.replace('/apps?action=guide');
+        return;
       }
       handleRedirect(formData);
     };
@@ -59,7 +61,7 @@ const RedirectPage = () => {
     if (router.isReady) {
       handleUrlParams();
     }
-  }, [router, router.isReady, router.query]);
+  }, [resetGuideState, router, router.isReady, router.query, setLastRoute]);
 
   return null;
 };
