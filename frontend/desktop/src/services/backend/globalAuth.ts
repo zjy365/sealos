@@ -16,6 +16,7 @@ import {
 import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
 import { Select, useId } from '@chakra-ui/react';
+import { v4 } from 'uuid';
 
 type TransactionClient = Omit<
   PrismaClient,
@@ -251,7 +252,86 @@ async function signUp({
     return null;
   }
 }
+async function signUpWithEmail({
+  provider,
+  id,
+  name: nickname,
+  avatar_url,
+  email,
+  semData,
+  firstname = '',
+  lastname = ''
+}: {
+  provider: ProviderType;
+  id: string;
+  name: string;
+  email: string;
+  firstname?: string;
+  lastname?: string;
+  avatar_url: string;
+  semData?: SemData;
+}) {
+  const name = nanoid(10);
+  try {
+    let oauthProvider: Prisma.UserCreateArgs['data']['oauthProvider'] = {
+      create: {
+        providerId: id,
+        providerType: provider
+      }
+    };
+    const result = await globalPrisma.$transaction(async (tx) => {
+      // 先处理 email 再处理剩余的
+      const user: User = await tx.user.create({
+        data: {
+          name: name,
+          id: name,
+          nickname: nickname,
+          avatarUri: avatar_url,
+          oauthProvider: {
+            create: {
+              providerId: email,
+              providerType: 'EMAIL'
+            }
+          },
+          userInfo: {
+            create: {
+              firstname,
+              lastname,
+              signUpRegionUid: getRegionUid(),
+              isInited: false
+            }
+          }
+        }
+      });
+      // o
+      await tx.oauthProvider.create({
+        data: {
+          providerId: id,
+          providerType: provider,
+          userUid: user.uid
+        }
+      });
+      if (semData?.channel) {
+        await tx.userSemChannel.create({
+          data: {
+            userUid: user.uid,
+            channel: semData.channel,
+            ...(semData.additionalInfo && { additionalInfo: semData.additionalInfo })
+          }
+        });
+      }
 
+      await createNewUserTasks(tx, user.uid);
+
+      return { user };
+    });
+
+    return result;
+  } catch (error) {
+    console.error('globalAuth: Error during sign up:', error);
+    return null;
+  }
+}
 export async function signUpByPassword({
   id,
   name: nickname,
@@ -413,45 +493,6 @@ export const getGlobalToken = async ({
     }
   });
 
-  // if (provider === ProviderType.PASSWORD) {
-  //   if (!password) {
-  //     return null;
-  //   }
-  //   if (!_user) {
-  //     if (!enableSignUp()) throw new Error('Failed to signUp user');
-  //     const result = await signUpByPassword({
-  //       id: providerId,
-  //       name,
-  //       avatar_url,
-  //       password,
-  //       semData
-  //     });
-  //     if (!!result) {
-  //       user = result.user;
-  //       if (inviterId && result) {
-  //         inviteHandler({
-  //           inviterId: inviterId,
-  //           inviteeId: result?.user.name,
-  //           signResult: result
-  //         });
-  //       }
-  //       if (enableTracking()) {
-  //         await trackSignUp({
-  //           userId: result.user.id,
-  //           userUid: result.user.uid
-  //         });
-  //       }
-  //     }
-  //   } else {
-  //     const result = await signInByPassword({
-  //       id: providerId,
-  //       password
-  //     });
-  //     // password is wrong
-  //     if (!result) return null;
-  //     user = result.user;
-  //   }
-  // } else {
   if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
     throw new Error('not support other way to signin/signup');
   if (!_user) {
@@ -487,6 +528,118 @@ export const getGlobalToken = async ({
           userUid: result.user.uid
         });
       }
+    }
+  } else {
+    const result = await signIn({
+      provider,
+      id: providerId
+    });
+    if (result) {
+      user = result.user;
+      isInited = !!result.user.userInfo?.isInited;
+    }
+  }
+  // }
+  if (!user) throw new Error('Failed to edit db');
+  // user is deleted or banned
+  if (user.status !== UserStatus.NORMAL_USER) return null;
+  const token = generateAuthenticationToken({
+    userUid: user.uid,
+    userId: user.name
+  });
+
+  return {
+    token,
+    user: {
+      name: user.nickname,
+      avatar: user.avatarUri,
+      userUid: user.uid
+    },
+    needInit: !isInited
+  };
+};
+// 要绑定邮箱
+export const getGlobalTokenByOauth = async ({
+  provider,
+  providerId,
+  name,
+  email,
+  avatar_url,
+  inviterId,
+  semData,
+  bdVid
+}: {
+  provider: ProviderType;
+  providerId: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+  password?: string;
+  inviterId?: string;
+  semData?: SemData;
+  bdVid?: string;
+}) => {
+  let user: User | null = null;
+  let isInited = false;
+  if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
+    throw new Error('not support other way to signin/signup');
+
+  const _user = await globalPrisma.oauthProvider.findUnique({
+    where: {
+      providerId_providerType: {
+        providerType: provider,
+        providerId
+      }
+    },
+    select: {
+      userUid: true
+    }
+  });
+  if (!_user) {
+    // 注册
+    if (!enableSignUp()) throw new Error('Failed to signUp user');
+    const emailUser = await globalPrisma.oauthProvider.findUnique({
+      where: {
+        providerId_providerType: {
+          providerType: ProviderType.EMAIL,
+          providerId: email
+        }
+      }
+    });
+    // 被占用了，待定？ 不绑该邮箱
+    // let result;
+    if (!!emailUser) return null;
+    const result = await signUpWithEmail({
+      email,
+      provider,
+      id: providerId,
+      name,
+      avatar_url,
+      semData
+    });
+    if (!result) return null;
+    user = result.user;
+    if (inviterId) {
+      inviteHandler({
+        inviterId: inviterId,
+        inviteeId: result?.user.name,
+        signResult: result
+      });
+    }
+    if (bdVid) {
+      await uploadConvertData({ newType: [3], bdVid })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    if (enableTracking()) {
+      await trackSignUp({
+        userId: result.user.id,
+        userUid: result.user.uid
+      });
     }
   } else {
     const result = await signIn({

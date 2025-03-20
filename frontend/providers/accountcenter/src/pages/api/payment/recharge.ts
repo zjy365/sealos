@@ -7,7 +7,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
   try {
-    console.log('recharge');
     // For internal backend requests, use rechargeApiSchema
     const paramsResult = rechargeRequest.safeParse(req.body);
     if (!paramsResult.success) {

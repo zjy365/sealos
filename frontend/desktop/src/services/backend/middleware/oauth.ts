@@ -11,6 +11,7 @@ import { v4 } from 'uuid';
 import { BIND_STATUS } from '@/types/response/bind';
 import { UNBIND_STATUS } from '@/types/response/unbind';
 import { SemData } from '@/types/sem';
+import { createMiddleware } from '@/utils/factory';
 
 export const OauthCodeFilter = async (
   req: NextApiRequest,
@@ -80,7 +81,7 @@ export const googleOAuthGuard =
   (clientId: string, clientSecret: string, code: string, callbackUrl: string) =>
   async (
     res: NextApiResponse,
-    next: (data: { id: string; name: string; avatar_url: string }) => void
+    next: (data: { id: string; name: string; avatar_url: string; email: string }) => void
   ) => {
     const url = `https://oauth2.googleapis.com/token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}&redirect_uri=${callbackUrl}&grant_type=authorization_code`;
     const response = await fetch(url, { method: 'POST', headers: { Accept: 'application/json' } });
@@ -103,6 +104,7 @@ export const googleOAuthGuard =
       at_hash: string;
       name: string;
       picture: string;
+      email: string;
       given_name: string;
       family_name: string;
       locale: string;
@@ -112,13 +114,15 @@ export const googleOAuthGuard =
     const name = userInfo.name;
     const id = userInfo.sub;
     const avatar_url = userInfo.picture;
+    const email = userInfo.email;
     if (!id) throw Error('get userInfo error');
     // @ts-ignore
     await Promise.resolve(
       next?.({
         id,
         name,
-        avatar_url
+        avatar_url,
+        email
       })
     );
   };
@@ -126,7 +130,7 @@ export const githubOAuthGuard =
   (clientId: string, clientSecret: string, code: string) =>
   async (
     res: NextApiResponse,
-    next: (data: { id: string; name: string; avatar_url: string }) => void
+    next: (data: { id: string; name: string; avatar_url: string; email: string }) => void
   ) => {
     const url = ` https://github.com/login/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}`;
     const __data = (await (
@@ -140,6 +144,7 @@ export const githubOAuthGuard =
         data: 'access_token is null'
       });
     }
+    // get userInfo
     const userUrl = `https://api.github.com/user`;
     const response = await fetch(userUrl, {
       headers: {
@@ -151,6 +156,42 @@ export const githubOAuthGuard =
         code: 401,
         message: 'Unauthorized'
       });
+    // get userEmail
+    const emailsUrl = `https://api.github.com/user/emails`;
+    const emailsResponse = await fetch(emailsUrl, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        Accept: 'application/json'
+      }
+    });
+    let email = '';
+    if (emailsResponse.ok) {
+      const emails = (await emailsResponse.json()) as Array<{
+        email: string;
+        primary: boolean;
+        verified: boolean;
+        visibility: string | null;
+      }>;
+      if (emails.length === 0)
+        return jsonRes(res, {
+          message: 'Failed to fetch user github emails',
+          code: 401
+        });
+      const primaryEmail = emails.find((e) => e.primary && e.verified);
+      // prefer primary email
+      if (primaryEmail) {
+        email = primaryEmail.email;
+      } else {
+        // next verified email
+        const verifiedEmail = emails.find((e) => e.verified);
+        if (verifiedEmail) {
+          email = verifiedEmail.email;
+        } else if (emails.length > 0) {
+          // no verified email, use first email
+          email = emails[0].email;
+        }
+      }
+    }
     const result = (await response.json()) as TgithubUser;
     const id = result.id;
     if (!isNumber(id)) throw Error();
@@ -159,11 +200,59 @@ export const githubOAuthGuard =
       next?.({
         id: id + '',
         name: result.login,
-        avatar_url: result.avatar_url
+        avatar_url: result.avatar_url,
+        email
       })
     );
   };
-
+// export const getGithubEmailMiddleware = createMiddleware<
+//   {
+//     access_token: string;
+//   },
+//   { email: string }
+// >(async ({ req, res, next, ctx }) => {
+//   const { access_token } = ctx;
+//   try {
+//     const emailsUrl = `https://api.github.com/user/emails`;
+//     const emailsResponse = await fetch(emailsUrl, {
+//       headers: {
+//         Authorization: `Bearer ${access_token}`,
+//         Accept: 'application/json'
+//       }
+//     });
+//     let email: string;
+//     if (emailsResponse.ok) {
+//       const emails = (await emailsResponse.json()) as Array<{
+//         email: string;
+//         primary: boolean;
+//         verified: boolean;
+//         visibility: string | null;
+//       }>;
+//       if (emails.length === 0) throw Error('No email found');
+//       const primaryEmail = emails.find((e) => e.primary && e.verified);
+//       // prefer primary email
+//       if (primaryEmail) {
+//         email = primaryEmail.email;
+//       } else {
+//         // next verified email
+//         const verifiedEmail = emails.find((e) => e.verified);
+//         if (verifiedEmail) {
+//           email = verifiedEmail.email;
+//         } else if (emails.length > 0) {
+//           // no verified email, use first email
+//           email = emails[0].email;
+//         }
+//       }
+//       await next({ email: email! });
+//     }
+//   } catch (error) {
+//     return jsonRes(res, {
+//       message: 'Failed to fetch user github emails',
+//       code: 500,
+//       data: error
+//     });
+//   }
+// });
 export const wechatOAuthGuard =
   (clientId: string, clientSecret: string, code: string) =>
   async (

@@ -90,22 +90,28 @@ export default function Callback() {
             if (response.message === BIND_STATUS.RESULT_SUCCESS) {
               setProvider();
               await router.replace('/');
-            } else if (response.message === MERGE_USER_READY.MERGE_USER_CONTINUE) {
-              const code = response.data?.code;
-              if (!code) return;
-              setMergeUserData({
-                providerType: provider as ProviderType,
-                code
-              });
-              setMergeUserStatus(MergeUserStatus.CANMERGE);
-              setProvider();
-              await router.replace('/');
-            } else if (response.message === MERGE_USER_READY.MERGE_USER_PROVIDER_CONFLICT) {
+            } else {
               setMergeUserData();
               setMergeUserStatus(MergeUserStatus.CONFLICT);
               setProvider();
               await router.replace('/');
             }
+            // else if (response.message === MERGE_USER_READY.MERGE_USER_CONTINUE) {
+            //   const code = response.data?.code;
+            //   if (!code) return;
+            //   setMergeUserData({
+            //     providerType: provider as ProviderType,
+            //     code
+            //   });
+            //   setMergeUserStatus(MergeUserStatus.CANMERGE);
+            //   setProvider();
+            //   await router.replace('/');
+            // } else if (response.message === MERGE_USER_READY.MERGE_USER_PROVIDER_CONFLICT) {
+            //   setMergeUserData();
+            //   setMergeUserStatus(MergeUserStatus.CONFLICT);
+            //   setProvider();
+            //   await router.replace('/');
+            // }
           } else if (action === 'UNBIND') {
             await unBindRequest(provider)({ code });
             setProvider();

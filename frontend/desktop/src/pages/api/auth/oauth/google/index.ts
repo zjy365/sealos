@@ -22,13 +22,14 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           clientSecret,
           code,
           callbackURL
-        )(res, async ({ id, name, avatar_url }) => {
+        )(res, async ({ email, id, name, avatar_url }) => {
           const presistAvatarUrl =
             (await persistImage(avatar_url, 'avatar/' + ProviderType.GOOGLE + '/' + id)) || '';
           await getGlobalTokenByGoogleSvc(
             presistAvatarUrl,
             id,
             name,
+            email,
             inviterId,
             semData,
             bdVid
@@ -36,5 +37,4 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
         });
       })
   );
-  if (process.env.test_google_proxy) console.log('req', req, 'res', res);
 });

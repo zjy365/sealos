@@ -2,10 +2,45 @@ import { SemData } from '@/types/sem';
 import { NextApiResponse } from 'next';
 import { ProviderType, UserStatus } from 'prisma/global/generated/client';
 import { globalPrisma } from '../db/init';
-import { getGlobalToken } from '../globalAuth';
+import { getGlobalToken, getGlobalTokenByOauth } from '../globalAuth';
 import { jsonRes } from '../response';
 import { HttpStatusCode } from 'axios';
 
+export const getGlobalTokenSvcWithEmail =
+  (
+    avatar_url: string,
+    providerId: string,
+    name: string,
+    providerType: ProviderType,
+    email: string,
+    password?: string,
+    inviterId?: string,
+    semData?: SemData,
+    bdVid?: string
+  ) =>
+  async (res: NextApiResponse, next?: () => void) => {
+    const data = await getGlobalTokenByOauth({
+      provider: providerType,
+      providerId,
+      avatar_url,
+      name,
+      email,
+      inviterId,
+      password,
+      semData,
+      bdVid
+    });
+    if (!data)
+      return jsonRes(res, {
+        code: HttpStatusCode.Unauthorized,
+        message: 'Unauthorized'
+      });
+    return jsonRes(res, {
+      data,
+      code: HttpStatusCode.Ok,
+      message: 'Successfully'
+    });
+  };
 export const getGlobalTokenSvc =
   (
     avatar_url: string,
@@ -44,15 +79,17 @@ export const getGlobalTokenByGithubSvc = (
   avatar_url: string,
   providerId: string,
   name: string,
+  email: string,
   inviterId?: string,
   semData?: SemData,
   bdVid?: string
 ) =>
-  getGlobalTokenSvc(
+  getGlobalTokenSvcWithEmail(
     avatar_url,
     providerId,
     name,
     ProviderType.GITHUB,
+    email,
     undefined,
     inviterId,
     semData,
@@ -88,15 +125,17 @@ export const getGlobalTokenByGoogleSvc = (
   avatar_url: string,
   providerId: string,
   name: string,
+  email: string,
   inviterId?: string,
   semData?: SemData,
   bdVid?: string
 ) =>
-  getGlobalTokenSvc(
+  getGlobalTokenSvcWithEmail(
     avatar_url,
     providerId,
     name,
     ProviderType.GOOGLE,
+    email,
     undefined,
     inviterId,
     semData,

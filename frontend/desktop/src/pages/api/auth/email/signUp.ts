@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { jsonRes } from '@/services/backend/response';
-import { strongPassword } from '@/utils/crypto';
-import { enableEmailSms, enablePassword } from '@/services/enable';
-import { getGlobalToken, signUpByEmail } from '@/services/backend/globalAuth';
+import { enableEmailSms } from '@/services/enable';
+import { signUpByEmail } from '@/services/backend/globalAuth';
 import { ProviderType } from 'prisma/global/generated/client';
 import { generateAuthenticationToken } from '@/services/backend/auth';
 import { ErrorHandler } from '@/services/backend/middleware/error';
