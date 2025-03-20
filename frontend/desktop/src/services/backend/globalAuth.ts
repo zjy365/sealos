@@ -581,6 +581,8 @@ export const getGlobalTokenByOauth = async ({
 }) => {
   let user: User | null = null;
   let isInited = false;
+  if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
+    throw new Error('not support other way to signin/signup');
 
   const _user = await globalPrisma.oauthProvider.findUnique({
     where: {
@@ -593,10 +595,8 @@ export const getGlobalTokenByOauth = async ({
       userUid: true
     }
   });
-
-  if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
-    throw new Error('not support other way to signin/signup');
   if (!_user) {
+    // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
     const emailUser = await globalPrisma.oauthProvider.findUnique({
       where: {
@@ -607,48 +607,39 @@ export const getGlobalTokenByOauth = async ({
       }
     });
     // 被占用了，待定？ 不绑该邮箱
-    let result;
-    if (!emailUser)
-      result = await signUp({
-        provider,
-        id: providerId,
-        name,
-        avatar_url,
-        semData
+    // let result;
+    if (!!emailUser) return null;
+    const result = await signUpWithEmail({
+      email,
+      provider,
+      id: providerId,
+      name,
+      avatar_url,
+      semData
+    });
+    if (!result) return null;
+    user = result.user;
+    if (inviterId) {
+      inviteHandler({
+        inviterId: inviterId,
+        inviteeId: result?.user.name,
+        signResult: result
       });
-    else
-      result = await signUpWithEmail({
-        email,
-        provider,
-        id: providerId,
-        name,
-        avatar_url,
-        semData
+    }
+    if (bdVid) {
+      await uploadConvertData({ newType: [3], bdVid })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    if (enableTracking()) {
+      await trackSignUp({
+        userId: result.user.id,
+        userUid: result.user.uid
       });
-    if (result) {
-      user = result.user;
-      if (inviterId) {
-        inviteHandler({
-          inviterId: inviterId,
-          inviteeId: result?.user.name,
-          signResult: result
-        });
-      }
-      if (bdVid) {
-        await uploadConvertData({ newType: [3], bdVid })
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-      if (enableTracking()) {
-        await trackSignUp({
-          userId: result.user.id,
-          userUid: result.user.uid
-        });
-      }
     }
   } else {
     const result = await signIn({

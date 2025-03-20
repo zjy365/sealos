@@ -6,6 +6,7 @@ import { filterMergeUser, mergeUserGuard } from '@/services/backend/middleware/m
 import { mergeUserSvc } from '@/services/backend/svc/mergeUser';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
+  throw new Error('Not implemented');
   await filterAccessToken(req, res, async ({ userUid, userId, userCrName }) => {
     await filterMergeUser(req, res, async ({ providerId, providerType }) => {
       await mergeUserGuard(
