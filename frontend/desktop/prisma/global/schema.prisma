@@ -120,6 +120,7 @@ model User {
   subscription            Subscription?
   // TransactionInfo             TransactionInfo?
   subscriptionTransaction SubscriptionTransaction[]
+  AccountRegionUserTask   AccountRegionUserTask[]
 }
 
 model Transfer {
@@ -354,7 +355,6 @@ model CardInfo {
   user_uid               String    @db.Uuid
   card_no                String?
   card_brand             String?
-  card_token             String?   @unique
   created_at             DateTime? @default(now()) @db.Timestamptz(3)
   network_transaction_id String?
   default                Boolean?  @default(false)
@@ -496,6 +496,20 @@ model UserInfo {
   isInited        Boolean @default(false)
   enSubEmail      Boolean @default(false)
   user            User    @relation(fields: [userUid], references: [uid])
+}
+
+model AccountRegionUserTask {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region_domain String    @db.String(50)
+  user_uid      String    @db.Uuid
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  type          String    @default("flush-quota")
+  start_at      DateTime  @default(now()) @db.Timestamptz(6)
+  end_at        DateTime? @db.Timestamptz(6)
+  status        String    @default("pending")
+  user          User      @relation(references: [uid], fields: [user_uid])
+
+  @@index([user_uid], map: "idx_AccountRegionUserTask_user_uid")
 }
 
 model SubscriptionTransaction {

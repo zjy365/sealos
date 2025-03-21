@@ -9,6 +9,7 @@ import { jsonRes } from '@/service/backend/response';
 import { authSession } from '@/service/backend/auth';
 import { AxiosError, HttpStatusCode } from 'axios';
 import { AccessTokenPayload } from '@/service/auth';
+import { github } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -26,6 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 验证返回数据的结构
     const validation = CreditsUsageApiResponse.safeParse(response.data);
     if (!validation.success) {
+      console.log(validation.error);
       return jsonRes(res, {
         code: 500,
         message: 'Invalid response format'
@@ -41,6 +43,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         charged: {
           total: creditsData.balance,
           used: creditsData.deductionBalance
+          // 如果需要时间信息，可以添加逻辑来计算，这里留空
+        },
+        github: {
+          total: creditsData.kycDeductionCreditsBalance,
+          used: creditsData.kycDeductionCreditsDeductionBalance
+          // 如果需要时间信息，可以添加逻辑来计算，这里留空
+        },
+        currentPlan: {
+          total: creditsData.currentPlanCreditsBalance,
+          used: creditsData.currentPlanCreditsDeductionBalance
           // 如果需要时间信息，可以添加逻辑来计算，这里留空
         }
       };
