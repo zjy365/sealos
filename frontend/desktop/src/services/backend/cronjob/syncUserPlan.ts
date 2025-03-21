@@ -253,6 +253,34 @@ export class SyncUserPlanCrJob implements CronJobStatus<SyncUserPlanTransactionI
         });
       })
     );
+    const region = await globalPrisma.region.findUnique({
+      where: {
+        uid: this.regionUid
+      }
+    });
+    if (!region) throw new Error('region not found');
+    // 创建 workspace quota
+    await globalPrisma.$transaction(async (tx) => {
+      // find task
+      const result = await globalPrisma.accountRegionUserTask.findFirst({
+        where: {
+          user_uid: userUid,
+          region_domain: region.domain,
+          status: 'pending',
+          type: 'flush-quota'
+        },
+        select: {
+          id: true
+        }
+      });
+      if (!!result) return;
+      await globalPrisma.accountRegionUserTask.create({
+        data: {
+          region_domain: region.domain,
+          user_uid: userUid
+        }
+      });
+    });
 
     await globalPrisma.eventLog.create({
       data: {
