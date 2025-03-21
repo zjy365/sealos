@@ -8,6 +8,7 @@ import { DELETE_USER_STATUS } from '@/types/response/deleteUser';
 import { UserStatus, TransactionStatus, TransactionType } from 'prisma/global/generated/client';
 import { v4 } from 'uuid';
 import { HttpStatusCode } from 'axios';
+import { SYNC_PLAN_STATUS } from '@/types/response/syncPlan';
 
 export const syncUserPlanSvc = createMiddleware<AccessTokenPayload>(
   async ({ req, res, next, ctx }) => {
@@ -70,7 +71,7 @@ export const syncUserPlanSvc = createMiddleware<AccessTokenPayload>(
       });
     });
     return jsonRes(res, {
-      message: DELETE_USER_STATUS.RESULT_SUCCESS,
+      message: SYNC_PLAN_STATUS.RESULT_SUCCESS,
       code: 200
     });
   }

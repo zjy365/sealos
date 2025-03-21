@@ -43,13 +43,30 @@ export const SubscriptionApiResponse = z.object({
   })
 });
 export type TSubscriptionApiResponse = z.infer<typeof SubscriptionApiResponse>;
+
+// {
+// 	"credits": {
+// 		"userUid": "088672be-e977-4b21-a700-b02b4d94c295",
+// 		"balance": 153000000,
+// 		"deductionBalance": 20000000,
+// 		"credits": 45000000,
+// 		"deductionCredits": 0,
+// 		"kycDeductionCreditsDeductionBalance": 0,
+// 		"kycDeductionCreditsBalance": 5000000,
+// 		"currentPlanCreditsBalance": 0,
+// 		"currentPlanCreditsDeductionBalance": 0
+// 	}
 export const CreditsUsageApiResponse = z.object({
   credits: z.object({
     userUid: z.string(),
     balance: z.number(),
     deductionBalance: z.number(),
     credits: z.number(),
-    deductionCredits: z.number()
+    deductionCredits: z.number(),
+    kycDeductionCreditsDeductionBalance: z.number(),
+    kycDeductionCreditsBalance: z.number(),
+    currentPlanCreditsBalance: z.number(),
+    currentPlanCreditsDeductionBalance: z.number()
   })
 });
 export const CreditsUsageResponse = z.object({
@@ -59,6 +76,16 @@ export const CreditsUsageResponse = z.object({
     time: z.string().optional()
   }),
   charged: z.object({
+    total: z.number(),
+    used: z.number(),
+    time: z.string().optional()
+  }),
+  github: z.object({
+    total: z.number(),
+    used: z.number(),
+    time: z.string().optional()
+  }),
+  currentPlan: z.object({
     total: z.number(),
     used: z.number(),
     time: z.string().optional()
