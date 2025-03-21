@@ -3,14 +3,15 @@ import { useRouter } from 'next/router';
 import { FC, useEffect } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import { useTranslation } from 'next-i18next';
+import urls from '@/utils/urls';
 
-interface PayResultProps {}
-const PayResult: FC<PayResultProps> = (props) => {
+const Index: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const toast = useToast();
   useEffect(() => {
-    const { stripeState } = router.query;
+    const { stripeState, scene } = router.query;
+    let replaceTo = '/setting';
     if (stripeState === 'success') {
       toast({
         status: 'success',
@@ -19,6 +20,7 @@ const PayResult: FC<PayResultProps> = (props) => {
         isClosable: true,
         position: 'top'
       });
+      replaceTo = '/plan';
     } else if (stripeState === 'error') {
       toast({
         status: 'error',
@@ -27,10 +29,16 @@ const PayResult: FC<PayResultProps> = (props) => {
         isClosable: true,
         position: 'top'
       });
-    } else {
-      return;
+      replaceTo = '/plan';
     }
-    router.replace('/plan');
+    // scene 参数，可以跳转到指定页面的部分，也可组合达到如：scene=upgrade&stripeState=error 提示支付失败 然后跳转/plan打开updrade弹窗等效果。
+    if (typeof scene === 'string') {
+      const sceneUrl = urls.getSceneRedirectUrl(scene);
+      if (sceneUrl) {
+        replaceTo = sceneUrl;
+      }
+    }
+    router.replace(replaceTo);
   }, []);
   return null;
 };
@@ -41,4 +49,4 @@ export async function getServerSideProps(content: any) {
     }
   };
 }
-export default PayResult;
+export default Index;

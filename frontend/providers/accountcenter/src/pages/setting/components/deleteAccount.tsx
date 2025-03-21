@@ -20,22 +20,41 @@ import {
   FormLabel,
   Input
 } from '@chakra-ui/react';
-import { FC, useRef } from 'react';
+import { FC, SyntheticEvent, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import { deleteUser } from '@/api/user';
+import useToastAPIResult from '@/hooks/useToastAPIResult';
 
 interface DeleteAccountProps {
   userName?: string;
 }
 const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
   const { t } = useTranslation();
+  const { toastAPIError, toastError } = useToastAPIResult();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const [inputValue, setInputValue] = useState('');
+  const handleInputChange = (e: SyntheticEvent<HTMLInputElement>) => {
+    setInputValue(e.currentTarget.value);
+  };
+  const openAlert = () => {
+    setInputValue('');
+    onOpen();
+  };
   const handleDelete = () => {
-    return deleteUser().then(() => {
-      location.reload();
-      onClose();
-    });
+    if (userName !== inputValue.trim()) {
+      toastError(t('DeleteAccountInputUsernameNotMatch', { userName }));
+      return;
+    }
+    return deleteUser().then(
+      () => {
+        location.reload();
+        onClose();
+      },
+      (e) => {
+        toastAPIError(e);
+      }
+    );
   };
   return (
     <>
@@ -51,7 +70,7 @@ const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
                 {t('DeleteAccountTip')}
               </Text>
             </Box>
-            <Button variant="danger" leftIcon={<DeleteIcon />} onClick={onOpen}>
+            <Button variant="danger" leftIcon={<DeleteIcon />} onClick={openAlert}>
               {t('Delete')}
             </Button>
           </Flex>
@@ -75,7 +94,7 @@ const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
                     }}
                   />
                 </FormLabel>
-                <Input bg="#fff" w="100%" />
+                <Input value={inputValue} bg="#fff" w="100%" onChange={handleInputChange} />
               </FormControl>
             </AlertDialogBody>
             <AlertDialogFooter>

@@ -108,6 +108,11 @@ function Home() {
       regionUid: region
     }).then((res) => {
       setNamespaceList(res);
+      if (res.length > 0) {
+        setNamespace(res[0][0]);
+      } else {
+        setNamespace('');
+      }
     });
   }, [date?.from, date?.to, region]);
 
@@ -115,16 +120,20 @@ function Home() {
   const fetchUsageList = useCallback(
     debounce(async (data: any) => {
       setInitialized(false);
-      const res = await getUsageList(data);
-      setUsageList(res?.overviews || []);
-      setTotal(res?.total || 0);
-      if (Math.ceil(res.total / pagination.pageSize) < pagination.pageIndex) {
-        setPagination({
-          ...pagination,
-          pageIndex: 0
-        });
+      try {
+        const res = await getUsageList(data);
+        setUsageList(res?.overviews || []);
+        setTotal(res?.total || 0);
+        if (Math.ceil(res.total / pagination.pageSize) < pagination.pageIndex) {
+          setPagination({
+            ...pagination,
+            pageIndex: 0
+          });
+        }
+      } catch (e) {
+      } finally {
+        setInitialized(true);
       }
-      setInitialized(true);
     }, 500),
     []
   );
@@ -167,7 +176,7 @@ function Home() {
   return (
     <Layout loading={!initialized}>
       <Flex justifyContent={'space-between'} mb={'12px'}>
-        <Flex w={'334px'}>
+        <Flex w={'370px'}>
           <Select
             value={region}
             onChange={(e) => setRegion(e.target.value)}

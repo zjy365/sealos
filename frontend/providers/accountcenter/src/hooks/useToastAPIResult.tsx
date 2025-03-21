@@ -18,7 +18,8 @@ export default function useToastAPIResult() {
       title: text,
       status: 'error',
       duration: 2000,
-      isClosable: true
+      isClosable: true,
+      position: 'top'
     });
   };
   const toastAPIError = (error: any) => {
@@ -29,7 +30,8 @@ export default function useToastAPIResult() {
       title: text,
       status: 'success',
       duration: 2000,
-      isClosable: true
+      isClosable: true,
+      position: 'top'
     });
   };
 

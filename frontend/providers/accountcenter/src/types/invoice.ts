@@ -39,14 +39,23 @@ export type InvoicesCollection = {
 };
 type InoviceStatus = 'COMPLETED' | 'PENDING' | 'REJECTED';
 export type InvoicePayload = {
-  id: string;
-  userID: string;
-  createdAt: Date;
-  updatedAt: Date;
-  detail: string;
-  remark: unknown;
-  totalAmount: number;
-  status: InoviceStatus;
+  ActivityType: string;
+  Amount: number;
+  CardUID: object;
+  ChargeSource: string;
+  CodeURL: string;
+  CreatedAt: Date;
+  Gift: number;
+  ID: string;
+  InvoiceAt: boolean;
+  Message: string;
+  Method: string;
+  RegionUID: string;
+  RegionUserOwner: string;
+  Remark: string;
+  TradeNO: string;
+  Type: string;
+  UserUID: string;
 };
 export type InvoiceListData = {
   total: number;
