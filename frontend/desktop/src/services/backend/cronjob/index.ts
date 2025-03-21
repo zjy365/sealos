@@ -5,13 +5,16 @@ import { Prisma } from '@prisma/client/extension';
 import dayjs from 'dayjs';
 import {
   Prisma as GlobalPrisma,
+  PrecommitTransaction,
   TransactionStatus,
   TransactionType
 } from 'prisma/global/generated/client';
 import { globalPrisma } from '../db/init';
+import { GetPayloadResult } from 'prisma/global/generated/client/runtime/library';
+import { SyncUserPlanCrJob } from './syncUserPlan';
 
-export type CronJobStatus = {
-  unit: (infoUid: string, transactionUid: string) => Promise<void>;
+export type CronJobStatus<TInfo extends unknown> = {
+  unit: (transactionUid: string, info: TInfo) => Promise<void>;
   canCommit: () => boolean;
   transactionType: TransactionType;
   COMMIT_TIMEOUT: number;
@@ -21,15 +24,19 @@ const TIMEOUT = 5000;
 const getJob = (
   transaction: Prisma.Result<
     typeof globalPrisma.precommitTransaction,
-    GlobalPrisma.PrecommitTransactionDefaultArgs,
+    { select: { uid: true; info: true; transactionType: true } },
     'findFirst'
   >
 ) => {
-  if (!transaction) return null;
+  if (!transaction?.info) return null;
   if (transaction.transactionType === TransactionType.DELETE_USER) {
-    return new DeleteUserCrJob(transaction.uid, transaction.infoUid);
+    return new DeleteUserCrJob(transaction.uid, transaction.info);
   } else if (transaction.transactionType === TransactionType.MERGE_USER) {
-    return new MergeUserCrJob(transaction.uid, transaction.infoUid);
+    // cc 不支持操作
+    return null;
+    // return new MergeUserCrJob(transaction.uid, transaction.info);
+  } else if (transaction.transactionType === TransactionType.SYNC_PLAN) {
+    return new SyncUserPlanCrJob(transaction.uid, transaction.info);
   } else {
     return null;
   }
@@ -47,7 +54,14 @@ export const runTransactionjob = async () => {
       status: TransactionStatus.READY
     },
     include: {
-      precommitTransaction: true
+      precommitTransaction: {
+        select: {
+          uid: true,
+          status: true,
+          transactionType: true,
+          info: true
+        }
+      }
     },
     orderBy: {
       updatedAt: 'asc'
@@ -67,7 +81,14 @@ export const runTransactionjob = async () => {
         updatedAt: 'asc'
       },
       include: {
-        precommitTransaction: true
+        precommitTransaction: {
+          select: {
+            status: true,
+            uid: true,
+            transactionType: true,
+            info: true
+          }
+        }
       }
     });
     isTimeoutTransactionDetail = true;

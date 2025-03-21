@@ -1,7 +1,8 @@
 import { AccessTokenPayload, AuthenticationTokenPayload } from '@/types/token';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { verifyAccessToken, verifyAuthenticationToken } from '../auth';
+import { verifyAccessToken, verifyAppToken, verifyAuthenticationToken } from '../auth';
 import { jsonRes } from '../response';
+import { createMiddleware } from '@/utils/factory';
 
 export const filterAccessToken = async (
   req: NextApiRequest,
@@ -30,3 +31,15 @@ export const filterAuthenticationToken = async (
     });
   else await next(userData);
 };
+
+export const filterInternalAccessToken = createMiddleware<never, AccessTokenPayload>(
+  async ({ req, res, next }) => {
+    const userData = await verifyAppToken(req.headers);
+    if (!userData)
+      return jsonRes(res, {
+        code: 401,
+        message: 'invalid token'
+      });
+    await Promise.resolve(next(userData));
+  }
+);

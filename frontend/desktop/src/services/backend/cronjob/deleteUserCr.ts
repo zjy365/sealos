@@ -5,27 +5,32 @@ import { TransactionStatus, TransactionType } from 'prisma/global/generated/clie
 import { Role } from 'prisma/region/generated/client';
 import { globalPrisma, prisma } from '../db/init';
 import { setUserDelete, setUserWorkspaceLock as setWorkspaceLock } from '../kubernetes/admin';
+import {
+  DeleteUserTransactionInfo,
+  DeleteUserTransactionInfoSchema
+} from '@/types/db/transcationInfo';
 
-export class DeleteUserCrJob implements CronJobStatus {
-  private userUid = '';
+export class DeleteUserCrJob implements CronJobStatus<DeleteUserTransactionInfo> {
+  // private userUid = '';
+  private info: DeleteUserTransactionInfo;
   transactionType = TransactionType.DELETE_USER;
   UNIT_TIMEOUT = 3000;
   COMMIT_TIMEOUT = 30000;
-  constructor(private transactionUid: string, private infoUid: string) {}
+  constructor(private transactionUid: string, info: unknown) {
+    this.info = DeleteUserTransactionInfoSchema.parse(info);
+  }
   async init() {
-    const infoUid = this.infoUid;
-    const info = await globalPrisma.deleteUserTransactionInfo.findUnique({
-      where: {
-        uid: infoUid
-      }
-    });
-    if (!info) throw new Error('the transaction info not found');
-
-    this.userUid = info.userUid;
+    // const info = await globalPrisma.precommitTransaction.findUnique({
+    //   where: {
+    //     uid: this.transactionUid
+    //   }
+    // });
+    if (!this.info || this.transactionUid) throw new Error('the transaction info not found');
+    // this.userUid = this.info.userUid;
   }
   async unit() {
     await this.init();
-    const userUid = this.userUid;
+    const userUid = this.info.userUid;
     // lock owner workspace
     const userCr = await prisma.userCr.findUnique({
       where: { userUid },
@@ -115,7 +120,7 @@ export class DeleteUserCrJob implements CronJobStatus {
   }
   async commit() {
     await this.init();
-    const userUid = this.userUid;
+    const userUid = this.info.userUid;
     if (!userUid) throw Error('uid not found');
     await globalPrisma.$transaction([
       globalPrisma.commitTransactionSet.create({
