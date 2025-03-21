@@ -42,6 +42,8 @@ const Empty = () => {
         overflow={'hidden'}
         position={'relative'}
         borderRadius={'16px'}
+        onClick={() => router.push('/app/edit')}
+        cursor={'pointer'}
       >
         <Image
           width={'775px'}
@@ -50,14 +52,7 @@ const Empty = () => {
           src="/launchpad-empty.png"
           alt="empty"
         />
-        <Box
-          position={'absolute'}
-          bottom={'20px'}
-          left={'50%'}
-          transform={'translateX(-50%)'}
-          onClick={() => router.push('/app/edit')}
-          cursor={'pointer'}
-        >
+        <Box position={'absolute'} bottom={'20px'} left={'50%'} transform={'translateX(-50%)'}>
           <Text fontSize={'18px'} fontWeight={600} textAlign={'center'}>
             Deploy your first app
           </Text>

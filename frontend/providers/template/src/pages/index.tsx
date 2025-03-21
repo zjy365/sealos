@@ -295,7 +295,7 @@ export async function getServerSideProps(content: any) {
   const local =
     forcedLanguage ||
     content?.req?.cookies?.NEXT_LOCALE ||
-    compareFirstLanguages(content?.req?.headers?.['accept-language'] || 'zh');
+    compareFirstLanguages(content?.req?.headers?.['accept-language'] || 'en');
 
   content?.res.setHeader(
     'Set-Cookie',

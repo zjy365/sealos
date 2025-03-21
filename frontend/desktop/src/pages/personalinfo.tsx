@@ -13,7 +13,7 @@ export default function PersonalInfoPage() {
 }
 export async function getServerSideProps({ req, res, locales }: any) {
   const local =
-    req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'zh');
+    req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
   res.setHeader('Set-Cookie', `NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
 
   const queryClient = new QueryClient();

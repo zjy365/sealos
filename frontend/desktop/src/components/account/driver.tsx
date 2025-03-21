@@ -144,7 +144,7 @@ export const appLaunchpadDriverObj = (openDesktopApp?: any): Config => ({
                 Create Launchpad
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                1/3
+                1/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>

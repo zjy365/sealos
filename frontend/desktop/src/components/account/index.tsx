@@ -346,26 +346,6 @@ export default function Account() {
                   px="8px"
                   borderRadius="8px"
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                  onClick={() => {
-                    console.log('open');
-                    openAccountCenterApp('setting');
-                  }}
-                >
-                  <Flex alignItems="center" gap="8px">
-                    <Center w="20px" h="20px">
-                      <Settings size={16} color="#737373" />
-                    </Center>
-                    <Text fontSize="14px" fontWeight="500">
-                      {t('cc:settings')}
-                    </Text>
-                  </Flex>
-                </MenuItem>
-
-                <MenuItem
-                  py="6px"
-                  px="8px"
-                  borderRadius="8px"
-                  _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                   onClick={() => kubeconfig && download('kubeconfig.yaml', kubeconfig)}
                 >
                   <Flex alignItems="center" gap="8px" justifyContent="space-between" width="100%">

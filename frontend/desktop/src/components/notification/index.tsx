@@ -142,6 +142,7 @@ export default function Notification(props: NotificationProps) {
         draft.popupMessage = undefined;
       })
     );
+    refetch();
   };
 
   return disclosure.isOpen ? (

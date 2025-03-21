@@ -64,7 +64,7 @@
   "submit": "提交",
   "unknown_error": "未知错误",
   "unlocked_credit": "解锁30天信用卡免费访问",
-  "unlocked_credit_description": "请在30天内添加您的付款方式。否则将导致服务暂停。",
+  "unlocked_credit_description": "请在30天内连接您的GitHub账户。否则将导致服务暂停。",
   "worspace_heading_description": "通过独立的工作空间为您的团队高效地组织、协作和管理应用程序",
   "you_may_invite_memebers_later": "你一会可能需要邀请成员",
   "workspace_welcome": "欢迎来到ClawCloud",
