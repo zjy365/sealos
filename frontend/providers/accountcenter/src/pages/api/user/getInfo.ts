@@ -30,7 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         },
         oauthProvider: true,
-        avatarUri: true
+        avatarUri: true,
+        createdAt: true
       }
     });
 
@@ -54,7 +55,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           avatarUri: user.avatarUri,
           firstname: user.userInfo?.firstname || '',
           lastname: user.userInfo?.lastname || '',
-          email: userOAuthProviders.find((p) => p.providerType === 'EMAIL')?.providerId || ''
+          email: userOAuthProviders.find((p) => p.providerType === 'EMAIL')?.providerId || '',
+          createdAt: user.createdAt.getTime()
         },
         bindings: bindingsResp
       }
