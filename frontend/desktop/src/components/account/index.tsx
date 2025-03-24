@@ -41,7 +41,8 @@ import {
   LogOut,
   Copy,
   Bell,
-  Sparkles
+  Sparkles,
+  ReceiptText
 } from 'lucide-react';
 import UpgradePlanModal from './UpgradePlanModal';
 import GuideModal from './GuideModal';
@@ -268,7 +269,9 @@ export default function Account() {
                   mb="16px"
                   _hover={{ bg: '#1677FF' }}
                 >
-                  FREE
+                  {(
+                    plan?.data?.subscription?.subscriptionPlan?.name || 'free'
+                  )?.toLocaleUpperCase()}
                 </Button>
                 <Text color={'#18181B'} fontSize="14px" fontWeight="500" mb="8px">
                   {user?.name}
@@ -306,6 +309,43 @@ export default function Account() {
                 )}
 
                 <MenuItem
+                  py="6px"
+                  px="8px"
+                  borderRadius="8px"
+                  _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
+                  onClick={() => {
+                    openAccountCenterApp('plan');
+                  }}
+                >
+                  <Flex alignItems="center" gap="8px">
+                    <Center w="20px" h="20px">
+                      <CreditCard size={16} color="#737373" />
+                    </Center>
+                    <Text fontSize="14px" fontWeight="500">
+                      {t('cc:plan_and_billing')}
+                    </Text>
+                  </Flex>
+                </MenuItem>
+                <MenuItem
+                  py="6px"
+                  px="8px"
+                  borderRadius="8px"
+                  _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
+                  onClick={() => {
+                    openAccountCenterApp('billing');
+                  }}
+                >
+                  <Flex alignItems="center" gap="8px">
+                    <Center w="20px" h="20px">
+                      <ReceiptText size={16} color="#737373" />
+                    </Center>
+                    <Text fontSize="14px" fontWeight="500">
+                      Billing
+                    </Text>
+                  </Flex>
+                </MenuItem>
+
+                <MenuItem
                   mt="0px"
                   py="6px"
                   px="8px"
@@ -322,25 +362,6 @@ export default function Account() {
                     </Center>
                     <Text fontSize="14px" fontWeight="500">
                       {t('cc:usage_analysis')}
-                    </Text>
-                  </Flex>
-                </MenuItem>
-
-                <MenuItem
-                  py="6px"
-                  px="8px"
-                  borderRadius="8px"
-                  _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                  onClick={() => {
-                    openAccountCenterApp('plan');
-                  }}
-                >
-                  <Flex alignItems="center" gap="8px">
-                    <Center w="20px" h="20px">
-                      <CreditCard size={16} color="#737373" />
-                    </Center>
-                    <Text fontSize="14px" fontWeight="500">
-                      {t('cc:plan_and_billing')}
                     </Text>
                   </Flex>
                 </MenuItem>

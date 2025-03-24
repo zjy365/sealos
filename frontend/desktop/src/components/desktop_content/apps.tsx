@@ -120,19 +120,15 @@ export default function Apps() {
                   onClick={(e) => handleDoubleClick(e, item)}
                   className={item.key}
                 >
-                  <Box
-                    mt={'10px'}
-                    w="72px"
-                    h="72px"
-                    borderRadius={'full'}
-                    boxShadow={'0px 4px 20px 0px rgba(0, 0, 0, 0.30)'}
-                  >
+                  <Box mt={'10px'} w="72px" h="72px" borderRadius={'full'}>
                     <Image
                       width="100%"
                       height="100%"
                       src={item?.icon}
                       fallbackSrc={logo}
                       draggable={false}
+                      borderRadius={'full'}
+                      boxShadow={'0px 4px 20px 0px rgba(0, 0, 0, 0.30)'}
                       alt="app logo"
                     />
                   </Box>
