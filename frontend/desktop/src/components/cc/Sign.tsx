@@ -38,6 +38,7 @@ import { useConfigStore } from '@/stores/config';
 import useSessionStore from '@/stores/session';
 import { OauthProvider } from '@/types/user';
 import { sessionConfig } from '@/utils/sessionConfig';
+import Link from 'next/link';
 
 export default function SigninComponent() {
   const { t } = useTranslation();
@@ -388,8 +389,22 @@ export default function SigninComponent() {
                   {/* Terms and Conditions */}
                   <Box fontSize="sm" color="gray.500">
                     By proceeding you acknowledge that you have read, understood and agree to our{' '}
-                    <Box display="inline" textDecoration={'underline'}>
-                      Terms and Conditions , and Privacy Policy.
+                    <Box
+                      as={Link}
+                      href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
+                      target="_blank"
+                      textDecoration="underline"
+                    >
+                      Terms and Conditions
+                    </Box>
+                    &nbsp;and&nbsp;
+                    <Box
+                      as={Link}
+                      href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
+                      target="_blank"
+                      textDecoration="underline"
+                    >
+                      Privacy Policy.
                     </Box>
                   </Box>
                 </Stack>
@@ -495,8 +510,22 @@ export default function SigninComponent() {
                   {/* Terms and Conditions */}
                   <Box fontSize="sm" color="gray.500">
                     By proceeding you acknowledge that you have read, understood and agree to our{' '}
-                    <Box textDecoration={'underline'}>
-                      Terms and Conditions , and Privacy Policy.
+                    <Box
+                      as={Link}
+                      href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
+                      target="_blank"
+                      textDecoration="underline"
+                    >
+                      Terms and Conditions
+                    </Box>
+                    &nbsp;and&nbsp;
+                    <Box
+                      as={Link}
+                      href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
+                      target="_blank"
+                      textDecoration="underline"
+                    >
+                      Privacy Policy.
                     </Box>
                   </Box>
                 </Stack>
