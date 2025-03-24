@@ -67,7 +67,8 @@ export default function WorkspaceToggle() {
         gap={'8px'}
       >
         <Text color={'#0A0A0A'} fontSize={'14px'} fontWeight={'500'}>
-          {namespace?.nstype === NSType.Private ? t('common:default_team') : namespace?.teamName}
+          {namespace?.teamName}
+          {/* {namespace?.nstype === NSType.Private ? t('common:default_team') : namespace?.teamName} */}
         </Text>
         <Center
           bg={disclosure.isOpen ? '#FFF' : ''}

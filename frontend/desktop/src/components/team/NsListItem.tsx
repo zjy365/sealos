@@ -58,7 +58,10 @@ const NsListItem = ({
             />
           </Box>
         )}
-        <Text textTransform={'capitalize'}>{isPrivate ? t('common:default_team') : teamName}</Text>
+        <Text textTransform={'capitalize'}>
+          {/* {isPrivate ? t('common:default_team') : teamName} */}
+          {teamName}
+        </Text>
         {isSelected && showCheck && (
           <CheckIcon style={{ marginLeft: 'auto' }} size={16} color={'#1C4EF5'} />
         )}
