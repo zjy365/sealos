@@ -1,4 +1,4 @@
-import { Box, HStack, StackDivider, useRadioGroup, VStack } from '@chakra-ui/react';
+import { StackDivider, useRadioGroup, VStack } from '@chakra-ui/react';
 import { FC, ReactNode } from 'react';
 import RadioOption from '.';
 
@@ -31,7 +31,7 @@ const RadioOptionGroup: FC<RadioOptionGroupProps> = ({
   return (
     <VStack
       {...group}
-      divider={<StackDivider borderColor="rgb(228, 228, 231)" my="0" />}
+      divider={<StackDivider borderColor="rgb(228, 228, 231)" my="0!important" />}
       border="1px solid rgb(228, 228, 231)"
       borderRadius="8px"
     >
