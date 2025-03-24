@@ -36,6 +36,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error) {
     console.log(error);
-    jsonRes(res, { code: 500, message: 'get amount error' });
+    jsonRes(res, { code: 500, message: 'delete error' });
   }
 }
