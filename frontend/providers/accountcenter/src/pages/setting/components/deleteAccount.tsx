@@ -24,6 +24,7 @@ import { FC, SyntheticEvent, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import { deleteUser } from '@/api/user';
 import useToastAPIResult from '@/hooks/useToastAPIResult';
+import Icon from '@/components/Icon';
 
 interface DeleteAccountProps {
   userName?: string;
@@ -60,8 +61,8 @@ const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
     <>
       {/* colorScheme='red' not work here */}
       <Card {...colorScheme.red.card} variant="outline">
-        <CardBody>
-          <Flex justifyContent="space-between" alignItems="start">
+        <CardBody py="24px">
+          <Flex justifyContent="space-between" alignItems="center">
             <Box>
               <Text fontSize="18px" fontWeight={600} lineHeight="28px">
                 {t('DeleteAccount')}
@@ -70,7 +71,11 @@ const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
                 {t('DeleteAccountTip')}
               </Text>
             </Box>
-            <Button variant="danger" leftIcon={<DeleteIcon />} onClick={openAlert}>
+            <Button
+              variant="danger"
+              leftIcon={<Icon name="delete" fill="#fff" w="16px" h="16px" />}
+              onClick={openAlert}
+            >
               {t('Delete')}
             </Button>
           </Flex>
