@@ -54,6 +54,12 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
       </Flex>
     );
   };
+  const giftCredit: TCreditsUsageResponse['github'] = creditsUsage.github || { total: 0, used: 0 };
+  const planCredit: TCreditsUsageResponse['currentPlan'] = creditsUsage.currentPlan || {
+    total: 0,
+    used: 0
+  };
+  const restGift = giftCredit.total - giftCredit.used;
   const renderExpireDate = (date: any) => {
     return date ? (
       <Text
@@ -104,12 +110,12 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
     return (
       <>
         <Text mt="12px" fontSize="30px" fontWeight="600">
-          ${formatMoneyStr(creditsUsage.gift.used)}
+          ${formatMoneyStr(restGift, 'floor')}
         </Text>
         {giftExp}
         <Progress
           mt="20px"
-          value={(creditsUsage.gift.used / creditsUsage.gift.total) * 100}
+          value={restGift === 0 ? 0 : (restGift / giftCredit.total) * 100}
           borderRadius="9999px"
           h="8px"
         />
@@ -118,20 +124,19 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
   };
   const renderBody = () => {
     if (plan.amount === 0) {
-      const rest = creditsUsage.gift.total - creditsUsage.gift.used;
       return (
         <Flex flexDirection="column" rowGap="12px" py="4px">
           <Flex alignItems="baseline" gap="12px">
             <Text lineHeight="36px" fontSize="30px" fontWeight="600" color="#18181B">
-              ${formatMoneyStr(rest)}
+              ${formatMoneyStr(restGift, 'floor')}
             </Text>
             <Text fontSize="16px" fontWeight="400" color="#737373">
-              ${formatMoneyStr(creditsUsage.gift.used)}/{formatMoneyStr(creditsUsage.gift.total)}{' '}
+              ${formatMoneyStr(giftCredit.used, 'floor')}/{formatMoneyStr(giftCredit.total)}{' '}
               {t('Used').toLowerCase()}
             </Text>
           </Flex>
           <Progress
-            value={(creditsUsage.gift.used / creditsUsage.gift.total) * 100}
+            value={restGift === 0 ? 0 : (restGift / giftCredit.total) * 100}
             borderRadius="9999px"
             h="8px"
           />
@@ -149,7 +154,9 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
         width="1px"
       />
     );
-    const giftExp = renderExpireDate(creditsUsage.gift.time);
+    const giftExp = renderExpireDate(giftCredit.time);
+    const planExp = renderExpireDate(planCredit.time);
+    const restPlan = planCredit.total - planCredit.used;
     return (
       <>
         <Grid templateColumns="1fr 1fr 1fr" columnGap="48px">
@@ -164,12 +171,12 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
             <Flex flexDirection="column">
               {renderLabel(t('PlanIncludedCreditsLabel'), 'rgba(28, 78, 245, .3)')}
               <Text mt="12px" fontSize="30px" fontWeight="600">
-                ${formatMoneyStr(creditsUsage.gift.total)}
+                ${formatMoneyStr(restPlan, 'floor')}
               </Text>
-              {giftExp}
+              {planExp}
               <Progress
                 mt="20px"
-                value={100}
+                value={restPlan === 0 ? 0 : (restPlan / planCredit.total) * 100}
                 borderRadius="9999px"
                 h="8px"
                 // 修改颜色的hack。这个组件只支持colorScheme修改颜色
@@ -186,7 +193,7 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
             <Flex flexDirection="column">
               {renderLabel(t('PlanRechargedCreditsLabel'), null)}
               <Text mt="12px" fontSize="30px" fontWeight="600">
-                ${formatMoneyStr(creditsUsage.charged.total - creditsUsage.charged.used)}
+                ${formatMoneyStr(creditsUsage.charged.total - creditsUsage.charged.used, 'floor')}
               </Text>
               {typeof creditsUsage.charged.total === 'number' &&
                 renderExpireDate(creditsUsage.charged.time)}
