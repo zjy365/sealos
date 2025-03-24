@@ -1,10 +1,10 @@
-import { TCreditsUsageResponse, TPlanApiResponse } from '@/schema/plan';
+import { TCreditsUsageResponse } from '@/schema/plan';
 import { formatMoney } from '@/utils/format';
 import { FC } from 'react';
 import Alert from '.';
 import { Trans } from 'next-i18next';
-import UpgradePlanModal, { UpgradePlanModalProps } from '../Plans/UpgradeModal';
-import { useDisclosure } from '@chakra-ui/react';
+import { UpgradePlanModalProps } from '../Plans/UpgradeModal';
+import useUpgradeModalInTranslation from '@/hooks/useUpgradeModalInTranslation';
 
 interface CreditsAlertProps extends Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'> {
   creditsUsage: TCreditsUsageResponse | undefined;
@@ -12,30 +12,17 @@ interface CreditsAlertProps extends Omit<UpgradePlanModalProps, 'isOpen' | 'onCl
 function nanToZero(n: any) {
   return typeof n === 'number' ? n : 0;
 }
-const CreditsAlert: FC<CreditsAlertProps> = ({ creditsUsage, currentPlan, ...restProps }) => {
-  const {
-    isOpen: isUpgradeModalOpen,
-    onOpen: openUpgradeModal,
-    onClose: closeUpgradeModal
-  } = useDisclosure();
+const CreditsAlert: FC<CreditsAlertProps> = ({ creditsUsage, ...restProps }) => {
+  const { upgradeModal, transComponents, isUpgradable } = useUpgradeModalInTranslation(restProps);
   if (!creditsUsage) {
     return null;
   }
-  const total = nanToZero(creditsUsage.gift.total) + nanToZero(creditsUsage.charged.total);
-  const used = nanToZero(creditsUsage.gift.used) + nanToZero(creditsUsage.charged.used);
+  const total = nanToZero(creditsUsage.github.total) + nanToZero(creditsUsage.charged.total);
+  const used = nanToZero(creditsUsage.github.used) + nanToZero(creditsUsage.charged.used);
   const rest = formatMoney(total - used);
   if (rest >= 5) {
     return null;
   }
-  const isUpgradable =
-    currentPlan &&
-    Array.isArray(currentPlan.upgradePlanList) &&
-    currentPlan.upgradePlanList.length > 0;
-  const transComponents = {
-    Upgrade: (
-      <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={openUpgradeModal} />
-    )
-  };
   const renderAlert = () => {
     if (rest <= 0) {
       return (
@@ -65,12 +52,7 @@ const CreditsAlert: FC<CreditsAlertProps> = ({ creditsUsage, currentPlan, ...res
   return (
     <>
       {renderAlert()}
-      <UpgradePlanModal
-        {...restProps}
-        isOpen={isUpgradeModalOpen}
-        onClose={closeUpgradeModal}
-        currentPlan={currentPlan}
-      />
+      {upgradeModal}
     </>
   );
 };

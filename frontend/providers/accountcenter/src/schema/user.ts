@@ -6,7 +6,7 @@ export const UserInfoReponse = z.object({
     firstname: z.string().optional(),
     lastname: z.string().optional(),
     email: z.string().optional(),
-    createdAt: z.number().int()
+    createdAt: z.number().int().optional()
   }),
   bindings: z.object({
     github: z.boolean().optional(),

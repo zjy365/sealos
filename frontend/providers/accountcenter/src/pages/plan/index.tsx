@@ -11,6 +11,8 @@ import Alert from '@/components/Alert';
 import { useAPIErrorMessage } from '@/hooks/useToastAPIResult';
 import PlanAlert from '@/components/Alert/PlanAlert';
 import CreditsAlert from '@/components/Alert/CreditsAlert';
+import FreeConnectGithubAlert from '@/components/Alert/FreeConnectGithubAlert';
+import { getUserInfo } from '@/api/user';
 
 function PlanPage() {
   const [initialized, setInitialized] = useState({
@@ -56,6 +58,9 @@ function PlanPage() {
       }
     }
   );
+  const { data: userInfo, isLoading: isLoadingUserInfo } = useQuery(['userInfo'], getUserInfo, {
+    refetchOnWindowFocus: true
+  });
   const firstError = plansError || creditsError || subscriptionError;
   const refresh = () => {
     refetchPlans();
@@ -96,8 +101,20 @@ function PlanPage() {
       return <Alert type="error" text={getAPIErrorMessage(firstError)} />;
     }
     if (!currentPlan || !plans) return null;
+    const currentPlanIsFree = currentPlan.amount === 0;
     return (
       <Flex flexDirection="column" rowGap="16px" pb="20px">
+        {currentPlanIsFree ? (
+          <FreeConnectGithubAlert
+            userInfo={userInfo}
+            subscriptionResponse={subscriptionResponse}
+            plans={plans}
+            currentPlan={currentPlan}
+            freePlan={freePlan}
+            lastTransaction={lastTransactionResponse?.transcation}
+            onPaySuccess={refresh}
+          />
+        ) : null}
         <CreditsAlert
           creditsUsage={creditsUsage}
           plans={plans}
@@ -122,7 +139,13 @@ function PlanPage() {
           refresh={refresh}
         />
         {creditsUsage ? (
-          <PlanCredits plan={currentPlan} creditsUsage={creditsUsage} onPaySuccess={refresh} />
+          <PlanCredits
+            userInfo={userInfo}
+            isLoadingUserInfo={isLoadingUserInfo}
+            plan={currentPlan}
+            creditsUsage={creditsUsage}
+            onPaySuccess={refresh}
+          />
         ) : null}
       </Flex>
     );

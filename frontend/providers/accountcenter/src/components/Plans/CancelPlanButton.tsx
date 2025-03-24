@@ -76,6 +76,9 @@ const CancelPlanButton: FC<CancelPlanButtonProps> = ({
       typeof buttonProps === 'function' ? buttonProps({ isCancellable, isCancelled }) : {},
     text: typeof text === 'function' ? text({ isCancellable, isCancelled }) : null
   };
+  if (plan.amount === 0) {
+    return null;
+  }
   if (isCancelled) {
     return (
       <Button {...cancelButtonStyle} {...override.buttonProps} isDisabled>

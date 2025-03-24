@@ -19,17 +19,24 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '@/api/user';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { sealosApp } from 'sealos-desktop-sdk/app';
+import { TUserInfoReponse } from '@/schema/user';
+import { differenceInMonths } from 'date-fns';
 
 interface CreditsProps {
   plan: TPlanApiResponse;
   creditsUsage: TCreditsUsageResponse;
+  userInfo: TUserInfoReponse | undefined;
+  isLoadingUserInfo?: boolean;
   onPaySuccess?: () => void;
 }
-const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => {
+const PlanCredits: FC<CreditsProps> = ({
+  plan,
+  creditsUsage,
+  onPaySuccess,
+  isLoadingUserInfo: loadingUserInfo,
+  userInfo
+}) => {
   const { t } = useTranslation();
-  const { data: userInfo, isLoading: loadingUserInfo } = useQuery(['userInfo'], getUserInfo, {
-    refetchOnWindowFocus: true
-  });
   const renderLabel = (text: string, ballColor: string | null) => {
     return (
       <Flex
@@ -78,34 +85,40 @@ const PlanCredits: FC<CreditsProps> = ({ plan, creditsUsage, onPaySuccess }) => 
       return null;
     }
     if (userInfo && !userInfo.bindings.github) {
-      return (
-        <>
-          <Text
-            mt="8px"
-            lineHeight="16px"
-            fontSize="12px"
-            fontWeight={400}
-            color="rgb(113, 113, 122)"
-          >
-            {t('BindGithubGiftCreditHint')}
-          </Text>
-          <Box>
-            <Button
-              mt="15px"
-              colorScheme="gray"
-              variant="ghost"
-              bg="#F4F4F5"
-              p="8px 12px"
-              rightIcon={<ArrowForwardIcon />}
-              onClick={() => {
-                return sealosApp.runEvents(`bindGithub`);
-              }}
+      const userCreateMonthDiffToday =
+        typeof userInfo.user.createdAt === 'number'
+          ? differenceInMonths(new Date(), new Date(userInfo.user.createdAt))
+          : 0;
+      if (userCreateMonthDiffToday >= 1) {
+        return (
+          <>
+            <Text
+              mt="8px"
+              lineHeight="16px"
+              fontSize="12px"
+              fontWeight={400}
+              color="rgb(113, 113, 122)"
             >
-              {t('ConnectAccount', { platform: 'Github' })}
-            </Button>
-          </Box>
-        </>
-      );
+              {t('BindGithubGiftCreditHint')}
+            </Text>
+            <Box>
+              <Button
+                mt="15px"
+                colorScheme="gray"
+                variant="ghost"
+                bg="#F4F4F5"
+                p="8px 12px"
+                rightIcon={<ArrowForwardIcon />}
+                onClick={() => {
+                  return sealosApp.runEvents(`bindGithub`);
+                }}
+              >
+                {t('ConnectAccount', { platform: 'Github' })}
+              </Button>
+            </Box>
+          </>
+        );
+      }
     }
     return (
       <>
