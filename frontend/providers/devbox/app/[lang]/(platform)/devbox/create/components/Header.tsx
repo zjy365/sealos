@@ -107,7 +107,7 @@ const Header = ({
                   Configure Devbox
                 </Text>
                 <Text fontSize={'13px'} fontWeight={500}>
-                  3/8
+                  3/4
                 </Text>
               </Flex>
               <Text

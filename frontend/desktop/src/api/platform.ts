@@ -107,3 +107,16 @@ export const getUserBilling = () => {
     }>
   >('/api/desktop/getBilling');
 };
+
+export const getUserPlan = () => {
+  return request.get<
+    any,
+    ApiResp<{
+      subscription: {
+        subscriptionPlan: {
+          name: string;
+        };
+      };
+    }>
+  >('/api/account/getPlan');
+};

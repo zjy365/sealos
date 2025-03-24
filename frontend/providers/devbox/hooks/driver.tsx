@@ -50,7 +50,7 @@ export const startGuide2 = (openDesktopApp?: any): Config => ({
                 Create Devbox
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                2/8
+                2/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
@@ -103,8 +103,8 @@ export const startGuide2 = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {
@@ -142,7 +142,7 @@ export const startguideIDE = (openDesktopApp?: any): Config => ({
                 Code in IDE
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                4/8
+                4/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
@@ -195,8 +195,8 @@ export const startguideIDE = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {
@@ -234,7 +234,7 @@ export const startGuide5 = (openDesktopApp?: any): Config => ({
                 Manage and deploy
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                5/8
+                4/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
@@ -292,8 +292,8 @@ export const startGuide5 = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {
@@ -330,7 +330,7 @@ export const startGuide6 = (openDesktopApp?: any): Config => ({
                 Manage and deploy
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                6/8
+                4/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
@@ -386,8 +386,8 @@ export const startGuide6 = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {
@@ -424,7 +424,7 @@ export const startGuide7 = (openDesktopApp?: any): Config => ({
                 Manage and deploy
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                7/8
+                4/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
@@ -477,8 +477,8 @@ export const startGuide7 = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onHighlighted: (element) => {
@@ -518,7 +518,7 @@ export const startguideRelease = (openDesktopApp?: any): Config => ({
                 Manage and deploy
               </Text>
               <Text color={'grayModern.900'} fontSize={'13px'} fontWeight={500}>
-                8/8
+                4/4
               </Text>
             </Flex>
             <Text mt={'8px'} color={'#FFFFFFCC'} fontSize={'14px'} fontWeight={400}>
@@ -574,8 +574,8 @@ export const startguideRelease = (openDesktopApp?: any): Config => ({
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {
@@ -656,8 +656,8 @@ export const quitGuideDriverObj: Config = {
   onDeselected: (element?: Element) => {
     if (element) {
       const el = element as any;
-      el.style.borderRadius = el._originalBorderRadius || '';
-      el.style.border = el._originalBorder || '';
+      el.style.borderRadius = '';
+      el.style.border = '';
     }
   },
   onDestroyed: () => {

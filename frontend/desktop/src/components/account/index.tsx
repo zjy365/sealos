@@ -19,7 +19,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import { CopyIcon, DocsIcon, DownloadIcon, LogoutIcon, NotificationIcon } from '@sealos/ui';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -46,6 +46,7 @@ import {
 import UpgradePlanModal from './UpgradePlanModal';
 import GuideModal from './GuideModal';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
+import { getUserPlan } from '@/api/platform';
 
 const baseItemStyle = {
   minW: '40px',
@@ -107,6 +108,12 @@ export default function Account() {
     }
   }, [guideDisclosure, initGuide]);
 
+  const { data: plan, isSuccess } = useQuery(['getUserPlan'], () => getUserPlan(), {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+
   return (
     <Box position={'relative'} flex={1}>
       <Flex justifyContent={'space-between'} alignItems={'center'} height={'100%'} zIndex={3}>
@@ -138,7 +145,6 @@ export default function Account() {
           <LangSelectSimple visibility={'hidden'} />
 
           <AccountCenter ref={accountCenterRef} variant={'white-bg-icon'} p="4px" />
-
           {/* {layoutConfig?.common.workorderEnabled && (
             <Flex
               borderBottom={'1px solid rgba(255, 255, 255, 0.05)'}
@@ -160,32 +166,32 @@ export default function Account() {
               />
             </Flex>
           )} */}
-
-          <Box
-            cursor={'pointer'}
-            height="36px"
-            padding="8px 12px"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            gap="6px"
-            borderRadius="8px"
-            background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
-            _hover={{
-              background:
-                'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
-            }}
-            onClick={() => {
-              console.log('open');
-              openAccountCenterApp('plan');
-            }}
-          >
-            <Sparkles size={16} color="#1C4EF5" />
-            <Text color="#1C4EF5" fontWeight="medium">
-              {t('cc:upgrade_plan')}
-            </Text>
-          </Box>
-
+          {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
+            <Box
+              cursor={'pointer'}
+              height="36px"
+              padding="8px 12px"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              gap="6px"
+              borderRadius="8px"
+              background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
+              _hover={{
+                background:
+                  'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
+              }}
+              onClick={() => {
+                console.log('open');
+                openAccountCenterApp('plan');
+              }}
+            >
+              <Sparkles size={16} color="#1C4EF5" />
+              <Text color="#1C4EF5" fontWeight="medium">
+                {t('cc:upgrade_plan')}
+              </Text>
+            </Box>
+          )}
           <Center
             className="guide-button"
             cursor={'pointer'}
@@ -203,7 +209,6 @@ export default function Account() {
           >
             {t('cc:guide')}
           </Center>
-
           {layoutConfig?.common.docsUrl && (
             <Center
               cursor={'pointer'}
@@ -218,7 +223,6 @@ export default function Account() {
               {t('common:doc')}
             </Center>
           )}
-
           <Box>
             <Center
               cursor={'pointer'}

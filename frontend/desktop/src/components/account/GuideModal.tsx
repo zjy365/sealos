@@ -124,7 +124,7 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
           image: '/images/onboarding/devbox-4.png'
         }
       ],
-      stepNumbers: 8
+      stepNumbers: 4
     },
     {
       key: 'system-applaunchpad',
