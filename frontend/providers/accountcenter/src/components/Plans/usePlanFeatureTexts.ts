@@ -67,15 +67,16 @@ export function useGetPlanFeatureTexts() {
     };
     res.push({
       text: `${t('PlanWorkspaceCount', {
-        count: plan.maxWorkspaces,
+        count: plan.maxWorkspaces === -1 ? Infinity : plan.maxWorkspaces,
         countText: getWorkspaceCountText()
       })} / ${t('Region').toLowerCase()}`,
       key: 'workspace'
     });
     res.push({
-      text: `${t('PlanSeatCount', { count: plan.maxSeats, countText: getSeatCountText() })} / ${t(
-        'workspace'
-      ).toLowerCase()}`,
+      text: `${t('PlanSeatCount', {
+        count: plan.maxSeats === -1 ? Infinity : plan.maxSeats,
+        countText: getSeatCountText()
+      })} / ${t('workspace').toLowerCase()}`,
       key: 'seats'
     });
     return res;
