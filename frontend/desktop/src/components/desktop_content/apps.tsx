@@ -128,7 +128,7 @@ export default function Apps() {
                       fallbackSrc={logo}
                       draggable={false}
                       borderRadius={'full'}
-                      boxShadow={'0px 4px 20px 0px rgba(0, 0, 0, 0.30)'}
+                      boxShadow={'0px 0.6px 2.6px 0px rgba(0, 0, 0, 0.30)'}
                       alt="app logo"
                     />
                   </Box>

@@ -38,6 +38,7 @@ import NsListItem from '@/components/team/NsListItem';
 import RenameTeam from './RenameTeam';
 import { Plus } from 'lucide-react';
 import useAppStore from '@/stores/app';
+import { getUserPlan } from '@/api/platform';
 
 export default function TeamCenter({
   closeWorkspaceToggle,
@@ -121,6 +122,12 @@ export default function TeamCenter({
       pathname: '/redirect'
     });
   };
+
+  const { data: plan, isSuccess } = useQuery(['getUserPlan'], () => getUserPlan(), {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
 
   return (
     <>
@@ -239,27 +246,29 @@ export default function TeamCenter({
                       </Text>
                     </Flex>
                   </CreateTeam>
-                  <Button
-                    ml={'auto'}
-                    fontSize={'12px'}
-                    variant={'unstyled'}
-                    display={'flex'}
-                    height={'22px'}
-                    padding={'10px 8px'}
-                    justifyContent={'center'}
-                    alignItems={'center'}
-                    gap={'8px'}
-                    borderRadius={'full'}
-                    background={'#18181B'}
-                    color={'#FFF'}
-                    onClick={() => {
-                      closeWorkspaceToggle();
-                      onClose();
-                      openAccountCenterApp('plan');
-                    }}
-                  >
-                    {t('cc:upgrade')}
-                  </Button>
+                  {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
+                    <Button
+                      ml={'auto'}
+                      fontSize={'12px'}
+                      variant={'unstyled'}
+                      display={'flex'}
+                      height={'22px'}
+                      padding={'10px 8px'}
+                      justifyContent={'center'}
+                      alignItems={'center'}
+                      gap={'8px'}
+                      borderRadius={'full'}
+                      background={'#18181B'}
+                      color={'#FFF'}
+                      onClick={() => {
+                        closeWorkspaceToggle();
+                        onClose();
+                        openAccountCenterApp('plan');
+                      }}
+                    >
+                      {t('cc:upgrade')}
+                    </Button>
+                  )}
                 </Flex>
               </Box>
             </Stack>
@@ -352,21 +361,23 @@ export default function TeamCenter({
                         canAbdicate={!isPrivate}
                       />
                     </Box>
-                    <Center color={'#71717A'} fontSize={'14px'} cursor={'pointer'}>
-                      <Box
-                        color={'#18181B'}
-                        fontWeight={600}
-                        pr={'4px'}
-                        onClick={() => {
-                          onClose();
-                          closeWorkspaceToggle();
-                          openAccountCenterApp('plan');
-                        }}
-                      >
-                        Upgrade
-                      </Box>
-                      to get more seats
-                    </Center>
+                    {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
+                      <Center color={'#71717A'} fontSize={'14px'} cursor={'pointer'}>
+                        <Box
+                          color={'#18181B'}
+                          fontWeight={600}
+                          pr={'4px'}
+                          onClick={() => {
+                            onClose();
+                            closeWorkspaceToggle();
+                            openAccountCenterApp('plan');
+                          }}
+                        >
+                          Upgrade
+                        </Box>
+                        to get more seats
+                      </Center>
+                    )}
                   </Stack>
                 </>
               ) : namespaces.length === 0 ? (

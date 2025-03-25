@@ -257,7 +257,6 @@ export default function Account() {
             <MenuList p="0" borderRadius="12px" overflow="hidden" boxShadow="lg" minW="246px">
               <Box p="16px">
                 <Button
-                  width={'46px'}
                   height="24px"
                   size="sm"
                   px="16px"
