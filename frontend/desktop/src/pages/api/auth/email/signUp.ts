@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { jsonRes } from '@/services/backend/response';
-import { enableEmailSms } from '@/services/enable';
+import { enableEmailSms, getRegionUid } from '@/services/enable';
 import { signUpByEmail } from '@/services/backend/globalAuth';
 import { ProviderType } from 'prisma/global/generated/client';
 import { generateAuthenticationToken } from '@/services/backend/auth';
@@ -8,6 +8,7 @@ import { ErrorHandler } from '@/services/backend/middleware/error';
 import { registerParamsSchema } from '@/schema/email';
 import { HttpStatusCode } from 'axios';
 import { globalPrisma } from '@/services/backend/db/init';
+import { emailSmsVerifyReq } from '@/services/backend/sms';
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!enableEmailSms()) {
     throw new Error('SMS is not enabled');
@@ -20,7 +21,6 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
     });
   }
   const { email: name, password, firstName: firstname, lastName: lastname } = result.data;
-  console.log('get params success');
   const oauthProvider = await globalPrisma.oauthProvider.findUnique({
     where: {
       providerId_providerType: {
@@ -41,6 +41,12 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
     name,
     firstname,
     lastname
+  });
+  await emailSmsVerifyReq(name, {
+    type: 'email',
+    regionUid: getRegionUid(),
+    userUid: data.user.uid,
+    userId: data.user.id
   });
   if (!data)
     return jsonRes(res, {

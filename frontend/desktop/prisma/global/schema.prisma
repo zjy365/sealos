@@ -495,6 +495,7 @@ model UserInfo {
   signUpRegionUid String  @db.Uuid
   isInited        Boolean @default(false)
   enSubEmail      Boolean @default(false)
+  verifyEmail     Boolean @default(false)
   user            User    @relation(fields: [userUid], references: [uid])
 }
 

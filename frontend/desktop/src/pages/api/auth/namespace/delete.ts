@@ -40,40 +40,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const regionUid = getRegionUid();
     // sync status, user add 1,
-    await globalPrisma.workspaceUsage.delete({
+
+    // try {
+    const res1 = await setUserTeamDelete(creator);
+    if (!res1) throw new Error('fail to update user ');
+    const res2 = await applyDeleteRequest(creator);
+    if (!res2) throw new Error('fail to delete namespace ');
+    const results = await prisma.userWorkspace.deleteMany({
       where: {
-        regionUid_userUid_workspaceUid: {
-          userUid: payload.userUid,
-          workspaceUid: ns_uid,
-          regionUid
-        }
+        workspaceUid: ns_uid,
+        isPrivate: false
       }
     });
-    try {
-      const res1 = await setUserTeamDelete(creator);
-      if (!res1) throw new Error('fail to update user ');
-      const res2 = await applyDeleteRequest(creator);
-      if (!res2) throw new Error('fail to delete namespace ');
-      const results = await prisma.userWorkspace.deleteMany({
+    if (results.count < 1)
+      return jsonRes(res, { code: 404, message: 'fail to remove users of ns' });
+
+    await globalPrisma.$transaction(async (tx) => {
+      const result = await tx.workspaceUsage.findUnique({
         where: {
-          workspaceUid: ns_uid,
-          isPrivate: false
+          regionUid_userUid_workspaceUid: {
+            userUid: payload.userUid,
+            workspaceUid: ns_uid,
+            regionUid
+          }
         }
       });
-      if (results.count < 1)
-        return jsonRes(res, { code: 404, message: 'fail to remove users of ns' });
-      return jsonRes(res, { code: 200, message: 'Successfully' });
-    } catch (e) {
-      await globalPrisma.workspaceUsage.create({
-        data: {
-          userUid: payload.userUid,
-          workspaceUid: ns_uid,
-          regionUid,
-          seat: 1
+      // 被意外删除
+      if (!result) return;
+      await tx.workspaceUsage.delete({
+        where: {
+          regionUid_userUid_workspaceUid: {
+            userUid: payload.userUid,
+            workspaceUid: ns_uid,
+            regionUid
+          }
         }
       });
-      throw Error(String(e));
-    }
+    });
+    return jsonRes(res, { code: 200, message: 'Successfully' });
+    // } catch (e) {
+    //   await globalPrisma.workspaceUsage.create({
+    //     data: {
+    //       userUid: payload.userUid,
+    //       workspaceUid: ns_uid,
+    //       regionUid,
+    //       seat: 1
+    //     }
+    //   });
+    //   throw Error(String(e));
+    // }
   } catch (e) {
     console.log(e);
     jsonRes(res, { code: 500, message: 'fail to remove ns' });

@@ -216,3 +216,13 @@ export function identityCodeValid(code: string): boolean {
 
   return pass;
 }
+
+export function isWithinLimit(seats: number, max_seats: number | bigint): boolean {
+  let max_seats_ = max_seats < 0 ? Infinity : Number(max_seats);
+  // 如果所有 workspace 的 seat 都没有超出 effectiveMaxSeats，返回 false
+  return max_seats_ >= seats;
+}
+export function isWithinLimitAndNotEqual(seats: number, max_seats: number | bigint): boolean {
+  let max_seats_ = max_seats < 0 ? Infinity : Number(max_seats);
+  return max_seats_ > seats;
+}

@@ -3,7 +3,7 @@ import { jsonRes } from '@/services/backend/response';
 import { modifyWorkspaceRole } from '@/services/backend/team';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { globalPrisma, prisma } from '@/services/backend/db/init';
-import { UserRoleToRole } from '@/utils/tools';
+import { isWithinLimit, UserRoleToRole } from '@/utils/tools';
 import { JoinStatus } from 'prisma/region/generated/client';
 import { verifyAccessToken } from '@/services/backend/auth';
 import { findInviteCode } from '@/services/backend/db/workspaceInviteCode';
@@ -23,20 +23,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         code: 400,
         message: `action must be ${reciveAction.Accepte}, ${reciveAction.Reject}`
       });
+
     if (action === reciveAction.Accepte) {
       const linkResults = await findInviteCode(code);
       if (!linkResults) return jsonRes(res, { code: 404, message: 'the link is not found' });
       const queryResults = await prisma.userWorkspace.findMany({
         where: {
           workspaceUid: linkResults.workspaceUid,
-          userCrUid: {
-            in: [linkResults.inviterCrUid, payload.userCrUid]
-          },
           status: JoinStatus.IN_WORKSPACE
         },
         include: {
-          workspace: true,
-          userCr: true
+          workspace: {
+            select: {
+              uid: true,
+              id: true
+            }
+          },
+          userCr: {
+            select: {
+              userUid: true
+            }
+          }
         }
       });
       const inviteeStatus = queryResults.find((item) => item.userCrUid === payload.userCrUid);
@@ -82,8 +89,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           message: 'The  owner of workspace is not a member of the workspace'
         });
       const seat = ownerWorkspaceState.seat;
+
       const maxSeat = ownerState.subscription.subscriptionPlan.max_seats;
-      if (seat >= maxSeat)
+      if (!isWithinLimit(seat + 1, maxSeat))
         return jsonRes(res, {
           code: 403,
           message: 'The owner has reached the maximum number of workspaces'
@@ -99,14 +107,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
         if (!ownerStatus) {
+          //工作空间被删了
           throw new Error('no owner status in workspace');
         }
         await globalPrisma.workspaceUsage.update({
           where: {
             regionUid_userUid_workspaceUid: {
-              userUid: payload.userUid,
-              workspaceUid: linkResults.workspaceUid,
-              regionUid
+              regionUid,
+              userUid: ownerResult.userCr.userUid,
+              workspaceUid: ownerResult.workspace.uid
             }
           },
           data: {
@@ -151,9 +160,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           await globalPrisma.workspaceUsage.update({
             where: {
               regionUid_userUid_workspaceUid: {
-                userUid: payload.userUid,
-                workspaceUid: linkResults.workspaceUid,
-                regionUid
+                regionUid,
+                userUid: ownerResult.userCr.userUid,
+                workspaceUid: ownerResult.workspace.uid
               }
             },
             data: {
@@ -170,6 +179,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (e) {
     console.log(e);
-    return jsonRes(res, { code: 500, message: 'get price error' });
+    return jsonRes(res, { code: 500, message: 'verifyInviteCode' });
   }
 }
