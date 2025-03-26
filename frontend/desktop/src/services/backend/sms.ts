@@ -7,6 +7,15 @@ import OpenApi, * as $OpenApi from '@alicloud/openapi-client';
 import Utils, * as $Util from '@alicloud/tea-util';
 import Captcha, * as $Captcha from '@alicloud/captcha20230305';
 import nodemailer from 'nodemailer';
+import { getRegionUid } from '../enable';
+import { globalPrisma } from './db/init';
+import {
+  generateAccessToken,
+  generateVerifyEmailToken,
+  verifyJWT,
+  verifyVerifyEmailToken
+} from './auth';
+import { VerifyTokenPayload } from '@/types/token';
 const getTransporter = () => {
   if (!global.nodemailer) {
     const emailConfig = global.AppConfig.desktop.auth.idp.sms?.email;
@@ -188,4 +197,107 @@ export const emailSmsReq = async (email: string) => {
     3
   );
   return code;
+};
+export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPayload) => {
+  const emailConfig = global.AppConfig.desktop.auth.idp.sms?.email;
+  if (!emailConfig) throw Error('config error');
+
+  // const code = Math.floor(Math.random() * 900000 + 100000).toString();
+  const token = generateVerifyEmailToken(payload);
+  const transporter = getTransporter();
+  const region = await globalPrisma.region.findUnique({
+    where: {
+      uid: getRegionUid()
+    }
+  });
+  if (!region) throw Error('region not found');
+  const domain = region.domain;
+  const url = `https://${domain}/verify-email?code=${token}`;
+  await retrySerially(
+    () =>
+      transporter.sendMail({
+        from: emailConfig.user,
+        to: email,
+        subject: 'ClawCloud Email Verification',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>ClawCloud Email Verification</title>
+        </head>
+
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f4f4;">
+            <tr>
+              <td align="center">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600"
+                  style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(270deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);
+                               height: 120px;
+                               display: flex;
+                               flex-direction: column;
+                               justify-content: center;
+                               align-items: center;
+                               gap: 10px;">
+                      <img src="./clawcloud.png" alt="ClawCloud Logo" style="max-width: 217px;">
+                    </td>
+                  </tr>
+                  <!-- Body -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      <h2 style="margin: 0; font-size: 28px; color: #000; font-weight: 700;">Dear {{.UserName}}</h2>
+                      <p style="margin: 24px 0; font-size: 16px; color: #000; line-height: 1.6;">
+                      Please click on the link below to verify your email address. This is required to confirm ownership of the email address.
+                      </p>
+
+                      <!-- Button -->
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+                        style="margin: 32px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${url}" style="display: inline-block;
+                                     padding: 14px 24px;
+                                     width: 100%;
+                                     box-sizing: border-box;
+                                     text-align: center;
+                                     border-radius: 8px;
+                                     background: #18181B;
+                                     color: #ffffff;
+                                     text-decoration: none;
+                                     font-size: 16px;
+                                     font-weight: 500;
+                                     cursor: pointer;">
+                              ${url}
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                      <p style="margin: 24px 0; font-size: 16px; color: #000; line-height: 1.6;">
+                        If you're having trouble, try copying and pasting the following URL into your browser.
+                      </p>
+                      <!-- Footer Text -->
+                      <p style="margin: 24px 0 0; font-size: 16px; color: #000; font-weight: 700;">
+                        Thank you for your support!
+                      </p>
+                      <p style="margin: 8px 0 0; font-size: 14px; color: #444;">
+                        [Clawcloud (Singapore) Private Limited]<br>
+                        [support@run.claw.cloud]
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+
+        </html>`
+      }),
+    3
+  );
+  return token;
 };

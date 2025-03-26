@@ -3,6 +3,10 @@ export type AuthenticationTokenPayload = {
   userId: string;
   regionUid?: string;
 };
+export type DownGradeTokenPayload = {
+  userUid: string;
+  regionUid?: string;
+};
 export type AccessTokenPayload = {
   regionUid: string;
   userCrUid: string;
@@ -10,6 +14,13 @@ export type AccessTokenPayload = {
   workspaceUid: string;
   workspaceId: string;
 } & AuthenticationTokenPayload;
+export type TverifyType = 'email';
+export type VerifyTokenPayload = {
+  type: TverifyType;
+  userUid: string;
+  userId: string;
+  regionUid: string;
+};
 
 export type CronJobTokenPayload = {
   mergeUserUid: string;

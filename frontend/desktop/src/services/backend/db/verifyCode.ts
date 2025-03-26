@@ -1,6 +1,7 @@
 import { v4 } from 'uuid';
 import { connectToDatabase } from './mongodb';
-export type SmsType = 'phone' | 'email';
+import { time } from 'console';
+export type SmsType = 'phone' | 'email' | 'email-verify';
 export type TVerification_Codes = {
   id: string;
   smsType: SmsType;
@@ -48,13 +49,21 @@ export async function addOrUpdateCode({
   return result;
 }
 // checkCode
-export async function checkSendable({ id, smsType }: { id: string; smsType: SmsType }) {
+export async function checkSendable({
+  id,
+  smsType,
+  timeout = 60 * 1000
+}: {
+  id: string;
+  smsType: SmsType;
+  timeout?: number;
+}) {
   const codes = await connectToCollection();
   const result = await codes.findOne({
     id,
     smsType,
     createdAt: {
-      $gt: new Date(new Date().getTime() - 60 * 1000)
+      $gt: new Date(new Date().getTime() - timeout)
     }
   });
   return !result;
@@ -63,11 +72,13 @@ export async function checkSendable({ id, smsType }: { id: string; smsType: SmsT
 export async function checkCode({
   id,
   smsType,
-  code
+  code,
+  cacheTime = 5 * 60 * 1000
 }: {
   id: string;
   code: string;
   smsType: SmsType;
+  cacheTime?: number;
 }) {
   const codes = await connectToCollection();
   const result = await codes.findOne({
@@ -75,7 +86,7 @@ export async function checkCode({
     smsType,
     code,
     createdAt: {
-      $gt: new Date(new Date().getTime() - 5 * 60 * 1000)
+      $gt: new Date(new Date().getTime() - cacheTime)
     }
   });
   return result;

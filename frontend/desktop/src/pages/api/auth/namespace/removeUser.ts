@@ -57,7 +57,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         workspaceUid: ns_uid
       });
     } else if (JoinStatus.IN_WORKSPACE === tItem.status) {
-      // 先处理全局数据库状态
       const ownerResult = queryResults.find((qr) => qr.role === 'OWNER');
       if (!ownerResult) {
         throw new Error('no owner in workspace');

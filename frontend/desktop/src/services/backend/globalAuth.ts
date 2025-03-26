@@ -298,7 +298,8 @@ async function signUpWithEmail({
               firstname,
               lastname,
               signUpRegionUid: getRegionUid(),
-              isInited: false
+              isInited: false,
+              verifyEmail: true
             }
           }
         }
@@ -583,7 +584,6 @@ export const getGlobalTokenByOauth = async ({
   let isInited = false;
   if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
     throw new Error('not support other way to signin/signup');
-
   const _user = await globalPrisma.oauthProvider.findUnique({
     where: {
       providerId_providerType: {
@@ -598,6 +598,10 @@ export const getGlobalTokenByOauth = async ({
   if (!_user) {
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
+    if (!email) {
+      console.log('email in null');
+      return null;
+    }
     const emailUser = await globalPrisma.oauthProvider.findUnique({
       where: {
         providerId_providerType: {

@@ -132,8 +132,8 @@ export class SyncUserPlanCrJob implements CronJobStatus<SyncUserPlanTransactionI
             }
           });
           // 提交状态, 防止异常导致重复执行
-          await globalPrisma.$transaction([
-            globalPrisma.workspaceUsage.delete({
+          await globalPrisma.$transaction(async (tx) => {
+            const workspaceUsage = await tx.workspaceUsage.findUnique({
               where: {
                 regionUid_userUid_workspaceUid: {
                   regionUid: this.regionUid,
@@ -141,21 +141,32 @@ export class SyncUserPlanCrJob implements CronJobStatus<SyncUserPlanTransactionI
                   workspaceUid: workspace.uid
                 }
               }
-            }),
-            globalPrisma.eventLog.create({
-              data: {
-                eventName: SyncUserPlanEvent['<SYNC_PLAN>_SET_LOCK_WORKSPACE'],
-                mainId: userUid,
-                data: JSON.stringify({
-                  userUid,
-                  userCrName: userCr.crName,
-                  workspaceId: workspace.id,
-                  regionUid: this.regionUid,
-                  message: `success`
-                })
-              }
-            })
-          ]);
+            });
+            // 如不存在则跳过
+            if (!!workspaceUsage)
+              await tx.workspaceUsage.delete({
+                where: {
+                  regionUid_userUid_workspaceUid: {
+                    regionUid: this.regionUid,
+                    userUid,
+                    workspaceUid: workspace.uid
+                  }
+                }
+              }),
+                await tx.eventLog.create({
+                  data: {
+                    eventName: SyncUserPlanEvent['<SYNC_PLAN>_SET_LOCK_WORKSPACE'],
+                    mainId: userUid,
+                    data: JSON.stringify({
+                      userUid,
+                      userCrName: userCr.crName,
+                      workspaceId: workspace.id,
+                      regionUid: this.regionUid,
+                      message: `success`
+                    })
+                  }
+                });
+          });
         })
     );
     const privateWorkspaceList = userCr.userWorkspace
@@ -280,18 +291,17 @@ export class SyncUserPlanCrJob implements CronJobStatus<SyncUserPlanTransactionI
           user_uid: userUid
         }
       });
-    });
-
-    await globalPrisma.eventLog.create({
-      data: {
-        eventName: SyncUserPlanEvent['<SYNC_PLAN>_UPDATE_SEAT'],
-        mainId: userUid,
-        data: JSON.stringify({
-          userUid,
-          regionUid: getRegionUid(),
-          message: `kick off success`
-        })
-      }
+      await globalPrisma.eventLog.create({
+        data: {
+          eventName: SyncUserPlanEvent['<SYNC_PLAN>_UPDATE_SEAT'],
+          mainId: userUid,
+          data: JSON.stringify({
+            userUid,
+            regionUid: getRegionUid(),
+            message: `kick off success`
+          })
+        }
+      });
     });
   }
   canCommit() {

@@ -5,7 +5,7 @@ import { jsonRes } from '@/services/backend/response';
 import { modifyWorkspaceRole } from '@/services/backend/team';
 import { getRegionUid } from '@/services/enable';
 import { UserRole } from '@/types/team';
-import { retrySerially } from '@/utils/tools';
+import { isWithinLimit, retrySerially } from '@/utils/tools';
 import { Cat } from 'lucide-react';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { JoinStatus, Role } from 'prisma/region/generated/client';
@@ -69,16 +69,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!targetUser.subscription)
       return jsonRes(res, { code: 403, message: 'The targetUser is not subscribed' });
-    if (
-      targetUser.WorkspaceUsage.filter((usage) => usage.regionUid === getRegionUid()).length >=
-      targetUser.subscription.subscriptionPlan.max_workspaces
-    )
+    // now count
+    const targetUserWorkspaceCount = targetUser.WorkspaceUsage.filter(
+      (usage) => usage.regionUid === getRegionUid()
+    ).length;
+    const newWorkspaceCount = targetUserWorkspaceCount + 1;
+    const targetUserMaxWorkspaces = targetUser.subscription.subscriptionPlan.max_workspaces;
+    if (!isWithinLimit(newWorkspaceCount, targetUserMaxWorkspaces))
       return jsonRes(res, {
         code: 403,
         message: 'The targetUser has reached the maximum number of workspaces'
       });
     const seat = workspaceToRegionUsers.length;
-    if (seat >= targetUser.subscription.subscriptionPlan.max_seats) {
+    const maxSeat = targetUser.subscription.subscriptionPlan.max_seats;
+    if (isWithinLimit(seat, maxSeat)) {
       return jsonRes(res, {
         code: 403,
         message: 'The targetUser has reached the maximum number of seats'

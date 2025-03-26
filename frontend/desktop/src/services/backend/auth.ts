@@ -4,8 +4,10 @@ import {
   AuthenticationTokenPayload,
   BillingTokenPayload,
   CronJobTokenPayload,
-  OnceTokenPayload
+  OnceTokenPayload,
+  VerifyTokenPayload
 } from '@/types/token';
+import { Verify } from 'crypto';
 import { IncomingHttpHeaders } from 'http';
 import { sign, verify } from 'jsonwebtoken';
 
@@ -77,11 +79,15 @@ export const verifyAppToken = async (header: IncomingHttpHeaders) => {
     return null;
   }
 };
-
+export const verifyVerifyEmailToken = (token: string) =>
+  verifyJWT<VerifyTokenPayload>(token, grobalJwtSecret());
 export const generateBillingToken = (props: BillingTokenPayload) =>
   sign(props, internalJwtSecret(), { expiresIn: '3600000' });
 export const generateAccessToken = (props: AccessTokenPayload) =>
   sign(props, regionalJwtSecret(), { expiresIn: '7d' });
+export const generateVerifyEmailToken = (props: VerifyTokenPayload) =>
+  sign(props, grobalJwtSecret(), { expiresIn: '10d' });
+
 export const generateAppToken = (props: AccessTokenPayload) =>
   sign(props, internalJwtSecret(), { expiresIn: '7d' });
 export const generateAuthenticationToken = (props: AuthenticationTokenPayload) =>

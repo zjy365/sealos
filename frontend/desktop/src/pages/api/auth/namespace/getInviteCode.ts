@@ -8,7 +8,7 @@ import { v4, validate } from 'uuid';
 import { JoinStatus } from 'prisma/region/generated/client';
 import { verifyAccessToken } from '@/services/backend/auth';
 import { getTeamInviteLimit } from '@/services/enable';
-const TEAM_INVITE_LIMIT = getTeamInviteLimit();
+// const TEAM_INVITE_LIMIT = getTeamInviteLimit();
 import { Role } from 'prisma/region/generated/client';
 import { addOrUpdateInviteCode } from '@/services/backend/db/workspaceInviteCode';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -40,8 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!own) return jsonRes(res, { code: 403, message: 'you are not in the namespace' });
     const vaild = ([Role.OWNER, Role.MANAGER] as Role[]).includes(own.role);
     if (!vaild) return jsonRes(res, { code: 403, message: 'you are not manager' });
-    if (queryResults.length >= TEAM_INVITE_LIMIT)
-      return jsonRes(res, { code: 403, message: 'these invitees are too many' });
+    // if (queryResults.length >= TEAM_INVITE_LIMIT)
+    //   return jsonRes(res, { code: 403, message: 'these invitees are too many' });
     const spec = {
       inviterUid: payload.userUid,
       workspaceUid: ns_uid,
