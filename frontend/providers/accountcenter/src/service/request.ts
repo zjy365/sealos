@@ -9,6 +9,9 @@ import { isApiResp } from './kubernet';
 import { getUserKubeConfig, getUserSession } from '@/utils/user';
 import { getToken } from '@chakra-ui/system';
 
+interface RequestConfig extends AxiosRequestConfig {
+  noParseAPIResponseData?: boolean;
+}
 const showStatus = (status: number) => {
   let message = '';
   switch (status) {
@@ -97,7 +100,10 @@ request.interceptors.response.use(
         status + ':' + showStatus(status) + ', ' + typeof data === 'string' ? data : String(data)
       );
     }
-
+    const config: RequestConfig = response.config;
+    if (config.noParseAPIResponseData) {
+      return data;
+    }
     const apiResp = data as ApiResp;
     if (apiResp.code < 200 || apiResp.code >= 400) {
       return Promise.reject(apiResp.code + ':' + apiResp.message);
@@ -120,7 +126,7 @@ request.interceptors.response.use(
 export function GET<T = any>(
   url: string,
   data?: { [key: string]: any },
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> {
   return request.get(url, {
     params: data,
@@ -131,7 +137,7 @@ export function GET<T = any>(
 export function POST<T = any>(
   url: string,
   data?: { [key: string]: any },
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> {
   return request.post(url, data, config);
 }
@@ -139,7 +145,7 @@ export function POST<T = any>(
 export function DELETE<T = any>(
   url: string,
   data?: { [key: string]: any },
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> {
   return request.delete(url, {
     params: data,

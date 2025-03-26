@@ -95,7 +95,7 @@ export const theme = extendTheme(SealosTheme, {
           lineHeight: '28px'
         },
         body: {
-          padding: '14px 24px 24px'
+          padding: '16px 24px 24px'
         }
       }
     },

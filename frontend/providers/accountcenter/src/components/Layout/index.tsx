@@ -35,13 +35,13 @@ function Layout({ children, loading }: { children?: ReactNode; loading?: boolean
         maxW={'1440px'}
         columnGap={'24px'}
         minW={'1280px'}
-        p={'24px 12px'}
+        p={'24px 40px'}
         position={'relative'}
       >
-        <Box w={'266px'} position={'relative'}>
+        <Box w={'266px'} position={'relative'} flexGrow={0}>
           <Sidebar position={'sticky'} top={'120px'} />
         </Box>
-        <Box w={'886px'} position="relative">
+        <Box flexGrow={1} maxW="1000px" position="relative">
           {children}
           <Loading loading={loading} fixed={false} />
         </Box>

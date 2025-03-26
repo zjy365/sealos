@@ -69,5 +69,6 @@
   "you_may_invite_memebers_later": "你一会可能需要邀请成员",
   "workspace_welcome": "欢迎来到ClawCloud",
   "workspace_create": "让我们创建您的工作空间",
-  "please_select_region_and_workspace_name": "请选择一个可用区和工作空间名称"
+  "please_select_region_and_workspace_name": "请选择一个可用区和工作空间名称",
+  "referral": "推荐"
 }

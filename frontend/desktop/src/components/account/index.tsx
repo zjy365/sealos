@@ -42,7 +42,8 @@ import {
   Copy,
   Bell,
   Sparkles,
-  ReceiptText
+  ReceiptText,
+  Gift
 } from 'lucide-react';
 import UpgradePlanModal from './UpgradePlanModal';
 import GuideModal from './GuideModal';
@@ -371,7 +372,25 @@ export default function Account() {
                     </Text>
                   </Flex>
                 </MenuItem>
-
+                <MenuItem
+                  mt="0px"
+                  py="6px"
+                  px="8px"
+                  borderRadius="8px"
+                  _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
+                  onClick={() => {
+                    openAccountCenterApp('referral');
+                  }}
+                >
+                  <Flex alignItems="center" gap="8px">
+                    <Center w="20px" h="20px">
+                      <Gift size={16} color="#737373" />
+                    </Center>
+                    <Text fontSize="14px" fontWeight="500">
+                      {t('cc:referral')}
+                    </Text>
+                  </Flex>
+                </MenuItem>
                 {/* <MenuItem
                   py="6px"
                   px="8px"
