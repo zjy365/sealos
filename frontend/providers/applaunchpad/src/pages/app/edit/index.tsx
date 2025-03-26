@@ -112,7 +112,6 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
     amount: 0,
     manufacturers: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { openConfirm, ConfirmChild } = useConfirm({
     content: applyMessage
   });
@@ -335,9 +334,6 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
           yamlList={yamlList}
           applyBtnText={applyBtnText}
           applyCb={() => {
-            console.log(isSubmitting, 'isSubmitting');
-            if (isSubmitting) return;
-            setIsSubmitting(true);
             formHook.handleSubmit(async (data) => {
               const parseYamls = formData2Yamls(data);
               setYamlList(parseYamls);
@@ -392,10 +388,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
                 }
               }
 
-              openConfirm(
-                () => submitSuccess(parseYamls),
-                () => setIsSubmitting(false)
-              )();
+              openConfirm(() => submitSuccess(parseYamls))();
             }, submitError)();
           }}
         />

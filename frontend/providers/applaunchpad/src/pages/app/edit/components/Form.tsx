@@ -1143,6 +1143,7 @@ const Form = ({
                       return (
                         <Flex key={env.id} gap={'12px'}>
                           <Box
+                            w={'0px'}
                             flex="1 1 40%"
                             fontWeight="500"
                             borderRadius={'8px'}
@@ -1150,12 +1151,13 @@ const Form = ({
                             background={'#FAFAFA'}
                             p={'8px 12px'}
                           >
-                            {env.key}
+                            <Text className={styles.textEllipsis}>{env.key}</Text>
                           </Box>
                           <Center>
                             <ArrowRight color="#71717A" size={20} />
                           </Center>
                           <Box
+                            w={'0px'}
                             flex="1 1 60%"
                             borderRadius={'8px'}
                             border={'1px solid #E4E4E7'}

@@ -195,6 +195,8 @@ const CCPodLineChart = ({
         type: 'line'
       },
       appendToBody: true,
+      enterable: false,
+      hideDelay: 100,
       extraCssText: `
       box-shadow: none; 
       padding: 0; 

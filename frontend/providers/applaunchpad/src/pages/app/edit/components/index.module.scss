@@ -25,11 +25,13 @@
   flex-shrink: 0;
   width: 100px;
 }
+
 .textEllipsis {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
+
 .table {
   border-radius: 2px;
   overflow: hidden;
