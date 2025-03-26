@@ -1,10 +1,12 @@
 import { getRegionToken, initRegionToken } from '@/api/auth';
 import { nsListRequest, switchRequest } from '@/api/namespace';
 import { SwitchRegionType } from '@/constants/account';
+import request from '@/services/request';
 import useAppStore from '@/stores/app';
 import { useConfigStore } from '@/stores/config';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
 import useSessionStore from '@/stores/session';
+import { ApiResp } from '@/types';
 import { AccessTokenPayload } from '@/types/token';
 import { parseOpenappQuery } from '@/utils/format';
 import { sessionConfig } from '@/utils/sessionConfig';
@@ -48,6 +50,14 @@ const Callback: NextPage = () => {
       setInitGuide(true);
     }
   });
+  const verifyEmailMutation = useMutation({
+    mutationFn: async (token: string) => {
+      if (!isString(token)) throw new Error('failed to get token');
+      const resp = await request.post<never, ApiResp<any>>('/api/auth/email/verify', { token });
+      if (resp.code !== 200) throw new Error('failed to verify email');
+      return resp.data;
+    }
+  });
   useEffect(() => {
     if (!router.isReady) return;
     const { query } = router;
@@ -78,6 +88,29 @@ const Callback: NextPage = () => {
             throw new Error('No result data');
           }
           await sessionConfig(initRegionTokenResult.data);
+          await router.replace('/');
+          return;
+        } catch (error) {
+          console.error(error);
+          setToken('');
+          await router.replace('/signin');
+          return;
+        }
+      })();
+    } else if (switchRegionType === SwitchRegionType.VERIFYEMAIL) {
+      (async () => {
+        try {
+          // if (!!curToken) {
+          //   delSession();
+          //   setToken('');
+          // }
+          // setToken(globalToken);
+          // await router.replace('/workspace');
+          await verifyEmailMutation.mutateAsync(globalToken);
+          // if (!verifyTokenResult.data) {
+          //   throw new Error('No result data');
+          // }
+          // await sessionConfig(initRegionTokenResult.data);
           await router.replace('/');
           return;
         } catch (error) {

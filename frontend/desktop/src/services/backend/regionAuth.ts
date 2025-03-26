@@ -10,6 +10,7 @@ import { generateAccessToken, generateAppToken } from '@/services/backend/auth';
 import Workspace from '@/components/cc/Workspace';
 import { v4 } from 'uuid';
 import { iss } from 'tencentcloud-sdk-nodejs';
+import { curry } from 'lodash';
 
 const LetterBytes = 'abcdefghijklmnopqrstuvwxyz0123456789';
 const HostnameLength = 8;
@@ -73,7 +74,8 @@ export async function getRegionToken({
     let needCreating = curRegionWorkspaceUsage.length === 0;
     // 先处理全局状态
     if (!needCreating) {
-      curRegionWorkspaceUsage[0];
+      // 找最早的工作空间 = privaite
+      curRegionWorkspaceUsage.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
       // 当前可用区初始化中，用幂等逻辑
       workspaceUid = curRegionWorkspaceUsage[0].workspaceUid;
     } else {

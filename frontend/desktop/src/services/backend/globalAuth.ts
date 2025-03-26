@@ -217,7 +217,7 @@ async function signUp({
         data: {
           name: name,
           id: name,
-          nickname: nickname,
+          nickname: firstname && nickname ? `${firstname} ${lastname}` : nickname,
           avatarUri: avatar_url,
           oauthProvider,
           userInfo: {

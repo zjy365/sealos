@@ -42,12 +42,16 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
     firstname,
     lastname
   });
-  await emailSmsVerifyReq(name, {
-    type: 'email',
-    regionUid: getRegionUid(),
-    userUid: data.user.uid,
-    userId: data.user.id
-  });
+  await emailSmsVerifyReq(
+    name,
+    {
+      type: 'email',
+      regionUid: getRegionUid(),
+      userUid: data.user.uid,
+      userId: data.user.id
+    },
+    data.user.nickname
+  );
   if (!data)
     return jsonRes(res, {
       code: HttpStatusCode.Unauthorized,
