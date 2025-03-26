@@ -20,5 +20,6 @@ export enum CcStatusCodes {
 }
 export enum SwitchRegionType {
   INIT = 'INIT',
-  SWITCH = 'SWITCH'
+  SWITCH = 'SWITCH',
+  VERIFYEMAIL = 'VERIFYEMAIL'
 }

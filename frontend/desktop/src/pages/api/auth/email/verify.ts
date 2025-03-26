@@ -11,12 +11,18 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
   if (!enableEmailSms()) {
     throw new Error('SMS is not enabled');
   }
-  const token = z.string().parse(req.query.token);
-  const result = await verifyVerifyEmailToken(token);
-  if (!result) {
+  const tokenResult = z.string().safeParse(req.body.token);
+  if (!tokenResult.success) {
     return jsonRes(res, {
       message: 'token is required',
       code: 400
+    });
+  }
+  const result = await verifyVerifyEmailToken(tokenResult.data);
+  if (!result) {
+    return jsonRes(res, {
+      message: 'token is invalid',
+      code: 401
     });
   }
   if (result.type !== 'email') {

@@ -16,6 +16,7 @@ import {
   verifyVerifyEmailToken
 } from './auth';
 import { VerifyTokenPayload } from '@/types/token';
+import { SwitchRegionType } from '@/constants/account';
 const getTransporter = () => {
   if (!global.nodemailer) {
     const emailConfig = global.AppConfig.desktop.auth.idp.sms?.email;
@@ -198,7 +199,11 @@ export const emailSmsReq = async (email: string) => {
   );
   return code;
 };
-export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPayload) => {
+export const emailSmsVerifyReq = async (
+  email: string,
+  payload: VerifyTokenPayload,
+  nickname: string
+) => {
   const emailConfig = global.AppConfig.desktop.auth.idp.sms?.email;
   if (!emailConfig) throw Error('config error');
 
@@ -212,7 +217,7 @@ export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPaylo
   });
   if (!region) throw Error('region not found');
   const domain = region.domain;
-  const url = `https://${domain}/verify-email?code=${token}`;
+  const url = `https://${domain}/switchRegion?token=${token}&switchRegionType=${SwitchRegionType.VERIFYEMAIL}`;
   await retrySerially(
     () =>
       transporter.sendMail({
@@ -243,13 +248,13 @@ export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPaylo
                                justify-content: center;
                                align-items: center;
                                gap: 10px;">
-                      <img src="./clawcloud.png" alt="ClawCloud Logo" style="max-width: 217px;">
+                      <img src="https://static-host-627noqh5-qwe.cloud.sealos.io/clawcloud.png" alt="ClawCloud Logo" style="max-width: 217px;">
                     </td>
                   </tr>
                   <!-- Body -->
                   <tr>
                     <td style="padding: 40px;">
-                      <h2 style="margin: 0; font-size: 28px; color: #000; font-weight: 700;">Dear {{.UserName}}</h2>
+                      <h2 style="margin: 0; font-size: 28px; color: #000; font-weight: 700;">Dear ${nickname}</h2>
                       <p style="margin: 24px 0; font-size: 16px; color: #000; line-height: 1.6;">
                       Please click on the link below to verify your email address. This is required to confirm ownership of the email address.
                       </p>
@@ -259,7 +264,8 @@ export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPaylo
                         style="margin: 32px 0;">
                         <tr>
                           <td align="center">
-                            <a href="${url}" style="display: inline-block;
+                            <a href="${url}"
+                            style="display: inline-block;
                                      padding: 14px 24px;
                                      width: 100%;
                                      box-sizing: border-box;
@@ -270,8 +276,9 @@ export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPaylo
                                      text-decoration: none;
                                      font-size: 16px;
                                      font-weight: 500;
-                                     cursor: pointer;">
-                              ${url}
+                                     cursor: pointer;"
+                                     >
+                              Verify your email address
                             </a>
                           </td>
                         </tr>
@@ -284,8 +291,8 @@ export const emailSmsVerifyReq = async (email: string, payload: VerifyTokenPaylo
                         Thank you for your support!
                       </p>
                       <p style="margin: 8px 0 0; font-size: 14px; color: #444;">
-                        [Clawcloud (Singapore) Private Limited]<br>
-                        [support@run.claw.cloud]
+                        Clawcloud (Singapore) Private Limited<br>
+                        support@run.claw.cloud
                       </p>
                     </td>
                   </tr>
