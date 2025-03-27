@@ -31,7 +31,7 @@ export default function PersonalInfoComponent() {
   const { t } = useTranslation();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const { signupData, clearSignupData } = useSignupStore();
+  const { signupData, clearSignupData, setPersonalData, personalData } = useSignupStore();
   const { setToken } = useSessionStore();
   useEffect(() => {
     if (!signupData) {
@@ -45,7 +45,11 @@ export default function PersonalInfoComponent() {
     formState: { errors }
   } = useForm<IPersonalInfo>({
     resolver: zodResolver(personalInfoSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      firstName: personalData?.firstName || '',
+      lastName: personalData?.lastName || ''
+    }
   });
 
   const onSubmit = async (data: IPersonalInfo) => {
@@ -55,35 +59,36 @@ export default function PersonalInfoComponent() {
       if (!signupData) {
         throw new Error('No signup data found');
       }
-
-      // FIXME: language and country not sure
-      const result = await ccEmailSignUp({
-        email: signupData.email,
-        password: signupData.password,
+      setPersonalData({
         firstName: data.firstName,
-        lastName: data.lastName,
-        language: 'en',
-        confirmPassword: signupData.password,
-        country: 'US'
+        lastName: data.lastName
       });
+      // FIXME: language and country not sure
+      // const result = await ccEmailSignUp({
+      //   email: signupData.email,
+      //   password: signupData.password,
+      //   firstName: data.firstName,
+      //   lastName: data.lastName,
+      //   language: 'en',
+      //   confirmPassword: signupData.password,
+      //   country: 'US'
+      // });
 
-      if (!result.data) {
-        throw new Error('No result data');
-      }
-      const token = result.data?.token;
-      setToken(token);
+      // if (result.code !== 200) {
+      //   throw new Error('No result data');
+      // }
+      // const token = result.data?.token;
+      // setToken(token);
+      // clearSignupData();
+      // toast({
+      //   title: t('cc:sign_up_success'),
+      //   status: 'success',
+      //   duration: 3000,
+      //   isClosable: true,
+      //   position: 'top'
+      // });
 
-      clearSignupData();
-
-      toast({
-        title: t('cc:sign_up_success'),
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
-
-      router.push('/unlockcard');
+      router.push('/emailCheck');
     } catch (error) {
       console.error('Update personal info error:', error);
       toast({

@@ -190,7 +190,8 @@ async function signUp({
   password,
   semData,
   firstname = '',
-  lastname = ''
+  lastname = '',
+  rawPassword = false
 }: {
   provider: ProviderType;
   id: string;
@@ -200,6 +201,7 @@ async function signUp({
   lastname?: string;
   avatar_url: string;
   semData?: SemData;
+  rawPassword?: boolean;
 }) {
   const name = nanoid(10);
   try {
@@ -211,7 +213,7 @@ async function signUp({
     };
     if (!!password && !!oauthProvider?.create)
       //@ts-ignore
-      oauthProvider.create.password = hashPassword(password);
+      oauthProvider.create.password = rawPassword ? password : hashPassword(password);
     const result = await globalPrisma.$transaction(async (tx) => {
       const user: User = await tx.user.create({
         data: {
@@ -225,7 +227,8 @@ async function signUp({
               firstname,
               lastname,
               signUpRegionUid: getRegionUid(),
-              isInited: false
+              isInited: false,
+              verifyEmail: true
             }
           }
         }
@@ -416,7 +419,8 @@ export async function signUpByEmail({
     avatar_url: '',
     name,
     firstname,
-    lastname
+    lastname,
+    rawPassword: true
   });
   if (!result) throw Error('email signup error');
   return {

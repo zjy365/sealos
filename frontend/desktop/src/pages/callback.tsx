@@ -7,10 +7,8 @@ import { isString } from 'lodash';
 import { bindRequest, getRegionToken, signInRequest, unBindRequest } from '@/api/auth';
 import { getBaiduId, getInviterId, getUserSemData, sessionConfig } from '@/utils/sessionConfig';
 import useCallbackStore, { MergeUserStatus } from '@/stores/callback';
-import { ProviderType } from 'prisma/global/generated/client';
 import request from '@/services/request';
 import { BIND_STATUS } from '@/types/response/bind';
-import { MERGE_USER_READY } from '@/types/response/utils';
 export default function Callback() {
   const router = useRouter();
   const setProvider = useSessionStore((s) => s.setProvider);
