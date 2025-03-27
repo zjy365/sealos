@@ -184,8 +184,16 @@ export default function Account() {
                   'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
               }}
               onClick={() => {
-                console.log('open');
-                openAccountCenterApp('plan');
+                openDesktopApp({
+                  appKey: 'system-account-center',
+                  query: {
+                    scene: 'upgrade'
+                  },
+                  messageData: {
+                    scene: 'upgrade'
+                  },
+                  pathname: '/'
+                });
               }}
             >
               <Sparkles size={16} color="#1C4EF5" />

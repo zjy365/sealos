@@ -170,7 +170,7 @@ export default function AppDock() {
         }
         backdropFilter="blur(20px)"
         boxShadow={'0px 4px 12px 0px rgba(0, 0, 0, 0.12)'}
-        minH={'326px'}
+        minH={'fit-content'}
         h={'auto'}
         flexDirection={'column'}
         gap={'12px'}

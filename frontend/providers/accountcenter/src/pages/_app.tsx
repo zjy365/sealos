@@ -135,6 +135,16 @@ function App({ Component, pageProps }: AppProps) {
                 }
               });
             }
+
+            if (e.data?.scene) {
+              return router.push({
+                pathname: '/',
+                query: {
+                  scene: e.data.scene
+                }
+              });
+            }
+
             if (e.data?.page) {
               router.push({
                 pathname: `/${e.data.page}`
