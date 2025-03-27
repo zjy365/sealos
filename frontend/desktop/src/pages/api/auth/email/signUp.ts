@@ -9,6 +9,8 @@ import { registerParamsSchema } from '@/schema/email';
 import { HttpStatusCode } from 'axios';
 import { globalPrisma } from '@/services/backend/db/init';
 import { emailSmsVerifyReq } from '@/services/backend/sms';
+import { addOrUpdateCode, checkSendable } from '@/services/backend/db/verifyEmailCode';
+import { hashPassword } from '@/utils/crypto';
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!enableEmailSms()) {
     throw new Error('SMS is not enabled');
@@ -20,11 +22,11 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
       code: HttpStatusCode.BadRequest
     });
   }
-  const { email: name, password, firstName: firstname, lastName: lastname } = result.data;
+  const { email, password, firstName: firstname, lastName: lastname } = result.data;
   const oauthProvider = await globalPrisma.oauthProvider.findUnique({
     where: {
       providerId_providerType: {
-        providerId: name,
+        providerId: email,
         providerType: 'EMAIL'
       }
     }
@@ -35,37 +37,31 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
       message: 'Email already exists'
     });
   }
-  const data = await signUpByEmail({
-    id: name,
-    password,
-    name,
-    firstname,
-    lastname
+  const enableResult = await checkSendable({
+    id: email
   });
-  await emailSmsVerifyReq(
-    name,
-    {
-      type: 'email',
-      regionUid: getRegionUid(),
-      userUid: data.user.uid,
-      userId: data.user.id
-    },
-    data.user.nickname
-  );
-  if (!data)
+  if (!enableResult) {
     return jsonRes(res, {
-      code: HttpStatusCode.Unauthorized,
-      message: 'Unauthorized'
+      code: 409,
+      message: 'Email already exists'
     });
-  const globalToken = generateAuthenticationToken({
-    userUid: data.user.uid,
-    userId: data.user.id
-  });
-  return jsonRes(res, {
-    data: {
-      token: globalToken,
-      needInit: true
+  }
+  const code = await emailSmsVerifyReq(email, `${firstname} ${lastname}`);
+
+  const updateResult = await addOrUpdateCode({
+    id: email,
+    payload: {
+      email,
+      password: hashPassword(password),
+      firstName: firstname,
+      lastName: lastname
     },
+    code
+  });
+  if (!updateResult.acknowledged) {
+    throw new Error('Failed to update code');
+  }
+  return jsonRes(res, {
     code: 200,
     message: 'Successfully'
   });

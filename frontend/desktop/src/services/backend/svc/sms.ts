@@ -25,10 +25,10 @@ export const sendEmailCodeSvc = (email: string) => async (res: NextApiResponse) 
   const code = await emailSmsReq(email);
   return sendSmsCodeResp('email', email, code)(res);
 };
-// export const sendEmailVerifyMiddleware = createMiddleware<{ email: string }>(
+// export const sendVerifyInfoEmailCodeSvc = createMiddleware<{ email: string }>(
 //   async ({ ctx, next }) => {
 //     const { email } = ctx;
-//     await emailSmsVerif(email);
+//     await sendSmsCodeResp('email-verify', email, code)(res);
 //     await next();
 //   }
 // );

@@ -1,42 +1,48 @@
 import { v4 } from 'uuid';
 import { connectToDatabase } from './mongodb';
-export type SmsType = 'phone' | 'email';
-export type TVerification_Codes = {
+export type TEmailPayload = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+};
+type TVerification_Codes = {
   id: string;
-  smsType: SmsType;
   code: string;
-  uid: string;
+  payload: TEmailPayload;
   createdAt: Date;
 };
 
 async function connectToCollection() {
   const client = await connectToDatabase();
-  const collection = client.db().collection<TVerification_Codes>('sms_verification_codes');
-  await collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 60 * 5 });
-  await collection.createIndex({ uid: 1 }, { unique: true });
-  await collection.createIndex({ id: 1, smsType: 1 }, { unique: true });
+  const collection = client.db().collection<TVerification_Codes>('email_verification_codes');
+  // 10天后过期
+  await collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 10 });
+  await collection.createIndex({ code: 1 }, { unique: true });
+  await collection.createIndex({ id: 1 }, { unique: true });
+
   return collection;
 }
 
 // addOrUpdateCode
 export async function addOrUpdateCode({
   id,
-  smsType,
+  payload,
   code
 }: {
   id: string;
   code: string;
-  smsType: SmsType;
+  payload: TEmailPayload;
 }) {
   const codes = await connectToCollection();
   const result = await codes.updateOne(
     {
-      id,
-      smsType
+      id
     },
     {
       $set: {
         code,
+        payload,
         createdAt: new Date(),
         uid: v4()
       }
@@ -47,20 +53,11 @@ export async function addOrUpdateCode({
   );
   return result;
 }
-// checkCode
-export async function checkSendable({
-  id,
-  smsType,
-  timeout = 60 * 1000
-}: {
-  id: string;
-  smsType: SmsType;
-  timeout?: number;
-}) {
+// checkCode 1分钟内不能重发
+export async function checkSendable({ id, timeout = 60 * 1000 }: { id: string; timeout?: number }) {
   const codes = await connectToCollection();
   const result = await codes.findOne({
     id,
-    smsType,
     createdAt: {
       $gt: new Date(new Date().getTime() - timeout)
     }
@@ -69,20 +66,17 @@ export async function checkSendable({
 }
 // checkCode
 export async function checkCode({
-  id,
-  smsType,
+  // id,
   code,
   cacheTime = 5 * 60 * 1000
 }: {
-  id: string;
+  // id: string;
   code: string;
-  smsType: SmsType;
   cacheTime?: number;
 }) {
   const codes = await connectToCollection();
   const result = await codes.findOne({
-    id,
-    smsType,
+    // id,
     code,
     createdAt: {
       $gt: new Date(new Date().getTime() - cacheTime)
@@ -90,17 +84,10 @@ export async function checkCode({
   });
   return result;
 }
-export async function getInfoByUid({ uid }: { uid: string }) {
-  const codes = await connectToCollection();
-  const result = await codes.findOne({
-    uid
-  });
-  return result;
-}
-export async function deleteByUid({ uid }: { uid: string }) {
-  const codes = await connectToCollection();
-  const result = await codes.deleteOne({
-    uid
-  });
-  return result;
-}
+// export async function getInfoByUid({ uid }: { uid: string }) {
+//   const codes = await connectToCollection();
+//   const result = await codes.findOne({
+//     uid
+//   });
+//   return result;
+// }

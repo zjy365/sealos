@@ -238,7 +238,7 @@ export const verifySmsCodeGuard =
 
 export const verifyPhoneCodeGuard = verifySmsCodeGuard('phone');
 export const verifyEmailCodeGuard = verifySmsCodeGuard('email');
-export const verifyInfoEmailCodeGuard = verifySmsCodeGuard('email-verify');
+// export const verifyInfoEmailCodeGuard = verifySmsCodeGuard('email-verify');
 // need to get queryParam from after filter
 export const sendSmsCodeGuard =
   (smsType: SmsType) => (id: string) => async (res: NextApiResponse, next?: () => void) => {

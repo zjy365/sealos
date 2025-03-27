@@ -201,14 +201,15 @@ export const emailSmsReq = async (email: string) => {
 };
 export const emailSmsVerifyReq = async (
   email: string,
-  payload: VerifyTokenPayload,
+  // payload: VerifyTokenPayload,
+  // code: string,
   nickname: string
 ) => {
   const emailConfig = global.AppConfig.desktop.auth.idp.sms?.email;
   if (!emailConfig) throw Error('config error');
 
-  // const code = Math.floor(Math.random() * 900000 + 100000).toString();
-  const token = generateVerifyEmailToken(payload);
+  const code = Math.floor(Math.random() * 900000 + 100000).toString();
+  // const token = generateVerifyEmailToken(payload);
   const transporter = getTransporter();
   const region = await globalPrisma.region.findUnique({
     where: {
@@ -217,7 +218,7 @@ export const emailSmsVerifyReq = async (
   });
   if (!region) throw Error('region not found');
   const domain = region.domain;
-  const url = `https://${domain}/switchRegion?token=${token}&switchRegionType=${SwitchRegionType.VERIFYEMAIL}`;
+  const url = `https://${domain}/callbackVerify?token=${code}`;
   await retrySerially(
     () =>
       transporter.sendMail({
@@ -306,5 +307,5 @@ export const emailSmsVerifyReq = async (
       }),
     3
   );
-  return token;
+  return code;
 };

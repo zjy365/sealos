@@ -218,7 +218,7 @@ export const _ccEmailSignIn = (request: AxiosInstance) => (data: ILoginParams) =
   request.post<never, ApiResp<ILoginResult>>('/api/auth/email', data);
 
 export const _ccEmailSignUp = (request: AxiosInstance) => (data: IRegisterParams) =>
-  request.post<typeof data, ApiResp<{ token: string }>>('/api/auth/email/signUp', data);
+  request.post<typeof data, ApiResp<any>>('/api/auth/email/signUp', data);
 
 export const _initRegionToken = (request: AxiosInstance) => (data: InitRegionTokenParams) =>
   request.post<typeof data, ApiResp<{ token: string; kubeconfig: string; appToken: string }>>(
