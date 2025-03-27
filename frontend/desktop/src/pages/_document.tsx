@@ -18,11 +18,13 @@ export default function Document() {
         <meta name="msapplication-TileColor" content="#2B5797" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="theme-color" content="#FFFFFF" />
-        <link rel="manifest" href="/manifest.json" />
 
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico?v=0327" sizes="48x48" />
+        <link rel="icon" href="/favicon.ico?v=0327" sizes="any"></link>
+        <link rel="apple-touch-icon" href="/logo.png?v=0327" />
+        <link rel="manifest" href="/manifest.json" />
       </Head>
       <body>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
