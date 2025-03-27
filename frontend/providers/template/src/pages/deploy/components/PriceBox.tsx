@@ -80,8 +80,8 @@ const PriceBox = (props: ResourceUsage) => {
         </Flex>
         <Divider my={'12px'} />
       </Flex>
-      <Box pb={'24px'} px={'24px'}>
-        {priceList.map((item, index) => (
+      <Box px={'24px'}>
+        {priceList.slice(0, priceList?.length - 1).map((item, index) => (
           <Flex
             key={item.label}
             alignItems={'center'}
@@ -100,7 +100,7 @@ const PriceBox = (props: ResourceUsage) => {
             ></Box>
             <Flex alignItems={'center'} gap={'2px'} flex={'0 0 60px'}>
               {t(item.label)}
-              {index === priceList.length - 1 && (
+              {index === priceList?.length - 1 && (
                 <MyTooltip label={t('total_price_tip')}>
                   <Center width={'14px'} height={'14px'} cursor={'pointer'}>
                     <MyIcon name="help" width={'14px'} height={'14px'} color={'grayModern.500'} />
@@ -109,12 +109,17 @@ const PriceBox = (props: ResourceUsage) => {
               )}
             </Flex>
             <Flex ml={'auto'} minW={'45px'} alignItems={'center'} gap={'4px'} whiteSpace={'nowrap'}>
-              <CurrencySymbol type={envs?.CURRENCY_SYMBOL} />
-              {item.value}
+              {/* <CurrencySymbol type={envs?.CURRENCY_SYMBOL} /> */}
+              {`$ ${item.value}`}
             </Flex>
           </Flex>
         ))}
       </Box>
+
+      <Flex pb={'24px'} fontSize={'12px'} px={'24px'} flexDirection={'column'}>
+        <Divider my={'12px'} />
+        {t('total_price_tip')}
+      </Flex>
     </Box>
   );
 };

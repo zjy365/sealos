@@ -84,9 +84,10 @@ export default function Develop() {
         });
       }
     },
+    // eslint-disable-next-line
     [platformEnvs, generateYamlData]
   );
-
+  // eslint-disable-next-line
   const onYamlChange = useCallback(
     debounce((doc: string) => {
       parseTemplate(doc);
@@ -98,7 +99,7 @@ export default function Develop() {
   const formHook = useForm({
     defaultValues: getTemplateInputDefaultValues(templateSource)
   });
-
+  // eslint-disable-next-line
   const formOnchangeDebounce = useCallback(
     debounce((formInputData: Record<string, string>) => {
       try {

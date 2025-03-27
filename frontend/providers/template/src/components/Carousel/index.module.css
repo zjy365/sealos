@@ -1,0 +1,6 @@
+@media (max-width: 1023px) {
+  .left {
+    left: unset !important;
+    right: 45px;
+  }
+}

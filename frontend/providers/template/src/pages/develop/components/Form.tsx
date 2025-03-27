@@ -41,18 +41,18 @@ const Form = ({
     register,
     formState: { errors },
     setValue,
-    getValues,
+    getValues
   } = formHook;
 
   const { defaults, defaultInputs } = useMemo(() => getTemplateValues(formSource), [formSource]);
 
   const hasDynamicInputs = useMemo(() => {
-    return formSource?.source?.inputs?.some(item => item.if !== undefined);
+    return formSource?.source?.inputs?.some((item) => item.if !== undefined);
   }, [formSource?.source?.inputs]);
-
+  // eslint-disable-next-line
   const debouncedReset = useCallback(
     debounce(() => {
-      setForceUpdate(prev => !prev)
+      setForceUpdate((prev) => !prev);
     }, 150),
     []
   );
@@ -65,13 +65,11 @@ const Form = ({
       ...getValues()
     },
     defaults: defaults
-  }
+  };
   const filteredInputs = formSource?.source?.inputs?.filter(
     (item) =>
-      item.if === undefined ||
-      item.if?.length === 0 ||
-      !!evaluateExpression(item.if, evalData)
-  )
+      item.if === undefined || item.if?.length === 0 || !!evaluateExpression(item.if, evalData)
+  );
 
   return (
     <Box flexGrow={1} id={'baseInfo'} minH={'200px'}>
@@ -100,7 +98,7 @@ const Form = ({
                         })}
                         onchange={(val: any) => {
                           setValue(item.key, val);
-                          if (hasDynamicInputs) debouncedReset()
+                          if (hasDynamicInputs) debouncedReset();
                         }}
                       />
                     </Box>
@@ -112,7 +110,7 @@ const Form = ({
                       defaultChecked={item.default === 'true'}
                       onChange={(e) => {
                         setValue(item.key, e.target.checked ? 'true' : 'false');
-                        if (hasDynamicInputs) debouncedReset()
+                        if (hasDynamicInputs) debouncedReset();
                       }}
                     >
                       {item.description && (
@@ -135,7 +133,7 @@ const Form = ({
                       {...register(item?.key, {
                         required: item?.required,
                         onChange: (e) => {
-                          if (hasDynamicInputs) debouncedReset()
+                          if (hasDynamicInputs) debouncedReset();
                         }
                       })}
                     />

@@ -159,6 +159,7 @@ const PodLineChart = ({
         }
       ]
     }),
+    // eslint-disable-next-line
     [limit, type]
   );
 
@@ -167,6 +168,7 @@ const PodLineChart = ({
     if (!Dom.current || myChart?.current?.getOption()) return;
     myChart.current = echarts.init(Dom.current);
     myChart.current && myChart.current.setOption(option);
+    // eslint-disable-next-line
   }, [Dom]);
 
   // data changed, update
@@ -179,6 +181,7 @@ const PodLineChart = ({
     option.xAxis.data = [...x.slice(1), x[x.length - 1] + 1];
     option.series[0].data = uniData;
     myChart.current.setOption(option);
+    // eslint-disable-next-line
   }, [data, limit]);
 
   // limit changed, update

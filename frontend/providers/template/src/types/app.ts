@@ -10,6 +10,7 @@ export type TemplateType = {
     filePath: string;
     deployCount?: number;
     // instance
+    images: string[];
     categories?: string[];
     templateType: 'inline';
     gitRepo: string;

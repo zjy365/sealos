@@ -1,4 +1,4 @@
-import { Box, Grid, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
@@ -15,20 +15,14 @@ const AppMenu = dynamic(() => import('./appmenu'), {
 
 export default function Layout({ children }: { children: JSX.Element }) {
   const router = useRouter();
-  const firstColumnWidth = useBreakpointValue({ base: '230px', xl: '270px' });
 
   return (
     <>
       {ShowLayoutRoute[router.pathname] ? (
-        <Grid
-          templateColumns={`${firstColumnWidth} 1fr`}
-          h="100vh"
-          overflow={'hidden'}
-          background={'#F4F4F7'}
-        >
+        <Flex bg={'#f8f9fc'} h="100vh" overflow={'scroll'} flexDirection={'column'}>
           <AppMenu />
           <>{children}</>
-        </Grid>
+        </Flex>
       ) : (
         <Box h="100vh">{children}</Box>
       )}

@@ -1,6 +1,7 @@
 import { getTemplates } from '@/api/platform';
 import Banner from '@/components/Banner';
 import MyIcon from '@/components/Icon';
+import Carousel from '@/components/Carousel';
 import { useCachedStore } from '@/store/cached';
 import { useSystemConfigStore } from '@/store/config';
 import { useSearchStore } from '@/store/search';
@@ -30,6 +31,7 @@ import Head from 'next/head';
 import { ShareIcon } from '@/components/icons';
 import { useGuideStore } from '@/store/guide';
 import { applistDriverObj, startDriver } from '@/hooks/driver';
+import { formatNum } from '@/utils/tools';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
@@ -112,11 +114,11 @@ export default function AppList({
   return (
     <Box
       flexDirection={'column'}
-      height={'100%'}
-      overflow={'auto'}
+      // height={'100%'}
+      // overflow={'auto'}
       position={'relative'}
       borderRadius={'12px'}
-      background={'linear-gradient(180deg, #FFF 0%, rgba(255, 255, 255, 0.70) 100%)'}
+      background={'#f8f9fc'}
       py="24px"
       px="42px"
     >
@@ -145,13 +147,14 @@ export default function AppList({
       </Head>
       {!!data?.templates?.length ? (
         <>
-          {showCarousel && <Banner />}
+          {/* {showCarousel && <Banner />} */}
+          <Carousel></Carousel>
           {filterData?.length && filterData?.length > 0 ? (
             <Grid
               justifyContent={'center'}
               w={'100%'}
               gridTemplateColumns="repeat(auto-fill,minmax(320px,1fr))"
-              gridGap={'24px'}
+              gridGap={'12px'}
               minW={'480px'}
             >
               {filterData?.map((item: TemplateType) => {
@@ -168,10 +171,9 @@ export default function AppList({
                     flexDirection={'column'}
                     h={'184px'}
                     p={'24px'}
-                    borderRadius={'8px'}
+                    borderRadius={'16px'}
                     backgroundColor={'#fff'}
-                    boxShadow={'0px 2px 4px 0px rgba(187, 196, 206, 0.25)'}
-                    border={'1px solid #EAEBF0'}
+                    border={'1px solid #F1F1F3'}
                   >
                     <Flex alignItems={'center'}>
                       <Box
@@ -179,7 +181,7 @@ export default function AppList({
                         w={'48px'}
                         h={'48px'}
                         boxShadow={'0px 1px 2px 0.5px rgba(84, 96, 107, 0.20)'}
-                        borderRadius={'4px'}
+                        borderRadius={'full'}
                         backgroundColor={'#fff'}
                         border={' 1px solid rgba(255, 255, 255, 0.50)'}
                       >
@@ -201,7 +203,7 @@ export default function AppList({
                           </Text>
                         )}
                       </Flex>
-                      {item.spec?.deployCount && item.spec?.deployCount > 6 && (
+                      {/* {item.spec?.deployCount && item.spec?.deployCount > 6 && (
                         <Tooltip
                           label={t('users installed the app', { count: item.spec.deployCount })}
                           hasArrow
@@ -217,7 +219,7 @@ export default function AppList({
                             <Text>+{formatStarNumber(item.spec.deployCount)}</Text>
                           </Flex>
                         </Tooltip>
-                      )}
+                      )} */}
                     </Flex>
                     <Text
                       css={`
@@ -264,7 +266,10 @@ export default function AppList({
                           )
                         }
                       >
-                        <ShareIcon color={'#667085'} />
+                        <MyIcon name="usersround" color={'transparent'} />
+                        <Text fontSize={'12px'} color={'#A3A3A3'} ml={'4px'}>
+                          {formatNum(item?.spec.deployCount)}
+                        </Text>
                       </Center>
                     </Flex>
                   </Flex>
