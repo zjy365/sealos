@@ -19,9 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 export async function GetApps({ req }: { req: NextApiRequest }) {
-  const { k8sApp, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { k8sApp, namespace } = await getK8s(await authSession(req.headers));
 
   const response = await Promise.allSettled([
     k8sApp.listNamespacedDeployment(

@@ -15,8 +15,7 @@ import {
 } from 'prisma/global/generated/client';
 import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
-import { Select, useId } from '@chakra-ui/react';
-import { v4 } from 'uuid';
+import { sendEvent } from '../eventBridge';
 
 type TransactionClient = Omit<
   PrismaClient,
@@ -398,17 +397,17 @@ export async function signUpByPassword({
 
 export async function signUpByEmail({
   id,
-  name: nickname,
   password,
   firstname,
   lastname,
+  referralCode,
   semData
 }: {
   id: string;
-  name: string;
   password: string;
   firstname: string;
   lastname: string;
+  referralCode?: string;
   semData?: SemData;
 }) {
   const name = nanoid(10);
@@ -423,6 +422,10 @@ export async function signUpByEmail({
     rawPassword: true
   });
   if (!result) throw Error('email signup error');
+
+  // Send event to EventBridge
+  await sendEvent('user_signup', result.user.uid, referralCode);
+
   return {
     user: result.user
   };
@@ -471,6 +474,7 @@ export const getGlobalToken = async ({
   avatar_url,
   password,
   inviterId,
+  referralCode,
   semData,
   bdVid
 }: {
@@ -480,6 +484,7 @@ export const getGlobalToken = async ({
   avatar_url: string;
   password?: string;
   inviterId?: string;
+  referralCode?: string;
   semData?: SemData;
   bdVid?: string;
 }) => {
@@ -511,6 +516,10 @@ export const getGlobalToken = async ({
     });
     if (result) {
       user = result.user;
+
+      // Send event to EventBridge
+      await sendEvent('user_signup', user.uid, referralCode);
+
       if (inviterId) {
         inviteHandler({
           inviterId: inviterId,
@@ -571,6 +580,7 @@ export const getGlobalTokenByOauth = async ({
   email,
   avatar_url,
   inviterId,
+  referralCode,
   semData,
   bdVid
 }: {
@@ -581,6 +591,7 @@ export const getGlobalTokenByOauth = async ({
   avatar_url: string;
   password?: string;
   inviterId?: string;
+  referralCode?: string;
   semData?: SemData;
   bdVid?: string;
 }) => {
@@ -667,6 +678,9 @@ export const getGlobalTokenByOauth = async ({
     userUid: user.uid,
     userId: user.name
   });
+
+  // Send event to EventBridge
+  await sendEvent('user_signup', user.uid, referralCode);
 
   return {
     token,

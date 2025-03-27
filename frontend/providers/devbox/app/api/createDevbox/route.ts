@@ -1,12 +1,13 @@
 import { NextRequest } from 'next/server';
 
-import { authSession } from '@/services/backend/auth';
+import { authSession, authSessionWithJWT } from '@/services/backend/auth';
 import { getK8s } from '@/services/backend/kubernetes';
 import { jsonRes } from '@/services/backend/response';
 import { devboxDB } from '@/services/db/init';
 import { DevboxEditTypeV2 } from '@/types/devbox';
 import { KBDevboxTypeV2 } from '@/types/k8s';
 import { json2DevboxV2, json2Ingress, json2Service } from '@/utils/json2Yaml';
+import { sendEvent } from '@/services/eventBridge';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
     const { applyYamlList, k8sCustomObjects, namespace } = await getK8s({
       kubeconfig: await authSession(headerList)
     });
+    const { payload } = await authSessionWithJWT(headerList);
     const { body: devboxListBody } = (await k8sCustomObjects.listNamespacedCustomObject(
       'devbox.sealos.io',
       'v1alpha1',
@@ -59,6 +61,8 @@ export async function POST(req: NextRequest) {
     const service = json2Service(devboxForm);
     const ingress = json2Ingress(devboxForm, INGRESS_SECRET as string);
     await applyYamlList([devbox, service, ingress], 'create');
+
+    await sendEvent('create_devbox', payload.userUid);
 
     return jsonRes({
       data: 'success create devbox'

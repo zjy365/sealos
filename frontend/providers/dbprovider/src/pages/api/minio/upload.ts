@@ -80,9 +80,7 @@ export default async function handler(req: any, res: NextApiResponse) {
       });
     }
 
-    const { applyYamlList, namespace } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { applyYamlList, namespace } = await getK8s(await authSession(req));
     const { files } = await upload.doUpload(req, res);
     const bucketName = process.env?.MINIO_BUCKET_NAME || 'database-test';
 

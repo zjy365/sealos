@@ -6,9 +6,7 @@ import { jsonRes } from '@/services/backend/response';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const { k8sCustomObjects, namespace } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
     const response: any = await k8sCustomObjects.listNamespacedCustomObject(
       'apps.kubeblocks.io',

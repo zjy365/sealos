@@ -7,9 +7,7 @@ import { jsonRes } from '@/services/backend/response';
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
     const { name } = req.query as { name: string };
-    const { k8sEvents, namespace } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { k8sEvents, namespace } = await getK8s(await authSession(req));
 
     const response = await k8sEvents.listNamespacedEvent(
       namespace,

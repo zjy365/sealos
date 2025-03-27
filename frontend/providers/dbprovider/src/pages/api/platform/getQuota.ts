@@ -5,9 +5,7 @@ import { authSession } from '@/services/backend/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { getUserQuota } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { getUserQuota } = await getK8s(await authSession(req));
 
     const quota = await getUserQuota();
 

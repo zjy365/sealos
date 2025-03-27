@@ -27,9 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const { k8sCustomObjects, namespace } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
     const result = await updateBackupPolicyApi({
       dbName,

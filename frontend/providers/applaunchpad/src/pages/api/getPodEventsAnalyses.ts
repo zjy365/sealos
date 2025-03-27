@@ -20,9 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('events is empty');
     }
 
-    await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    await getK8s(await authSession(req.headers));
 
     res.setHeader('Content-Type', 'text/event-stream;charset-utf-8');
     res.setHeader('Access-Control-Allow-Origin', '*');

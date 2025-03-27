@@ -79,7 +79,7 @@ const AdapterChartData: Record<
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const kubeconfig = await authSession(req.headers);
+    const { kubeconfig } = await authSession(req.headers);
     const { namespace, kc } = await getK8s({
       kubeconfig: kubeconfig
     });

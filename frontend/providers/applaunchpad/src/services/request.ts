@@ -6,7 +6,7 @@ import axios, {
 } from 'axios';
 import type { ApiResp } from './kubernet';
 import { isApiResp } from './kubernet';
-import { getUserKubeConfig } from '@/utils/user';
+import { getToken, getUserKubeConfig } from '@/utils/user';
 
 const request = axios.create({
   baseURL: '/',
@@ -26,7 +26,12 @@ request.interceptors.request.use(
     //获取token，并将其添加至请求头中
     _headers['Authorization'] = config.headers.Authorization
       ? config.headers.Authorization
-      : encodeURIComponent(getUserKubeConfig());
+      : encodeURIComponent(
+          JSON.stringify({
+            kubeconfig: getUserKubeConfig(),
+            token: getToken()
+          })
+        );
 
     if (!config.headers || config.headers['Content-Type'] === '') {
       _headers['Content-Type'] = 'application/json';
@@ -78,6 +83,7 @@ export function GET<T = any>(
     ...config
   });
 }
+
 export function POST<T = any>(
   url: string,
   data?: { [key: string]: any },
@@ -85,6 +91,7 @@ export function POST<T = any>(
 ): Promise<T> {
   return request.post(url, data, config);
 }
+
 export function DELETE<T = any>(
   url: string,
   data?: { [key: string]: any },

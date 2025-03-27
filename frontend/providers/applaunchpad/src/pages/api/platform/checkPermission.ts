@@ -10,9 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { appName } = req.query as { appName: string };
     if (!appName) throw new Error('appName is empty');
 
-    const { k8sApp, namespace } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { k8sApp, namespace } = await getK8s(await authSession(req.headers));
 
     const patchBody = {
       metadata: {

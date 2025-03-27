@@ -39,6 +39,7 @@ export const defaultAppConfig: AppConfigType = {
     gpuEnabled: false
   },
   launchpad: {
+    eventBridgeUrl: '',
     currencySymbol: Coin.shellCoin,
     pvcStorageMax: 20,
     eventAnalyze: {

@@ -10,9 +10,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const { namespace, k8sExec } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { namespace, k8sExec } = await getK8s(await authSession(req));
 
     const { podName, dbType, logType } = req.body as {
       podName: string;

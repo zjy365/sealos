@@ -13,9 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // important load env
     serverLoadInitData();
 
-    const { applyYamlList } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { applyYamlList } = await getK8s(await authSession(req.headers));
 
     appForm.networks = appForm.networks.map((network) => ({
       ...network,

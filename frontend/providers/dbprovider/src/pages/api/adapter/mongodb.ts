@@ -41,9 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { name } = req.body as {
       name: string;
     };
-    const { applyYamlList, namespace, k8sCore } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { applyYamlList, namespace, k8sCore } = await getK8s(await authSession(req));
     const yaml = json2HaConfig({
       name,
       namespace,

@@ -29,9 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
 export async function DeleteAppByName({ name, req }: DeleteAppParams & { req: NextApiRequest }) {
   const { k8sApp, k8sCore, k8sAutoscaling, k8sNetworkingApp, namespace, k8sCustomObjects } =
-    await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    await getK8s(await authSession(req.headers));
 
   // delete Certificate
   const certificatesList = (await k8sCustomObjects.listNamespacedCustomObject(

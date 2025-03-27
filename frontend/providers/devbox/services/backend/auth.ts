@@ -21,6 +21,7 @@ export const authSession = async (headers: Headers) => {
     return Promise.reject(ERROR_ENUM.unAuthorization);
   }
 };
+
 export const authSessionWithDesktopJWT = async (headers: Headers) => {
   const kubeConfig = await authSession(headers);
   const token = headers.get('Authorization-Bearer');
@@ -36,6 +37,7 @@ export const authSessionWithDesktopJWT = async (headers: Headers) => {
     token
   };
 };
+
 export const authSessionWithJWT = async (headers: Headers) => {
   const kubeConfig = await authSession(headers);
   const token = headers.get('Authorization-Bearer');
@@ -53,6 +55,7 @@ export const authSessionWithJWT = async (headers: Headers) => {
     token
   };
 };
+
 export const generateDevboxToken = (payload: {
   workspaceId: string;
   organizationUid: string;
@@ -76,6 +79,7 @@ export const getPayloadWithoutVerification = <T = CustomJwtPayload>(
     return { payload: null, token: null };
   }
 };
+
 export const verifyToken = async <TPayload = CustomJwtPayload>(
   token: string,
   secret: string

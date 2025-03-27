@@ -38,9 +38,7 @@ export async function delMigrateByName({ migrateName, req }: Props & { req: Next
   const version = 'v1alpha1';
   const plural = 'migrationtasks';
 
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
   await k8sCustomObjects.deleteNamespacedCustomObject(
     group,
     version,

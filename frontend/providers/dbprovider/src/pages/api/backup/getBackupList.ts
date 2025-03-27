@@ -38,9 +38,7 @@ export async function getBackupListByDBName({ dbName, req }: Props & { req: Next
   const version = 'v1alpha1';
   const plural = 'backups';
 
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
   const { body } = (await k8sCustomObjects.listNamespacedCustomObject(
     group,

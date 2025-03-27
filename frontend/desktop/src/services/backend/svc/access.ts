@@ -15,6 +15,7 @@ export const getGlobalTokenSvcWithEmail =
     email: string,
     password?: string,
     inviterId?: string,
+    referralCode?: string,
     semData?: SemData,
     bdVid?: string
   ) =>
@@ -27,6 +28,7 @@ export const getGlobalTokenSvcWithEmail =
       email,
       inviterId,
       password,
+      referralCode,
       semData,
       bdVid
     });
@@ -49,6 +51,7 @@ export const getGlobalTokenSvc =
     providerType: ProviderType,
     password?: string,
     inviterId?: string,
+    referralCode?: string,
     semData?: SemData,
     bdVid?: string
   ) =>
@@ -59,6 +62,7 @@ export const getGlobalTokenSvc =
       avatar_url,
       name,
       inviterId,
+      referralCode,
       password,
       semData,
       bdVid
@@ -81,6 +85,7 @@ export const getGlobalTokenByGithubSvc = (
   name: string,
   email: string,
   inviterId?: string,
+  referralCode?: string,
   semData?: SemData,
   bdVid?: string
 ) =>
@@ -92,6 +97,7 @@ export const getGlobalTokenByGithubSvc = (
     email,
     undefined,
     inviterId,
+    referralCode,
     semData,
     bdVid
   );
@@ -100,6 +106,7 @@ export const getGlobalTokenByWechatSvc = (
   providerId: string,
   name: string,
   inviterId?: string,
+  referralCode?: string,
   semData?: SemData,
   bdVid?: string
 ) =>
@@ -110,23 +117,43 @@ export const getGlobalTokenByWechatSvc = (
     ProviderType.WECHAT,
     undefined,
     inviterId,
+    referralCode,
     semData,
     bdVid
   );
 export const getGlobalTokenByPhoneSvc = (
   phone: string,
   inviterId?: string,
+  referralCode?: string,
   semData?: SemData,
   bdVid?: string
-) => getGlobalTokenSvc('', phone, phone, ProviderType.PHONE, undefined, inviterId, semData, bdVid);
-export const getGlobalTokenByPasswordSvc = (name: string, password: string, inviterId?: string) =>
-  getGlobalTokenSvc('', name, name, ProviderType.PASSWORD, password, inviterId);
+) =>
+  getGlobalTokenSvc(
+    '',
+    phone,
+    phone,
+    ProviderType.PHONE,
+    undefined,
+    inviterId,
+    referralCode,
+    semData,
+    bdVid
+  );
+
+export const getGlobalTokenByPasswordSvc = (
+  name: string,
+  password: string,
+  inviterId?: string,
+  referralCode?: string
+) => getGlobalTokenSvc('', name, name, ProviderType.PASSWORD, password, inviterId, referralCode);
+
 export const getGlobalTokenByGoogleSvc = (
   avatar_url: string,
   providerId: string,
   name: string,
   email: string,
   inviterId?: string,
+  referralCode?: string,
   semData?: SemData,
   bdVid?: string
 ) =>
@@ -138,6 +165,7 @@ export const getGlobalTokenByGoogleSvc = (
     email,
     undefined,
     inviterId,
+    referralCode,
     semData,
     bdVid
   );

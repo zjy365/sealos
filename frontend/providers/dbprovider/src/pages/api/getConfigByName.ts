@@ -13,9 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('name is empty');
     }
 
-    const { namespace, k8sCore } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { namespace, k8sCore } = await getK8s(await authSession(req));
 
     const dbConfig = DBReconfigureMap[dbType];
     const key = name + dbConfig.configMapName;

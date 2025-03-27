@@ -40,6 +40,7 @@ export type AppConfigType = {
     gpuEnabled: boolean;
   };
   launchpad: {
+    eventBridgeUrl: string;
     currencySymbol: Coin;
     pvcStorageMax: number;
     eventAnalyze: {

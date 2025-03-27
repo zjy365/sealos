@@ -24,9 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 export async function GetJobByName({ name, req }: { name: string } & { req: NextApiRequest }) {
-  const { k8sBatch, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sBatch, namespace } = await getK8s(await authSession(req));
   const { body: data } = await k8sBatch.listNamespacedJob(
     namespace,
     undefined,
@@ -39,9 +37,7 @@ export async function GetJobByName({ name, req }: { name: string } & { req: Next
 }
 
 export async function DeleteJobByName({ name, req }: { name: string } & { req: NextApiRequest }) {
-  const { k8sBatch, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sBatch, namespace } = await getK8s(await authSession(req));
   return await k8sBatch.deleteNamespacedJob(
     name,
     namespace,

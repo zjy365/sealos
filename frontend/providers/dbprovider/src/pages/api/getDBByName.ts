@@ -26,9 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 export async function getCluster(req: NextApiRequest, name: string) {
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
   const { body } = (await k8sCustomObjects.getNamespacedCustomObject(
     'apps.kubeblocks.io',

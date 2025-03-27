@@ -15,9 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       dbType: DBType;
     };
 
-    const { k8sCustomObjects, namespace } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
     let labelSelector = `app.kubernetes.io/instance=${name}`;
     if (label) {

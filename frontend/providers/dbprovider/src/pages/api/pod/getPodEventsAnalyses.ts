@@ -27,9 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('events is empty');
     }
 
-    await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    await getK8s(await authSession(req));
 
     const response = await axios.post(
       'https://fastgpt.run/api/openapi/chat/chat',

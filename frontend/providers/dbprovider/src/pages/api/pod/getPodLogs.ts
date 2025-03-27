@@ -9,9 +9,7 @@ import { DBBackupPolicyNameMap, DBTypeEnum } from '@/constants/db';
 
 // get App Metrics By DeployName. compute average value
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
-  const { kc, k8sCore, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { kc, k8sCore, namespace } = await getK8s(await authSession(req));
 
   const {
     dbType,

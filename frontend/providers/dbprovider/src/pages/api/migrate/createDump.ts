@@ -12,9 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   try {
     const data = req.body as DumpForm;
 
-    const { namespace, applyYamlList } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { namespace, applyYamlList } = await getK8s(await authSession(req));
 
     const { yamlStr, yamlObj } = await json2DumpCR({
       ...data,

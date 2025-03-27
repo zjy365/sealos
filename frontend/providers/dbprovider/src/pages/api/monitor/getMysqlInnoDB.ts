@@ -11,7 +11,7 @@ import { maxBy } from 'lodash';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const kubeconfig = await authSession(req);
+    const { kubeconfig } = await authSession(req);
     const { namespace, kc } = await getK8s({
       kubeconfig: kubeconfig
     });

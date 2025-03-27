@@ -15,9 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const version = 'v1alpha1';
   const plural = 'backups';
 
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
   const { body } = (await k8sCustomObjects.listNamespacedCustomObject(
     group,

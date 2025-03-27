@@ -29,6 +29,32 @@ export const getUserSession = () => {
   }
 };
 
+export const getUserInfo = () => {
+  try {
+    const store = localStorage.getItem('session');
+    if (store) {
+      const session = JSON.parse(store) as SessionV1;
+      return session.user;
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getToken = () => {
+  try {
+    const store = localStorage.getItem('session');
+    if (store) {
+      const session = JSON.parse(store) as SessionV1;
+      return session.token;
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
 export const getUserNamespace = () => {
   const kubeConfig = getUserKubeConfig();
   const json: any = yaml.load(kubeConfig);
