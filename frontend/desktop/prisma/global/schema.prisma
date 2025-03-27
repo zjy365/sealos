@@ -121,6 +121,7 @@ model User {
   // TransactionInfo             TransactionInfo?
   subscriptionTransaction SubscriptionTransaction[]
   AccountRegionUserTask   AccountRegionUserTask[]
+  Referral                Referral?
 }
 
 model Transfer {
@@ -568,6 +569,43 @@ model RealNameAuthProvider {
 model subscription_processor_locks {
   id         String   @id
   lock_until DateTime @db.Timestamptz(6)
+}
+
+model Referral {
+  id          Int      @id @default(sequence())
+  code        String   @unique
+  user_uid    String   @unique @db.Uuid
+  referrer_id Int?
+  created_at  DateTime @default(now()) @db.Timestamptz(3)
+  updated_at  DateTime @updatedAt @db.Timestamptz(3)
+  used        Boolean  @default(false)
+  available   Boolean  @default(false)
+
+  user     User             @relation(references: [uid], fields: [user_uid])
+  referrer Referral?        @relation("ReferrerReferral", references: [id], fields: [referrer_id], onDelete: NoAction, onUpdate: NoAction)
+  referral Referral[]       @relation("ReferrerReferral")
+  rewards  ReferralReward[]
+
+  @@unique([user_uid, referrer_id])
+  @@index([referrer_id])
+  @@index([code])
+  @@index([user_uid])
+}
+
+model ReferralReward {
+  id          Int        @id @default(sequence())
+  referral_id Int
+  reward      RewardType
+  created_at  DateTime   @default(now()) @db.Timestamptz(3)
+  updated_at  DateTime   @updatedAt @db.Timestamptz(3)
+
+  referral Referral @relation(references: [id], fields: [referral_id])
+
+  @@index([referral_id])
+}
+
+enum RewardType {
+  ONE_MONTH_HOBBY_LICENSE
 }
 
 enum ProviderType {
