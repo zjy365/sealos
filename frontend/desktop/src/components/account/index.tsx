@@ -177,6 +177,7 @@ export default function Account() {
               alignItems="center"
               gap="6px"
               borderRadius="8px"
+              fontSize={'14px'}
               background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
               _hover={{
                 background:
@@ -365,7 +366,7 @@ export default function Account() {
                   </Flex>
                 </MenuItem>
 
-                <MenuItem
+                {/* <MenuItem
                   py="6px"
                   px="8px"
                   borderRadius="8px"
@@ -392,7 +393,7 @@ export default function Account() {
                       }}
                     />
                   </Flex>
-                </MenuItem>
+                </MenuItem> */}
               </Box>
               <Divider bg={'#E4E4E7'} />
               <Box p="8px">

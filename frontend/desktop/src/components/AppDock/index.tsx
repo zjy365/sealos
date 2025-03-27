@@ -255,6 +255,7 @@ export default function AppDock() {
                 />
               </Center>
               <Box
+                display={item?.isShow ? 'block' : 'none'}
                 opacity={item?.isShow ? 1 : 0}
                 mt={'6px'}
                 width={'20px'}

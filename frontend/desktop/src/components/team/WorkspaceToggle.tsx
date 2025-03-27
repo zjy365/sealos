@@ -126,6 +126,7 @@ export default function WorkspaceToggle() {
                       teamAvatar={ns.id}
                       showCheck={true}
                       selectedColor={'rgba(0, 0, 0, 0.05)'}
+                      fontSize={'14px'}
                     />
                   );
                 })}
@@ -144,7 +145,6 @@ export default function WorkspaceToggle() {
                     </Text>
                   </Flex>
                 </CreateTeam>
-
                 <Divider my={'4px'} borderColor={'#F4F4F5'} />
                 <TeamCenter closeWorkspaceToggle={closeWorkspaceToggle} />
               </VStack>

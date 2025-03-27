@@ -22,8 +22,6 @@ export default function SignLayout({ children }: { children: React.ReactNode }) 
       <Head>
         <title>{layoutConfig?.meta.title}</title>
         <meta name="description" content={layoutConfig?.meta.description} />
-        <link rel="shortcut icon" href={layoutConfig?.logo ? layoutConfig?.logo : '/favicon.ico'} />
-        <link rel="icon" href={layoutConfig?.logo ? layoutConfig?.logo : '/favicon.ico'} />
       </Head>
       {authConfig?.captcha.enabled && (
         <Script

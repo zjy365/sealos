@@ -106,6 +106,7 @@ export default function RegionToggle() {
                     const cpuPrice = region?.description?.prices?.find((p) => p.name === 'CPU');
                     return (
                       <Flex
+                        fontSize={'14px'}
                         justifyContent={'space-between'}
                         alignItems={'center'}
                         whiteSpace={'nowrap'}

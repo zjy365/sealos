@@ -132,6 +132,7 @@ export default function TeamCenter({
   return (
     <>
       <HStack
+        fontSize={'14px'}
         px={'8px'}
         alignItems={'center'}
         cursor={'pointer'}
