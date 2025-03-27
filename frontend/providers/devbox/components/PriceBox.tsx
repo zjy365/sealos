@@ -89,6 +89,9 @@ const PriceBox = ({
         <Text color={'grayModern.900'} fontWeight={500}>
           {t('estimated_price')}
         </Text>
+        <Text color={'grayModern.600'} fontWeight={500}>
+          (Day)
+        </Text>
       </Flex>
       <Flex flexDirection={'column'}>
         {priceList.map((item) => (

@@ -110,7 +110,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         });
       } catch (error) {
         changeI18n({
-          currentLanguage: 'zh'
+          currentLanguage: 'en'
         });
       }
     })();
@@ -129,7 +129,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   }, [router.pathname, router.isReady, setLastRoute]);
 
   useEffect(() => {
-    const lang = getLangStore() || 'zh';
+    const lang = getLangStore() || 'en';
     i18n?.changeLanguage?.(lang);
   }, [refresh, router.pathname]);
 
@@ -192,7 +192,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           {/* <button
             onClick={() => {
               const lastLang = getLangStore();
-              let lang = lastLang === 'en' ? 'zh' : 'en';
+              let lang = lastLang === 'en' ? 'en' : 'en';
               if (lastLang !== lang) {
                 i18n.changeLanguage(lang);
                 setLangStore(lang);
