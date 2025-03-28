@@ -1,7 +1,16 @@
 import { useCachedStore } from '@/store/cached';
 import { useSearchStore } from '@/store/search';
 import { getLangStore, setLangStore } from '@/utils/cookieUtils';
-import { Center, Flex, Icon, Input, InputGroup, InputLeftElement, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  Flex,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Text
+} from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import SideBar from './sidebar';
@@ -34,60 +43,61 @@ export default function AppMenu() {
     >
       {(router.route === '/app' || router.route === '/') && (
         <Flex px="40px" position={'relative'} alignItems={'center'}>
-          {insideCloud ? (
-            <Flex cursor={'default'} h="88px" alignItems={'center'} gap={'24px'}>
-              <Text
-                fontSize={'24px'}
-                fontWeight={600}
-                lineHeight={'32px'}
-                onClick={() => {
-                  router.replace('/');
-                  setAppType(ApplicationType.All);
-                }}
-                color={router.route === '/' ? '' : '#A3A3A3'}
-                _hover={{
-                  color: '#2778FD'
-                }}
-              >
-                {t('SideBar.Explore')}
-              </Text>
-              <Text
-                fontSize={'24px'}
-                fontWeight={600}
-                lineHeight={'32px'}
-                onClick={() => {
-                  router.replace('/app');
-                  setAppType(ApplicationType.MyApp);
-                }}
-                color={router.route === '/app' ? '' : '#A3A3A3'}
-                _hover={{
-                  color: '#2778FD'
-                }}
-              >
-                {t('SideBar.My App')}
-              </Text>
-            </Flex>
-          ) : (
-            <Center
-              bg="rgba(150, 153, 180, 0.15)"
-              mb={'16px'}
-              color={'#485058'}
-              w="28px"
-              h="28px"
-              borderRadius={'50%'}
-              bottom={'28px'}
-              right={'16px'}
-              fontSize={'12px'}
-              fontWeight={500}
-              cursor={'pointer'}
-              onClick={(e) => {
-                e.stopPropagation();
-                changeI18n();
-              }}
-            >
-              {i18n?.language === 'en' ? 'En' : '中'}
-            </Center>
-          )}
+          {
+            insideCloud ? (
+              <Flex cursor={'default'} h="88px" alignItems={'center'} gap={'24px'}>
+                <Text
+                  fontSize={'24px'}
+                  fontWeight={600}
+                  lineHeight={'32px'}
+                  onClick={() => {
+                    router.replace('/');
+                    setAppType(ApplicationType.All);
+                  }}
+                  color={router.route === '/' ? '' : '#A3A3A3'}
+                  _hover={{
+                    color: '#2778FD'
+                  }}
+                >
+                  {t('SideBar.Explore')}
+                </Text>
+                <Text
+                  fontSize={'24px'}
+                  fontWeight={600}
+                  lineHeight={'32px'}
+                  onClick={() => {
+                    router.replace('/app');
+                    setAppType(ApplicationType.MyApp);
+                  }}
+                  color={router.route === '/app' ? '' : '#A3A3A3'}
+                  _hover={{
+                    color: '#2778FD'
+                  }}
+                >
+                  {t('SideBar.My App')}
+                </Text>
+              </Flex>
+            ) : null
+            // <Center
+            //   bg="rgba(150, 153, 180, 0.15)"
+            //   mb={'16px'}
+            //   color={'#485058'}
+            //   w="28px"
+            //   h="28px"
+            //   borderRadius={'50%'}
+            //   bottom={'28px'}
+            //   right={'16px'}
+            //   fontSize={'12px'}
+            //   fontWeight={500}
+            //   cursor={'pointer'}
+            //   onClick={(e) => {
+            //     e.stopPropagation();
+            //     changeI18n();
+            //   }}
+            // >
+            //   {i18n?.language === 'en' ? 'En' : '中'}
+            // </Center>
+          }
         </Flex>
       )}
       {router.route === '/' && (

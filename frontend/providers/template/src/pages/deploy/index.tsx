@@ -384,7 +384,7 @@ export default function EditApp({
             appName={appName || ''}
             title={title}
             yamlList={yamlList}
-            applyBtnText={insideCloud ? applyBtnText : 'Deploy on sealos'}
+            applyBtnText={insideCloud ? applyBtnText : 'Deploy on ClawCloud'}
             applyCb={() => formHook.handleSubmit(openConfirm(submitSuccess), submitError)()}
             borderBottom={'1px solid #EAEBF0'}
           />
