@@ -57,7 +57,6 @@ export const verifyJWT = <T extends Object = JWTPayload>(token?: string, secret?
     if (!token) return resolve(null);
     verify(token, secret || regionalJwtSecret(), (err, payload) => {
       if (err) {
-        // console.log(err);
         resolve(null);
       } else if (!payload) {
         resolve(null);

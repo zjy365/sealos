@@ -68,7 +68,6 @@ export default function Callback() {
               const token = data.data?.token;
               setToken(token);
               const needInit = data.data.needInit;
-              console.log('needInit', needInit);
               if (needInit) {
                 // await router.push('/personalinfo');
                 await router.push('/unlockcard');

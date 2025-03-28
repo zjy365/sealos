@@ -31,7 +31,6 @@ export const authSession = async (header: IncomingHttpHeaders) => {
       return Promise.reject('凭证错误');
     }
     const payload = await verifyInternalToken(auth);
-    console.log('payload', payload);
     if (!payload) {
       return Promise.reject('凭证错误');
     }

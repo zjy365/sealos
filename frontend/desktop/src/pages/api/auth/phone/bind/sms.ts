@@ -10,7 +10,6 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
     throw new Error('SMS is not enabled');
   }
   await filterCf(req, res, async () => {
-    console.log('filiterAccess');
     await filterAccessToken(req, res, () =>
       filterPhoneParams(req, res, ({ phoneNumbers: phone }) =>
         sendPhoneCodeGuard(phone)(res, () => sendPhoneCodeSvc(phone)(res))

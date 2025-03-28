@@ -36,7 +36,6 @@ request.interceptors.response.use(
   (response: AxiosResponse) => {
     const { status, data } = response;
     if (data.code === 401) {
-      // console.log('鉴权失败');
       useSessionStore.getState().delSession();
       useSessionStore.getState().setToken('');
       return window.location.replace('/signin');

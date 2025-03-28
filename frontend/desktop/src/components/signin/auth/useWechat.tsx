@@ -21,7 +21,6 @@ export default function useWechat() {
 
   const login = React.useCallback(() => {
     getWechatQR().then((res) => {
-      console.log(res);
       setwechatInfo(res.data);
     });
   }, []);

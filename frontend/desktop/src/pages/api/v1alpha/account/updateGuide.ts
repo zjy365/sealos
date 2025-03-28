@@ -58,7 +58,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ];
 
     const reuslt = await UpdateCRD(defaultKc, AccountMeta, kube_user.name, jsonPatch);
-    console.log('updateDesktopGuide', jsonPatch, reuslt?.body);
 
     jsonRes(res, { data: reuslt?.body });
   } catch (error) {

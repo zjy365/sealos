@@ -301,7 +301,6 @@ export default function Account() {
                     borderRadius="8px"
                     _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                     onClick={() => {
-                      console.log('open');
                       openAccountCenterApp('setting');
                     }}
                   >
@@ -360,7 +359,6 @@ export default function Account() {
                   borderRadius="8px"
                   _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                   onClick={() => {
-                    console.log('open');
                     openAccountCenterApp('usage');
                   }}
                 >

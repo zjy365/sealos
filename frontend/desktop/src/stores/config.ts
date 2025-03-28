@@ -30,7 +30,6 @@ export const useConfigStore = create<State>()(
         trackingConfig: undefined,
         async initAppConfig() {
           const data = await getAppConfig();
-          console.log('initAppConfig', data.data);
           set((state) => {
             state.trackingConfig = data.data.tracking;
             state.layoutConfig = data.data.desktop.layout;

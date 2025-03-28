@@ -171,7 +171,6 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
     // Ensure workspaces exist
     if (workspaces.length === 0) {
       console.log('No workspaces found');
-      // throw new Error('No workspaces found');
     }
     const needDefault =
       workspaces.findIndex((w) => w.uid === workspaceUid) === -1 && workspaces.length > 0;

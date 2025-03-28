@@ -158,6 +158,7 @@ function countGpuSource(rawData: ResourcePriceType['data']['properties'], gpuNod
 function countSourcePrice(rawData: ResourcePriceType['data']['properties'], type: ResourceType) {
   const rawPrice = rawData.find((item) => item.name === type)?.unit_price || 1;
   const sourceScale = rawPrice * (valuationMap[type] || 1);
-  const unitScale = sourceScale / PRICE_SCALE;
-  return unitScale;
+  return sourceScale;
+  // const unitScale = sourceScale / PRICE_SCALE;
+  // return unitScale;
 }

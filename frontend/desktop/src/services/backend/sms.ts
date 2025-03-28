@@ -115,7 +115,6 @@ export const captchaReq = async ({ captchaVerifyParam }: { captchaVerifyParam?: 
       if (!_result) {
         throw new Error('captcha result is null');
       }
-      console.log(_result);
       if (_result.body.code !== 'Success' || !_result.body.success) {
         throw new Error(`
 				${_result.body.message}

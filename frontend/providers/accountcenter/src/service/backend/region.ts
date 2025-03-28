@@ -56,7 +56,6 @@ export function makeAPIClient(
   payload?: AccessTokenPayload
 ): AxiosInstance {
   const baseURL = region?.accountSvc ? `http://${region?.accountSvc}` : process.env.ACCOUNT_SVC;
-  console.log(baseURL);
   if (!baseURL) throw Error('get apiClent error');
   if (!payload) {
     return axios.create({
@@ -89,7 +88,6 @@ export function makeDesktopAPIClient(
   // const baseURL = region?. ? `http://${region?.accountSvc}` : process.env.ACCOUNT_SVC;
   // console.log(baseURL);
   const baseURL = process.env.SEALOS_SVC;
-  console.log(baseURL);
   if (!baseURL) throw Error('get apiClent error');
   if (!payload) {
     return axios.create({
