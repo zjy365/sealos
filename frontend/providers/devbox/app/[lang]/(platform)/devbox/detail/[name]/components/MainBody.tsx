@@ -89,6 +89,7 @@ const MainBody = () => {
                 color={'grayModern.600'}
                 _hover={{ textDecoration: 'underline' }}
                 onClick={() => window.open(`https://${address}`, '_blank')}
+                isTruncated
               >
                 {address}
               </Text>

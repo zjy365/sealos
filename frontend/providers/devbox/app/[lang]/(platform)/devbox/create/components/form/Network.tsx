@@ -231,6 +231,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                             className="textEllipsis"
                             color={'#71717A'}
                             p={'0 8px'}
+                            isTruncated
                           >
                             {network.customDomain ? network.customDomain : network.publicDomain!}
                           </Box>
