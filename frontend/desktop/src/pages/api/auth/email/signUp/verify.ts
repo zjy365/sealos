@@ -8,7 +8,7 @@ import { enableEmailSms } from '@/services/enable';
 import { Code } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import email from '.';
+import email from '..';
 import { signUpByEmail } from '@/services/backend/globalAuth';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {

@@ -9,6 +9,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { jsonRes } from '../response';
 import { HttpStatusCode } from 'axios';
 import { z } from 'zod';
+import { createMiddleware } from '@/utils/factory';
+import { isDisposableEmail } from 'disposable-email-domains-js';
+import { globalPrisma } from '../db/init';
 
 export const filterLoginParams = async (
   req: NextApiRequest,
@@ -53,3 +56,38 @@ export const filterForgotPasswordParams = async (
     });
   await Promise.resolve(next({ email }));
 };
+
+export const checkIsVaildEmailMiddleware = createMiddleware<{ email: string }>(
+  async ({ ctx, req, res, next }) => {
+    const { email } = ctx;
+    if (!email)
+      return jsonRes(res, {
+        message: 'Email is invalid',
+        code: HttpStatusCode.BadRequest
+      });
+    if (isDisposableEmail(email)) {
+      return jsonRes(res, {
+        code: 409,
+        message: 'Email is invalid'
+      });
+    }
+    const oauthProvider = await globalPrisma.oauthProvider.findUnique({
+      where: {
+        providerId_providerType: {
+          providerId: email,
+          providerType: 'EMAIL'
+        }
+      },
+      select: {
+        uid: true
+      }
+    });
+    if (!!oauthProvider) {
+      return jsonRes(res, {
+        code: 409,
+        message: 'Email is invalid'
+      });
+    }
+    await next();
+  }
+);

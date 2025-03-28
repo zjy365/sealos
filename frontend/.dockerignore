@@ -6,6 +6,7 @@
 **/.next/
 **/.git/
 **/.env.local
+**/.env
 **/config.yaml
 **/.vscode/
 **/.yalc/
