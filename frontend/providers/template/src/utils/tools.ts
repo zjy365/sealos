@@ -285,3 +285,12 @@ export function getTemplateEnvs(namespace?: string): EnvResponse {
 export const formatMoney = (mone: number) => {
   return mone / 1000000;
 };
+
+// 1 2.3k 4.5m 6.7g
+export const formatNum = (num?: number) => {
+  if (!num) return '';
+  if (num < 1000) return num;
+  if (num < 1000000) return (num / 1000).toFixed(1) + 'k';
+  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'm';
+  return (num / 1000000000).toFixed(1) + 'g';
+};

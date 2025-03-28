@@ -78,6 +78,7 @@ export const useConfirm = ({
           </AlertDialogOverlay>
         </AlertDialog>
       ),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [content, isOpen, onClose, t, title]
     )
   };

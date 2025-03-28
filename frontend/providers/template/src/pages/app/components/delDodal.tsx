@@ -49,6 +49,7 @@ const DelModal = ({
       console.error(error);
     }
     setLoading(false);
+    // eslint-disable-next-line
   }, [name, toast, t, onSuccess, onClose]);
 
   return (

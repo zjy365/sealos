@@ -9,16 +9,13 @@ import { basicSetup } from 'codemirror';
 import { useEffect, useRef, memo } from 'react';
 import { debounce } from 'lodash';
 
-function Editor({
-  onDocChange,
-  ...styles
-}: { onDocChange: (x: string) => void } & BoxProps) {
+function Editor({ onDocChange, ...styles }: { onDocChange: (x: string) => void } & BoxProps) {
   const ref = useRef(null);
   useEffect(() => {
-    const storage = localStorage.getItem('developEditor')
+    const storage = localStorage.getItem('developEditor');
 
     const debouncedOnDocChange = debounce((doc: Text) => {
-      const docStr = doc.toString()
+      const docStr = doc.toString();
       localStorage.setItem('developEditor', docStr);
       onDocChange(docStr);
     }, 300);
@@ -29,13 +26,13 @@ function Editor({
       StreamLanguage.define(yaml),
       StateField.define({
         create: (state) => {
-          onDocChange(state.doc.toString())
+          onDocChange(state.doc.toString());
         },
         update: (_, transaction) => {
           if (transaction.docChanged) {
-            debouncedOnDocChange(transaction.newDoc)
+            debouncedOnDocChange(transaction.newDoc);
           }
-        },
+        }
       })
     ];
 
@@ -48,6 +45,7 @@ function Editor({
       parent: ref.current!
     });
     return () => view && view.destroy();
+    // eslint-disable-next-line
   }, []);
 
   return <Box ref={ref} {...styles} />;

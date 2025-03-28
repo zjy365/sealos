@@ -51,6 +51,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     initSystemConfig(i18n.language);
     loadUserSourcePrice();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     localStorage.removeItem('session');
     NProgress.done();
     return response;
+    // eslint-disable-next-line
   }, []);
 
   // add resize event
@@ -106,6 +108,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       }
     })();
     return sealosApp?.addAppEventListen(EVENT_NAME.CHANGE_I18N, changeI18n);
+    // eslint-disable-next-line
   }, []);
 
   // record route
@@ -113,6 +116,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     return () => {
       setLastRoute(router.asPath);
     };
+    // eslint-disable-next-line
   }, [router.pathname]);
 
   useEffect(() => {
@@ -161,6 +165,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       } catch (error) {}
     };
     setupInternalAppCallListener();
+    // eslint-disable-next-line
   }, []);
 
   return (

@@ -26,6 +26,7 @@ import { useUserStore } from '@/store/user';
 import { getResourceUsage } from '@/utils/usage';
 import Head from 'next/head';
 import { useMessage } from '@sealos/ui';
+import Carousel from './components/Carousel';
 
 const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 const Header = dynamic(() => import('./components/Header'), { ssr: false });
@@ -35,7 +36,8 @@ export default function EditApp({
   metaData,
   brandName,
   readmeContent,
-  readUrl
+  readUrl,
+  images
 }: {
   appName?: string;
   metaData: {
@@ -46,6 +48,7 @@ export default function EditApp({
   brandName?: string;
   readmeContent: string;
   readUrl: string;
+  images: string[];
 }) {
   const { t, i18n } = useTranslation();
   const { message: toast } = useMessage();
@@ -63,6 +66,7 @@ export default function EditApp({
   const { userSourcePrice, checkQuotaAllow, loadUserQuota } = useUserStore();
   useEffect(() => {
     loadUserQuota();
+    // eslint-disable-next-line
   }, []);
 
   const detailName = useMemo(
@@ -114,7 +118,7 @@ export default function EditApp({
     },
     [platformEnvs]
   );
-
+  // eslint-disable-next-line
   const formOnchangeDebounce = useCallback(
     debounce((inputs: Record<string, string>) => {
       try {
@@ -309,7 +313,7 @@ export default function EditApp({
         <meta name="keywords" content={metaData.keywords} />
         <meta name="description" content={metaData.description} />
       </Head>
-      <Flex
+      {/* <Flex
         zIndex={99}
         position={'sticky'}
         top={0}
@@ -364,16 +368,17 @@ export default function EditApp({
             {data?.templateYaml?.metadata?.name}
           </Text>
         </Flex>
-      </Flex>
-      <Flex px="42px" pb="36px" flexDirection={'column'} alignItems={'center'} minWidth={'780px'}>
+      </Flex> */}
+      <Flex pb="36px" flexDirection={'column'} alignItems={'center'} minWidth={'780px'}>
         <Flex
-          mt={'32px'}
           flexDirection={'column'}
           width={'100%'}
           flexGrow={1}
           backgroundColor={'rgba(255, 255, 255, 0.90)'}
         >
           <Header
+            px={'42px'}
+            showReturn={true}
             cloudDomain={platformEnvs?.DESKTOP_DOMAIN || ''}
             templateDetail={data?.templateYaml!}
             appName={appName || ''}
@@ -381,17 +386,28 @@ export default function EditApp({
             yamlList={yamlList}
             applyBtnText={insideCloud ? applyBtnText : 'Deploy on sealos'}
             applyCb={() => formHook.handleSubmit(openConfirm(submitSuccess), submitError)()}
+            borderBottom={'1px solid #EAEBF0'}
           />
-          <Flex w="100%" mt="32px" flexDirection="column">
+          <Flex w="100%" flexDirection="column">
             {/* <QuotaBox /> */}
-            <Form
-              formHook={formHook}
-              pxVal={pxVal}
-              formSource={templateSource!}
-              platformEnvs={platformEnvs!}
-            />
+            {!!templateSource?.source?.inputs?.length ? (
+              <Form
+                formHook={formHook}
+                pxVal={pxVal}
+                formSource={templateSource!}
+                platformEnvs={platformEnvs!}
+              />
+            ) : null}
+            {images.length !== 0 ? (
+              <Carousel
+                // data={images.length ? images : ['/1','/2','/3','/4','/1','/2','/3','/4']}
+                data={images}
+              />
+            ) : null}
             {/* <Yaml yamlList={yamlList} pxVal={pxVal}></Yaml> */}
-            <ReadMe key={readUrl} readUrl={readUrl} readmeContent={readmeContent} />
+            {readmeContent ? (
+              <ReadMe key={readUrl} readUrl={readUrl} readmeContent={readmeContent} />
+            ) : null}
           </Flex>
         </Flex>
       </Flex>
@@ -427,7 +443,7 @@ export async function getServerSideProps(content: any) {
   };
   let readmeContent = '';
   let readUrl = '';
-
+  let images: string[] = [];
   try {
     const templateSource: { data: TemplateSourceType } = await (
       await fetch(`${baseurl}/api/getTemplateSource?templateName=${appName}`)
@@ -439,6 +455,7 @@ export async function getServerSideProps(content: any) {
       keywords: templateDetail?.spec?.description,
       description: templateDetail?.spec?.description
     };
+    images = templateDetail?.spec?.images ?? [];
 
     const readme = templateDetail?.spec?.i18n?.[local]?.readme ?? templateDetail?.spec?.readme;
     readUrl = readme;
@@ -452,6 +469,7 @@ export async function getServerSideProps(content: any) {
       brandName,
       readmeContent,
       readUrl,
+      images,
       ...(await serviceSideProps(content))
     }
   };

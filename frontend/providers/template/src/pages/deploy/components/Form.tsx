@@ -11,7 +11,8 @@ import {
   Checkbox,
   NumberInput,
   NumberInputField,
-  useTheme
+  useTheme,
+  BoxProps
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -25,13 +26,14 @@ const Form = ({
   formHook,
   pxVal,
   formSource,
-  platformEnvs
+  platformEnvs,
+  ...props
 }: {
   formHook: UseFormReturn;
   pxVal: number;
   formSource: TemplateSourceType;
   platformEnvs: EnvResponse;
-}) => {
+} & BoxProps & { [key: string]: any }) => {
   if (!formHook) return null;
   const { t } = useTranslation();
   const theme = useTheme();
@@ -55,6 +57,7 @@ const Form = ({
     return formSource?.source?.inputs?.some((item) => item.if !== undefined);
   }, [formSource?.source?.inputs]);
 
+  // eslint-disable-next-line
   const debouncedReset = useCallback(
     debounce(() => {
       setForceUpdate((prev) => !prev);
@@ -77,31 +80,28 @@ const Form = ({
   );
 
   const boxStyles = {
-    border: '1px solid #DFE2EA',
-    borderRadius: '8px',
+    borderTop: '1px solid #DFE2EA',
     bg: 'white'
   };
 
   const headerStyles = {
-    py: 4,
+    pt: '32px',
     pl: '42px',
-    fontSize: 'xl',
-    color: 'myGray.900',
-    fontWeight: 'bold',
+    fontSize: '20px',
+    lineHeight: '28px',
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: 'grayModern.50',
-    borderTopRadius: '8px'
+    color: '#18181B'
   };
 
   return (
-    <Box flexGrow={1} id={'baseInfo'} {...boxStyles}>
-      <Box {...headerStyles} borderBottom={'1px solid #E8EBF0'}>
-        <MyIcon name={'formInfo'} mr={'8px'} w={'20px'} color={'grayModern.600'} />
+    <Box {...props} flexGrow={1} id={'baseInfo'} {...boxStyles}>
+      <Box {...headerStyles}>
+        {/* <MyIcon name={'formInfo'} mr={'8px'} w={'20px'} color={'grayModern.600'} /> */}
         {t('Configure Project')}
       </Box>
       {isShowContent ? (
-        <Box px={'42px'} py={'24px'}>
+        <Box px={'42px'} py={'16px'}>
           {filteredInputs.map((item: FormSourceInput, index: number) => {
             const renderInput = () => {
               switch (item.type) {
@@ -174,7 +174,8 @@ const Form = ({
                     position={'relative'}
                     w="200px"
                     className="template-dynamic-label"
-                    color={'#333'}
+                    color={'#18181B'}
+                    fontSize={'14px'}
                     userSelect={'none'}
                     whiteSpace={'pre-wrap'}
                     wordBreak={'break-word'}

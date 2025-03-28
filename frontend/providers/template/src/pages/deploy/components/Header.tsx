@@ -2,7 +2,7 @@ import MyIcon from '@/components/Icon';
 import { CopyLinkIcon, HomePageIcon, HtmlIcon, MdIcon, ShareIcon } from '@/components/icons';
 import { TemplateType } from '@/types/app';
 import type { YamlItemType } from '@/types/index';
-import { downLoadBold, formatStarNumber, useCopyData } from '@/utils/tools';
+import { downLoadBold, formatStarNumber, useCopyData, formatNum } from '@/utils/tools';
 import { getResourceUsage } from '@/utils/usage';
 import {
   Avatar,
@@ -20,7 +20,8 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
-  Tooltip
+  Tooltip,
+  Tag
 } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
@@ -31,6 +32,7 @@ import { CurrencySymbol } from '@sealos/ui';
 import { useSystemConfigStore } from '@/store/config';
 import { useGuideStore } from '@/store/guide';
 import { deployDriverObj, quitGuideDriverObj, startDriver } from '@/hooks/driver';
+import { useRouter } from 'next/router';
 
 const Header = ({
   appName,
@@ -39,7 +41,9 @@ const Header = ({
   applyCb,
   applyBtnText,
   templateDetail,
-  cloudDomain
+  cloudDomain,
+  showReturn = false,
+  ...props
 }: {
   appName: string;
   title: string;
@@ -48,10 +52,12 @@ const Header = ({
   applyBtnText: string;
   templateDetail: TemplateType;
   cloudDomain: string;
-}) => {
+  showReturn?: boolean;
+} & FlexProps & { [key: string]: any }) => {
   const { t, i18n } = useTranslation();
   const { copyData } = useCopyData();
   const { envs } = useSystemConfigStore();
+  const router = useRouter();
 
   const handleExportYaml = useCallback(async () => {
     const exportYamlString = yamlList?.map((i) => i.value).join('---\n');
@@ -116,11 +122,31 @@ const Header = ({
   }, [yamlList]);
 
   const priceList = usePriceCalculation(usage);
-
   const { createCompleted } = useGuideStore();
 
   return (
-    <Flex w={'100%'} h={'80px'} alignItems={'center'} backgroundColor={'rgba(255, 255, 255, 0.90)'}>
+    <Flex
+      {...props}
+      w={'100%'}
+      h={'120px'}
+      alignItems={'center'}
+      backgroundColor={'rgba(255, 255, 255, 0.90)'}
+    >
+      {showReturn && (
+        <Flex
+          cursor={'pointer'}
+          w={'24px'}
+          h={'100%'}
+          alignItems={'center'}
+          justifyContent={'center'}
+          mr={'16px'}
+          onClick={() => {
+            router.push('/');
+          }}
+        >
+          <MyIcon name="arrowLeftLine" color={'transparent'} w={'24px'} h={'24px'} />
+        </Flex>
+      )}
       <Flex
         boxShadow={'0px 1px 2px 0.5px rgba(84, 96, 107, 0.20)'}
         flexShrink={0}
@@ -144,8 +170,8 @@ const Header = ({
           <Text fontSize={'24px'} fontWeight={600} color={'#24282C'}>
             {templateDetail?.spec?.i18n?.[i18n.language]?.title ?? templateDetail?.spec?.title}
           </Text>
-          {DeployCountComponent}
-          <Flex
+          {/* {DeployCountComponent} */}
+          {/* <Flex
             cursor={'pointer'}
             p="6px"
             borderRadius={'4px'}
@@ -165,9 +191,9 @@ const Header = ({
             <Text fontSize={'12px '} fontWeight={400} pl="6px">
               {t('Home Page')}
             </Text>
-          </Flex>
+          </Flex> */}
 
-          <Popover trigger="hover">
+          {/* <Popover trigger="hover">
             <PopoverTrigger>
               <Flex
                 cursor={'pointer'}
@@ -242,10 +268,40 @@ const Header = ({
                 <Image mt="4px" alt="Button effect" src="/images/ButtonEffect.svg" />
               </PopoverBody>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
         </Flex>
-
-        <Tooltip
+        <Flex mt="12px" justifyContent={'flex-start'} alignItems={'center'} gap={'20px'}>
+          <Flex alignItems={'center'} gap={'10px'} overflow={'hidden'}>
+            {templateDetail?.spec?.categories?.map((i) => (
+              <Tag
+                flexShrink={0}
+                key={i}
+                bg="#F4F4F7"
+                border={'1px solid #E8EBF0'}
+                fontSize={'10px'}
+                color={'5A646E'}
+                fontWeight={400}
+              >
+                {t(`SideBar.${i}`)}
+              </Tag>
+            ))}
+          </Flex>
+          <Center
+            cursor={'pointer'}
+            onClick={(e) =>
+              goGithub(
+                e,
+                templateDetail.spec?.i18n?.[i18n.language]?.gitRepo ?? templateDetail?.spec?.gitRepo
+              )
+            }
+          >
+            <MyIcon name="usersround" color={'transparent'} />
+            <Text fontSize={'12px'} color={'#A3A3A3'} ml={'4px'}>
+              {formatNum(templateDetail?.spec.deployCount)}
+            </Text>
+          </Center>
+        </Flex>
+        {/* <Tooltip
           label={
             templateDetail?.spec?.i18n?.[i18n.language]?.description ??
             templateDetail?.spec?.description
@@ -263,14 +319,14 @@ const Header = ({
             onClick={() =>
               copyData(
                 templateDetail?.spec?.i18n?.[i18n.language]?.description ??
-                  templateDetail?.spec?.description
+                templateDetail?.spec?.description
               )
             }
           >
             {templateDetail?.spec?.i18n?.[i18n.language]?.description ??
               templateDetail?.spec?.description}
           </Text>
-        </Tooltip>
+        </Tooltip> */}
       </Flex>
       <Popover trigger="hover" closeDelay={600}>
         <PopoverTrigger>
@@ -284,8 +340,8 @@ const Header = ({
             flexShrink={'0'}
             gap={'4px'}
           >
-            <CurrencySymbol type={envs?.CURRENCY_SYMBOL} />
-            {priceList?.[priceList.length - 1]?.value}
+            {/* <CurrencySymbol type={envs?.CURRENCY_SYMBOL} /> */}
+            {`$ ${priceList?.[priceList?.length - 1]?.value}`}
             <Text fontSize={'16px'}>/{t('Day')}</Text>
             <MyIcon name="help" width={'16px'} height={'16px'} color={'grayModern.500'}></MyIcon>
           </Flex>
@@ -302,7 +358,7 @@ const Header = ({
         </PopoverContent>
       </Popover>
 
-      <Button
+      {/* <Button
         h={'40px'}
         mr={'12px'}
         ml={'20px'}
@@ -314,8 +370,8 @@ const Header = ({
         onClick={handleExportYaml}
       >
         {t('Export')} Yaml
-      </Button>
-      <Box position={'relative'}>
+      </Button> */}
+      <Box ml={'20px'} position={'relative'}>
         <Box
           p={'1px'}
           borderRadius={'8px'}

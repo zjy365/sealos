@@ -24,10 +24,10 @@ export default function MyApp() {
       position={'relative'}
       borderRadius={'12px'}
       background={'linear-gradient(180deg, #FFF 0%, rgba(255, 255, 255, 0.70) 100%)'}
-      pt={'36px'}
-      px="42px"
+      pt={'32px'}
+      px="40px"
     >
-      <Flex justifyContent={'space-between'} minW={'712px'}>
+      {/* <Flex justifyContent={'space-between'} minW={'712px'}>
         <Tabs
           fontWeight={500}
           position="relative"
@@ -56,7 +56,7 @@ export default function MyApp() {
             {t('develop.Debugging Template')}
           </Text>
         </Center>
-      </Flex>
+      </Flex> */}
 
       <InstanceList />
     </Flex>
