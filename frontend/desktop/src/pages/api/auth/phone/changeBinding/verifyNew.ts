@@ -12,6 +12,8 @@ import { enablePhoneSms } from '@/services/enable';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // cc throw Error
+  throw new Error('cc not support');
   if (!enablePhoneSms()) {
     throw new Error('SMS is not enabled');
   }

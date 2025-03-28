@@ -5,6 +5,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    // cc throw Error
+    throw new Error('cc not support');
     const access_token = await getWeChatAccessToken();
     if (!access_token) {
       return jsonRes(res, {

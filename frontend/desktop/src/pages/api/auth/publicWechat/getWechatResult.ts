@@ -9,6 +9,8 @@ import { getRegionToken } from '@/services/backend/regionAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    // cc throw Error
+    throw new Error('cc not support');
     const access_token = await getWeChatAccessToken();
     const { code } = req.query as { code: string };
     if (!code) {

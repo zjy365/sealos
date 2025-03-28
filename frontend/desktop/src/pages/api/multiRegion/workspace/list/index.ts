@@ -5,6 +5,8 @@ import { verifyAccessToken, verifyAuthenticationToken } from '@/services/backend
 import { ErrorHandler } from '@/services/backend/middleware/error';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // cc throw Error
+  throw new Error('cc not support');
   const regionUser = await verifyAuthenticationToken(req.headers);
   if (!regionUser)
     return jsonRes(res, {

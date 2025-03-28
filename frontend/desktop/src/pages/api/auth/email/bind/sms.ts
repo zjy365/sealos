@@ -6,6 +6,8 @@ import { filterCf, filterEmailParams, sendEmailCodeGuard } from '@/services/back
 import { sendEmailCodeSvc } from '@/services/backend/svc/sms';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // cc throw Error
+  throw new Error('cc not support');
   if (!enableEmailSms()) {
     throw new Error('SMS is not enabled');
   }

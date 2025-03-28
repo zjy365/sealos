@@ -5,6 +5,8 @@ import { verifyAccessToken } from '@/services/backend/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    // cc throw Error
+    throw new Error('cc not support');
     const regionUser = await verifyAccessToken(req.headers);
     if (!regionUser)
       return jsonRes(res, {

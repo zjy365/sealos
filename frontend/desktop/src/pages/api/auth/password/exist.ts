@@ -6,6 +6,8 @@ import { globalPrisma } from '@/services/backend/db/init';
 import { ProviderType } from 'prisma/global/generated/client';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    // cc throw Error
+    throw new Error('cc not support');
     if (!enablePassword()) {
       throw new Error('PASSWORD_SALT is not defined');
     }
