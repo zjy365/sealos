@@ -106,6 +106,8 @@ export function textMsg(message: WechatMessage, content: string) {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    // cc throw Error
+    throw new Error('cc not support');
     if (req.method === 'GET') {
       const str = verifyWeChatRequest(req);
       return res.send(str);
