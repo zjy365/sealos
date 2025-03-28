@@ -25,6 +25,13 @@ export const registerParamsSchema = z
   })
   .passthrough();
 
+export const emailCheckParamsSchema = z.object({
+  email: z
+    .string()
+    .email({ message: 'Invalid email format' })
+    .refine((e) => !isDisposableEmail(e), 'Invalid email')
+});
+
 // const forgotPasswordParamsSchema = z
 //   .object({
 //     email: z.string().email({ message: 'Invalid email format' })
@@ -33,4 +40,6 @@ export const registerParamsSchema = z
 
 export type ILoginParams = z.infer<typeof loginParamsSchema>;
 export type IRegisterParams = z.infer<typeof registerParamsSchema>;
+export type IEmailCheckParams = z.infer<typeof emailCheckParamsSchema>;
+
 // export type IForgotPasswordParams = z.infer<typeof forgotPasswordParamsSchema>;

@@ -33,12 +33,13 @@ import {
   registerParamsWithoutNameSchema
 } from '@/schema/ccSvc';
 import { useSignupStore } from '@/stores/signup';
-import { ccEmailSignIn, getRegionToken } from '@/api/auth';
+import { ccEmailSignIn, ccEmailSignUpCheck, getRegionToken } from '@/api/auth';
 import { useConfigStore } from '@/stores/config';
 import useSessionStore from '@/stores/session';
 import { OauthProvider } from '@/types/user';
 import { sessionConfig } from '@/utils/sessionConfig';
 import Link from 'next/link';
+import email from '@/pages/api/auth/email';
 
 export default function SigninComponent() {
   const { t } = useTranslation();
@@ -47,7 +48,7 @@ export default function SigninComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
-  const { setSignupData } = useSignupStore();
+  const { setSignupData, signupData } = useSignupStore();
   const conf = useConfigStore().authConfig;
   const { generateState, setProvider, setToken } = useSessionStore();
   const {
@@ -65,7 +66,11 @@ export default function SigninComponent() {
     formState: { errors: signupErrors }
   } = useForm<IRegisterParamsWithoutName>({
     resolver: zodResolver(registerParamsWithoutNameSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      email: signupData?.email || '',
+      password: signupData?.password || ''
+    }
   });
 
   const handleSubmit = (type: 'signin' | 'signup') => {
@@ -128,7 +133,7 @@ export default function SigninComponent() {
 
       toast({
         title: t('cc:sign_in_failed'),
-        description: error instanceof Error ? error.message : t('cc:unknown_error'),
+        description: (error as Error)?.message || t('cc:unknown_error'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -143,7 +148,17 @@ export default function SigninComponent() {
     try {
       setIsLoading(true);
       console.log('signup data:', data);
-
+      const result = await ccEmailSignUpCheck({ email: data.email });
+      if (result.code !== 201) {
+        toast({
+          title: t('cc:sign_up_failed'),
+          description: result.message || t('cc:unknown_error'),
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
+        });
+      }
       setSignupData({
         email: data.email,
         password: data.password
@@ -292,7 +307,7 @@ export default function SigninComponent() {
                       <Box as="span" justifyContent={'space-between'}>
                         {t('cc:password')}
                       </Box>
-                      <Box
+                      {/* <Box
                         as="span"
                         color="gray.500"
                         display={'inline-block'}
@@ -300,7 +315,7 @@ export default function SigninComponent() {
                         textDecoration={'underline'}
                       >
                         {t('cc:password_hint')}
-                      </Box>
+                      </Box> */}
                     </FormLabel>
                     <Input
                       type="password"

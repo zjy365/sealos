@@ -1,5 +1,6 @@
 import { InitRegionTokenParams } from '@/schema/auth';
 import { ILoginParams, ILoginResult, IRegisterParams } from '@/schema/ccSvc';
+import { IEmailCheckParams } from '@/schema/email';
 import { SmsType } from '@/services/backend/db/verifyCode';
 import { RegionResourceType } from '@/services/backend/svc/checkResource';
 import request from '@/services/request';
@@ -219,6 +220,8 @@ export const _ccEmailSignIn = (request: AxiosInstance) => (data: ILoginParams) =
 
 export const _ccEmailSignUp = (request: AxiosInstance) => (data: IRegisterParams) =>
   request.post<typeof data, ApiResp<any>>('/api/auth/email/signUp', data);
+export const _ccEmailSignUpCheck = (request: AxiosInstance) => (data: IEmailCheckParams) =>
+  request.post<never, ApiResp<any>>('/api/auth/email/signUp/check', data);
 
 export const _initRegionToken = (request: AxiosInstance) => (data: InitRegionTokenParams) =>
   request.post<typeof data, ApiResp<{ token: string; kubeconfig: string; appToken: string }>>(
@@ -228,6 +231,7 @@ export const _initRegionToken = (request: AxiosInstance) => (data: InitRegionTok
 
 export const ccEmailSignIn = _ccEmailSignIn(request);
 export const ccEmailSignUp = _ccEmailSignUp(request);
+export const ccEmailSignUpCheck = _ccEmailSignUpCheck(request);
 export const initRegionToken = _initRegionToken(request);
 
 export const passwordExistRequest = _passwordExistRequest(request);

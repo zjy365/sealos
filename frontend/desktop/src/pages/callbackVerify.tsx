@@ -31,7 +31,7 @@ const Callback: NextPage = () => {
     mutationFn: async (token: string) => {
       if (!isString(token)) throw new Error('failed to get token');
       const resp = await request.post<never, ApiResp<{ token: string; needInit: boolean }>>(
-        '/api/auth/email/verify',
+        '/api/auth/email/signUp/verify',
         { token }
       );
       if (resp.code !== 200) throw new Error('failed to verify email');
