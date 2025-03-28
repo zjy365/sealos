@@ -82,7 +82,8 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
         const cardList = Array.isArray(res?.cardList) ? res.cardList : [];
         setCards(cardList);
         setLoading((prev) => ({ ...prev, cards: false }));
-        setCardID(cardList[0]?.id || newCardValue);
+        const defaultCard = cardList.find((card) => Boolean(card.default)) || cardList[0];
+        setCardID(defaultCard?.id || newCardValue);
       });
     fetchSummaryIfNeeded();
   }, []);

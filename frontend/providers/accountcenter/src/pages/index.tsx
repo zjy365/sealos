@@ -4,6 +4,7 @@ import { FC, useEffect } from 'react';
 import { serviceSideProps } from '@/utils/i18n';
 import { useTranslation } from 'next-i18next';
 import urls from '@/utils/urls';
+import type { Url } from 'next/dist/shared/lib/router/router';
 
 const Index: FC = () => {
   const { t } = useTranslation();
@@ -11,7 +12,7 @@ const Index: FC = () => {
   const toast = useToast();
   useEffect(() => {
     const { stripeState, scene } = router.query;
-    let replaceTo = '/setting';
+    let replaceTo: Url = urls.page.setting;
     if (stripeState === 'success') {
       toast({
         status: 'success',
@@ -20,7 +21,10 @@ const Index: FC = () => {
         isClosable: true,
         position: 'top'
       });
-      replaceTo = '/plan';
+      replaceTo = {
+        pathname: urls.page.plan,
+        search: '?checkUpgrade'
+      };
     } else if (stripeState === 'error') {
       toast({
         status: 'error',
@@ -29,7 +33,7 @@ const Index: FC = () => {
         isClosable: true,
         position: 'top'
       });
-      replaceTo = '/plan';
+      replaceTo = urls.page.plan;
     }
     // scene 参数，可以跳转到指定页面的部分，也可组合达到如：scene=upgrade&stripeState=error 提示支付失败 然后跳转/plan打开updrade弹窗等效果。
     if (typeof scene === 'string') {

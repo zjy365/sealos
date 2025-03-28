@@ -68,11 +68,11 @@ function AccountSettings() {
   });
   const renderThirdPartyAccount = (
     nameKey: string,
-    { email, bound }: { email?: string; bound: boolean }
+    { email, bound, eventKey }: { email?: string; bound: boolean; eventKey?: string }
   ) => {
     const platform = t(nameKey as any);
     const handleClick = () => {
-      return sealosApp.runEvents(`bind${upperFirst(nameKey)}`);
+      return sealosApp.runEvents(`bind${upperFirst(eventKey || nameKey)}`);
     };
     return (
       <Flex bg="#F9F9F9" borderRadius="12px" p="12px 16px 12px 12px" alignItems="center">
@@ -178,7 +178,8 @@ function AccountSettings() {
               })}
               {renderThirdPartyAccount('google', {
                 email: '',
-                bound: Boolean(data?.bindings.google)
+                bound: Boolean(data?.bindings.google),
+                eventKey: 'gmail'
               })}
             </Flex>
           </CardBody>

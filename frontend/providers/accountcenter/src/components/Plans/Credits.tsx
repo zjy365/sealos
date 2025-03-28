@@ -15,8 +15,6 @@ import {
 import { useTranslation } from 'next-i18next';
 import { CSSProperties, FC, ReactNode } from 'react';
 import Recharge from '../Recharge';
-import { useQuery } from '@tanstack/react-query';
-import { getUserInfo } from '@/api/user';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { TUserInfoReponse } from '@/schema/user';
@@ -66,7 +64,12 @@ const PlanCredits: FC<CreditsProps> = ({
     total: 0,
     used: 0
   };
+  const chargedCredit: TCreditsUsageResponse['charged'] = creditsUsage.charged || {
+    total: 0,
+    used: 0
+  };
   const restGift = giftCredit.total - giftCredit.used;
+  const restCharged = chargedCredit.total - chargedCredit.used;
   const renderExpireDate = (date: any) => {
     return date ? (
       <Text
@@ -136,8 +139,32 @@ const PlanCredits: FC<CreditsProps> = ({
     );
   };
   const renderBody = () => {
-    if (plan.amount === 0) {
+    const gridDivider = (
+      <Box
+        position="absolute"
+        left="-24px"
+        top="8px"
+        bottom="8px"
+        bg="rgba(244, 244, 245, 1)"
+        width="1px"
+      />
+    );
+    const renderChargedGridItem = () => {
       return (
+        <GridItem position="relative">
+          {gridDivider}
+          <Flex flexDirection="column">
+            {renderLabel(t('PlanRechargedCreditsLabel'), null)}
+            <Text mt="12px" fontSize="30px" fontWeight="600">
+              ${formatMoneyStr(restCharged, 'floor')}
+            </Text>
+            {typeof chargedCredit.total === 'number' && renderExpireDate(chargedCredit.time)}
+          </Flex>
+        </GridItem>
+      );
+    };
+    if (plan.amount === 0) {
+      const freePlanGift = (
         <Flex flexDirection="column" rowGap="12px" py="4px">
           <Flex alignItems="baseline" gap="12px">
             <Text lineHeight="36px" fontSize="30px" fontWeight="600" color="#18181B">
@@ -156,17 +183,16 @@ const PlanCredits: FC<CreditsProps> = ({
           {renderLabel(t('PlanGiftCreditsLabel'), '#1C4EF5')}
         </Flex>
       );
+      if (!isNaN(restCharged) && restCharged <= 0) {
+        return freePlanGift;
+      }
+      return (
+        <Grid templateColumns="1fr 1fr" columnGap="48px">
+          <GridItem>{freePlanGift}</GridItem>
+          {renderChargedGridItem()}
+        </Grid>
+      );
     }
-    const gridDivider = (
-      <Box
-        position="absolute"
-        left="-24px"
-        top="8px"
-        bottom="8px"
-        bg="rgba(244, 244, 245, 1)"
-        width="1px"
-      />
-    );
     const giftExp = renderExpireDate(giftCredit.time);
     const planExp = renderExpireDate(planCredit.time);
     const restPlan = planCredit.total - planCredit.used;
@@ -201,17 +227,7 @@ const PlanCredits: FC<CreditsProps> = ({
               />
             </Flex>
           </GridItem>
-          <GridItem position="relative">
-            {gridDivider}
-            <Flex flexDirection="column">
-              {renderLabel(t('PlanRechargedCreditsLabel'), null)}
-              <Text mt="12px" fontSize="30px" fontWeight="600">
-                ${formatMoneyStr(creditsUsage.charged.total - creditsUsage.charged.used, 'floor')}
-              </Text>
-              {typeof creditsUsage.charged.total === 'number' &&
-                renderExpireDate(creditsUsage.charged.time)}
-            </Flex>
-          </GridItem>
+          {renderChargedGridItem()}
         </Grid>
         <Box mt="48px">
           <Recharge onPaySuccess={onPaySuccess} />

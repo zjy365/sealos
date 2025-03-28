@@ -24,10 +24,10 @@ const Empty = ({
       py={'24px'}
     >
       {Icon}
-      <Text fontSize={'14px'} fontWeight={'600'}>
+      <Text textAlign={'center'} fontSize={'14px'} fontWeight={'600'}>
         {title}
       </Text>
-      <Text fontSize={'14px'} fontWeight={'400'} lineHeight={'20px'}>
+      <Text textAlign={'center'} fontSize={'14px'} fontWeight={'400'} lineHeight={'20px'}>
         {description}
       </Text>
     </Box>
