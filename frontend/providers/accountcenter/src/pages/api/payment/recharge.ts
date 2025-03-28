@@ -23,7 +23,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       amount,
       method: 'CARD'
     });
-    console.log('recharge', res.data);
     if (!res.data.success) {
       console.log(res.data);
       return jsonRes(resp, {

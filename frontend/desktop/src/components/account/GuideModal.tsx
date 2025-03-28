@@ -210,8 +210,6 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
     isActive: boolean;
     onClick: () => void;
   }) => {
-    console.log(step);
-
     return (
       <Flex
         alignItems={'center'}
@@ -331,7 +329,6 @@ const GuideModal = ({ isOpen, onClose }: GuideModalProps) => {
                   onClick={() => {
                     onClose();
                     setInitGuide(false);
-                    console.log(guideLinks[selectedGuide]);
                     const cur = guideLinks[selectedGuide];
 
                     switch (cur.key) {

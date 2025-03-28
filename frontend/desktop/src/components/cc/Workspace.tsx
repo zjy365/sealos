@@ -62,14 +62,6 @@ export default function Workspace() {
         });
         return;
       }
-      console.log(
-        'inii',
-        selectedRegionUid,
-        cloudConfig?.regionUID,
-        token,
-        workspaceName,
-        cloudConfig
-      );
       if (selectedRegionUid !== cloudConfig?.regionUID) {
         const region = regionList.find((r) => r.uid === selectedRegionUid);
         if (!region) return;

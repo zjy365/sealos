@@ -44,7 +44,6 @@ const getJob = (
 // ready=>running
 // handle one Task per tick
 export const runTransactionjob = async () => {
-  // console.log('run transactionjob', new Date());
   const regionUid = getRegionUid();
   let isTimeoutTransactionDetail = false;
   // find task
@@ -164,7 +163,6 @@ export const runTransactionjob = async () => {
 
 // running => finish or error
 export const finishTransactionJob = async () => {
-  // console.log('finish transactionjob', new Date());
   const regionList = await globalPrisma.region.findMany({});
   const transactionList = await globalPrisma.precommitTransaction.findMany({
     where: {
@@ -206,7 +204,6 @@ export const finishTransactionJob = async () => {
 
 // finish => commited
 export const commitTransactionjob = async () => {
-  // console.log('commit transactionjob', new Date());
   const unCommitedTransaction = await globalPrisma.precommitTransaction.findFirst({
     where: {
       status: TransactionStatus.FINISH,

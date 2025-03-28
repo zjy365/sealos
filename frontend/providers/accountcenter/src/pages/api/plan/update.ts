@@ -28,7 +28,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     const { planName, planID, planType, cardID } = validation.data;
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
-    console.log('ready for');
     const res = await client.post<TUpdatePlanResponse>('payment/v1alpha1/subscription/pay', {
       planName,
       planID,
@@ -37,8 +36,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       cardID
     });
 
-    console.log(res.data);
-    console.log('response');
     if (!res.data.success) {
       return jsonRes(resp, { code: res.status, message: res.data.error });
     }

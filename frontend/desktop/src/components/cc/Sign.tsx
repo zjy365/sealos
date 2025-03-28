@@ -90,7 +90,6 @@ export default function SigninComponent() {
       if (!token) throw Error('get token error');
 
       setToken(token, rememberMe);
-      console.log(result);
 
       if (result.data?.needInit) {
         toast({
@@ -147,7 +146,6 @@ export default function SigninComponent() {
   const onSignup = async (data: IRegisterParamsWithoutName) => {
     try {
       setIsLoading(true);
-      console.log('signup data:', data);
       const result = await ccEmailSignUpCheck({ email: data.email });
       if (result.code !== 201) {
         toast({

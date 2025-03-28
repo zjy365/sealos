@@ -42,7 +42,6 @@ const Callback: NextPage = () => {
     if (!router.isReady) return;
     const verifyToken = router.query.token;
     if (!isString(verifyToken)) throw new Error('failed to get Token');
-    console.log(router.query);
     (async () => {
       try {
         if (!!curToken) {
@@ -58,7 +57,6 @@ const Callback: NextPage = () => {
         const token = data?.token;
         setToken(token);
         const needInit = data.needInit;
-        console.log('needInit', needInit);
         if (needInit) {
           // await router.push('/personalinfo');
           await router.push('/unlockcard');

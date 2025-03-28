@@ -7,6 +7,7 @@ import { useEnvStore } from '@/stores/env';
 import { usePriceStore } from '@/stores/price';
 
 import MyIcon from './Icon';
+import { displayMoney, formatMoney } from '@/utils/format';
 
 export const colorMap = {
   cpu: '#33BABB',
@@ -63,16 +64,18 @@ const PriceBox = ({
       {
         label: 'cpu',
         icon: 'cpu',
-        value: cp.toFixed(2)
+        value: displayMoney(formatMoney(cp))
       },
-      { label: 'memory', icon: 'memory', value: mp.toFixed(2) },
+      { label: 'memory', icon: 'memory', value: displayMoney(formatMoney(mp)) },
       {
         label: 'port',
         icon: 'port',
-        value: pp.toFixed(2)
+        value: displayMoney(formatMoney(pp))
       },
-      ...(sourcePrice?.gpu ? [{ label: 'GPU', icon: 'gpu', value: gp.toFixed(2) }] : []),
-      { label: 'total_price', icon: '', value: tp.toFixed(2) }
+      ...(sourcePrice?.gpu
+        ? [{ label: 'GPU', icon: 'gpu', value: displayMoney(formatMoney(gp)) }]
+        : []),
+      { label: 'total_price', icon: '', value: displayMoney(formatMoney(tp)) }
     ];
   }, [components, sourcePrice.cpu, sourcePrice.memory, sourcePrice.nodeports, sourcePrice.gpu]);
 

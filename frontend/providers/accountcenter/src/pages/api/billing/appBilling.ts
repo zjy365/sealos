@@ -56,7 +56,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     const response = await client.post('/account/v1alpha1/costs/app', bodyRaw);
     const res = response.data;
     if (response.status !== 200) {
-      console.log(res);
       throw Error('get appbilling error');
     }
     const data = res.app_costs;
