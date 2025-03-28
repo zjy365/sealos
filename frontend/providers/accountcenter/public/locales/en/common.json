@@ -374,5 +374,7 @@
   "BindGithubGiftCreditHint": "Connect GitHub account to unlock monthly $5 gift credits",
   "days": "1 day",
   "days_other": "{{count}} days",
-  "FreePlanConnectGithubWarn": "Please connect your GitHub in account setting within {{daysText}} to maintain access to the Free plan, or  <Upgrade>upgrade plan</Upgrade>"
+  "FreePlanConnectGithubWarn": "Please connect your GitHub in account setting within {{daysText}} to maintain access to the Free plan, or  <Upgrade>upgrade plan</Upgrade>",
+  "UpgradeFailed": "Upgrade failed",
+  "UpgradeSuccess": "Upgrade Successfully"
 }

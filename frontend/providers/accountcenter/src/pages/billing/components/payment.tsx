@@ -217,12 +217,7 @@ const Payment = ({
             </Flex>
           ))
         ) : (
-          <Center
-            borderRadius={'xl'}
-            border={'1px dashed #D4D4D4'}
-            cursor={'pointer'}
-            onClick={handleAddCard}
-          >
+          <Center borderRadius={'xl'} border={'1px dashed #D4D4D4'}>
             <Empty
               title={t('NoPayment')}
               description={t('NoPaymentPrompt')}

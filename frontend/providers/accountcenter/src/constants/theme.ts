@@ -62,7 +62,10 @@ export const theme = extendTheme(SealosTheme, {
           bg: '#DC2626',
           color: '#fff',
           _hover: {
-            bg: colors.red['600']
+            bg: colors.red['600'],
+            _disabled: {
+              bg: colors.red['600']
+            }
           },
           _active: {
             bg: colors.red['700']

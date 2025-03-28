@@ -127,15 +127,15 @@ const Pdf = ({ data, user }: { data?: InvoicePayload[]; user?: TUserInfoReponse 
             <View>
               <Text style={[styles.p, styles.strong]}>Bill To</Text>
               <Text style={styles.p}>
-                {user?.user.firstname} {user?.user.lastname}
+                {user?.user?.firstname} {user?.user?.lastname}
               </Text>
-              <Text style={styles.p}>{user?.user.email}</Text>
+              <Text style={styles.p}>{user?.user?.email}</Text>
             </View>
           </View>
           <View style={{ marginTop: 22, marginBottom: 28 }}>
             <Text style={styles.p}>Invoice of (USD)</Text>
             <Text style={[styles.title, { fontSize: 20 }]}>
-              ${displayMoney(formatMoney(item.Amount))}
+              ${displayMoney(formatMoney(item?.Amount))}
             </Text>
           </View>
           <View style={styles.table}>
@@ -149,32 +149,32 @@ const Pdf = ({ data, user }: { data?: InvoicePayload[]; user?: TUserInfoReponse 
               <View style={{ width: 100 }}>
                 <Text style={styles.p}>PAYMENT METHOD</Text>
               </View>
-              <View style={styles.tableCell}>
+              <View style={{ width: 90 }}>
                 <Text style={styles.p}>ID</Text>
               </View>
-              <View style={styles.tableCell}>
+              <View style={{ width: 90 }}>
                 <Text style={[styles.p, styles.right]}>AMOUNT</Text>
               </View>
             </View>
             <View style={styles.tableRow}>
               <View style={styles.tableCell}>
-                <Text style={[styles.p, styles.strong]}>{item.Type}</Text>
-                <Text style={styles.p}>{item.ChargeSource}</Text>
+                <Text style={[styles.p, styles.strong]}>{item?.Type}</Text>
+                <Text style={styles.p}>{item?.ChargeSource}</Text>
               </View>
               <View style={{ width: 100 }}>
                 <Text style={[styles.p, styles.strong]}>
-                  {new Date(item.CreatedAt).toLocaleDateString()}
+                  {new Date(item?.CreatedAt).toLocaleDateString()}
                 </Text>
               </View>
               <View style={{ width: 100 }}>
-                <Text style={[styles.p, styles.strong]}>{item.Method as string}</Text>
+                <Text style={[styles.p, styles.strong]}>{item?.Method as string}</Text>
               </View>
-              <View style={styles.tableCell}>
-                <Text style={[styles.p, styles.strong]}>{item.ID}</Text>
+              <View style={{ width: 90 }}>
+                <Text style={[styles.p, styles.strong]}>{item?.ID}</Text>
               </View>
-              <View style={styles.tableCell}>
+              <View style={{ width: 90 }}>
                 <Text style={[styles.p, styles.strong, styles.right]}>
-                  ${displayMoney(formatMoney(item.Amount))} USD
+                  ${displayMoney(formatMoney(item?.Amount))} USD
                 </Text>
               </View>
             </View>
