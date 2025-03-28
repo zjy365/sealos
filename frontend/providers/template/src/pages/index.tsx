@@ -123,26 +123,16 @@ export default function AppList({
       px="42px"
     >
       <Head>
-        <title>
-          {i18n.language === 'en'
-            ? `Enterprise-level distributed application hosting platform - ${brandName}`
-            : `企业级分布式应用托管平台 - ${brandName}`}
-        </title>
+        <title>{`Enterprise-level distributed application hosting platform - ${brandName}`}</title>
         <meta
           name="keywords"
           content={
-            i18n.language === 'en'
-              ? 'Distributed applications, Application hosting, Application deployment, Containers and middleware, PaaS'
-              : '分布式应用,应用托管,应用部署,容器与中间件,PaaS平台'
+            'Distributed applications, Application hosting, Application deployment, Containers and middleware, PaaS'
           }
         />
         <meta
           name="description"
-          content={
-            i18n.language === 'en'
-              ? `All-in-one platform for app development and deployment. Features app engine, API gateway. Deploy your app with one click.`
-              : `提供高性能可伸缩的容器应用管理能力，支持企业级 Kubernetes 容器化应用的全生命周期管理,一站式集成应用创建、开发、部署、上线等功能，提供了应用引擎、前后端开发框架、API网关、调度引擎等模块，一键部署Helm应用。`
-          }
+          content={`All-in-one platform for app development and deployment. Features app engine, API gateway. Deploy your app with one click.`}
         />
       </Head>
       {!!data?.templates?.length ? (
