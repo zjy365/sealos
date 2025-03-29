@@ -356,6 +356,7 @@ model CardInfo {
   card_no                String?
   card_brand             String?
   created_at             DateTime? @default(now()) @db.Timestamptz(3)
+  card_token             String
   network_transaction_id String?
   default                Boolean?  @default(false)
   last_payment_status    String?
