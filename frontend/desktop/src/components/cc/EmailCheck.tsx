@@ -123,7 +123,6 @@ export default function EmailCheckComponent() {
           >
             {/* Check your email */}
             <Text
-              fontFamily="Geist"
               fontWeight="600"
               fontSize="24px"
               lineHeight="31px"
@@ -150,7 +149,6 @@ export default function EmailCheckComponent() {
               {/* Get started (hidden) */}
               <Text
                 display="none"
-                fontFamily="Geist"
                 fontWeight="700"
                 fontSize="30px"
                 lineHeight="36px"
@@ -177,7 +175,6 @@ export default function EmailCheckComponent() {
               >
                 {/* Verification message */}
                 <Text
-                  fontFamily="Geist"
                   fontWeight="400"
                   fontSize="14px"
                   lineHeight="20px"
@@ -206,7 +203,6 @@ export default function EmailCheckComponent() {
                   <Text
                     w="352px"
                     h="20px"
-                    fontFamily="Geist"
                     fontWeight="700"
                     fontSize="14px"
                     lineHeight="20px"
@@ -222,7 +218,6 @@ export default function EmailCheckComponent() {
                   {canResend ? (
                     <Text
                       as="a"
-                      fontFamily="Geist"
                       fontWeight="400"
                       fontSize="14px"
                       lineHeight="20px"
@@ -242,7 +237,6 @@ export default function EmailCheckComponent() {
                     </Text>
                   ) : (
                     <Text
-                      fontFamily="Geist"
                       fontWeight="400"
                       fontSize="14px"
                       lineHeight="20px"
