@@ -11,7 +11,7 @@ export default function UnlockCard() {
   const bg = useColorModeValue('white', 'gray.700');
   return (
     <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
-      <ClawCloudIcon w={'134px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
+      <ClawCloudIcon w={'160px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
       <Stack spacing={8} mx="auto" maxW="lg" px={4} h={'60%'}>
         <Box rounded="lg" p={8} w={'480px'}>
           <Flex height={'100px'} width={'full'} justifyContent={'center'} alignItems={'center'}>

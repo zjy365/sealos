@@ -12,7 +12,7 @@ import 'react-day-picker/dist/style.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Sealos Devbox',
+  title: 'ClawCloud Devbox',
   description: 'Generated a development and production environment for you',
   icons: [
     {
