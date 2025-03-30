@@ -252,8 +252,9 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
 }
 
 export async function getServerSideProps({ req, res, locales }: any) {
-  const local =
-    req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
+  // const local =
+  //   req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
+  const local = 'en';
   res.setHeader('Set-Cookie', `NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
 
   const sealos_cloud_domain = global.AppConfig?.cloud.domain || 'cloud.sealos.io';
