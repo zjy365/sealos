@@ -241,14 +241,10 @@ export const emailSmsVerifyReq = async (
                   style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   <!-- Header -->
                   <tr>
-                    <td style="background: linear-gradient(270deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);
-                               height: 120px;
-                               display: flex;
-                               flex-direction: column;
-                               justify-content: center;
-                               align-items: center;
-                               gap: 10px;">
-                      <img src="https://static-host-627noqh5-qwe.cloud.sealos.io/clawcloud.png" alt="ClawCloud Logo" style="max-width: 217px;">
+                    <td align="center" style="background: linear-gradient(270deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);
+                                        height: 120px;">
+                      <img src="https://objectstorageapi.us-east-1.clawcloudrun.com/nog6na79-admin/cc-run-white.svg"
+                        alt="ClawCloud Logo" style="max-width: 217px; display: block; margin: 0 auto;">
                     </td>
                   </tr>
                   <!-- Body -->
