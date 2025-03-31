@@ -1,14 +1,12 @@
 import { extendTheme } from '@chakra-ui/react';
-import { theme as SealosTheme } from '@sealos/ui';
-import { cardAnatomy, checkboxAnatomy } from '@chakra-ui/anatomy';
+import { theme as SealosTheme } from './theme';
+import { checkboxAnatomy } from '@chakra-ui/anatomy';
 import { createMultiStyleConfigHelpers } from '@chakra-ui/react';
-import { colors } from '@sealos/ui/src/theme/colors';
-import { Button } from '@sealos/ui/src/theme/components/Button';
+import { colors } from './colors';
+import { Button } from './components/Button';
 import { merge } from 'lodash';
 
-const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpers(
-  checkboxAnatomy.keys
-);
+const { defineMultiStyleConfig } = createMultiStyleConfigHelpers(checkboxAnatomy.keys);
 const checkbox = defineMultiStyleConfig({
   baseStyle: {
     control: {

@@ -381,6 +381,9 @@ importers:
 
   packages/ui:
     dependencies:
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -406,6 +409,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: ^11.1.4
         version: 11.1.5(rollup@2.79.1)(tslib@2.6.2)(typescript@5.2.2)
+      '@types/lodash':
+        specifier: ^4.14.199
+        version: 4.14.202
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.37

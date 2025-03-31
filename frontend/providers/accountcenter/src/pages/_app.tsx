@@ -1,4 +1,4 @@
-import { theme } from '@/constants/theme';
+import { runTheme } from '@sealos/ui';
 import { useLoading } from '@/hooks/useLoading';
 import { useGlobalStore } from '@/store/global';
 import { getLangStore, setLangStore } from '@/utils/cookieUtils';
@@ -169,7 +169,7 @@ function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <QueryClientProvider client={queryClient}>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider theme={runTheme}>
           {/* <button
             onClick={() => {
               const lastLang = getLangStore();
