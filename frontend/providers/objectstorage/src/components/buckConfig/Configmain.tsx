@@ -34,8 +34,8 @@ const ConfigMain = () => {
       <Box w="220px">
         <Tabs
           list={[
-            { id: TabId.Form, label: t('configForm') },
-            { id: TabId.Yaml, label: t('yamlFile') }
+            { id: TabId.Form, label: t('configForm') }
+            // { id: TabId.Yaml, label: t('yamlFile') }
           ]}
           activeId={activeId}
           onChange={function (id): void {
