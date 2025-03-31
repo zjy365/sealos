@@ -231,9 +231,7 @@ export default function SigninComponent() {
           if (!googleConf) {
             throw new Error('Google configuration not found');
           }
-          const scope = encodeURIComponent(
-            `https://www.googleapis.com/auth/userinfo.profile openid`
-          );
+          const scope = encodeURIComponent(`profile openid email`);
           if (googleConf.proxyAddress) {
             await oauthProxyLogin({
               state,
