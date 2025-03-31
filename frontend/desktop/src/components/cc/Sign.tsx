@@ -278,7 +278,17 @@ export default function SigninComponent() {
             bg="rgba(140, 175, 255, 0.05)"
           >
             <Flex alignItems="center" justifyContent="center" direction="column">
-              <Box fontSize="xl" fontWeight="bold" color="blue.500" mb={4}>
+              <Box
+                fontSize="14px"
+                fontWeight="500"
+                sx={{
+                  background: 'linear-gradient(270deg, #1D49FF 8.46%, #1AA8FF 91.17%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+                mb={'12px'}
+              >
                 Monthly $5 credits available with Github
               </Box>
               <Button
