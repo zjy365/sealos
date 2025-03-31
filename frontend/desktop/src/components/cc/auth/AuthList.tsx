@@ -103,7 +103,7 @@ const AuthList = ({
             if (!isAgreeCb()) return;
             const state = generateState();
             const googleConf = conf?.idp.google;
-            const scope = encodeURIComponent(`email profile openid`);
+            const scope = encodeURIComponent(`profile email openid`);
             if (googleConf.proxyAddress)
               oauthProxyLogin({
                 state,
