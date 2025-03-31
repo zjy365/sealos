@@ -112,7 +112,7 @@ function App({ Component, pageProps }: AppProps) {
         });
       } catch (error) {
         changeI18n({
-          currentLanguage: 'zh'
+          currentLanguage: 'en'
         });
       }
     })();
@@ -130,7 +130,7 @@ function App({ Component, pageProps }: AppProps) {
   }, [router.pathname]);
 
   useEffect(() => {
-    const lang = getLangStore() || 'zh';
+    const lang = getLangStore() || 'en';
     i18n?.changeLanguage?.(lang);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh, router.asPath]);

@@ -53,9 +53,9 @@ const Header = ({
         </Box>
       </Flex>
       <Box flex={1}></Box>
-      <Button h={'40px'} flex={'0 0 114px'} mr={5} variant={'outline'} onClick={handleExportYaml}>
+      {/* <Button h={'40px'} flex={'0 0 114px'} mr={5} variant={'outline'} onClick={handleExportYaml}>
         {t('Export')} Yaml
-      </Button>
+      </Button> */}
 
       <Box position={'relative'}>
         <Box

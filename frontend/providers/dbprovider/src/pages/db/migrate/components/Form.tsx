@@ -149,8 +149,8 @@ const Form = ({
         <Box>
           <Tabs
             list={[
-              { id: 'form', label: t('config_form') },
-              { id: 'yaml', label: t('yaml_file') }
+              { id: 'form', label: t('config_form') }
+              // { id: 'yaml', label: t('yaml_file') }
             ]}
             activeId={'form'}
             onChange={() => {

@@ -84,7 +84,7 @@ export default function EditApp({
   });
 
   const { openConfirm, ConfirmChild } = useConfirm({
-    content: insideCloud ? 'Confirm Deploy Application?' : 'Heading to sealos soon'
+    content: insideCloud ? 'Confirm Deploy Application?' : 'Heading to ClawCloud soon'
   });
 
   const { openConfirm: openConfirm2, ConfirmChild: ConfirmChild2 } = useConfirm({
@@ -437,7 +437,7 @@ export async function getServerSideProps(content: any) {
   const baseurl = `http://${process.env.HOSTNAME || 'localhost'}:${process.env.PORT || 3000}`;
 
   let metaData = {
-    title: `${appName}部署和安装教程 - Sealos`,
+    title: `${appName}部署和安装教程 - ClawCloud`,
     keywords: '',
     description: ''
   };

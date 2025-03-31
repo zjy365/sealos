@@ -117,7 +117,7 @@
   "Intelligent Analysis": "Smart Insights",
   "Inventory": "Stock",
   "Items": "pods",
-  "jump_message": "This app can't be used standalone. Click OK to open it via Sealos Desktop.",
+  "jump_message": "This app can't be used standalone. Click OK to open it via ClawCloud Desktop.",
   "jump_prompt": "Navigation Notice",
   "let me think again": "Let me reconsider",
   "Limit CPU": "CPU Limit",

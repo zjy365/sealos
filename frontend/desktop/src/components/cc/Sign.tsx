@@ -265,286 +265,85 @@ export default function SigninComponent() {
   return (
     <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
       <ClawCloudIcon w={'160px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
-      <Stack spacing={8} mx="auto" maxW="lg" px={4} h={'60%'}>
-        <Box rounded="lg" p={8}>
-          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
-            <TabList mb="30px" bg="#F4F4F5" p={2} borderRadius="md" borderBottom="none">
-              <Tab _selected={{ bg: 'white', borderRadius: 'md' }} w="50%">
-                {t('cc:sign_in')}
-              </Tab>
-              <Tab _selected={{ bg: 'white', borderRadius: 'md' }} w="50%">
-                {t('cc:sign_up')}
-              </Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel p={0}>
-                <Stack spacing={4}>
-                  {/* Email Address */}
-                  <FormControl isInvalid={!!signinErrors.email}>
-                    <FormLabel>{t('cc:email')}</FormLabel>
-                    <Input
-                      type="email"
-                      height={'40px'}
-                      bg={'white'}
-                      width={'full'}
-                      placeholder="Email"
-                      {...registerSignin('email')}
-                    />
-                    <FormErrorMessage>{signinErrors.email?.message}</FormErrorMessage>
-                  </FormControl>
-
-                  {/* Password */}
-                  <FormControl isInvalid={!!signinErrors.password}>
-                    <FormLabel
-                      display={'flex'}
-                      justifyContent={'space-between'}
-                      alignItems={'center'}
-                    >
-                      <Box as="span" justifyContent={'space-between'}>
-                        {t('cc:password')}
-                      </Box>
-                      {/* <Box
-                        as="span"
-                        color="gray.500"
-                        display={'inline-block'}
-                        ml={2}
-                        textDecoration={'underline'}
-                      >
-                        {t('cc:password_hint')}
-                      </Box> */}
-                    </FormLabel>
-                    <Input
-                      type="password"
-                      height={'40px'}
-                      bg={'white'}
-                      width={'full'}
-                      placeholder="Password"
-                      {...registerSignin('password')}
-                    />
-                    <FormErrorMessage>{signinErrors.password?.message}</FormErrorMessage>
-                  </FormControl>
-
-                  {/* Remember Me Checkbox */}
-                  <Checkbox
-                    isChecked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    sx={{
-                      '.chakra-checkbox__control': {
-                        borderRadius: '4px',
-                        borderWidth: '1px',
-                        borderColor: 'gray.900',
-                        _checked: {
-                          bg: 'gray.900',
-                          color: 'white'
-                        },
-                        _hover: {
-                          borderColor: 'gray.900'
-                        }
-                      },
-                      '.chakra-checkbox__label': {
-                        fontSize: 'md',
-                        color: 'gray.900',
-                        fontWeight: 'medium'
-                      }
-                    }}
-                  >
-                    {t('cc:remember_me')}
-                  </Checkbox>
-
-                  <Button
-                    variant="solid"
-                    colorScheme="blue"
-                    isLoading={isLoading}
-                    onClick={() => handleSubmit('signin')}
-                    rightIcon={<ArrowRight width={20} height={20} />}
-                  >
-                    {t('cc:sign_in')}
-                  </Button>
-
-                  {/* OR Divider */}
-                  <Box position="relative" my={'4'}>
-                    <Divider />
-                    <AbsoluteCenter bg="white" px="4" color="#94949B">
-                      {t('cc:or_sign_in_with')}
-                    </AbsoluteCenter>
-                  </Box>
-
-                  {/* Social Login Buttons */}
-                  <Stack direction="row" spacing={4} w={'full'}>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
-                      w={'50%'}
-                      boxShadow={'none'}
-                      _hover={{
-                        bg: 'grayModern.50'
-                      }}
-                      leftIcon={<GoogleIcon />}
-                    >
-                      Google
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
-                      w={'50%'}
-                      _hover={{
-                        bg: 'grayModern.50'
-                      }}
-                      boxShadow={'none'}
-                      leftIcon={<GithubIcon />}
-                    >
-                      GitHub
-                    </Button>
-                  </Stack>
-
-                  {/* Terms and Conditions */}
-                  <Box fontSize="sm" color="gray.500">
-                    By proceeding you acknowledge that you have read, understood and agree to our{' '}
-                    <Box
-                      as={Link}
-                      href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
-                      target="_blank"
-                      textDecoration="underline"
-                    >
-                      Terms and Conditions
-                    </Box>
-                    &nbsp;and&nbsp;
-                    <Box
-                      as={Link}
-                      href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
-                      target="_blank"
-                      textDecoration="underline"
-                    >
-                      Privacy Policy.
-                    </Box>
-                  </Box>
-                </Stack>
-              </TabPanel>
-              <TabPanel p={0}>
-                <Stack spacing={4}>
-                  {/* Email Address */}
-                  <FormControl isInvalid={!!signupErrors.email}>
-                    <FormLabel>{t('cc:email')}</FormLabel>
-                    <Input
-                      type="email"
-                      height={'40px'}
-                      bg={'white'}
-                      width={'full'}
-                      placeholder="Email"
-                      {...registerSignup('email')}
-                    />
-                    <FormErrorMessage>{signupErrors.email?.message}</FormErrorMessage>
-                  </FormControl>
-
-                  {/* Password */}
-                  <FormControl isInvalid={!!signupErrors.password}>
-                    <FormLabel>{t('cc:password')}</FormLabel>
-                    <Input
-                      type="password"
-                      height={'40px'}
-                      bg={'white'}
-                      width={'full'}
-                      placeholder="Password"
-                      {...registerSignup('password')}
-                    />
-                    <FormErrorMessage>{signupErrors.password?.message}</FormErrorMessage>
-                  </FormControl>
-
-                  {/* Confirm Password */}
-                  <FormControl isInvalid={!!signupErrors.confirmPassword}>
-                    <FormLabel>{t('cc:confirm_password')}</FormLabel>
-                    <Input
-                      type="password"
-                      height={'40px'}
-                      bg={'white'}
-                      width={'full'}
-                      placeholder="Confirm Password"
-                      {...registerSignup('confirmPassword')}
-                    />
-                    <FormErrorMessage>{signupErrors.confirmPassword?.message}</FormErrorMessage>
-                  </FormControl>
-
-                  {/* Country - Hidden but with default value */}
-                  <Input type="hidden" value="US" {...registerSignup('country')} />
-
-                  {/* Language - Hidden but with default value */}
-                  <Input type="hidden" value="en" {...registerSignup('language')} />
-
-                  <Button
-                    variant="solid"
-                    colorScheme="blue"
-                    isLoading={isLoading}
-                    onClick={() => handleSubmit('signup')}
-                    rightIcon={<ArrowRight width={20} height={20} />}
-                  >
-                    {t('cc:continue')}
-                  </Button>
-
-                  {/* OR Divider */}
-                  <Box position="relative" my={'4'}>
-                    <Divider />
-                    <AbsoluteCenter bg="white" px="4" color="#94949B">
-                      {t('cc:or_sign_up_with')}
-                    </AbsoluteCenter>
-                  </Box>
-
-                  {/* Social Login Buttons */}
-                  <Stack direction="row" spacing={4} w={'full'}>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
-                      w={'50%'}
-                      boxShadow={'none'}
-                      _hover={{
-                        bg: 'grayModern.50'
-                      }}
-                      leftIcon={<GoogleIcon />}
-                      isDisabled={!conf?.idp.google.enabled}
-                    >
-                      Google
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
-                      w={'50%'}
-                      _hover={{
-                        bg: 'grayModern.50'
-                      }}
-                      boxShadow={'none'}
-                      leftIcon={<GithubIcon />}
-                      isDisabled={!conf?.idp.github.enabled}
-                    >
-                      GitHub
-                    </Button>
-                  </Stack>
-
-                  {/* Terms and Conditions */}
-                  <Box fontSize="sm" color="gray.500">
-                    By proceeding you acknowledge that you have read, understood and agree to our{' '}
-                    <Box
-                      as={Link}
-                      href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
-                      target="_blank"
-                      textDecoration="underline"
-                    >
-                      Terms and Conditions
-                    </Box>
-                    &nbsp;and&nbsp;
-                    <Box
-                      as={Link}
-                      href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
-                      target="_blank"
-                      textDecoration="underline"
-                    >
-                      Privacy Policy.
-                    </Box>
-                  </Box>
-                </Stack>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+      <Box mx="auto" maxW="lg" px={4}>
+        <Box fontSize={'24px'} fontWeight={600} mb={'24px'}>
+          Welcome to ClawCloud Run
         </Box>
-      </Stack>
+        <Stack spacing={'24px'}>
+          <Box
+            borderWidth="1px"
+            borderRadius="12px"
+            p={'12px'}
+            borderColor="#8CAFFF"
+            bg="rgba(140, 175, 255, 0.05)"
+          >
+            <Flex alignItems="center" justifyContent="center" direction="column">
+              <Box fontSize="xl" fontWeight="bold" color="blue.500" mb={4}>
+                Monthly $5 credits available with Github
+              </Box>
+              <Button
+                borderRadius={'8px'}
+                variant="outline"
+                onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
+                w={'100%'}
+                _hover={{
+                  bg: 'grayModern.50'
+                }}
+                boxShadow={'none'}
+                leftIcon={<GithubIcon />}
+              >
+                GitHub
+              </Button>
+            </Flex>
+          </Box>
+          {/* OR Divider */}
+          <Box position="relative">
+            <Divider />
+            <AbsoluteCenter bg="white" px="4" color="#94949B">
+              OR
+            </AbsoluteCenter>
+          </Box>
+
+          {/* Social Login Buttons */}
+          <Stack direction="row" spacing={4} w={'full'}>
+            <Button
+              borderRadius={'8px'}
+              variant="outline"
+              onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
+              w={'100%'}
+              boxShadow={'none'}
+              _hover={{
+                bg: 'grayModern.50'
+              }}
+              leftIcon={<GoogleIcon />}
+            >
+              Google
+            </Button>
+          </Stack>
+
+          {/* Terms and Conditions */}
+          <Box fontSize="sm" color="gray.500">
+            By proceeding you acknowledge that you have read, understood and agree to our{' '}
+            <Box
+              as={Link}
+              href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
+              target="_blank"
+              textDecoration="underline"
+            >
+              Terms and Conditions
+            </Box>
+            &nbsp;and&nbsp;
+            <Box
+              as={Link}
+              href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
+              target="_blank"
+              textDecoration="underline"
+            >
+              Privacy Policy.
+            </Box>
+          </Box>
+        </Stack>
+      </Box>
     </Flex>
   );
 }
