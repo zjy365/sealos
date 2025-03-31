@@ -12,9 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('podName is empty');
     }
 
-    const { k8sCore, namespace } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { k8sCore, namespace } = await getK8s(await authSession(req.headers));
 
     // get pods event list
     const { body: data } = await k8sCore.listNamespacedEvent(

@@ -7,9 +7,7 @@ import { Log } from '@kubernetes/client-node';
 import { PassThrough } from 'stream';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
-  const { kc, k8sCore, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { kc, k8sCore, namespace } = await getK8s(await authSession(req.headers));
 
   const {
     appName,

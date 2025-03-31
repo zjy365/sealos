@@ -42,9 +42,9 @@ export async function PauseApp({
   replica,
   req
 }: UpdateReplicaParams & { req: NextApiRequest }) {
-  const { apiClient, k8sAutoscaling, getDeployApp, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { apiClient, k8sAutoscaling, getDeployApp, namespace } = await getK8s(
+    await authSession(req.headers)
+  );
 
   const app = await getDeployApp(appName);
   if (!app.metadata?.name || !app?.metadata?.annotations || !app.spec) {
@@ -90,9 +90,7 @@ export async function StartApp({
   replica,
   req
 }: UpdateReplicaParams & { req: NextApiRequest }) {
-  const { apiClient, getDeployApp, applyYamlList } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { apiClient, getDeployApp, applyYamlList } = await getK8s(await authSession(req.headers));
 
   const app = await getDeployApp(appName);
 

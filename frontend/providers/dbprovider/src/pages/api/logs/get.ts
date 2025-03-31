@@ -11,9 +11,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handsler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const { namespace, k8sExec, k8sCore } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { namespace, k8sExec, k8sCore } = await getK8s(await authSession(req));
 
     const {
       podName,

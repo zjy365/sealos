@@ -38,9 +38,7 @@ export async function delBackupByName({ backupName, req }: Props & { req: NextAp
   const version = 'v1alpha1';
   const plural = 'backups';
 
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
   return await k8sCustomObjects.deleteNamespacedCustomObject(
     group,

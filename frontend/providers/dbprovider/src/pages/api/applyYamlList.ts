@@ -19,9 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const { applyYamlList } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { applyYamlList } = await getK8s(await authSession(req));
 
     await applyYamlList(yamlList, type);
 

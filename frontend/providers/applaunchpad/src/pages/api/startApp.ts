@@ -15,9 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     if (!appName) {
       throw new Error('appName is empty');
     }
-    const { apiClient, getDeployApp, applyYamlList, namespace, k8sNetworkingApp } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { apiClient, getDeployApp, applyYamlList, namespace, k8sNetworkingApp } = await getK8s(
+      await authSession(req.headers)
+    );
 
     const app = await getDeployApp(appName);
 

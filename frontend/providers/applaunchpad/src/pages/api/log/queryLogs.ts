@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const kubeconfig = await authSession(req.headers);
+    const { kubeconfig } = await authSession(req.headers);
     const { namespace } = await getK8s({
       kubeconfig: kubeconfig
     });

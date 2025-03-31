@@ -21,9 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       });
     }
 
-    const { applyYamlList, k8sCustomObjects, namespace } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { applyYamlList, k8sCustomObjects, namespace } = await getK8s(await authSession(req));
 
     const yaml = json2BasicOps({
       dbName,

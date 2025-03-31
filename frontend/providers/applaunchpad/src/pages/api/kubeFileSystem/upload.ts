@@ -9,9 +9,7 @@ import { PassThrough } from 'stream';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const { namespace, k8sExec } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace, k8sExec } = await getK8s(await authSession(req.headers));
 
     const kubefs = new KubeFileSystem(k8sExec);
     const { containerName, path, podName } = req.query as {

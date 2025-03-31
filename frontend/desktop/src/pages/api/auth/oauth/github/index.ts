@@ -25,12 +25,14 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           avatar_url,
           'avatar/' + ProviderType.GITHUB + '/' + id
         );
+        const referralCode = req.cookies?.CC_RUN_REFERRAL_CODE || undefined;
         await getGlobalTokenByGithubSvc(
           persistUrl || '',
           id,
           name,
           email,
           inviterId,
+          referralCode,
           semData,
           bdVid
         )(res);

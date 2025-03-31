@@ -31,9 +31,7 @@ export const GetPodMetrics = async ({
   req,
   podsName
 }: GetPodMetricsProps & { req: NextApiRequest }) => {
-  const { metricsClient, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { metricsClient, namespace } = await getK8s(await authSession(req.headers));
 
   const metrics = await Promise.allSettled(
     podsName.map((name) => metricsClient.getPodMetrics(namespace, name))

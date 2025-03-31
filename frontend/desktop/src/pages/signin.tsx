@@ -3,6 +3,7 @@ import SignLayout from '@/components/cc/SignLayout';
 import LangSelectSimple from '@/components/LangSelect/simple';
 import { useConfigStore } from '@/stores/config';
 import { setCookie } from '@/utils/cookieUtils';
+import referral from '@/utils/referral';
 import { compareFirstLanguages } from '@/utils/tools';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
@@ -45,11 +46,19 @@ export default function SigninPage() {
   );
 }
 
-export async function getServerSideProps({ req, res, locales }: any) {
+export async function getServerSideProps({ req, res, locales, query }: any) {
+  const code = query[referral.codeQueryKey];
+  const cookies: string[] = [];
+  if (code) {
+    const domain = referral.getCookieDomain(global.AppConfig?.cloud.domain);
+    // prettier-ignore
+    cookies.push(`${referral.codeCookieKey}=${code}; Max-Age=${ referral.codeCookieMaxAge}; Path=/; HttpOnly; Secure${domain ? `; Domain=${domain}` : ''}`);
+  }
   // const local =
   //   req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
   const local = 'en';
-  res.setHeader('Set-Cookie', `NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
+  cookies.push(`NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
+  res.setHeader('Set-Cookie', cookies);
 
   const queryClient = new QueryClient();
   const props = {

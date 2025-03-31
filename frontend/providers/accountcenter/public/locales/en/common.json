@@ -323,7 +323,7 @@
   "Multiple": "Multiple",
   "ExpireDate": "Exp. {{date}}",
   "PlanIncludedCreditsLabel": "Plan Included",
-  "PlanRechargedCreditsLabel": "Recharged available",
+  "PlanRechargedCreditsLabel": "Recharged Available",
   "UpdateSuccess": "Update Success",
   "RechargeCustomAmount": "Custom",
   "RechargeCustomAmountModalTitle": "Custom credit amount",
@@ -376,5 +376,22 @@
   "days_other": "{{count}} days",
   "FreePlanConnectGithubWarn": "Please connect your GitHub in account setting within {{daysText}} to maintain access to the Free plan, or  <Upgrade>upgrade plan</Upgrade>",
   "UpgradeFailed": "Upgrade failed",
-  "UpgradeSuccess": "Upgrade Successfully"
+  "UpgradeSuccess": "Upgrade Successfully",
+  "Referral": "Referral",
+  "ReferralShareLinkTitle": "Share your link to others",
+  "ReferralShareLinkDesc": "The referral link will be generated after creating apps from one of the following: Devbox, App store, App launchpad, Database.",
+  "ReferralLink": "Referral Link",
+  "CopyLink": "Copy Link",
+  "CopySuccess": "Copied",
+  "ReferralStats": "Referral stats",
+  "BonusWithIndex": "Bonus {{index}}",
+  "ReferralBonus": [
+    "Invite 5 new users to register and get: A 1-month Hobby plan (if on Free plan), OR a 1-month extension (if already on Hobby plan)",
+    "You can share the link unlimited times. Invite 120 new users and earn up to 24 months of the Hobby plan"
+  ],
+  "ReferralRewardsCount": "<Strong>{{count}}</Strong> month of hobby plan",
+  "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of hobby plan",
+  "ReferralStatsInvitedUsers": "Invited Users",
+  "ReferralStatsRewards": "Bonus Gained",
+  "NotAvailableYet": "Not available yet"
 }

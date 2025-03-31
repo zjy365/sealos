@@ -108,6 +108,16 @@ export type UserInfo = $Result.DefaultSelection<Prisma.$UserInfoPayload>
  * 
  */
 export type WorkspaceUsage = $Result.DefaultSelection<Prisma.$WorkspaceUsagePayload>
+/**
+ * Model Referral
+ * 
+ */
+export type Referral = $Result.DefaultSelection<Prisma.$ReferralPayload>
+/**
+ * Model ReferralReward
+ * 
+ */
+export type ReferralReward = $Result.DefaultSelection<Prisma.$ReferralRewardPayload>
 
 /**
  * Enums
@@ -157,6 +167,13 @@ export const TaskStatus: {
 
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus]
 
+
+export const RewardType: {
+  ONE_MONTH_HOBBY_LICENSE: 'ONE_MONTH_HOBBY_LICENSE'
+};
+
+export type RewardType = (typeof RewardType)[keyof typeof RewardType]
+
 }
 
 export type ProviderType = $Enums.ProviderType
@@ -174,6 +191,10 @@ export const TaskType: typeof $Enums.TaskType
 export type TaskStatus = $Enums.TaskStatus
 
 export const TaskStatus: typeof $Enums.TaskStatus
+
+export type RewardType = $Enums.RewardType
+
+export const RewardType: typeof $Enums.RewardType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -486,6 +507,26 @@ export class PrismaClient<
     * ```
     */
   get workspaceUsage(): Prisma.WorkspaceUsageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.referral`: Exposes CRUD operations for the **Referral** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Referrals
+    * const referrals = await prisma.referral.findMany()
+    * ```
+    */
+  get referral(): Prisma.ReferralDelegate<ExtArgs>;
+
+  /**
+   * `prisma.referralReward`: Exposes CRUD operations for the **ReferralReward** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ReferralRewards
+    * const referralRewards = await prisma.referralReward.findMany()
+    * ```
+    */
+  get referralReward(): Prisma.ReferralRewardDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -974,7 +1015,9 @@ export namespace Prisma {
     Subscription: 'Subscription',
     SubscriptionPlan: 'SubscriptionPlan',
     UserInfo: 'UserInfo',
-    WorkspaceUsage: 'WorkspaceUsage'
+    WorkspaceUsage: 'WorkspaceUsage',
+    Referral: 'Referral',
+    ReferralReward: 'ReferralReward'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -991,7 +1034,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'oauthProvider' | 'region' | 'account' | 'accountTransaction' | 'errorPaymentCreate' | 'payment' | 'user' | 'inviteReward' | 'userSemChannel' | 'task' | 'userTask' | 'cardInfo' | 'credits' | 'invoicePayment' | 'paymentOrder' | 'subscription' | 'subscriptionPlan' | 'userInfo' | 'workspaceUsage'
+      modelProps: 'oauthProvider' | 'region' | 'account' | 'accountTransaction' | 'errorPaymentCreate' | 'payment' | 'user' | 'inviteReward' | 'userSemChannel' | 'task' | 'userTask' | 'cardInfo' | 'credits' | 'invoicePayment' | 'paymentOrder' | 'subscription' | 'subscriptionPlan' | 'userInfo' | 'workspaceUsage' | 'referral' | 'referralReward'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
@@ -2249,6 +2292,138 @@ export namespace Prisma {
           }
         }
       }
+      Referral: {
+        payload: Prisma.$ReferralPayload<ExtArgs>
+        fields: Prisma.ReferralFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReferralFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReferralFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>
+          }
+          findFirst: {
+            args: Prisma.ReferralFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReferralFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>
+          }
+          findMany: {
+            args: Prisma.ReferralFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>[]
+          }
+          create: {
+            args: Prisma.ReferralCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>
+          }
+          createMany: {
+            args: Prisma.ReferralCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.ReferralDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>
+          }
+          update: {
+            args: Prisma.ReferralUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReferralDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReferralUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.ReferralUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPayload>
+          }
+          aggregate: {
+            args: Prisma.ReferralAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateReferral>
+          }
+          groupBy: {
+            args: Prisma.ReferralGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<ReferralGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReferralCountArgs<ExtArgs>,
+            result: $Utils.Optional<ReferralCountAggregateOutputType> | number
+          }
+        }
+      }
+      ReferralReward: {
+        payload: Prisma.$ReferralRewardPayload<ExtArgs>
+        fields: Prisma.ReferralRewardFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReferralRewardFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReferralRewardFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+          }
+          findFirst: {
+            args: Prisma.ReferralRewardFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReferralRewardFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+          }
+          findMany: {
+            args: Prisma.ReferralRewardFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>[]
+          }
+          create: {
+            args: Prisma.ReferralRewardCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+          }
+          createMany: {
+            args: Prisma.ReferralRewardCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.ReferralRewardDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+          }
+          update: {
+            args: Prisma.ReferralRewardUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReferralRewardDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReferralRewardUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.ReferralRewardUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+          }
+          aggregate: {
+            args: Prisma.ReferralRewardAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateReferralReward>
+          }
+          groupBy: {
+            args: Prisma.ReferralRewardGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<ReferralRewardGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReferralRewardCountArgs<ExtArgs>,
+            result: $Utils.Optional<ReferralRewardCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2555,6 +2730,50 @@ export namespace Prisma {
    */
   export type SubscriptionPlanCountOutputTypeCountSubscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SubscriptionWhereInput
+  }
+
+
+
+  /**
+   * Count Type ReferralCountOutputType
+   */
+
+  export type ReferralCountOutputType = {
+    referral: number
+    rewards: number
+  }
+
+  export type ReferralCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referral?: boolean | ReferralCountOutputTypeCountReferralArgs
+    rewards?: boolean | ReferralCountOutputTypeCountRewardsArgs
+  }
+
+  // Custom InputTypes
+
+  /**
+   * ReferralCountOutputType without action
+   */
+  export type ReferralCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralCountOutputType
+     */
+    select?: ReferralCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * ReferralCountOutputType without action
+   */
+  export type ReferralCountOutputTypeCountReferralArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReferralWhereInput
+  }
+
+
+  /**
+   * ReferralCountOutputType without action
+   */
+  export type ReferralCountOutputTypeCountRewardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReferralRewardWhereInput
   }
 
 
@@ -21098,6 +21317,2021 @@ export namespace Prisma {
 
 
   /**
+   * Model Referral
+   */
+
+  export type AggregateReferral = {
+    _count: ReferralCountAggregateOutputType | null
+    _avg: ReferralAvgAggregateOutputType | null
+    _sum: ReferralSumAggregateOutputType | null
+    _min: ReferralMinAggregateOutputType | null
+    _max: ReferralMaxAggregateOutputType | null
+  }
+
+  export type ReferralAvgAggregateOutputType = {
+    id: number | null
+    referrer_id: number | null
+  }
+
+  export type ReferralSumAggregateOutputType = {
+    id: number | null
+    referrer_id: number | null
+  }
+
+  export type ReferralMinAggregateOutputType = {
+    id: number | null
+    code: string | null
+    user_uid: string | null
+    referrer_id: number | null
+    created_at: Date | null
+    updated_at: Date | null
+    used: boolean | null
+    available: boolean | null
+  }
+
+  export type ReferralMaxAggregateOutputType = {
+    id: number | null
+    code: string | null
+    user_uid: string | null
+    referrer_id: number | null
+    created_at: Date | null
+    updated_at: Date | null
+    used: boolean | null
+    available: boolean | null
+  }
+
+  export type ReferralCountAggregateOutputType = {
+    id: number
+    code: number
+    user_uid: number
+    referrer_id: number
+    created_at: number
+    updated_at: number
+    used: number
+    available: number
+    _all: number
+  }
+
+
+  export type ReferralAvgAggregateInputType = {
+    id?: true
+    referrer_id?: true
+  }
+
+  export type ReferralSumAggregateInputType = {
+    id?: true
+    referrer_id?: true
+  }
+
+  export type ReferralMinAggregateInputType = {
+    id?: true
+    code?: true
+    user_uid?: true
+    referrer_id?: true
+    created_at?: true
+    updated_at?: true
+    used?: true
+    available?: true
+  }
+
+  export type ReferralMaxAggregateInputType = {
+    id?: true
+    code?: true
+    user_uid?: true
+    referrer_id?: true
+    created_at?: true
+    updated_at?: true
+    used?: true
+    available?: true
+  }
+
+  export type ReferralCountAggregateInputType = {
+    id?: true
+    code?: true
+    user_uid?: true
+    referrer_id?: true
+    created_at?: true
+    updated_at?: true
+    used?: true
+    available?: true
+    _all?: true
+  }
+
+  export type ReferralAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Referral to aggregate.
+     */
+    where?: ReferralWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Referrals to fetch.
+     */
+    orderBy?: ReferralOrderByWithRelationInput | ReferralOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReferralWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Referrals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Referrals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Referrals
+    **/
+    _count?: true | ReferralCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ReferralAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReferralSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReferralMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReferralMaxAggregateInputType
+  }
+
+  export type GetReferralAggregateType<T extends ReferralAggregateArgs> = {
+        [P in keyof T & keyof AggregateReferral]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReferral[P]>
+      : GetScalarType<T[P], AggregateReferral[P]>
+  }
+
+
+
+
+  export type ReferralGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReferralWhereInput
+    orderBy?: ReferralOrderByWithAggregationInput | ReferralOrderByWithAggregationInput[]
+    by: ReferralScalarFieldEnum[] | ReferralScalarFieldEnum
+    having?: ReferralScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReferralCountAggregateInputType | true
+    _avg?: ReferralAvgAggregateInputType
+    _sum?: ReferralSumAggregateInputType
+    _min?: ReferralMinAggregateInputType
+    _max?: ReferralMaxAggregateInputType
+  }
+
+  export type ReferralGroupByOutputType = {
+    id: number
+    code: string
+    user_uid: string
+    referrer_id: number | null
+    created_at: Date
+    updated_at: Date
+    used: boolean
+    available: boolean
+    _count: ReferralCountAggregateOutputType | null
+    _avg: ReferralAvgAggregateOutputType | null
+    _sum: ReferralSumAggregateOutputType | null
+    _min: ReferralMinAggregateOutputType | null
+    _max: ReferralMaxAggregateOutputType | null
+  }
+
+  type GetReferralGroupByPayload<T extends ReferralGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReferralGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReferralGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReferralGroupByOutputType[P]>
+            : GetScalarType<T[P], ReferralGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReferralSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    user_uid?: boolean
+    referrer_id?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    used?: boolean
+    available?: boolean
+    referrer?: boolean | Referral$referrerArgs<ExtArgs>
+    referral?: boolean | Referral$referralArgs<ExtArgs>
+    rewards?: boolean | Referral$rewardsArgs<ExtArgs>
+    _count?: boolean | ReferralCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["referral"]>
+
+  export type ReferralSelectScalar = {
+    id?: boolean
+    code?: boolean
+    user_uid?: boolean
+    referrer_id?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    used?: boolean
+    available?: boolean
+  }
+
+  export type ReferralInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referrer?: boolean | Referral$referrerArgs<ExtArgs>
+    referral?: boolean | Referral$referralArgs<ExtArgs>
+    rewards?: boolean | Referral$rewardsArgs<ExtArgs>
+    _count?: boolean | ReferralCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+
+  export type $ReferralPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Referral"
+    objects: {
+      referrer: Prisma.$ReferralPayload<ExtArgs> | null
+      referral: Prisma.$ReferralPayload<ExtArgs>[]
+      rewards: Prisma.$ReferralRewardPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      code: string
+      user_uid: string
+      referrer_id: number | null
+      created_at: Date
+      updated_at: Date
+      used: boolean
+      available: boolean
+    }, ExtArgs["result"]["referral"]>
+    composites: {}
+  }
+
+
+  type ReferralGetPayload<S extends boolean | null | undefined | ReferralDefaultArgs> = $Result.GetResult<Prisma.$ReferralPayload, S>
+
+  type ReferralCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ReferralFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ReferralCountAggregateInputType | true
+    }
+
+  export interface ReferralDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Referral'], meta: { name: 'Referral' } }
+    /**
+     * Find zero or one Referral that matches the filter.
+     * @param {ReferralFindUniqueArgs} args - Arguments to find a Referral
+     * @example
+     * // Get one Referral
+     * const referral = await prisma.referral.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends ReferralFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralFindUniqueArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one Referral that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {ReferralFindUniqueOrThrowArgs} args - Arguments to find a Referral
+     * @example
+     * // Get one Referral
+     * const referral = await prisma.referral.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ReferralFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first Referral that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralFindFirstArgs} args - Arguments to find a Referral
+     * @example
+     * // Get one Referral
+     * const referral = await prisma.referral.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends ReferralFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralFindFirstArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first Referral that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralFindFirstOrThrowArgs} args - Arguments to find a Referral
+     * @example
+     * // Get one Referral
+     * const referral = await prisma.referral.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ReferralFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more Referrals that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Referrals
+     * const referrals = await prisma.referral.findMany()
+     * 
+     * // Get first 10 Referrals
+     * const referrals = await prisma.referral.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const referralWithIdOnly = await prisma.referral.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends ReferralFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a Referral.
+     * @param {ReferralCreateArgs} args - Arguments to create a Referral.
+     * @example
+     * // Create one Referral
+     * const Referral = await prisma.referral.create({
+     *   data: {
+     *     // ... data to create a Referral
+     *   }
+     * })
+     * 
+    **/
+    create<T extends ReferralCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralCreateArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many Referrals.
+     *     @param {ReferralCreateManyArgs} args - Arguments to create many Referrals.
+     *     @example
+     *     // Create many Referrals
+     *     const referral = await prisma.referral.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends ReferralCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Referral.
+     * @param {ReferralDeleteArgs} args - Arguments to delete one Referral.
+     * @example
+     * // Delete one Referral
+     * const Referral = await prisma.referral.delete({
+     *   where: {
+     *     // ... filter to delete one Referral
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends ReferralDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralDeleteArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one Referral.
+     * @param {ReferralUpdateArgs} args - Arguments to update one Referral.
+     * @example
+     * // Update one Referral
+     * const referral = await prisma.referral.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends ReferralUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralUpdateArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more Referrals.
+     * @param {ReferralDeleteManyArgs} args - Arguments to filter Referrals to delete.
+     * @example
+     * // Delete a few Referrals
+     * const { count } = await prisma.referral.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends ReferralDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Referrals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Referrals
+     * const referral = await prisma.referral.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends ReferralUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Referral.
+     * @param {ReferralUpsertArgs} args - Arguments to update or create a Referral.
+     * @example
+     * // Update or create a Referral
+     * const referral = await prisma.referral.upsert({
+     *   create: {
+     *     // ... data to create a Referral
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Referral we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends ReferralUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralUpsertArgs<ExtArgs>>
+    ): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of Referrals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralCountArgs} args - Arguments to filter Referrals to count.
+     * @example
+     * // Count the number of Referrals
+     * const count = await prisma.referral.count({
+     *   where: {
+     *     // ... the filter for the Referrals we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReferralCountArgs>(
+      args?: Subset<T, ReferralCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReferralCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Referral.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReferralAggregateArgs>(args: Subset<T, ReferralAggregateArgs>): Prisma.PrismaPromise<GetReferralAggregateType<T>>
+
+    /**
+     * Group by Referral.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReferralGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReferralGroupByArgs['orderBy'] }
+        : { orderBy?: ReferralGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReferralGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReferralGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Referral model
+   */
+  readonly fields: ReferralFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Referral.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReferralClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    referrer<T extends Referral$referrerArgs<ExtArgs> = {}>(args?: Subset<T, Referral$referrerArgs<ExtArgs>>): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
+
+    referral<T extends Referral$referralArgs<ExtArgs> = {}>(args?: Subset<T, Referral$referralArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    rewards<T extends Referral$rewardsArgs<ExtArgs> = {}>(args?: Subset<T, Referral$rewardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the Referral model
+   */ 
+  interface ReferralFieldRefs {
+    readonly id: FieldRef<"Referral", 'Int'>
+    readonly code: FieldRef<"Referral", 'String'>
+    readonly user_uid: FieldRef<"Referral", 'String'>
+    readonly referrer_id: FieldRef<"Referral", 'Int'>
+    readonly created_at: FieldRef<"Referral", 'DateTime'>
+    readonly updated_at: FieldRef<"Referral", 'DateTime'>
+    readonly used: FieldRef<"Referral", 'Boolean'>
+    readonly available: FieldRef<"Referral", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * Referral findUnique
+   */
+  export type ReferralFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * Filter, which Referral to fetch.
+     */
+    where: ReferralWhereUniqueInput
+  }
+
+
+  /**
+   * Referral findUniqueOrThrow
+   */
+  export type ReferralFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * Filter, which Referral to fetch.
+     */
+    where: ReferralWhereUniqueInput
+  }
+
+
+  /**
+   * Referral findFirst
+   */
+  export type ReferralFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * Filter, which Referral to fetch.
+     */
+    where?: ReferralWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Referrals to fetch.
+     */
+    orderBy?: ReferralOrderByWithRelationInput | ReferralOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Referrals.
+     */
+    cursor?: ReferralWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Referrals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Referrals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Referrals.
+     */
+    distinct?: ReferralScalarFieldEnum | ReferralScalarFieldEnum[]
+  }
+
+
+  /**
+   * Referral findFirstOrThrow
+   */
+  export type ReferralFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * Filter, which Referral to fetch.
+     */
+    where?: ReferralWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Referrals to fetch.
+     */
+    orderBy?: ReferralOrderByWithRelationInput | ReferralOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Referrals.
+     */
+    cursor?: ReferralWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Referrals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Referrals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Referrals.
+     */
+    distinct?: ReferralScalarFieldEnum | ReferralScalarFieldEnum[]
+  }
+
+
+  /**
+   * Referral findMany
+   */
+  export type ReferralFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * Filter, which Referrals to fetch.
+     */
+    where?: ReferralWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Referrals to fetch.
+     */
+    orderBy?: ReferralOrderByWithRelationInput | ReferralOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Referrals.
+     */
+    cursor?: ReferralWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Referrals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Referrals.
+     */
+    skip?: number
+    distinct?: ReferralScalarFieldEnum | ReferralScalarFieldEnum[]
+  }
+
+
+  /**
+   * Referral create
+   */
+  export type ReferralCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Referral.
+     */
+    data: XOR<ReferralCreateInput, ReferralUncheckedCreateInput>
+  }
+
+
+  /**
+   * Referral createMany
+   */
+  export type ReferralCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Referrals.
+     */
+    data: ReferralCreateManyInput | ReferralCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Referral update
+   */
+  export type ReferralUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Referral.
+     */
+    data: XOR<ReferralUpdateInput, ReferralUncheckedUpdateInput>
+    /**
+     * Choose, which Referral to update.
+     */
+    where: ReferralWhereUniqueInput
+  }
+
+
+  /**
+   * Referral updateMany
+   */
+  export type ReferralUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Referrals.
+     */
+    data: XOR<ReferralUpdateManyMutationInput, ReferralUncheckedUpdateManyInput>
+    /**
+     * Filter which Referrals to update
+     */
+    where?: ReferralWhereInput
+  }
+
+
+  /**
+   * Referral upsert
+   */
+  export type ReferralUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Referral to update in case it exists.
+     */
+    where: ReferralWhereUniqueInput
+    /**
+     * In case the Referral found by the `where` argument doesn't exist, create a new Referral with this data.
+     */
+    create: XOR<ReferralCreateInput, ReferralUncheckedCreateInput>
+    /**
+     * In case the Referral was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReferralUpdateInput, ReferralUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Referral delete
+   */
+  export type ReferralDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    /**
+     * Filter which Referral to delete.
+     */
+    where: ReferralWhereUniqueInput
+  }
+
+
+  /**
+   * Referral deleteMany
+   */
+  export type ReferralDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Referrals to delete
+     */
+    where?: ReferralWhereInput
+  }
+
+
+  /**
+   * Referral.referrer
+   */
+  export type Referral$referrerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    where?: ReferralWhereInput
+  }
+
+
+  /**
+   * Referral.referral
+   */
+  export type Referral$referralArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+    where?: ReferralWhereInput
+    orderBy?: ReferralOrderByWithRelationInput | ReferralOrderByWithRelationInput[]
+    cursor?: ReferralWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReferralScalarFieldEnum | ReferralScalarFieldEnum[]
+  }
+
+
+  /**
+   * Referral.rewards
+   */
+  export type Referral$rewardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    where?: ReferralRewardWhereInput
+    orderBy?: ReferralRewardOrderByWithRelationInput | ReferralRewardOrderByWithRelationInput[]
+    cursor?: ReferralRewardWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReferralRewardScalarFieldEnum | ReferralRewardScalarFieldEnum[]
+  }
+
+
+  /**
+   * Referral without action
+   */
+  export type ReferralDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referral
+     */
+    select?: ReferralSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralInclude<ExtArgs> | null
+  }
+
+
+
+  /**
+   * Model ReferralReward
+   */
+
+  export type AggregateReferralReward = {
+    _count: ReferralRewardCountAggregateOutputType | null
+    _avg: ReferralRewardAvgAggregateOutputType | null
+    _sum: ReferralRewardSumAggregateOutputType | null
+    _min: ReferralRewardMinAggregateOutputType | null
+    _max: ReferralRewardMaxAggregateOutputType | null
+  }
+
+  export type ReferralRewardAvgAggregateOutputType = {
+    id: number | null
+    referral_id: number | null
+  }
+
+  export type ReferralRewardSumAggregateOutputType = {
+    id: number | null
+    referral_id: number | null
+  }
+
+  export type ReferralRewardMinAggregateOutputType = {
+    id: number | null
+    referral_id: number | null
+    reward: $Enums.RewardType | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ReferralRewardMaxAggregateOutputType = {
+    id: number | null
+    referral_id: number | null
+    reward: $Enums.RewardType | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ReferralRewardCountAggregateOutputType = {
+    id: number
+    referral_id: number
+    reward: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type ReferralRewardAvgAggregateInputType = {
+    id?: true
+    referral_id?: true
+  }
+
+  export type ReferralRewardSumAggregateInputType = {
+    id?: true
+    referral_id?: true
+  }
+
+  export type ReferralRewardMinAggregateInputType = {
+    id?: true
+    referral_id?: true
+    reward?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ReferralRewardMaxAggregateInputType = {
+    id?: true
+    referral_id?: true
+    reward?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ReferralRewardCountAggregateInputType = {
+    id?: true
+    referral_id?: true
+    reward?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type ReferralRewardAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ReferralReward to aggregate.
+     */
+    where?: ReferralRewardWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralRewards to fetch.
+     */
+    orderBy?: ReferralRewardOrderByWithRelationInput | ReferralRewardOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReferralRewardWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralRewards from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralRewards.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ReferralRewards
+    **/
+    _count?: true | ReferralRewardCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ReferralRewardAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReferralRewardSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReferralRewardMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReferralRewardMaxAggregateInputType
+  }
+
+  export type GetReferralRewardAggregateType<T extends ReferralRewardAggregateArgs> = {
+        [P in keyof T & keyof AggregateReferralReward]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReferralReward[P]>
+      : GetScalarType<T[P], AggregateReferralReward[P]>
+  }
+
+
+
+
+  export type ReferralRewardGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReferralRewardWhereInput
+    orderBy?: ReferralRewardOrderByWithAggregationInput | ReferralRewardOrderByWithAggregationInput[]
+    by: ReferralRewardScalarFieldEnum[] | ReferralRewardScalarFieldEnum
+    having?: ReferralRewardScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReferralRewardCountAggregateInputType | true
+    _avg?: ReferralRewardAvgAggregateInputType
+    _sum?: ReferralRewardSumAggregateInputType
+    _min?: ReferralRewardMinAggregateInputType
+    _max?: ReferralRewardMaxAggregateInputType
+  }
+
+  export type ReferralRewardGroupByOutputType = {
+    id: number
+    referral_id: number
+    reward: $Enums.RewardType
+    created_at: Date
+    updated_at: Date
+    _count: ReferralRewardCountAggregateOutputType | null
+    _avg: ReferralRewardAvgAggregateOutputType | null
+    _sum: ReferralRewardSumAggregateOutputType | null
+    _min: ReferralRewardMinAggregateOutputType | null
+    _max: ReferralRewardMaxAggregateOutputType | null
+  }
+
+  type GetReferralRewardGroupByPayload<T extends ReferralRewardGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReferralRewardGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReferralRewardGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReferralRewardGroupByOutputType[P]>
+            : GetScalarType<T[P], ReferralRewardGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReferralRewardSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    referral_id?: boolean
+    reward?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    referral?: boolean | ReferralDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["referralReward"]>
+
+  export type ReferralRewardSelectScalar = {
+    id?: boolean
+    referral_id?: boolean
+    reward?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type ReferralRewardInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referral?: boolean | ReferralDefaultArgs<ExtArgs>
+  }
+
+
+  export type $ReferralRewardPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ReferralReward"
+    objects: {
+      referral: Prisma.$ReferralPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      referral_id: number
+      reward: $Enums.RewardType
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["referralReward"]>
+    composites: {}
+  }
+
+
+  type ReferralRewardGetPayload<S extends boolean | null | undefined | ReferralRewardDefaultArgs> = $Result.GetResult<Prisma.$ReferralRewardPayload, S>
+
+  type ReferralRewardCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ReferralRewardFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ReferralRewardCountAggregateInputType | true
+    }
+
+  export interface ReferralRewardDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ReferralReward'], meta: { name: 'ReferralReward' } }
+    /**
+     * Find zero or one ReferralReward that matches the filter.
+     * @param {ReferralRewardFindUniqueArgs} args - Arguments to find a ReferralReward
+     * @example
+     * // Get one ReferralReward
+     * const referralReward = await prisma.referralReward.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends ReferralRewardFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralRewardFindUniqueArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one ReferralReward that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {ReferralRewardFindUniqueOrThrowArgs} args - Arguments to find a ReferralReward
+     * @example
+     * // Get one ReferralReward
+     * const referralReward = await prisma.referralReward.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ReferralRewardFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralRewardFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first ReferralReward that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardFindFirstArgs} args - Arguments to find a ReferralReward
+     * @example
+     * // Get one ReferralReward
+     * const referralReward = await prisma.referralReward.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends ReferralRewardFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralRewardFindFirstArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first ReferralReward that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardFindFirstOrThrowArgs} args - Arguments to find a ReferralReward
+     * @example
+     * // Get one ReferralReward
+     * const referralReward = await prisma.referralReward.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ReferralRewardFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralRewardFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more ReferralRewards that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ReferralRewards
+     * const referralRewards = await prisma.referralReward.findMany()
+     * 
+     * // Get first 10 ReferralRewards
+     * const referralRewards = await prisma.referralReward.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const referralRewardWithIdOnly = await prisma.referralReward.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends ReferralRewardFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralRewardFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a ReferralReward.
+     * @param {ReferralRewardCreateArgs} args - Arguments to create a ReferralReward.
+     * @example
+     * // Create one ReferralReward
+     * const ReferralReward = await prisma.referralReward.create({
+     *   data: {
+     *     // ... data to create a ReferralReward
+     *   }
+     * })
+     * 
+    **/
+    create<T extends ReferralRewardCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralRewardCreateArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many ReferralRewards.
+     *     @param {ReferralRewardCreateManyArgs} args - Arguments to create many ReferralRewards.
+     *     @example
+     *     // Create many ReferralRewards
+     *     const referralReward = await prisma.referralReward.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends ReferralRewardCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralRewardCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ReferralReward.
+     * @param {ReferralRewardDeleteArgs} args - Arguments to delete one ReferralReward.
+     * @example
+     * // Delete one ReferralReward
+     * const ReferralReward = await prisma.referralReward.delete({
+     *   where: {
+     *     // ... filter to delete one ReferralReward
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends ReferralRewardDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralRewardDeleteArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one ReferralReward.
+     * @param {ReferralRewardUpdateArgs} args - Arguments to update one ReferralReward.
+     * @example
+     * // Update one ReferralReward
+     * const referralReward = await prisma.referralReward.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends ReferralRewardUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralRewardUpdateArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more ReferralRewards.
+     * @param {ReferralRewardDeleteManyArgs} args - Arguments to filter ReferralRewards to delete.
+     * @example
+     * // Delete a few ReferralRewards
+     * const { count } = await prisma.referralReward.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends ReferralRewardDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralRewardDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ReferralRewards.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ReferralRewards
+     * const referralReward = await prisma.referralReward.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends ReferralRewardUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralRewardUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ReferralReward.
+     * @param {ReferralRewardUpsertArgs} args - Arguments to update or create a ReferralReward.
+     * @example
+     * // Update or create a ReferralReward
+     * const referralReward = await prisma.referralReward.upsert({
+     *   create: {
+     *     // ... data to create a ReferralReward
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ReferralReward we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends ReferralRewardUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralRewardUpsertArgs<ExtArgs>>
+    ): Prisma__ReferralRewardClient<$Result.GetResult<Prisma.$ReferralRewardPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of ReferralRewards.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardCountArgs} args - Arguments to filter ReferralRewards to count.
+     * @example
+     * // Count the number of ReferralRewards
+     * const count = await prisma.referralReward.count({
+     *   where: {
+     *     // ... the filter for the ReferralRewards we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReferralRewardCountArgs>(
+      args?: Subset<T, ReferralRewardCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReferralRewardCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ReferralReward.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReferralRewardAggregateArgs>(args: Subset<T, ReferralRewardAggregateArgs>): Prisma.PrismaPromise<GetReferralRewardAggregateType<T>>
+
+    /**
+     * Group by ReferralReward.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralRewardGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReferralRewardGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReferralRewardGroupByArgs['orderBy'] }
+        : { orderBy?: ReferralRewardGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReferralRewardGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReferralRewardGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ReferralReward model
+   */
+  readonly fields: ReferralRewardFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ReferralReward.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReferralRewardClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    referral<T extends ReferralDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ReferralDefaultArgs<ExtArgs>>): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the ReferralReward model
+   */ 
+  interface ReferralRewardFieldRefs {
+    readonly id: FieldRef<"ReferralReward", 'Int'>
+    readonly referral_id: FieldRef<"ReferralReward", 'Int'>
+    readonly reward: FieldRef<"ReferralReward", 'RewardType'>
+    readonly created_at: FieldRef<"ReferralReward", 'DateTime'>
+    readonly updated_at: FieldRef<"ReferralReward", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * ReferralReward findUnique
+   */
+  export type ReferralRewardFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralReward to fetch.
+     */
+    where: ReferralRewardWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralReward findUniqueOrThrow
+   */
+  export type ReferralRewardFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralReward to fetch.
+     */
+    where: ReferralRewardWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralReward findFirst
+   */
+  export type ReferralRewardFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralReward to fetch.
+     */
+    where?: ReferralRewardWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralRewards to fetch.
+     */
+    orderBy?: ReferralRewardOrderByWithRelationInput | ReferralRewardOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ReferralRewards.
+     */
+    cursor?: ReferralRewardWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralRewards from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralRewards.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ReferralRewards.
+     */
+    distinct?: ReferralRewardScalarFieldEnum | ReferralRewardScalarFieldEnum[]
+  }
+
+
+  /**
+   * ReferralReward findFirstOrThrow
+   */
+  export type ReferralRewardFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralReward to fetch.
+     */
+    where?: ReferralRewardWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralRewards to fetch.
+     */
+    orderBy?: ReferralRewardOrderByWithRelationInput | ReferralRewardOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ReferralRewards.
+     */
+    cursor?: ReferralRewardWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralRewards from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralRewards.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ReferralRewards.
+     */
+    distinct?: ReferralRewardScalarFieldEnum | ReferralRewardScalarFieldEnum[]
+  }
+
+
+  /**
+   * ReferralReward findMany
+   */
+  export type ReferralRewardFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralRewards to fetch.
+     */
+    where?: ReferralRewardWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralRewards to fetch.
+     */
+    orderBy?: ReferralRewardOrderByWithRelationInput | ReferralRewardOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ReferralRewards.
+     */
+    cursor?: ReferralRewardWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralRewards from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralRewards.
+     */
+    skip?: number
+    distinct?: ReferralRewardScalarFieldEnum | ReferralRewardScalarFieldEnum[]
+  }
+
+
+  /**
+   * ReferralReward create
+   */
+  export type ReferralRewardCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ReferralReward.
+     */
+    data: XOR<ReferralRewardCreateInput, ReferralRewardUncheckedCreateInput>
+  }
+
+
+  /**
+   * ReferralReward createMany
+   */
+  export type ReferralRewardCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ReferralRewards.
+     */
+    data: ReferralRewardCreateManyInput | ReferralRewardCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * ReferralReward update
+   */
+  export type ReferralRewardUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ReferralReward.
+     */
+    data: XOR<ReferralRewardUpdateInput, ReferralRewardUncheckedUpdateInput>
+    /**
+     * Choose, which ReferralReward to update.
+     */
+    where: ReferralRewardWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralReward updateMany
+   */
+  export type ReferralRewardUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ReferralRewards.
+     */
+    data: XOR<ReferralRewardUpdateManyMutationInput, ReferralRewardUncheckedUpdateManyInput>
+    /**
+     * Filter which ReferralRewards to update
+     */
+    where?: ReferralRewardWhereInput
+  }
+
+
+  /**
+   * ReferralReward upsert
+   */
+  export type ReferralRewardUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ReferralReward to update in case it exists.
+     */
+    where: ReferralRewardWhereUniqueInput
+    /**
+     * In case the ReferralReward found by the `where` argument doesn't exist, create a new ReferralReward with this data.
+     */
+    create: XOR<ReferralRewardCreateInput, ReferralRewardUncheckedCreateInput>
+    /**
+     * In case the ReferralReward was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReferralRewardUpdateInput, ReferralRewardUncheckedUpdateInput>
+  }
+
+
+  /**
+   * ReferralReward delete
+   */
+  export type ReferralRewardDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+    /**
+     * Filter which ReferralReward to delete.
+     */
+    where: ReferralRewardWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralReward deleteMany
+   */
+  export type ReferralRewardDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ReferralRewards to delete
+     */
+    where?: ReferralRewardWhereInput
+  }
+
+
+  /**
+   * ReferralReward without action
+   */
+  export type ReferralRewardDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralReward
+     */
+    select?: ReferralRewardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralRewardInclude<ExtArgs> | null
+  }
+
+
+
+  /**
    * Enums
    */
 
@@ -21404,6 +23638,31 @@ export namespace Prisma {
   export type WorkspaceUsageScalarFieldEnum = (typeof WorkspaceUsageScalarFieldEnum)[keyof typeof WorkspaceUsageScalarFieldEnum]
 
 
+  export const ReferralScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    user_uid: 'user_uid',
+    referrer_id: 'referrer_id',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    used: 'used',
+    available: 'available'
+  };
+
+  export type ReferralScalarFieldEnum = (typeof ReferralScalarFieldEnum)[keyof typeof ReferralScalarFieldEnum]
+
+
+  export const ReferralRewardScalarFieldEnum: {
+    id: 'id',
+    referral_id: 'referral_id',
+    reward: 'reward',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type ReferralRewardScalarFieldEnum = (typeof ReferralRewardScalarFieldEnum)[keyof typeof ReferralRewardScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -21573,6 +23832,20 @@ export namespace Prisma {
    * Reference to a field of type 'TaskStatus[]'
    */
   export type ListEnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'RewardType'
+   */
+  export type EnumRewardTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RewardType'>
+    
+
+
+  /**
+   * Reference to a field of type 'RewardType[]'
+   */
+  export type ListEnumRewardTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RewardType[]'>
     
 
 
@@ -23087,6 +25360,142 @@ export namespace Prisma {
     seat?: IntWithAggregatesFilter<"WorkspaceUsage"> | number
     createdAt?: DateTimeWithAggregatesFilter<"WorkspaceUsage"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"WorkspaceUsage"> | Date | string
+  }
+
+  export type ReferralWhereInput = {
+    AND?: ReferralWhereInput | ReferralWhereInput[]
+    OR?: ReferralWhereInput[]
+    NOT?: ReferralWhereInput | ReferralWhereInput[]
+    id?: IntFilter<"Referral"> | number
+    code?: StringFilter<"Referral"> | string
+    user_uid?: UuidFilter<"Referral"> | string
+    referrer_id?: IntNullableFilter<"Referral"> | number | null
+    created_at?: DateTimeFilter<"Referral"> | Date | string
+    updated_at?: DateTimeFilter<"Referral"> | Date | string
+    used?: BoolFilter<"Referral"> | boolean
+    available?: BoolFilter<"Referral"> | boolean
+    referrer?: XOR<ReferralNullableRelationFilter, ReferralWhereInput> | null
+    referral?: ReferralListRelationFilter
+    rewards?: ReferralRewardListRelationFilter
+  }
+
+  export type ReferralOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    user_uid?: SortOrder
+    referrer_id?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    used?: SortOrder
+    available?: SortOrder
+    referrer?: ReferralOrderByWithRelationInput
+    referral?: ReferralOrderByRelationAggregateInput
+    rewards?: ReferralRewardOrderByRelationAggregateInput
+  }
+
+  export type ReferralWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    code?: string
+    user_uid?: string
+    user_uid_referrer_id?: ReferralUser_uidReferrer_idCompoundUniqueInput
+    AND?: ReferralWhereInput | ReferralWhereInput[]
+    OR?: ReferralWhereInput[]
+    NOT?: ReferralWhereInput | ReferralWhereInput[]
+    referrer_id?: IntNullableFilter<"Referral"> | number | null
+    created_at?: DateTimeFilter<"Referral"> | Date | string
+    updated_at?: DateTimeFilter<"Referral"> | Date | string
+    used?: BoolFilter<"Referral"> | boolean
+    available?: BoolFilter<"Referral"> | boolean
+    referrer?: XOR<ReferralNullableRelationFilter, ReferralWhereInput> | null
+    referral?: ReferralListRelationFilter
+    rewards?: ReferralRewardListRelationFilter
+  }, "id" | "code" | "user_uid" | "user_uid_referrer_id">
+
+  export type ReferralOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    user_uid?: SortOrder
+    referrer_id?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    used?: SortOrder
+    available?: SortOrder
+    _count?: ReferralCountOrderByAggregateInput
+    _avg?: ReferralAvgOrderByAggregateInput
+    _max?: ReferralMaxOrderByAggregateInput
+    _min?: ReferralMinOrderByAggregateInput
+    _sum?: ReferralSumOrderByAggregateInput
+  }
+
+  export type ReferralScalarWhereWithAggregatesInput = {
+    AND?: ReferralScalarWhereWithAggregatesInput | ReferralScalarWhereWithAggregatesInput[]
+    OR?: ReferralScalarWhereWithAggregatesInput[]
+    NOT?: ReferralScalarWhereWithAggregatesInput | ReferralScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Referral"> | number
+    code?: StringWithAggregatesFilter<"Referral"> | string
+    user_uid?: UuidWithAggregatesFilter<"Referral"> | string
+    referrer_id?: IntNullableWithAggregatesFilter<"Referral"> | number | null
+    created_at?: DateTimeWithAggregatesFilter<"Referral"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Referral"> | Date | string
+    used?: BoolWithAggregatesFilter<"Referral"> | boolean
+    available?: BoolWithAggregatesFilter<"Referral"> | boolean
+  }
+
+  export type ReferralRewardWhereInput = {
+    AND?: ReferralRewardWhereInput | ReferralRewardWhereInput[]
+    OR?: ReferralRewardWhereInput[]
+    NOT?: ReferralRewardWhereInput | ReferralRewardWhereInput[]
+    id?: IntFilter<"ReferralReward"> | number
+    referral_id?: IntFilter<"ReferralReward"> | number
+    reward?: EnumRewardTypeFilter<"ReferralReward"> | $Enums.RewardType
+    created_at?: DateTimeFilter<"ReferralReward"> | Date | string
+    updated_at?: DateTimeFilter<"ReferralReward"> | Date | string
+    referral?: XOR<ReferralRelationFilter, ReferralWhereInput>
+  }
+
+  export type ReferralRewardOrderByWithRelationInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+    reward?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    referral?: ReferralOrderByWithRelationInput
+  }
+
+  export type ReferralRewardWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ReferralRewardWhereInput | ReferralRewardWhereInput[]
+    OR?: ReferralRewardWhereInput[]
+    NOT?: ReferralRewardWhereInput | ReferralRewardWhereInput[]
+    referral_id?: IntFilter<"ReferralReward"> | number
+    reward?: EnumRewardTypeFilter<"ReferralReward"> | $Enums.RewardType
+    created_at?: DateTimeFilter<"ReferralReward"> | Date | string
+    updated_at?: DateTimeFilter<"ReferralReward"> | Date | string
+    referral?: XOR<ReferralRelationFilter, ReferralWhereInput>
+  }, "id">
+
+  export type ReferralRewardOrderByWithAggregationInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+    reward?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: ReferralRewardCountOrderByAggregateInput
+    _avg?: ReferralRewardAvgOrderByAggregateInput
+    _max?: ReferralRewardMaxOrderByAggregateInput
+    _min?: ReferralRewardMinOrderByAggregateInput
+    _sum?: ReferralRewardSumOrderByAggregateInput
+  }
+
+  export type ReferralRewardScalarWhereWithAggregatesInput = {
+    AND?: ReferralRewardScalarWhereWithAggregatesInput | ReferralRewardScalarWhereWithAggregatesInput[]
+    OR?: ReferralRewardScalarWhereWithAggregatesInput[]
+    NOT?: ReferralRewardScalarWhereWithAggregatesInput | ReferralRewardScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ReferralReward"> | number
+    referral_id?: IntWithAggregatesFilter<"ReferralReward"> | number
+    reward?: EnumRewardTypeWithAggregatesFilter<"ReferralReward"> | $Enums.RewardType
+    created_at?: DateTimeWithAggregatesFilter<"ReferralReward"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"ReferralReward"> | Date | string
   }
 
   export type OauthProviderCreateInput = {
@@ -24786,6 +27195,139 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ReferralCreateInput = {
+    code: string
+    user_uid: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referrer?: ReferralCreateNestedOneWithoutReferralInput
+    referral?: ReferralCreateNestedManyWithoutReferrerInput
+    rewards?: ReferralRewardCreateNestedManyWithoutReferralInput
+  }
+
+  export type ReferralUncheckedCreateInput = {
+    id?: number
+    code: string
+    user_uid: string
+    referrer_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referral?: ReferralUncheckedCreateNestedManyWithoutReferrerInput
+    rewards?: ReferralRewardUncheckedCreateNestedManyWithoutReferralInput
+  }
+
+  export type ReferralUpdateInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referrer?: ReferralUpdateOneWithoutReferralNestedInput
+    referral?: ReferralUpdateManyWithoutReferrerNestedInput
+    rewards?: ReferralRewardUpdateManyWithoutReferralNestedInput
+  }
+
+  export type ReferralUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    referrer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referral?: ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+    rewards?: ReferralRewardUncheckedUpdateManyWithoutReferralNestedInput
+  }
+
+  export type ReferralCreateManyInput = {
+    id?: number
+    code: string
+    user_uid: string
+    referrer_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+  }
+
+  export type ReferralUpdateManyMutationInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ReferralUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    referrer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ReferralRewardCreateInput = {
+    reward: $Enums.RewardType
+    created_at?: Date | string
+    updated_at?: Date | string
+    referral: ReferralCreateNestedOneWithoutRewardsInput
+  }
+
+  export type ReferralRewardUncheckedCreateInput = {
+    id?: number
+    referral_id: number
+    reward: $Enums.RewardType
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ReferralRewardUpdateInput = {
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral?: ReferralUpdateOneRequiredWithoutRewardsNestedInput
+  }
+
+  export type ReferralRewardUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    referral_id?: IntFieldUpdateOperationsInput | number
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralRewardCreateManyInput = {
+    id?: number
+    referral_id: number
+    reward: $Enums.RewardType
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ReferralRewardUpdateManyMutationInput = {
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralRewardUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    referral_id?: IntFieldUpdateOperationsInput | number
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -26094,6 +28636,162 @@ export namespace Prisma {
     seat?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ReferralNullableRelationFilter = {
+    is?: ReferralWhereInput | null
+    isNot?: ReferralWhereInput | null
+  }
+
+  export type ReferralListRelationFilter = {
+    every?: ReferralWhereInput
+    some?: ReferralWhereInput
+    none?: ReferralWhereInput
+  }
+
+  export type ReferralRewardListRelationFilter = {
+    every?: ReferralRewardWhereInput
+    some?: ReferralRewardWhereInput
+    none?: ReferralRewardWhereInput
+  }
+
+  export type ReferralOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReferralRewardOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReferralUser_uidReferrer_idCompoundUniqueInput = {
+    user_uid: string
+    referrer_id: number
+  }
+
+  export type ReferralCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    user_uid?: SortOrder
+    referrer_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    used?: SortOrder
+    available?: SortOrder
+  }
+
+  export type ReferralAvgOrderByAggregateInput = {
+    id?: SortOrder
+    referrer_id?: SortOrder
+  }
+
+  export type ReferralMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    user_uid?: SortOrder
+    referrer_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    used?: SortOrder
+    available?: SortOrder
+  }
+
+  export type ReferralMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    user_uid?: SortOrder
+    referrer_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    used?: SortOrder
+    available?: SortOrder
+  }
+
+  export type ReferralSumOrderByAggregateInput = {
+    id?: SortOrder
+    referrer_id?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumRewardTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeFilter<$PrismaModel> | $Enums.RewardType
+  }
+
+  export type ReferralRelationFilter = {
+    is?: ReferralWhereInput
+    isNot?: ReferralWhereInput
+  }
+
+  export type ReferralRewardCountOrderByAggregateInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+    reward?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ReferralRewardAvgOrderByAggregateInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+  }
+
+  export type ReferralRewardMaxOrderByAggregateInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+    reward?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ReferralRewardMinOrderByAggregateInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+    reward?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ReferralRewardSumOrderByAggregateInput = {
+    id?: SortOrder
+    referral_id?: SortOrder
+  }
+
+  export type EnumRewardTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeWithAggregatesFilter<$PrismaModel> | $Enums.RewardType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRewardTypeFilter<$PrismaModel>
+    _max?: NestedEnumRewardTypeFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedOneWithoutOauthProviderInput = {
     create?: XOR<UserCreateWithoutOauthProviderInput, UserUncheckedCreateWithoutOauthProviderInput>
     connectOrCreate?: UserCreateOrConnectWithoutOauthProviderInput
@@ -26618,6 +29316,132 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWorkspaceUsageInput, UserUpdateWithoutWorkspaceUsageInput>, UserUncheckedUpdateWithoutWorkspaceUsageInput>
   }
 
+  export type ReferralCreateNestedOneWithoutReferralInput = {
+    create?: XOR<ReferralCreateWithoutReferralInput, ReferralUncheckedCreateWithoutReferralInput>
+    connectOrCreate?: ReferralCreateOrConnectWithoutReferralInput
+    connect?: ReferralWhereUniqueInput
+  }
+
+  export type ReferralCreateNestedManyWithoutReferrerInput = {
+    create?: XOR<ReferralCreateWithoutReferrerInput, ReferralUncheckedCreateWithoutReferrerInput> | ReferralCreateWithoutReferrerInput[] | ReferralUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: ReferralCreateOrConnectWithoutReferrerInput | ReferralCreateOrConnectWithoutReferrerInput[]
+    createMany?: ReferralCreateManyReferrerInputEnvelope
+    connect?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+  }
+
+  export type ReferralRewardCreateNestedManyWithoutReferralInput = {
+    create?: XOR<ReferralRewardCreateWithoutReferralInput, ReferralRewardUncheckedCreateWithoutReferralInput> | ReferralRewardCreateWithoutReferralInput[] | ReferralRewardUncheckedCreateWithoutReferralInput[]
+    connectOrCreate?: ReferralRewardCreateOrConnectWithoutReferralInput | ReferralRewardCreateOrConnectWithoutReferralInput[]
+    createMany?: ReferralRewardCreateManyReferralInputEnvelope
+    connect?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+  }
+
+  export type ReferralUncheckedCreateNestedManyWithoutReferrerInput = {
+    create?: XOR<ReferralCreateWithoutReferrerInput, ReferralUncheckedCreateWithoutReferrerInput> | ReferralCreateWithoutReferrerInput[] | ReferralUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: ReferralCreateOrConnectWithoutReferrerInput | ReferralCreateOrConnectWithoutReferrerInput[]
+    createMany?: ReferralCreateManyReferrerInputEnvelope
+    connect?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+  }
+
+  export type ReferralRewardUncheckedCreateNestedManyWithoutReferralInput = {
+    create?: XOR<ReferralRewardCreateWithoutReferralInput, ReferralRewardUncheckedCreateWithoutReferralInput> | ReferralRewardCreateWithoutReferralInput[] | ReferralRewardUncheckedCreateWithoutReferralInput[]
+    connectOrCreate?: ReferralRewardCreateOrConnectWithoutReferralInput | ReferralRewardCreateOrConnectWithoutReferralInput[]
+    createMany?: ReferralRewardCreateManyReferralInputEnvelope
+    connect?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+  }
+
+  export type ReferralUpdateOneWithoutReferralNestedInput = {
+    create?: XOR<ReferralCreateWithoutReferralInput, ReferralUncheckedCreateWithoutReferralInput>
+    connectOrCreate?: ReferralCreateOrConnectWithoutReferralInput
+    upsert?: ReferralUpsertWithoutReferralInput
+    disconnect?: ReferralWhereInput | boolean
+    delete?: ReferralWhereInput | boolean
+    connect?: ReferralWhereUniqueInput
+    update?: XOR<XOR<ReferralUpdateToOneWithWhereWithoutReferralInput, ReferralUpdateWithoutReferralInput>, ReferralUncheckedUpdateWithoutReferralInput>
+  }
+
+  export type ReferralUpdateManyWithoutReferrerNestedInput = {
+    create?: XOR<ReferralCreateWithoutReferrerInput, ReferralUncheckedCreateWithoutReferrerInput> | ReferralCreateWithoutReferrerInput[] | ReferralUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: ReferralCreateOrConnectWithoutReferrerInput | ReferralCreateOrConnectWithoutReferrerInput[]
+    upsert?: ReferralUpsertWithWhereUniqueWithoutReferrerInput | ReferralUpsertWithWhereUniqueWithoutReferrerInput[]
+    createMany?: ReferralCreateManyReferrerInputEnvelope
+    set?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    disconnect?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    delete?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    connect?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    update?: ReferralUpdateWithWhereUniqueWithoutReferrerInput | ReferralUpdateWithWhereUniqueWithoutReferrerInput[]
+    updateMany?: ReferralUpdateManyWithWhereWithoutReferrerInput | ReferralUpdateManyWithWhereWithoutReferrerInput[]
+    deleteMany?: ReferralScalarWhereInput | ReferralScalarWhereInput[]
+  }
+
+  export type ReferralRewardUpdateManyWithoutReferralNestedInput = {
+    create?: XOR<ReferralRewardCreateWithoutReferralInput, ReferralRewardUncheckedCreateWithoutReferralInput> | ReferralRewardCreateWithoutReferralInput[] | ReferralRewardUncheckedCreateWithoutReferralInput[]
+    connectOrCreate?: ReferralRewardCreateOrConnectWithoutReferralInput | ReferralRewardCreateOrConnectWithoutReferralInput[]
+    upsert?: ReferralRewardUpsertWithWhereUniqueWithoutReferralInput | ReferralRewardUpsertWithWhereUniqueWithoutReferralInput[]
+    createMany?: ReferralRewardCreateManyReferralInputEnvelope
+    set?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    disconnect?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    delete?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    connect?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    update?: ReferralRewardUpdateWithWhereUniqueWithoutReferralInput | ReferralRewardUpdateWithWhereUniqueWithoutReferralInput[]
+    updateMany?: ReferralRewardUpdateManyWithWhereWithoutReferralInput | ReferralRewardUpdateManyWithWhereWithoutReferralInput[]
+    deleteMany?: ReferralRewardScalarWhereInput | ReferralRewardScalarWhereInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type ReferralUncheckedUpdateManyWithoutReferrerNestedInput = {
+    create?: XOR<ReferralCreateWithoutReferrerInput, ReferralUncheckedCreateWithoutReferrerInput> | ReferralCreateWithoutReferrerInput[] | ReferralUncheckedCreateWithoutReferrerInput[]
+    connectOrCreate?: ReferralCreateOrConnectWithoutReferrerInput | ReferralCreateOrConnectWithoutReferrerInput[]
+    upsert?: ReferralUpsertWithWhereUniqueWithoutReferrerInput | ReferralUpsertWithWhereUniqueWithoutReferrerInput[]
+    createMany?: ReferralCreateManyReferrerInputEnvelope
+    set?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    disconnect?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    delete?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    connect?: ReferralWhereUniqueInput | ReferralWhereUniqueInput[]
+    update?: ReferralUpdateWithWhereUniqueWithoutReferrerInput | ReferralUpdateWithWhereUniqueWithoutReferrerInput[]
+    updateMany?: ReferralUpdateManyWithWhereWithoutReferrerInput | ReferralUpdateManyWithWhereWithoutReferrerInput[]
+    deleteMany?: ReferralScalarWhereInput | ReferralScalarWhereInput[]
+  }
+
+  export type ReferralRewardUncheckedUpdateManyWithoutReferralNestedInput = {
+    create?: XOR<ReferralRewardCreateWithoutReferralInput, ReferralRewardUncheckedCreateWithoutReferralInput> | ReferralRewardCreateWithoutReferralInput[] | ReferralRewardUncheckedCreateWithoutReferralInput[]
+    connectOrCreate?: ReferralRewardCreateOrConnectWithoutReferralInput | ReferralRewardCreateOrConnectWithoutReferralInput[]
+    upsert?: ReferralRewardUpsertWithWhereUniqueWithoutReferralInput | ReferralRewardUpsertWithWhereUniqueWithoutReferralInput[]
+    createMany?: ReferralRewardCreateManyReferralInputEnvelope
+    set?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    disconnect?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    delete?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    connect?: ReferralRewardWhereUniqueInput | ReferralRewardWhereUniqueInput[]
+    update?: ReferralRewardUpdateWithWhereUniqueWithoutReferralInput | ReferralRewardUpdateWithWhereUniqueWithoutReferralInput[]
+    updateMany?: ReferralRewardUpdateManyWithWhereWithoutReferralInput | ReferralRewardUpdateManyWithWhereWithoutReferralInput[]
+    deleteMany?: ReferralRewardScalarWhereInput | ReferralRewardScalarWhereInput[]
+  }
+
+  export type ReferralCreateNestedOneWithoutRewardsInput = {
+    create?: XOR<ReferralCreateWithoutRewardsInput, ReferralUncheckedCreateWithoutRewardsInput>
+    connectOrCreate?: ReferralCreateOrConnectWithoutRewardsInput
+    connect?: ReferralWhereUniqueInput
+  }
+
+  export type EnumRewardTypeFieldUpdateOperationsInput = {
+    set?: $Enums.RewardType
+  }
+
+  export type ReferralUpdateOneRequiredWithoutRewardsNestedInput = {
+    create?: XOR<ReferralCreateWithoutRewardsInput, ReferralUncheckedCreateWithoutRewardsInput>
+    connectOrCreate?: ReferralCreateOrConnectWithoutRewardsInput
+    upsert?: ReferralUpsertWithoutRewardsInput
+    connect?: ReferralWhereUniqueInput
+    update?: XOR<XOR<ReferralUpdateToOneWithWhereWithoutRewardsInput, ReferralUpdateWithoutRewardsInput>, ReferralUncheckedUpdateWithoutRewardsInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -27004,6 +29828,39 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRewardTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeFilter<$PrismaModel> | $Enums.RewardType
+  }
+
+  export type NestedEnumRewardTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeWithAggregatesFilter<$PrismaModel> | $Enums.RewardType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRewardTypeFilter<$PrismaModel>
+    _max?: NestedEnumRewardTypeFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutOauthProviderInput = {
@@ -28032,6 +30889,243 @@ export namespace Prisma {
     subscription?: SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   }
 
+  export type ReferralCreateWithoutReferralInput = {
+    code: string
+    user_uid: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referrer?: ReferralCreateNestedOneWithoutReferralInput
+    rewards?: ReferralRewardCreateNestedManyWithoutReferralInput
+  }
+
+  export type ReferralUncheckedCreateWithoutReferralInput = {
+    id?: number
+    code: string
+    user_uid: string
+    referrer_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    rewards?: ReferralRewardUncheckedCreateNestedManyWithoutReferralInput
+  }
+
+  export type ReferralCreateOrConnectWithoutReferralInput = {
+    where: ReferralWhereUniqueInput
+    create: XOR<ReferralCreateWithoutReferralInput, ReferralUncheckedCreateWithoutReferralInput>
+  }
+
+  export type ReferralCreateWithoutReferrerInput = {
+    code: string
+    user_uid: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referral?: ReferralCreateNestedManyWithoutReferrerInput
+    rewards?: ReferralRewardCreateNestedManyWithoutReferralInput
+  }
+
+  export type ReferralUncheckedCreateWithoutReferrerInput = {
+    id?: number
+    code: string
+    user_uid: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referral?: ReferralUncheckedCreateNestedManyWithoutReferrerInput
+    rewards?: ReferralRewardUncheckedCreateNestedManyWithoutReferralInput
+  }
+
+  export type ReferralCreateOrConnectWithoutReferrerInput = {
+    where: ReferralWhereUniqueInput
+    create: XOR<ReferralCreateWithoutReferrerInput, ReferralUncheckedCreateWithoutReferrerInput>
+  }
+
+  export type ReferralCreateManyReferrerInputEnvelope = {
+    data: ReferralCreateManyReferrerInput | ReferralCreateManyReferrerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReferralRewardCreateWithoutReferralInput = {
+    reward: $Enums.RewardType
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ReferralRewardUncheckedCreateWithoutReferralInput = {
+    id?: number
+    reward: $Enums.RewardType
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ReferralRewardCreateOrConnectWithoutReferralInput = {
+    where: ReferralRewardWhereUniqueInput
+    create: XOR<ReferralRewardCreateWithoutReferralInput, ReferralRewardUncheckedCreateWithoutReferralInput>
+  }
+
+  export type ReferralRewardCreateManyReferralInputEnvelope = {
+    data: ReferralRewardCreateManyReferralInput | ReferralRewardCreateManyReferralInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReferralUpsertWithoutReferralInput = {
+    update: XOR<ReferralUpdateWithoutReferralInput, ReferralUncheckedUpdateWithoutReferralInput>
+    create: XOR<ReferralCreateWithoutReferralInput, ReferralUncheckedCreateWithoutReferralInput>
+    where?: ReferralWhereInput
+  }
+
+  export type ReferralUpdateToOneWithWhereWithoutReferralInput = {
+    where?: ReferralWhereInput
+    data: XOR<ReferralUpdateWithoutReferralInput, ReferralUncheckedUpdateWithoutReferralInput>
+  }
+
+  export type ReferralUpdateWithoutReferralInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referrer?: ReferralUpdateOneWithoutReferralNestedInput
+    rewards?: ReferralRewardUpdateManyWithoutReferralNestedInput
+  }
+
+  export type ReferralUncheckedUpdateWithoutReferralInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    referrer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    rewards?: ReferralRewardUncheckedUpdateManyWithoutReferralNestedInput
+  }
+
+  export type ReferralUpsertWithWhereUniqueWithoutReferrerInput = {
+    where: ReferralWhereUniqueInput
+    update: XOR<ReferralUpdateWithoutReferrerInput, ReferralUncheckedUpdateWithoutReferrerInput>
+    create: XOR<ReferralCreateWithoutReferrerInput, ReferralUncheckedCreateWithoutReferrerInput>
+  }
+
+  export type ReferralUpdateWithWhereUniqueWithoutReferrerInput = {
+    where: ReferralWhereUniqueInput
+    data: XOR<ReferralUpdateWithoutReferrerInput, ReferralUncheckedUpdateWithoutReferrerInput>
+  }
+
+  export type ReferralUpdateManyWithWhereWithoutReferrerInput = {
+    where: ReferralScalarWhereInput
+    data: XOR<ReferralUpdateManyMutationInput, ReferralUncheckedUpdateManyWithoutReferrerInput>
+  }
+
+  export type ReferralScalarWhereInput = {
+    AND?: ReferralScalarWhereInput | ReferralScalarWhereInput[]
+    OR?: ReferralScalarWhereInput[]
+    NOT?: ReferralScalarWhereInput | ReferralScalarWhereInput[]
+    id?: IntFilter<"Referral"> | number
+    code?: StringFilter<"Referral"> | string
+    user_uid?: UuidFilter<"Referral"> | string
+    referrer_id?: IntNullableFilter<"Referral"> | number | null
+    created_at?: DateTimeFilter<"Referral"> | Date | string
+    updated_at?: DateTimeFilter<"Referral"> | Date | string
+    used?: BoolFilter<"Referral"> | boolean
+    available?: BoolFilter<"Referral"> | boolean
+  }
+
+  export type ReferralRewardUpsertWithWhereUniqueWithoutReferralInput = {
+    where: ReferralRewardWhereUniqueInput
+    update: XOR<ReferralRewardUpdateWithoutReferralInput, ReferralRewardUncheckedUpdateWithoutReferralInput>
+    create: XOR<ReferralRewardCreateWithoutReferralInput, ReferralRewardUncheckedCreateWithoutReferralInput>
+  }
+
+  export type ReferralRewardUpdateWithWhereUniqueWithoutReferralInput = {
+    where: ReferralRewardWhereUniqueInput
+    data: XOR<ReferralRewardUpdateWithoutReferralInput, ReferralRewardUncheckedUpdateWithoutReferralInput>
+  }
+
+  export type ReferralRewardUpdateManyWithWhereWithoutReferralInput = {
+    where: ReferralRewardScalarWhereInput
+    data: XOR<ReferralRewardUpdateManyMutationInput, ReferralRewardUncheckedUpdateManyWithoutReferralInput>
+  }
+
+  export type ReferralRewardScalarWhereInput = {
+    AND?: ReferralRewardScalarWhereInput | ReferralRewardScalarWhereInput[]
+    OR?: ReferralRewardScalarWhereInput[]
+    NOT?: ReferralRewardScalarWhereInput | ReferralRewardScalarWhereInput[]
+    id?: IntFilter<"ReferralReward"> | number
+    referral_id?: IntFilter<"ReferralReward"> | number
+    reward?: EnumRewardTypeFilter<"ReferralReward"> | $Enums.RewardType
+    created_at?: DateTimeFilter<"ReferralReward"> | Date | string
+    updated_at?: DateTimeFilter<"ReferralReward"> | Date | string
+  }
+
+  export type ReferralCreateWithoutRewardsInput = {
+    code: string
+    user_uid: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referrer?: ReferralCreateNestedOneWithoutReferralInput
+    referral?: ReferralCreateNestedManyWithoutReferrerInput
+  }
+
+  export type ReferralUncheckedCreateWithoutRewardsInput = {
+    id?: number
+    code: string
+    user_uid: string
+    referrer_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+    referral?: ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  }
+
+  export type ReferralCreateOrConnectWithoutRewardsInput = {
+    where: ReferralWhereUniqueInput
+    create: XOR<ReferralCreateWithoutRewardsInput, ReferralUncheckedCreateWithoutRewardsInput>
+  }
+
+  export type ReferralUpsertWithoutRewardsInput = {
+    update: XOR<ReferralUpdateWithoutRewardsInput, ReferralUncheckedUpdateWithoutRewardsInput>
+    create: XOR<ReferralCreateWithoutRewardsInput, ReferralUncheckedCreateWithoutRewardsInput>
+    where?: ReferralWhereInput
+  }
+
+  export type ReferralUpdateToOneWithWhereWithoutRewardsInput = {
+    where?: ReferralWhereInput
+    data: XOR<ReferralUpdateWithoutRewardsInput, ReferralUncheckedUpdateWithoutRewardsInput>
+  }
+
+  export type ReferralUpdateWithoutRewardsInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referrer?: ReferralUpdateOneWithoutReferralNestedInput
+    referral?: ReferralUpdateManyWithoutReferrerNestedInput
+  }
+
+  export type ReferralUncheckedUpdateWithoutRewardsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    referrer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referral?: ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  }
+
   export type WorkspaceUsageCreateManyRegionInput = {
     id?: string
     userUid: string
@@ -28268,6 +31362,76 @@ export namespace Prisma {
     next_cycle_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type ReferralCreateManyReferrerInput = {
+    id?: number
+    code: string
+    user_uid: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    used?: boolean
+    available?: boolean
+  }
+
+  export type ReferralRewardCreateManyReferralInput = {
+    id?: number
+    reward: $Enums.RewardType
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ReferralUpdateWithoutReferrerInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referral?: ReferralUpdateManyWithoutReferrerNestedInput
+    rewards?: ReferralRewardUpdateManyWithoutReferralNestedInput
+  }
+
+  export type ReferralUncheckedUpdateWithoutReferrerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+    referral?: ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+    rewards?: ReferralRewardUncheckedUpdateManyWithoutReferralNestedInput
+  }
+
+  export type ReferralUncheckedUpdateManyWithoutReferrerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    user_uid?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    available?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ReferralRewardUpdateWithoutReferralInput = {
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralRewardUncheckedUpdateWithoutReferralInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralRewardUncheckedUpdateManyWithoutReferralInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    reward?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -28289,6 +31453,10 @@ export namespace Prisma {
      * @deprecated Use SubscriptionPlanCountOutputTypeDefaultArgs instead
      */
     export type SubscriptionPlanCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ReferralCountOutputTypeDefaultArgs instead
+     */
+    export type ReferralCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReferralCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use OauthProviderDefaultArgs instead
      */
@@ -28365,6 +31533,14 @@ export namespace Prisma {
      * @deprecated Use WorkspaceUsageDefaultArgs instead
      */
     export type WorkspaceUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = WorkspaceUsageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ReferralDefaultArgs instead
+     */
+    export type ReferralArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReferralDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ReferralRewardDefaultArgs instead
+     */
+    export type ReferralRewardArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReferralRewardDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

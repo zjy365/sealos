@@ -17,9 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('deploy name is empty');
     }
 
-    const { namespace, k8sCustomObjects, k8sAuth, k8sCore } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { namespace, k8sCustomObjects, k8sAuth, k8sCore } = await getK8s(await authSession(req));
 
     // get job and delete
     const jobs = await GetJobByName({ name: name, req });

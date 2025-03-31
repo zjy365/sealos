@@ -25,12 +25,14 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
         )(res, async ({ email, id, name, avatar_url }) => {
           const presistAvatarUrl =
             (await persistImage(avatar_url, 'avatar/' + ProviderType.GOOGLE + '/' + id)) || '';
+          const referralCode = req.cookies?.CC_RUN_REFERRAL_CODE || undefined;
           await getGlobalTokenByGoogleSvc(
             presistAvatarUrl,
             id,
             name,
             email,
             inviterId,
+            referralCode,
             semData,
             bdVid
           )(res);

@@ -44,9 +44,9 @@ export async function GetAppByAppName({
   appName,
   req
 }: { appName: string } & { req: NextApiRequest }) {
-  const { k8sApp, k8sCore, k8sNetworkingApp, k8sAutoscaling, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { k8sApp, k8sCore, k8sNetworkingApp, k8sAutoscaling, namespace } = await getK8s(
+    await authSession(req.headers)
+  );
 
   const response = await Promise.allSettled([
     k8sApp.readNamespacedDeployment(appName, namespace),

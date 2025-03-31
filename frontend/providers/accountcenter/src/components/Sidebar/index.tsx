@@ -1,12 +1,13 @@
 import { Center, Text, Stack } from '@chakra-ui/react';
-import { User } from 'lucide-react';
-import { Dock } from 'lucide-react';
-import { ReceiptText } from 'lucide-react';
-import { BarChart3 } from 'lucide-react';
-
+import { User, Dock, ReceiptText, BarChart3, Gift } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 
+const iconProps = {
+  width: '16px',
+  height: '16px',
+  color: 'black'
+};
 export default function Sidebar({ ...props }: any) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -14,23 +15,28 @@ export default function Sidebar({ ...props }: any) {
   const siderbarMap = [
     {
       label: t('Setting'),
-      icon: <User width={'16px'} height={'16px'} color={'black'} />,
+      icon: <User {...iconProps} />,
       path: '/setting'
     },
     {
       label: t('Plan'),
-      icon: <Dock width={'16px'} height={'16px'} color={'black'} />,
+      icon: <Dock {...iconProps} />,
       path: '/plan'
     },
     {
       label: t('Billing'),
-      icon: <ReceiptText width={'16px'} height={'16px'} color={'black'} />,
+      icon: <ReceiptText {...iconProps} />,
       path: '/billing'
     },
     {
       label: t('Usage'),
-      icon: <BarChart3 width={'16px'} height={'16px'} color={'black'} />,
+      icon: <BarChart3 {...iconProps} />,
       path: '/usage'
+    },
+    {
+      label: t('Referral'),
+      icon: <Gift {...iconProps} />,
+      path: '/referral'
     }
   ];
 

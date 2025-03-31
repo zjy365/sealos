@@ -29,9 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const plural = 'backuppolicies';
 
   try {
-    const { k8sCustomObjects, namespace, applyYamlList } = await getK8s({
-      kubeconfig: await authSession(req)
-    });
+    const { k8sCustomObjects, namespace, applyYamlList } = await getK8s(await authSession(req));
 
     // get backup backupolicies.dataprotection.kubeblocks.io
     // const { body } = (await k8sCustomObjects.getNamespacedCustomObject(

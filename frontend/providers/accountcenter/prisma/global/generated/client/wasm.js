@@ -343,6 +343,25 @@ exports.Prisma.WorkspaceUsageScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ReferralScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  user_uid: 'user_uid',
+  referrer_id: 'referrer_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  used: 'used',
+  available: 'available'
+};
+
+exports.Prisma.ReferralRewardScalarFieldEnum = {
+  id: 'id',
+  referral_id: 'referral_id',
+  reward: 'reward',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -401,6 +420,10 @@ exports.TaskStatus = exports.$Enums.TaskStatus = {
   COMPLETED: 'COMPLETED'
 };
 
+exports.RewardType = exports.$Enums.RewardType = {
+  ONE_MONTH_HOBBY_LICENSE: 'ONE_MONTH_HOBBY_LICENSE'
+};
+
 exports.Prisma.ModelName = {
   OauthProvider: 'OauthProvider',
   Region: 'Region',
@@ -420,7 +443,9 @@ exports.Prisma.ModelName = {
   Subscription: 'Subscription',
   SubscriptionPlan: 'SubscriptionPlan',
   UserInfo: 'UserInfo',
-  WorkspaceUsage: 'WorkspaceUsage'
+  WorkspaceUsage: 'WorkspaceUsage',
+  Referral: 'Referral',
+  ReferralReward: 'ReferralReward'
 };
 
 /**

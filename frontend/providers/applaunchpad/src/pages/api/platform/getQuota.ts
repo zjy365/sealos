@@ -7,9 +7,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // source price
-    const { getUserQuota } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { getUserQuota } = await getK8s(await authSession(req.headers));
 
     const quota = await getUserQuota();
     const gpuEnabled = global.AppConfig.common.gpuEnabled;

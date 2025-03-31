@@ -33,13 +33,15 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
   }
   const { payload, id } = result;
   const { password, firstName, lastName } = payload;
+  const referralCode = req.cookies?.CC_RUN_REFERRAL_CODE || undefined;
   const data = await signUpByEmail({
     id,
     password,
-    name: `${firstName} ${lastName}`,
     firstname: firstName,
-    lastname: lastName
+    lastname: lastName,
+    referralCode
   });
+
   const globalToken = generateAuthenticationToken({
     userUid: data.user.uid,
     userId: data.user.id

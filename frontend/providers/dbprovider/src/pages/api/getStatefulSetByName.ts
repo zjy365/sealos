@@ -61,9 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 export async function GetStatefulSetByName({ name, req }: { name: string; req: NextApiRequest }) {
-  const { k8sApp, namespace } = await getK8s({
-    kubeconfig: await authSession(req)
-  });
+  const { k8sApp, namespace } = await getK8s(await authSession(req));
 
   const { body } = await k8sApp.readNamespacedStatefulSetStatus(name, namespace);
 
