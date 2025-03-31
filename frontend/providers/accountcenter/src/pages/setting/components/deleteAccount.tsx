@@ -43,7 +43,7 @@ const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
     onOpen();
   };
   const handleDelete = () => {
-    if (userName !== inputValue.trim()) {
+    if (userName?.trim() !== inputValue.trim()) {
       toastError(t('DeleteAccountInputUsernameNotMatch', { userName }));
       return;
     }

@@ -9,33 +9,18 @@ import type { Url } from 'next/dist/shared/lib/router/router';
 const Index: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const toast = useToast();
   useEffect(() => {
-    const { stripeState, scene } = router.query;
+    const { scene, paymentType, stripeState } = router.query;
     let replaceTo: Url = urls.page.setting;
-    if (stripeState === 'success') {
-      toast({
-        status: 'success',
-        duration: 4000,
-        title: t('PaySuccess'),
-        isClosable: true,
-        position: 'top'
-      });
+    if (paymentType === 'SUBSCRIPTION') {
       replaceTo = {
         pathname: urls.page.plan,
         search: '?checkUpgrade'
       };
-    } else if (stripeState === 'error') {
-      toast({
-        status: 'error',
-        duration: 4000,
-        title: t('PayResultFailed'),
-        isClosable: true,
-        position: 'top'
-      });
+    } else if (paymentType === 'ACCOUNT_RECHARGE' || stripeState) {
       replaceTo = urls.page.plan;
     }
-    // scene 参数，可以跳转到指定页面的部分，也可组合达到如：scene=upgrade&stripeState=error 提示支付失败 然后跳转/plan打开updrade弹窗等效果。
+    // scene 参数，可以跳转到指定页面的部分
     if (typeof scene === 'string') {
       const sceneUrl = urls.getSceneRedirectUrl(scene);
       if (sceneUrl) {
