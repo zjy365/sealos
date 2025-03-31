@@ -50,7 +50,7 @@ const ConfigHeader = ({
         </Box>
       </Flex>
       <Flex gap={'16px'}>
-        <Button
+        {/* <Button
           px="20px"
           py="10px"
           fontWeight={'500'}
@@ -64,7 +64,7 @@ const ConfigHeader = ({
           }}
         >
           {t('export')} Yaml
-        </Button>
+        </Button> */}
         <Button
           px="42.5px"
           type="submit"
