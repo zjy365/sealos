@@ -30,7 +30,7 @@ export function useGetPlanFeatureTexts() {
       });
     }
     if (maxResourceObject?.cpu && maxResourceObject.memory) {
-      let text = `${maxResourceObject.cpu} vCPU / ${maxResourceObject.memory} ${t('RAM')}`;
+      let text = `Up to ${maxResourceObject.cpu} vCPU / ${maxResourceObject.memory} ${t('RAM')}`;
       if (isFree && maxResourceObject.storage) {
         text += ` / ${maxResourceObject.storage} ${t('Disk')}`;
         if (!opts.hideFreeMaxResourcesPerRegionText) {
