@@ -72,7 +72,7 @@ export default function Callback() {
               const needInit = data.data.needInit;
               if (needInit) {
                 // await router.push('/personalinfo');
-                await router.push('/unlockcard');
+                await router.push('/workspace');
                 return;
               }
               const regionTokenRes = await getRegionToken();
