@@ -14,15 +14,13 @@ const ConfigFormContainer = ({
     h="full"
     maxH={'500px'}
     borderRadius={'4px'}
-    border={'1px solid'}
-    borderColor={'grayModern.200'}
     position={'relative'}
     {...props}
   >
-    <Flex px={'42px'} py={'15px'} bg={'white_.400'}>
+    {/* <Flex px={'42px'} py={'15px'} bg={'white_.400'}>
       {header}
-    </Flex>
-    <Box flex={1} h={0} overflow={'auto'} bg={'white'} p={'24px'}>
+    </Flex> */}
+    <Box flex={1} h={0} overflow={'auto'} bg={'white'}>
       {main}
     </Box>
   </Stack>

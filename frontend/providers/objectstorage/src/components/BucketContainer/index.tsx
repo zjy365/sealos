@@ -10,24 +10,23 @@ import {
   Tabs,
   Text
 } from '@chakra-ui/react';
-import DnsIcon from '../Icons/DnsIcon';
-import MonitorIcon from '../Icons/MonitorIcon';
 import { useOssStore } from '@/store/ossStore';
 import BucketHeader from './BucketHeader';
 import FileManager from './FileManager';
-import DataMonitor from './Monitor';
+// import DataMonitor from './Monitor';
+const DataMonitor = dynamic(() => import('./Monitor'), {
+  ssr: false
+});
 import { useTranslation } from 'next-i18next';
 import { Authority } from '@/consts';
 import { HostStatus } from '@/components/BucketContainer/HostStatus';
+import dynamic from 'next/dynamic';
 
 export default function BucketContainer(props: StackProps) {
   const bucket = useOssStore((s) => s.currentBucket);
   const { t } = useTranslation('file');
   const { t: bucketT } = useTranslation('bucket');
-  const tabTitle = [
-    { icon: DnsIcon, title: t('directory') },
-    { icon: MonitorIcon, title: t('monitoring') }
-  ] as const;
+  const tabTitle = [{ title: t('directory') }, { title: t('monitoring') }] as const;
   if (process.env.NODE_ENV !== 'development' && !bucket) return <></>;
   return (
     <Stack px="42px" py="28px" w="full" h="full" {...props}>
@@ -42,6 +41,9 @@ export default function BucketContainer(props: StackProps) {
                   alignItems={'center'}
                   gap="8px"
                   py="16px"
+                  fontWeight={500}
+                  transition={'all 0.2s'}
+                  border={'0px solid #000000'}
                   sx={{
                     svg: {
                       color: 'grayModern.500'
@@ -51,14 +53,12 @@ export default function BucketContainer(props: StackProps) {
                     }
                   }}
                   _selected={{
-                    borderBottom: '2px solid',
-                    borderColor: 'GrayModern.900',
+                    borderBottomWidth: '2px',
                     'svg, p': {
-                      color: 'grayModern.900'
+                      color: '#18181B'
                     }
                   }}
                 >
-                  <item.icon boxSize={'16px'} />
                   <Text fontSize={'14px'}>{item.title}</Text>
                 </Tab>
               ))}

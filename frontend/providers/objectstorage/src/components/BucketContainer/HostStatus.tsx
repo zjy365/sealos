@@ -14,7 +14,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import MoreIcon from '@/components/Icons/MoreIcon';
-import { WebHostIcon } from '@sealos/ui';
+import DnsIcon from '../Icons/DnsIcon';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useOssStore } from '@/store/ossStore';
 import { closeHost, getHostStatus, openHost } from '@/api/bucket';
@@ -93,8 +93,10 @@ export function HostStatus() {
           }}
           cursor={'pointer'}
         >
-          <WebHostIcon boxSize={'24px'} />
-          <Text fontSize={'12px'}>{t('Enable Hosting')}</Text>
+          <DnsIcon w={'16px'} h={'16px'} fill={'transparent'} color={'transparent'} />
+          <Text fontWeight={500} fontSize={'14px'}>
+            {t('Enable Hosting')}
+          </Text>
         </HStack>
       ) : (
         <HStack>

@@ -140,15 +140,21 @@ export default function TrendChart({
   };
   return (
     <Box
-      padding={'24px'}
       border={'1px solid'}
-      borderColor={'#EAEBF0'}
-      borderRadius={'4px'}
-      bgColor={'#FBFBFC'}
+      borderColor={'#EDEDED'}
+      borderRadius={'16px'}
+      // bgColor={'#FBFBFC'}
       flexDir={'column'}
       position={'relative'}
     >
-      <Text mb="10px" color={'grayModern.900'} fontSize={'12px'}>
+      <Text
+        px={'24px'}
+        py={'16px'}
+        borderBottom="1px solid #EDEDED"
+        color={'#000000'}
+        fontSize={'16px'}
+        fontWeight={500}
+      >
         {title}
       </Text>
       <ReactEChartsCore
@@ -156,7 +162,7 @@ export default function TrendChart({
         option={option}
         notMerge={true}
         lazyUpdate={true}
-        style={{ height: '200px', width: '500px' }}
+        style={{ height: '200px', width: '490px', margin: '24px' }}
         {...echartsProps}
       />
     </Box>

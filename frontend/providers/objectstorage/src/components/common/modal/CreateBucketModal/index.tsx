@@ -28,7 +28,7 @@ export default function CreateBucketModal({
           onClick={() => router.push('/bucketConfig')}
           {...styles}
         >
-          <AddIcon w="20px" h="20px" />
+          {/* <AddIcon w="20px" h="20px" /> */}
           <Text>{t('createBucket')}</Text>
         </Button>
       )}

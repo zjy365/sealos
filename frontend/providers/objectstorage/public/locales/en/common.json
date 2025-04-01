@@ -1,11 +1,12 @@
 {
   "application": "Application",
   "export": "Export",
-  "configForm": "Configuration Form",
+  "configForm": "Form",
   "config": "Config",
-  "yamlFile": "YAML File",
-  "createBucket": "Create Bucket",
+  "yamlFile": "YAML",
+  "createBucket": "Create bucket",
   "edit": "Edit",
+  "copy": "Copy",
   "delete": "Delete",
   "totalObjects": "Total Objects",
   "total": "Total",
@@ -13,6 +14,7 @@
   "remaining": "Remaining",
   "totalSpace": "Total Space",
   "s3ServiceParams": "Access Key",
+  "accessKeyTip": "Addressing Style: Please use Path-style requests.",
   "refresh": "Refresh",
   "dailyEstimate": "Daily Estimate",
   "deleteWarning": "Delete Warning",
@@ -26,5 +28,7 @@
   "reset": "Reset",
   "cancel": "Cancel",
   "Unable to Access": "Unable to Access",
-  "reset_error": "Reset Error"
+  "reset_error": "Reset Error",
+  "create": "Create",
+  "objectStorage": "Object Storage"
 }

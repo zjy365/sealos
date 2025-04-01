@@ -48,6 +48,7 @@ function App({ Component, pageProps }: AppProps) {
       } catch (error) {}
     })();
     return sealosApp?.addAppEventListen(EVENT_NAME.CHANGE_I18N, changeI18n);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ function App({ Component, pageProps }: AppProps) {
       } catch (error) {}
     };
     initApp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [oldSession?.kubeconfig]);
 
   useEffect(() => {
@@ -88,6 +90,7 @@ function App({ Component, pageProps }: AppProps) {
       }
     };
     initClient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [secret, oldSession]);
   return (
     <QueryClientProvider client={queryClient}>

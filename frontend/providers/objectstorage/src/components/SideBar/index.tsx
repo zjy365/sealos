@@ -11,12 +11,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Center
+  Center,
+  StackDivider
 } from '@chakra-ui/react';
 import RefreshIcon from '@/components/Icons/RefreshIcon';
 import BucketIcon from '@/components/Icons/BucketIcon';
 import MoreIcon from '@/components/Icons/MoreIcon';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { Children, ReactNode, useEffect, useMemo, useState } from 'react';
 import ParamterModal from '@/components/common/modal/ParamterModal';
 import CreateBucketModal from '@/components/common/modal/CreateBucketModal';
 import EditIcon from '../Icons/EditIcon';
@@ -31,55 +32,10 @@ import { formatBytes } from '@/utils/tools';
 import { useTranslation } from 'next-i18next';
 import DeleteBucketModal from '../common/modal/DeleteBucketModal';
 import useSessionStore from '@/store/session';
-function MoreMenu({ bucket }: { bucket: TBucket }) {
-  const router = useRouter();
-  const { t } = useTranslation(['common', 'bucket']);
-  const [hoverIdx, setHoverIdx] = useState(-1);
-  return (
-    <Menu>
-      <MenuButton
-        as={IconButton}
-        variant={'white-bg-icon'}
-        icon={<MoreIcon w="16px" h="16px" color="grayModern.500" />}
-        p="4px"
-        onClick={(e) => e.stopPropagation()}
-      ></MenuButton>
-      <MenuList
-        p="6px"
-        minW={'85px'}
-        fontSize={'12px'}
-        onClick={(e) => e.stopPropagation()}
-        boxShadow={'0px 0px 1px 0px #13336B1A, 0px 4px 10px 0px #13336B1A'}
-      >
-        <MenuItem
-          px="4px"
-          py="6px"
-          display={'flex'}
-          gap={'8px'}
-          onClick={() => {
-            const _params: bucketConfigQueryParam = {
-              bucketName: bucket.crName,
-              bucketPolicy: bucket.policy
-            };
-            const params = new URLSearchParams(_params);
-            router.push('/bucketConfig?' + params.toString());
-          }}
-          fill={'grayModern.600'}
-          color={'grayModern.600'}
-          alignItems={'center'}
-        >
-          <EditIcon w="16px" h="16px" fill={'inherit'} />
-          <Text fontSize={'12px'} fontWeight={500}>
-            {t('edit')}
-          </Text>
-        </MenuItem>
-        <MenuItem p="0">
-          <DeleteBucketModal layout="sm" bucketName={bucket.name} />
-        </MenuItem>
-      </MenuList>
-    </Menu>
-  );
-}
+import MoreMenu from '../common/MoreMenu';
+import ArrowDownSLineIcon from '../Icons/ArrowDownSLineIcon';
+import { Authority } from '@/consts';
+
 function BucketListItem({
   isSelected,
   bucket,
@@ -90,21 +46,21 @@ function BucketListItem({
       alignItems={'center'}
       bgColor={isSelected ? '#9699B41A' : ''}
       fontWeight={'500'}
-      p="4px"
-      borderRadius={'4px'}
-      pl="12px"
+      py="2px"
+      px="16px"
+      borderRadius={'8px'}
       cursor={'pointer'}
       {...props}
       justifyContent={'space-between'}
     >
       <Flex gap={'6px'} align={'center'}>
-        <BucketIcon w="16px" h="16px" color={'brightBlue.600'} />
-        <Text fontSize={'12px'} color={'brightBlue.700'}>
+        {/* <BucketIcon w="16px" h="16px" color={'brightBlue.600'} /> */}
+        <Text fontSize={'14px'} lineHeight={'100%'} color={'#18181B'}>
           {bucket.name}
         </Text>
       </Flex>
       <Flex align={'center'} gap="2px">
-        <AuthorityTips authority={bucket.policy} />
+        {/* <AuthorityTips authority={bucket.policy} /> */}
         <MoreMenu bucket={bucket} />
       </Flex>
     </Flex>
@@ -169,12 +125,20 @@ function BucketOverview({ ...styles }: StackProps) {
   const used = quotaQuery.data?.quota.used || 0;
   const count = quotaQuery.data?.quota.count || 0;
   return (
-    <Stack fontSize={'12px'} {...styles}>
-      <Flex justifyContent={'space-between'}>
-        <Text>{t('totalObjects')}：</Text>
-        <Text w="160px">{count}</Text>
-      </Flex>
-      {!quotaQuery.isLoading && (
+    <Stack
+      bg={'#EFF6FF'}
+      borderRadius={'8px'}
+      py={'16px'}
+      px={'12px'}
+      fontSize={'12px'}
+      {...styles}
+      color={'#18181B'}
+    >
+      <Text>{`${t('totalObjects')}: ${count}`}</Text>
+      <Text>{`${t('totalSpace')}: ${formatBytes(used).toString()} / ${formatBytes(
+        limit
+      ).toString()}`}</Text>
+      {/* {!quotaQuery.isLoading && ( 
         <QuotaProgress
           name={'storage'}
           limit={limit}
@@ -197,8 +161,38 @@ function BucketOverview({ ...styles }: StackProps) {
         >
           <Text>{t('totalSpace')}:</Text>
         </QuotaProgress>
-      )}
+      )} */}
     </Stack>
+  );
+}
+
+function BucketCategory({ category, children }: { category: Authority; children?: ReactNode }) {
+  const { t } = useTranslation('bucket');
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <Flex direction={'column'} gap={'4px'}>
+      <Flex
+        alignItems={'center'}
+        fontWeight={'500'}
+        py="6px"
+        px="8px"
+        cursor={'pointer'}
+        gap={'4px'}
+        color={'#71717A'}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <ArrowDownSLineIcon
+          transition={'all 0.1s'}
+          transform={isOpen ? '' : 'rotate(-90deg)'}
+          w={'14px'}
+          h={'16px'}
+        ></ArrowDownSLineIcon>
+        <Text fontSize={'12px'} lineHeight={'16px'}>
+          {category.replace(/^\S/, (s) => s.toUpperCase())}
+        </Text>
+      </Flex>
+      {isOpen && children}
+    </Flex>
   );
 }
 
@@ -230,12 +224,13 @@ export default function SideBar() {
         else switchBucket(bucketList[0]);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bucketList]);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   return (
-    <Stack w={'300px'} p="16px" overflow={'auto'}>
-      <Flex align={'center'} px="4px" justifyContent={'space-between'}>
+    <Stack w={'260px'} p="20px" overflow={'auto'} borderRight={'1px solid #E4E4E7'}>
+      {/* <Flex align={'center'} px="4px" justifyContent={'space-between'}>
         <Text color={'grayModern.900'} fontSize={'16px'} fontWeight={'500'}>
           {t('bucketList')}
         </Text>
@@ -256,29 +251,36 @@ export default function SideBar() {
           ></IconButton>
           <CreateBucketModal buttonType="min" />
         </Flex>
-      </Flex>
+      </Flex> */}
       {bucketList.length > 0 ? (
         <>
           <Stack h="" flex={'1'} overflow={'auto'} minH={'80px'}>
-            <Stack>
-              {bucketList.map((bucket) => (
-                <BucketListItem
-                  bucket={bucket}
-                  key={bucket.name}
-                  isSelected={bucket.name === currentBucket?.name}
-                  onClick={() => {
-                    bucket.name && switchBucket(bucket);
-                  }}
-                />
+            <Stack spacing={'8px'} divider={<StackDivider borderColor="#F4F4F5" />}>
+              {[Authority.private, Authority.readonly, Authority.readwrite].map((policy) => (
+                <BucketCategory key={policy} category={policy}>
+                  {bucketList.map(
+                    (bucket) =>
+                      bucket.policy === policy && (
+                        <BucketListItem
+                          bucket={bucket}
+                          key={bucket.name}
+                          isSelected={bucket.name === currentBucket?.name}
+                          onClick={() => {
+                            bucket.name && switchBucket(bucket);
+                          }}
+                        />
+                      )
+                  )}
+                </BucketCategory>
               ))}
             </Stack>
           </Stack>
           <BucketOverview />
-          <ParamterModal />
+          {/* <ParamterModal /> */}
         </>
       ) : (
-        <Center flex="1">
-          <Text fontSize={'12px'} color="grayModern.500">
+        <Center p={'40px'} flex="1">
+          <Text textAlign={'center'} fontSize={'12px'} color="grayModern.500">
             {t('noBucket')}
           </Text>
         </Center>

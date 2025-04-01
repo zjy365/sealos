@@ -36,16 +36,24 @@ const ConfigHeader = ({
   };
 
   return (
-    <Flex w={'100%'} px={'32px'} py="24px" alignItems={'center'} justify={'space-between'}>
+    <Flex
+      borderBottom={'1px solid #E4E4E7'}
+      w={'100%'}
+      height={'96px'}
+      px={'32px'}
+      py="24px"
+      alignItems={'center'}
+      justify={'space-between'}
+    >
       <Flex alignItems={'center'} cursor={'pointer'} gap={'19px'}>
         <IconButton
           variant={'white-bg-icon'}
-          icon={<LeftArrowIcon color={'grayModern.600'} w="24px" h="24px" />}
+          icon={<LeftArrowIcon color={'#18181B'} w="24px" h="24px" />}
           p="6px"
           aria-label={'black'}
           onClick={() => onBack()}
         />
-        <Box fontWeight={'500'} color={'grayModern.900'} fontSize={'20px'}>
+        <Box fontWeight={'600'} color={'#18181B'} fontSize={'24px'} lineHeight={'32px'}>
           {t('bucket:bucketConfig')}
         </Box>
       </Flex>
@@ -73,9 +81,8 @@ const ConfigHeader = ({
           // variant={'solid'}
           size={'md'}
           fontWeight={'500'}
-          backgroundColor={'grayModern.900'}
         >
-          {t('application')}
+          {t('create')}
         </Button>
       </Flex>
     </Flex>

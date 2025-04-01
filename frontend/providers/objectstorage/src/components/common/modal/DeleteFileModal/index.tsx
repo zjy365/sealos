@@ -5,6 +5,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalOverlay,
   useDisclosure,
   Button,
@@ -23,8 +24,8 @@ export default function DeleteFileModal({
   return (
     <>
       <Button {...styles} onClick={onOpen} isDisabled={fileListLength === 0}>
-        <ListCheckIcon boxSize={'24px'} color="grayModern.500" />{' '}
-        <Text color={'grayModern.900'} display={['none', null, null, null, 'initial']}>
+        {/* <ListCheckIcon boxSize={'24px'} color="grayModern.500" />{' '} */}
+        <Text color={'#1C4EF5'} display={['none', null, null, null, 'initial']}>
           {t('file:bulkDelete')}(
           {t('file:selectedItems', {
             count: fileListLength
@@ -34,35 +35,37 @@ export default function DeleteFileModal({
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
-        <ModalContent maxW={'400px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
+        <ModalContent maxW={'448px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
           <ModalCloseButton />
-          <ModalHeader>{t('file:bulkDelete')}</ModalHeader>
+          <ModalHeader>{t('file:allDelete')}</ModalHeader>
           <ModalBody h="100%" w="100%" display={'flex'} flexDir={'column'}>
-            <Text mb="12px">{t('file:confirmDeleteFile')}</Text>
-            <Flex py={'16px'} justifyContent={'flex-end'} gap={'12px'}>
-              <Button
-                variant={'outline'}
-                px="19.5px"
-                py="8px"
-                fontSize={'12px'}
-                fontWeight={'500'}
-                height={'auto'}
-                onClick={() => onClose()}
-              >
-                {t('common:cancel')}
-              </Button>
-              <Button
-                variant={'warningConfirm'}
-                {...styles}
-                onClick={() => {
-                  onDelete();
-                  onClose();
-                }}
-              >
-                {t('file:confirm')}
-              </Button>
-            </Flex>
+            <Text>{t('file:confirmDeleteFile')}</Text>
           </ModalBody>
+          <ModalFooter>
+            <Button
+              variant={'warningConfirm'}
+              px="16px"
+              py="10px"
+              fontWeight={'500'}
+              onClick={() => {
+                onDelete();
+                onClose();
+              }}
+              isDisabled={fileListLength === 0}
+            >
+              {t('file:delete')}
+            </Button>
+            <Button
+              variant={'outline'}
+              px="17px"
+              py="10px"
+              fontWeight={'500'}
+              onClick={() => onClose()}
+              isDisabled={false}
+            >
+              {t('common:cancel')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

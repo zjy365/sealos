@@ -6,7 +6,10 @@
   "action": "Action",
   "bulkDelete": "Bulk Delete",
   "SingleDelete": "Delete File",
+  "allDelete": "Delete all files",
+  "delete": "Delete",
   "upload": "Upload",
+  "uploading": "Uploading",
   "createFolder": "Create Folder",
   "confirm": "Confirm",
   "folderName": "Folder Name",
@@ -17,11 +20,13 @@
   "minio_bucket_usage_total_bytes": "Total number of bytes",
   "minio_bucket_traffic_received_bytes": "Total number of bytes received by the bucket",
   "minio_bucket_traffic_sent_bytes": "Total number of bytes sent from the bucket",
-  "confirmDeleteFile": "Confirm to delete these files",
-  "confirmDeleteSingleFile": "Confirm to delete the file",
+  "confirmDeleteFile": "Are you sure you want to delete all these files?",
+  "confirmDeleteSingleFile": "Are you sure you want to delete the file",
   "searchFile": "Search File",
   "selectedItems": "Selected {{count}} item",
   "clickToAscend": "Click to ascend",
   "clickToDescend": "Click to descend",
-  "clickToCancelSort": "Click to cancel sorting"
+  "clickToCancelSort": "Click to cancel sorting",
+  "noFile": "No data yet",
+  "noFileDesc": "Can’t find any data in this bucket"
 }

@@ -12,5 +12,9 @@
   "enterBucketNameConfirmation": "请输入存储桶名字 {{bucketName}} 确认",
   "enterValidBucketName": "请输入正确的存储桶名字",
   "initializing": "正在初始化中",
-	"reset_user_sk_title": "确认重置 Secret Key"
+  "reset_user_sk_title": "确认重置 Secret Key",
+  "noBucketDesc": "点击下面的按钮创建桶",
+  "noBucketTitle": "还没有桶",
+  "deleteBucket": "删除桶",
+  "reset_user_sk_desc": "确定要重置 Secret Key？"
 }
