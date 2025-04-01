@@ -32,6 +32,7 @@ import { ShareIcon } from '@/components/icons';
 import { useGuideStore } from '@/store/guide';
 import { applistDriverObj, startDriver } from '@/hooks/driver';
 import { formatNum } from '@/utils/tools';
+import referral from '@/utils/referral';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
@@ -291,11 +292,9 @@ export async function getServerSideProps(content: any) {
     forcedLanguage ||
     content?.req?.cookies?.NEXT_LOCALE ||
     compareFirstLanguages(content?.req?.headers?.['accept-language'] || 'en');
-
-  content?.res.setHeader(
-    'Set-Cookie',
-    `NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`
-  );
+  const cookies = referral.getCookiesUseInServerSideProps(content, 'Track');
+  cookies.push(`NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
+  content?.res.setHeader('Set-Cookie', cookies);
 
   const baseurl = `http://${process.env.HOSTNAME || 'localhost'}:${process.env.PORT || 3000}`;
   const { data } = (await (await fetch(`${baseurl}/api/platform/getSystemConfig`)).json()) as {
