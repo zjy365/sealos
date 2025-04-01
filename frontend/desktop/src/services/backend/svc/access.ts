@@ -17,7 +17,8 @@ export const getGlobalTokenSvcWithEmail =
     inviterId?: string,
     referralCode?: string,
     semData?: SemData,
-    bdVid?: string
+    bdVid?: string,
+    config?: any
   ) =>
   async (res: NextApiResponse, next?: () => void) => {
     const data = await getGlobalTokenByOauth({
@@ -30,13 +31,20 @@ export const getGlobalTokenSvcWithEmail =
       password,
       referralCode,
       semData,
-      bdVid
+      bdVid,
+      config
     });
     if (!data)
       return jsonRes(res, {
         code: HttpStatusCode.Unauthorized,
         message: 'Unauthorized'
       });
+    else if (data === 'email conflict') {
+      return jsonRes(res, {
+        code: HttpStatusCode.Conflict,
+        message: 'Email already used by another user'
+      });
+    }
     return jsonRes(res, {
       data,
       code: HttpStatusCode.Ok,
@@ -87,7 +95,8 @@ export const getGlobalTokenByGithubSvc = (
   inviterId?: string,
   referralCode?: string,
   semData?: SemData,
-  bdVid?: string
+  bdVid?: string,
+  config?: any
 ) =>
   getGlobalTokenSvcWithEmail(
     avatar_url,
@@ -99,7 +108,8 @@ export const getGlobalTokenByGithubSvc = (
     inviterId,
     referralCode,
     semData,
-    bdVid
+    bdVid,
+    config
   );
 export const getGlobalTokenByWechatSvc = (
   avatar_url: string,

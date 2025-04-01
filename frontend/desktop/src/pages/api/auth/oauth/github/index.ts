@@ -20,7 +20,7 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
         clientID,
         clientSecret,
         code
-      )(res, async ({ id, name, avatar_url, email }) => {
+      )(res, async ({ id, name, avatar_url, email, config }) => {
         const persistUrl = await persistImage(
           avatar_url,
           'avatar/' + ProviderType.GITHUB + '/' + id
@@ -34,7 +34,10 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           inviterId,
           referralCode,
           semData,
-          bdVid
+          bdVid,
+          {
+            github: config
+          }
         )(res);
       });
     });

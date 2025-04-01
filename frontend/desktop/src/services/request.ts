@@ -40,10 +40,11 @@ request.interceptors.response.use(
       useSessionStore.getState().setToken('');
       return window.location.replace('/signin');
     }
+    // 网关
     if (status < 200 || status >= 300) {
       return Promise.reject(new Error(data?.code + ':' + data?.message));
     }
-
+    // rest
     const apiResp = data as ApiResp;
     if (apiResp?.code && (apiResp.code < 200 || apiResp.code >= 300)) {
       return Promise.reject({ code: apiResp.code, message: apiResp.message, data: apiResp.data });

@@ -261,6 +261,7 @@ async function signUpWithEmail({
   avatar_url,
   email,
   semData,
+  config,
   firstname = '',
   lastname = ''
 }: {
@@ -272,6 +273,7 @@ async function signUpWithEmail({
   lastname?: string;
   avatar_url: string;
   semData?: SemData;
+  config?: any;
 }) {
   const name = nanoid(10);
   try {
@@ -301,7 +303,8 @@ async function signUpWithEmail({
               lastname,
               signUpRegionUid: getRegionUid(),
               isInited: false,
-              verifyEmail: true
+              verifyEmail: true,
+              config: config || {}
             }
           }
         }
@@ -502,7 +505,7 @@ export const getGlobalToken = async ({
       userUid: true
     }
   });
-
+  console.log('get global Token,');
   if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
     throw new Error('not support other way to signin/signup');
   if (!_user) {
@@ -582,6 +585,7 @@ export const getGlobalTokenByOauth = async ({
   inviterId,
   referralCode,
   semData,
+  config,
   bdVid
 }: {
   provider: ProviderType;
@@ -594,6 +598,7 @@ export const getGlobalTokenByOauth = async ({
   referralCode?: string;
   semData?: SemData;
   bdVid?: string;
+  config?: any;
 }) => {
   let user: User | null = null;
   let isInited = false;
@@ -610,11 +615,12 @@ export const getGlobalTokenByOauth = async ({
       userUid: true
     }
   });
+  console.log('global ', user, email, ProviderType, providerId);
   if (!_user) {
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
     if (!email) {
-      console.log('email in null');
+      // console.log('email is null');
       return null;
     }
     const emailUser = await globalPrisma.oauthProvider.findUnique({
@@ -627,14 +633,15 @@ export const getGlobalTokenByOauth = async ({
     });
     // 被占用了，待定？ 不绑该邮箱
     // let result;
-    if (!!emailUser) return null;
+    if (!!emailUser) return 'email conflict';
     const result = await signUpWithEmail({
       email,
       provider,
       id: providerId,
       name,
       avatar_url,
-      semData
+      semData,
+      config
     });
     if (!result) return null;
     user = result.user;

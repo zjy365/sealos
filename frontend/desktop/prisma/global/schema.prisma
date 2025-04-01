@@ -498,6 +498,7 @@ model UserInfo {
   isInited        Boolean @default(false)
   enSubEmail      Boolean @default(false)
   verifyEmail     Boolean @default(false)
+  config          Json?
   user            User    @relation(fields: [userUid], references: [uid])
 }
 

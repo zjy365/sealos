@@ -51,7 +51,8 @@ function genResAuthClientConfig(conf: AuthConfigType) {
       google: {
         enabled: !!conf.idp.google?.enabled,
         clientID: conf.idp.google?.clientID || '',
-        proxyAddress: conf.idp.google?.proxyAddress || ''
+        proxyAddress: conf.idp.google?.proxyAddress || '',
+        callbackURL: conf.idp.google?.callbackURL || ''
       },
       oauth2: {
         enabled: !!conf.idp.oauth2?.enabled,
