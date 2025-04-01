@@ -62,7 +62,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         if (!process.env.NEXT_PUBLIC_MOCK_USER) {
           cleanSession();
           openConfirm(() => {
-            window.open(`https://${env.sealosDomain}`, '_self');
+            window.open(`https://run.claw.cloud`, '_self');
           })();
         }
       }
