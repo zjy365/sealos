@@ -111,6 +111,7 @@ export const googleOAuthGuard =
       iat: number;
       exp: number;
     };
+    console.log('googleInfo', userInfo);
     const name = userInfo.name;
     const id = userInfo.sub;
     const avatar_url = userInfo.picture;
@@ -165,6 +166,7 @@ export const githubOAuthGuard =
       }
     });
     let email = '';
+
     if (emailsResponse.ok) {
       const emails = (await emailsResponse.json()) as Array<{
         email: string;
@@ -172,6 +174,8 @@ export const githubOAuthGuard =
         verified: boolean;
         visibility: string | null;
       }>;
+      console.log('github', emails);
+      console.log('');
       if (emails.length === 0)
         return jsonRes(res, {
           message: 'Failed to fetch user github emails',
@@ -191,6 +195,12 @@ export const githubOAuthGuard =
           email = emails[0].email;
         }
       }
+    } else {
+      console.log('github email not FOUND');
+      // return jsonRes(res, {
+      //   code: 401,
+      //   message: 'Unauthorized'
+      // });
     }
     const result = (await response.json()) as TgithubUser;
     const id = result.id;

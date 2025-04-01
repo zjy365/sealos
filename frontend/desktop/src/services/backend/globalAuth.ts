@@ -502,7 +502,7 @@ export const getGlobalToken = async ({
       userUid: true
     }
   });
-
+  console.log('get global Token,');
   if (provider !== ProviderType.GOOGLE && provider !== ProviderType.GITHUB)
     throw new Error('not support other way to signin/signup');
   if (!_user) {
@@ -610,6 +610,7 @@ export const getGlobalTokenByOauth = async ({
       userUid: true
     }
   });
+  console.log('global ', user, email, ProviderType, providerId);
   if (!_user) {
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
@@ -627,7 +628,7 @@ export const getGlobalTokenByOauth = async ({
     });
     // 被占用了，待定？ 不绑该邮箱
     // let result;
-    if (!!emailUser) return null;
+    if (!!emailUser) return 'email conflict';
     const result = await signUpWithEmail({
       email,
       provider,
