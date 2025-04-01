@@ -9,7 +9,9 @@
     "lint": "next lint",
     "link-sdk": "rm -rf node_modules/sealos-desktop-sdk && yalc link sealos-desktop-sdk",
     "unlink-sdk": "yalc remove --all && pnpm install sealos-desktop-sdk",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "gen:global": "prisma generate --schema ./prisma/global/schema.prisma",
+    "postinstall": "pnpm gen:global"
   },
   "dependencies": {
     "@alicloud/dysmsapi20170525": "^2.0.24",
