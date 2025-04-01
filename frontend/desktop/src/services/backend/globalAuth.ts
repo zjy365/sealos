@@ -620,7 +620,7 @@ export const getGlobalTokenByOauth = async ({
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
     if (!email) {
-      console.log('email in null');
+      // console.log('email is null');
       return null;
     }
     const emailUser = await globalPrisma.oauthProvider.findUnique({

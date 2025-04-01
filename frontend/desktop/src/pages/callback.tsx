@@ -10,6 +10,7 @@ import useCallbackStore, { MergeUserStatus } from '@/stores/callback';
 import request from '@/services/request';
 import { BIND_STATUS } from '@/types/response/bind';
 import { useCustomToast } from '@/hooks/useCustomToast';
+import { HttpStatusCode } from 'axios';
 export default function Callback() {
   const router = useRouter();
   const setProvider = useSessionStore((s) => s.setProvider);
@@ -81,8 +82,20 @@ export default function Callback() {
                 await router.replace('/');
                 return;
               }
+            } else if (data.code === HttpStatusCode.Conflict) {
+              if (data.message) {
+                toast({
+                  title: 'Error',
+                  description: data.message,
+                  status: 'error',
+                  duration: 5000,
+                  isClosable: true
+                });
+              }
+              await new Promise((resolve) => setTimeout(resolve, 5000));
+              await router.replace('/signin');
             } else {
-              throw new Error();
+              throw new Error('Unknown error');
             }
           } else if (action === 'BIND') {
             const response = await bindRequest(provider)({ code });
@@ -118,16 +131,18 @@ export default function Callback() {
           }
         }
       } catch (error) {
-        console.error(error);
-        if ((error as Error).message) {
-          toast({
-            title: 'Error',
-            description: (error as Error).message,
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          });
-        }
+        console.log(error);
+        //@ts-ignore
+        // if (error.code === 409 && error.message) {
+        toast({
+          title: 'Error',
+          //@ts-ignore
+          description: error.message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        });
+        // }
         await new Promise((resolve) => setTimeout(resolve, 5000));
         await router.replace('/signin');
       }
