@@ -109,6 +109,7 @@ export type AuthConfigType = {
     google?: {
       enabled: boolean;
       proxyAddress?: string;
+      callbackURL?: string;
       clientID: string;
       clientSecret?: string;
     };
@@ -307,6 +308,7 @@ export const DefaultAuthClientConfig: AuthClientConfigType = {
     google: {
       enabled: false,
       clientID: '',
+      callbackURL: '',
       proxyAddress: ''
     },
     sms: {

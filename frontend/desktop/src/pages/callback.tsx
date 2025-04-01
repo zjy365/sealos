@@ -9,12 +9,14 @@ import { getBaiduId, getInviterId, getUserSemData, sessionConfig } from '@/utils
 import useCallbackStore, { MergeUserStatus } from '@/stores/callback';
 import request from '@/services/request';
 import { BIND_STATUS } from '@/types/response/bind';
+import { useCustomToast } from '@/hooks/useCustomToast';
 export default function Callback() {
   const router = useRouter();
   const setProvider = useSessionStore((s) => s.setProvider);
   const setToken = useSessionStore((s) => s.setToken);
   const provider = useSessionStore((s) => s.provider);
   const compareState = useSessionStore((s) => s.compareState);
+  const { toast } = useCustomToast();
   const { setMergeUserData, setMergeUserStatus } = useCallbackStore();
   useEffect(() => {
     if (!router.isReady) return;
@@ -117,6 +119,16 @@ export default function Callback() {
         }
       } catch (error) {
         console.error(error);
+        if ((error as Error).message) {
+          toast({
+            title: 'Error',
+            description: (error as Error).message,
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          });
+        }
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         await router.replace('/signin');
       }
     })();

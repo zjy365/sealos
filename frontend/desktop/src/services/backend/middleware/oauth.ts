@@ -11,7 +11,6 @@ import { v4 } from 'uuid';
 import { BIND_STATUS } from '@/types/response/bind';
 import { UNBIND_STATUS } from '@/types/response/unbind';
 import { SemData } from '@/types/sem';
-import { createMiddleware } from '@/utils/factory';
 
 export const OauthCodeFilter = async (
   req: NextApiRequest,
@@ -66,7 +65,9 @@ export const googleOAuthEnvFilter = () => {
       global.AppConfig?.desktop.auth.idp.google?.clientID,
       global.AppConfig?.desktop.auth.idp.google?.clientSecret
     )(async (originData) => {
-      const callbackURL = global.AppConfig?.desktop.auth.callbackURL;
+      const callbackURL =
+        global.AppConfig?.desktop.auth.idp.google?.callbackURL ||
+        global.AppConfig?.desktop.auth.callbackURL;
       if (!callbackURL) throw Error('callbackURL NOT FOUND');
       await Promise.resolve(
         next?.({
@@ -84,12 +85,16 @@ export const googleOAuthGuard =
     next: (data: { id: string; name: string; avatar_url: string; email: string }) => void
   ) => {
     const url = `https://oauth2.googleapis.com/token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}&redirect_uri=${callbackUrl}&grant_type=authorization_code`;
+    // console.log(url);
     const response = await fetch(url, { method: 'POST', headers: { Accept: 'application/json' } });
-    if (!response.ok)
+    if (!response.ok) {
+      console.log('gmail error!', await response.clone().text());
       return jsonRes(res, {
         code: 401,
         message: 'Unauthorized'
       });
+    }
+
     const __data = (await response.json()) as {
       access_token: string;
       scope: string;
@@ -111,7 +116,7 @@ export const googleOAuthGuard =
       iat: number;
       exp: number;
     };
-    console.log('googleInfo', userInfo);
+    // console.log('googleInfo', userInfo);
     const name = userInfo.name;
     const id = userInfo.sub;
     const avatar_url = userInfo.picture;
@@ -131,7 +136,7 @@ export const githubOAuthGuard =
   (clientId: string, clientSecret: string, code: string) =>
   async (
     res: NextApiResponse,
-    next: (data: { id: string; name: string; avatar_url: string; email: string }) => void
+    next: (data: { id: string; name: string; avatar_url: string; email: string; config }) => void
   ) => {
     const url = ` https://github.com/login/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}`;
     const __data = (await (
@@ -174,8 +179,8 @@ export const githubOAuthGuard =
         verified: boolean;
         visibility: string | null;
       }>;
-      console.log('github', emails);
-      console.log('');
+      // console.log('github', emails);
+      // console.log('');
       if (emails.length === 0)
         return jsonRes(res, {
           message: 'Failed to fetch user github emails',
@@ -211,7 +216,8 @@ export const githubOAuthGuard =
         id: id + '',
         name: result.login,
         avatar_url: result.avatar_url,
-        email
+        email,
+        config: result
       })
     );
   };

@@ -37,6 +37,12 @@ export const getGlobalTokenSvcWithEmail =
         code: HttpStatusCode.Unauthorized,
         message: 'Unauthorized'
       });
+    else if (data === 'email conflict') {
+      return jsonRes(res, {
+        code: HttpStatusCode.Conflict,
+        message: 'Email already used by another user'
+      });
+    }
     return jsonRes(res, {
       data,
       code: HttpStatusCode.Ok,
@@ -87,7 +93,8 @@ export const getGlobalTokenByGithubSvc = (
   inviterId?: string,
   referralCode?: string,
   semData?: SemData,
-  bdVid?: string
+  bdVid?: string,
+  config?: any
 ) =>
   getGlobalTokenSvcWithEmail(
     avatar_url,
