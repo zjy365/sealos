@@ -261,6 +261,7 @@ async function signUpWithEmail({
   avatar_url,
   email,
   semData,
+  config,
   firstname = '',
   lastname = ''
 }: {
@@ -272,6 +273,7 @@ async function signUpWithEmail({
   lastname?: string;
   avatar_url: string;
   semData?: SemData;
+  config?: any;
 }) {
   const name = nanoid(10);
   try {
@@ -301,7 +303,8 @@ async function signUpWithEmail({
               lastname,
               signUpRegionUid: getRegionUid(),
               isInited: false,
-              verifyEmail: true
+              verifyEmail: true,
+              config: config || {}
             }
           }
         }
@@ -582,6 +585,7 @@ export const getGlobalTokenByOauth = async ({
   inviterId,
   referralCode,
   semData,
+  config,
   bdVid
 }: {
   provider: ProviderType;
@@ -594,6 +598,7 @@ export const getGlobalTokenByOauth = async ({
   referralCode?: string;
   semData?: SemData;
   bdVid?: string;
+  config?: any;
 }) => {
   let user: User | null = null;
   let isInited = false;
@@ -635,7 +640,8 @@ export const getGlobalTokenByOauth = async ({
       id: providerId,
       name,
       avatar_url,
-      semData
+      semData,
+      config
     });
     if (!result) return null;
     user = result.user;

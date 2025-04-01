@@ -35,7 +35,9 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           referralCode,
           semData,
           bdVid,
-          config
+          {
+            github: config
+          }
         )(res);
       });
     });

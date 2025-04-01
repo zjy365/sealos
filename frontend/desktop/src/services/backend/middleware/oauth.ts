@@ -136,7 +136,13 @@ export const githubOAuthGuard =
   (clientId: string, clientSecret: string, code: string) =>
   async (
     res: NextApiResponse,
-    next: (data: { id: string; name: string; avatar_url: string; email: string; config }) => void
+    next: (data: {
+      id: string;
+      name: string;
+      avatar_url: string;
+      email: string;
+      config: any;
+    }) => void
   ) => {
     const url = ` https://github.com/login/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}`;
     const __data = (await (

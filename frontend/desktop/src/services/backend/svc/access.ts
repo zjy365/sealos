@@ -17,7 +17,8 @@ export const getGlobalTokenSvcWithEmail =
     inviterId?: string,
     referralCode?: string,
     semData?: SemData,
-    bdVid?: string
+    bdVid?: string,
+    config?: any
   ) =>
   async (res: NextApiResponse, next?: () => void) => {
     const data = await getGlobalTokenByOauth({
@@ -30,7 +31,8 @@ export const getGlobalTokenSvcWithEmail =
       password,
       referralCode,
       semData,
-      bdVid
+      bdVid,
+      config
     });
     if (!data)
       return jsonRes(res, {
@@ -106,7 +108,8 @@ export const getGlobalTokenByGithubSvc = (
     inviterId,
     referralCode,
     semData,
-    bdVid
+    bdVid,
+    config
   );
 export const getGlobalTokenByWechatSvc = (
   avatar_url: string,
