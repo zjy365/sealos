@@ -85,7 +85,6 @@ export const googleOAuthGuard =
     next: (data: { id: string; name: string; avatar_url: string; email: string }) => void
   ) => {
     const url = `https://oauth2.googleapis.com/token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}&redirect_uri=${callbackUrl}&grant_type=authorization_code`;
-    // console.log(url);
     const response = await fetch(url, { method: 'POST', headers: { Accept: 'application/json' } });
     if (!response.ok) {
       console.log('gmail error!', await response.clone().text());
@@ -101,6 +100,7 @@ export const googleOAuthGuard =
       token_type: string;
       id_token: string;
     };
+    // console.log('__data', __data);
     const userInfo = jwt.decode(__data.id_token) as {
       iss: string;
       azp: string;
@@ -116,11 +116,33 @@ export const googleOAuthGuard =
       iat: number;
       exp: number;
     };
-    // console.log('googleInfo', userInfo);
+
     const name = userInfo.name;
     const id = userInfo.sub;
     const avatar_url = userInfo.picture;
-    const email = userInfo.email;
+    let email = userInfo.email || '';
+    if (!email && __data.access_token) {
+      try {
+        const userinfoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
+        const userinfoResponse = await fetch(userinfoUrl, {
+          headers: {
+            Authorization: `Bearer ${__data.access_token}`,
+            Accept: 'application/json'
+          }
+        });
+
+        if (userinfoResponse.ok) {
+          const userinfoData: {
+            email: string;
+          } = await userinfoResponse.json();
+
+          email = userinfoData.email || userInfo.email || '';
+        }
+      } catch (error) {
+        console.error('get google email error:', error);
+      }
+    }
+    // console.log('userInfo', userInfo);
     if (!id) throw Error('get userInfo error');
     // @ts-ignore
     await Promise.resolve(
