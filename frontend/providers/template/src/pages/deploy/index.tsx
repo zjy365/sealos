@@ -305,12 +305,7 @@ export default function EditApp({
       background={'linear-gradient(180deg, #FFF 0%, rgba(255, 255, 255, 0.70) 100%)'}
     >
       <Head>
-        <title>{`${metaData.title} ${
-          i18n.language === 'en'
-            ? `Deployment and installation tutorial - ${brandName}`
-            : `部署和安装教程 - ${brandName}`
-        }`}</title>
-        <meta name="keywords" content={metaData.keywords} />
+        <title>{`${metaData.title}-${brandName}`}</title>
         <meta name="description" content={metaData.description} />
       </Head>
       {/* <Flex
@@ -423,7 +418,9 @@ export default function EditApp({
 
 export async function getServerSideProps(content: any) {
   const brandName = process.env.NEXT_PUBLIC_BRAND_NAME;
+  const forcedLanguage = process.env.FORCED_LANGUAGE;
   const local =
+    forcedLanguage ||
     content?.req?.cookies?.NEXT_LOCALE ||
     compareFirstLanguages(content?.req?.headers?.['accept-language'] || 'en');
 
@@ -437,7 +434,7 @@ export async function getServerSideProps(content: any) {
   const baseurl = `http://${process.env.HOSTNAME || 'localhost'}:${process.env.PORT || 3000}`;
 
   let metaData = {
-    title: `${appName}部署和安装教程 - ClawCloud`,
+    title: `${appName}-ClawCloud`,
     keywords: '',
     description: ''
   };

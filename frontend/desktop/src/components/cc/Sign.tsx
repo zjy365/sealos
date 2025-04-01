@@ -289,7 +289,7 @@ export default function SigninComponent() {
                 }}
                 mb={'12px'}
               >
-                Monthly $5 credits available with Github
+                Eligible GitHub accounts can receive monthly $5 credits
               </Box>
               <Button
                 borderRadius={'8px'}

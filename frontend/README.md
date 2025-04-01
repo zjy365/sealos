@@ -81,3 +81,16 @@ Refer to other apps to add some configuration.
 In order to support multiple namespaces, the method of obtaining 'namespace' in the
 backend should be replaced with the method of obtaining it from 'kubeconfig' instead
 of adding 'ns-' to 'user' for generation purpose.
+
+# Update image
+
+BASE_IMAGE=ghcr.io/zjy365
+TAG=0331-cc-main3
+
+kubectl set image deployment/account-center-frontend -n sealos account-center-frontend=${BASE_IMAGE}/sealos-accountcenter-frontend:${TAG}
+kubectl set image deployment/desktop-frontend -n sealos desktop-frontend=${BASE_IMAGE}/sealos-desktop-frontend:${TAG}
+kubectl set image deployment/devbox-frontend -n devbox-frontend devbox-frontend=${BASE_IMAGE}/sealos-devbox-frontend:${TAG}
+kubectl set image deployment/dbprovider-frontend -n dbprovider-frontend dbprovider-frontend=${BASE_IMAGE}/sealos-dbprovider-frontend:${TAG}
+kubectl set image deployment/applaunchpad-frontend -n applaunchpad-frontend applaunchpad-frontend=${BASE_IMAGE}/sealos-applaunchpad-frontend:${TAG}
+kubectl set image deployment/template-frontend -n template-frontend template-frontend=${BASE_IMAGE}/sealos-template-frontend:${TAG}
+kubectl set image deployment/object-storage-frontend -n objectstorage-frontend object-storage-frontend=${BASE_IMAGE}/sealos-objectstorage-frontend:${TAG}
