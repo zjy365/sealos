@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { Box, Button, Flex, Img, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Img, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -54,8 +54,8 @@ const MainBody = () => {
             <MyIcon
               name="copy"
               w={'16px'}
-              color={'grayModern.400'}
               ml={1}
+              color={'grayModern.400'}
               _hover={{
                 color: 'grayModern.600'
               }}
@@ -73,27 +73,48 @@ const MainBody = () => {
         if (item.openPublicDomain) {
           const address = item.customDomain || item.publicDomain;
           return (
-            <Tooltip
-              label={t('open_link')}
-              hasArrow
-              bg={'#FFFFFF'}
-              color={'grayModern.900'}
-              fontSize={'12px'}
-              fontWeight={400}
-              py={2}
-              borderRadius={'md'}
-            >
-              <Text
-                className="guide-network-address"
-                cursor="pointer"
-                color={'grayModern.600'}
-                _hover={{ textDecoration: 'underline' }}
-                onClick={() => window.open(`https://${address}`, '_blank')}
-                isTruncated
+            <Flex alignItems={'center'}>
+              <Tooltip
+                label={t('open_link')}
+                hasArrow
+                bg={'#FFFFFF'}
+                color={'grayModern.900'}
+                fontSize={'12px'}
+                fontWeight={400}
+                py={2}
+                borderRadius={'md'}
               >
-                {address}
-              </Text>
-            </Tooltip>
+                <Text
+                  className="guide-network-address"
+                  cursor="pointer"
+                  color={'grayModern.600'}
+                  _hover={{ textDecoration: 'underline' }}
+                  onClick={() => window.open(`https://${address}`, '_blank')}
+                  isTruncated
+                >
+                  https://{address}
+                </Text>
+              </Tooltip>
+              {!!address && (
+                <Center
+                  flexShrink={0}
+                  w={'24px'}
+                  h={'24px'}
+                  borderRadius={'6px'}
+                  cursor={'pointer'}
+                >
+                  <MyIcon
+                    name={'copy'}
+                    w={'16px'}
+                    color={'grayModern.400'}
+                    _hover={{
+                      color: 'grayModern.600'
+                    }}
+                    onClick={() => copyData(`https://${address}`)}
+                  />
+                </Center>
+              )}
+            </Flex>
           );
         }
         return <Text>-</Text>;
