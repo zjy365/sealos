@@ -47,13 +47,10 @@ export default function SigninPage() {
 }
 
 export async function getServerSideProps({ req, res, locales, query }: any) {
-  const code = query[referral.codeQueryKey];
-  const cookies: string[] = [];
-  if (code) {
-    const domain = referral.getCookieDomain(global.AppConfig?.cloud.domain);
-    // prettier-ignore
-    cookies.push(`${referral.codeCookieKey}=${code}; Max-Age=${ referral.codeCookieMaxAge}; Path=/; HttpOnly; Secure${domain ? `; Domain=${domain}` : ''}`);
-  }
+  const cookies = referral.getCookiesUseInServerSideProps({
+    query,
+    host: global.AppConfig?.cloud.domain
+  });
   // const local =
   //   req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
   const local = 'en';
