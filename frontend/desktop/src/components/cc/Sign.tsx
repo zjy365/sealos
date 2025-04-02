@@ -266,93 +266,65 @@ export default function SigninComponent() {
     <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
       <ClawCloudIcon w={'160px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
       <Box mx="auto" maxW="lg" px={4}>
-        <Box fontSize={'24px'} fontWeight={600} mb={'24px'}>
+        <Box fontSize={'24px'} fontWeight={600} mb={'12px'}>
           Welcome to ClawCloud Run
         </Box>
-        <Stack spacing={'24px'}>
-          <Box
-            borderWidth="1px"
-            borderRadius="12px"
-            p={'12px'}
-            borderColor="#8CAFFF"
-            bg="rgba(140, 175, 255, 0.05)"
+
+        <Box color={'#71717A'} fontWeight={400} fontSize={'14px'} mb={'24px'}>
+          Free $5 credits first month by signing up - No credit card required. 180-day GitHub users
+          unlock $5 free every month.
+        </Box>
+
+        <Stack spacing={'12px'} mb={'24px'}>
+          <Button
+            borderRadius={'8px'}
+            variant="outline"
+            onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
+            w={'100%'}
+            _hover={{
+              bg: 'grayModern.50'
+            }}
+            boxShadow={'none'}
+            leftIcon={<GithubIcon />}
           >
-            <Flex alignItems="center" justifyContent="center" direction="column">
-              <Box
-                fontSize="14px"
-                fontWeight="500"
-                sx={{
-                  background: 'linear-gradient(270deg, #1D49FF 8.46%, #1AA8FF 91.17%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }}
-                mb={'12px'}
-              >
-                Eligible GitHub accounts can receive monthly $5 credits
-              </Box>
-              <Button
-                borderRadius={'8px'}
-                variant="outline"
-                onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
-                w={'100%'}
-                _hover={{
-                  bg: 'grayModern.50'
-                }}
-                boxShadow={'none'}
-                leftIcon={<GithubIcon />}
-              >
-                GitHub
-              </Button>
-            </Flex>
-          </Box>
-          {/* OR Divider */}
-          <Box position="relative">
-            <Divider />
-            <AbsoluteCenter bg="white" px="4" color="#94949B">
-              OR
-            </AbsoluteCenter>
-          </Box>
+            GitHub
+          </Button>
 
-          {/* Social Login Buttons */}
-          <Stack direction="row" spacing={4} w={'full'}>
-            <Button
-              borderRadius={'8px'}
-              variant="outline"
-              onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
-              w={'100%'}
-              boxShadow={'none'}
-              _hover={{
-                bg: 'grayModern.50'
-              }}
-              leftIcon={<GoogleIcon />}
-            >
-              Google
-            </Button>
-          </Stack>
-
-          {/* Terms and Conditions */}
-          <Box fontSize="sm" color="gray.500">
-            By proceeding you acknowledge that you have read, understood and agree to our{' '}
-            <Box
-              as={Link}
-              href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
-              target="_blank"
-              textDecoration="underline"
-            >
-              Terms and Conditions
-            </Box>
-            &nbsp;and&nbsp;
-            <Box
-              as={Link}
-              href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
-              target="_blank"
-              textDecoration="underline"
-            >
-              Privacy Policy.
-            </Box>
-          </Box>
+          <Button
+            borderRadius={'8px'}
+            variant="outline"
+            onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
+            w={'100%'}
+            boxShadow={'none'}
+            _hover={{
+              bg: 'grayModern.50'
+            }}
+            leftIcon={<GoogleIcon />}
+          >
+            Google
+          </Button>
         </Stack>
+
+        <Box fontSize="sm" color="gray.500">
+          By proceeding you acknowledge that you have read, understood and agree to our{' '}
+          <Box
+            as={Link}
+            href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
+            target="_blank"
+            textDecoration="underline"
+          >
+            Terms and Conditions
+          </Box>
+          &nbsp;and&nbsp;
+          <Box
+            as={Link}
+            href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
+            target="_blank"
+            textDecoration="underline"
+          >
+            Privacy Policy.
+          </Box>
+        </Box>
       </Box>
     </Flex>
   );
