@@ -110,7 +110,7 @@ const Callback: NextPage = () => {
         >
           <Image boxSize={'34px'} borderRadius="full" src={logo} alt="logo" />
           <Text fontWeight={700} fontSize={'24px'}>
-            {layoutConfig?.title ?? 'Sealos'}
+            {layoutConfig?.title ?? 'ClawCloud'}
           </Text>
         </Flex>
         {isValid ? (
