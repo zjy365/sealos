@@ -3,6 +3,7 @@ import React from 'react';
 import Icon from '../Icon';
 import Image from 'next/image';
 import style from './index.module.css';
+import { useRouter } from 'next/router';
 
 const data = [
   {
@@ -10,21 +11,24 @@ const data = [
     content:
       'A collaborative workspace integrating documents, whiteboards, and databases for seamless team productivity.',
     icon: <Icon w={'48px'} h={'48px'} name="affine"></Icon>,
-    image: '/images/Affine.png'
+    image: '/images/Affine.png',
+    url: 'affine'
   },
   {
     title: 'Dify',
     content:
       'A no-code/low-code platform for building and deploying AI-powered applications like chatbots and automations.',
     icon: <Icon color={'white'} w={'48px'} h={'48px'} name="dify"></Icon>,
-    image: '/images/Dify.png'
+    image: '/images/Dify.png',
+    url: 'dify'
   },
   {
     title: 'WordPress',
     content:
       'A versatile open-source CMS powering websites and blogs with customizable themes, plugins, and scalability.',
     icon: <Icon w={'48px'} h={'48px'} name="wordPress"></Icon>,
-    image: '/images/WordPress.png'
+    image: '/images/WordPress.png',
+    url: 'wordpress'
   }
 ];
 
@@ -41,6 +45,16 @@ const breakpoints = {
 
 export default function Carousel({}: {}) {
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const router = useRouter();
+  const goDeploy = (name: string) => {
+    if (!name) return;
+    router.push({
+      pathname: '/deploy',
+      query: {
+        templateName: name
+      }
+    });
+  };
   return (
     <Box mb={'32px'}>
       <Flex position={'relative'} gap={'16px'} w="100%" h="220px" justifyContent="center">
@@ -67,7 +81,10 @@ export default function Carousel({}: {}) {
             color={'white'}
             p={'32px 28px'}
             transition={'all 0.5s'}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => {
+              setActiveIndex(index);
+              goDeploy(item.url);
+            }}
             borderRadius={'16px'}
             w={{ lg: activeIndex === index ? '720px' : '296px', base: '944px' }}
             key={index}
