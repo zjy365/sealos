@@ -62,11 +62,11 @@ const EditApp = ({ bucketName, bucketPolicy }: bucketConfigQueryParam) => {
           flexDirection={'column'}
           alignItems={'center'}
           h={'100vh'}
-          bg={'#F3F4F5'}
+          bg={'white'}
         >
           <ConfigHeader />
 
-          <Box flex={'1 0 0'} h={0} w={'100%'} pb={4}>
+          <Box flex={'1 0 0'} h={0} w={'100%'} py={'32px'}>
             <ConfigMain />
           </Box>
         </Flex>

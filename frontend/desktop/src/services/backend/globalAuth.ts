@@ -661,6 +661,10 @@ export const getGlobalTokenByOauth = async ({
           console.log(err);
         });
     }
+
+    // Send event to EventBridge
+    await sendEvent('user_signup', user.uid, referralCode);
+
     if (enableTracking()) {
       await trackSignUp({
         userId: result.user.id,
@@ -685,9 +689,6 @@ export const getGlobalTokenByOauth = async ({
     userUid: user.uid,
     userId: user.name
   });
-
-  // Send event to EventBridge
-  await sendEvent('user_signup', user.uid, referralCode);
 
   return {
     token,

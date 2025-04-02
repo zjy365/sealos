@@ -249,13 +249,13 @@ export default function AppList({
                         ))}
                       </Flex>
                       <Center
-                        cursor={'pointer'}
-                        onClick={(e) =>
-                          goGithub(
-                            e,
-                            item.spec?.i18n?.[i18n.language]?.gitRepo ?? item?.spec?.gitRepo
-                          )
-                        }
+                      // cursor={'pointer'}
+                      // onClick={(e) =>
+                      //   goGithub(
+                      //     e,
+                      //     item.spec?.i18n?.[i18n.language]?.gitRepo ?? item?.spec?.gitRepo
+                      //   )
+                      // }
                       >
                         <MyIcon name="usersround" color={'transparent'} />
                         <Text fontSize={'12px'} color={'#A3A3A3'} ml={'4px'}>

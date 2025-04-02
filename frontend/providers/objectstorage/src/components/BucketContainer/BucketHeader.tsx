@@ -1,10 +1,12 @@
-import { bucketConfigQueryParam } from '@/consts';
-import { Text, HStack, StackProps, ButtonGroup, Button } from '@chakra-ui/react';
+import { bucketConfigQueryParam, TBucket } from '@/consts';
+import { Text, HStack, StackProps, ButtonGroup, Button, Flex } from '@chakra-ui/react';
 import { useOssStore } from '@/store/ossStore';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import EditIcon from '../Icons/EditIcon';
 import DeleteBucketModal from '../common/modal/DeleteBucketModal';
+import AuthorityTips from '../common/AuthorityTip';
+import MoreMenu from '../common/MoreMenu';
 
 export default function BucketHeader({ ...styles }: StackProps) {
   const bucket = useOssStore((s) => s.currentBucket);
@@ -12,13 +14,15 @@ export default function BucketHeader({ ...styles }: StackProps) {
   const { t } = useTranslation('common');
   if (!bucket) return <></>;
   return (
-    <HStack justify={'space-between'} wrap={'wrap'} w="full" {...styles}>
-      <HStack spacing={'20px'}>
+    <Flex h={'48px'} justify={'space-between'} wrap={'wrap'} w="full" {...styles}>
+      <Flex h={'28px'} alignItems={'center'} gap={'10px'}>
+        <AuthorityTips authority={bucket.policy} />
         <Text fontSize={'24px'} fontWeight={'500'}>
           {bucket.name}
         </Text>
-      </HStack>
-      <ButtonGroup variant={'outline'} spacing={'16px'}>
+        <MoreMenu bucket={bucket} />
+      </Flex>
+      {/* <ButtonGroup variant={'outline'} spacing={'16px'}>
         <Button
           gap="8px"
           px="24px"
@@ -37,7 +41,7 @@ export default function BucketHeader({ ...styles }: StackProps) {
           <Text>{t('edit')}</Text>
         </Button>
         <DeleteBucketModal bucketName={bucket.name} />
-      </ButtonGroup>
-    </HStack>
+      </ButtonGroup> */}
+    </Flex>
   );
 }

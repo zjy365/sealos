@@ -34,8 +34,8 @@ const validCookieDomains = ['claws.run', 'claw.cloud'];
 const referral = {
   codeQueryKey: 'referralCode',
   codeCookieKey: 'CC_RUN_REFERRAL_CODE',
-  // 单位s 31天
-  codeCookieMaxAge: 3600 * 24 * 31,
+  // 单位s 90天
+  codeCookieMaxAge: 3600 * 24 * 90,
   // 监控用 单位s 90天
   codeCookieTrackMaxAge: 3600 * 24 * 90,
   getCookieDomain(host: string | undefined) {

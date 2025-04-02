@@ -10,6 +10,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalOverlay,
   useDisclosure,
   Button,
@@ -44,13 +45,14 @@ export default function UpdateSecretKeyModal({ ...styles }: ButtonProps & {}) {
     <>
       <Button
         gap="4px"
-        variant={'outline'}
+        variant={'ghost'}
         px="8px"
         py="4px"
         h="auto"
-        fontSize={'11px'}
-        fontWeight={'500'}
+        fontSize={'14px'}
+        fontWeight={'400'}
         borderRadius={'4px'}
+        color={'#2563EB'}
         isLoading={isUpdating}
         _loading={{
           boxSize: '20px'
@@ -60,7 +62,7 @@ export default function UpdateSecretKeyModal({ ...styles }: ButtonProps & {}) {
           onOpen();
         }}
       >
-        <RefreshIcon boxSize={'12px'} color="grayModern.400" />
+        {/* <RefreshIcon boxSize={'12px'} color="grayModern.400" /> */}
         <Text>{t('reset')}</Text>
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -68,36 +70,25 @@ export default function UpdateSecretKeyModal({ ...styles }: ButtonProps & {}) {
         <ModalContent maxW={'360px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
           <ModalCloseButton />
           <ModalHeader display={'flex'} alignItems={'center'}>
-            <WarnTriangeIcon
+            {/* <WarnTriangeIcon
               color={'yellow.500'}
               boxSize={'20px'}
               mr={'10px'}
               fill={'yellow.500'}
-            />
+            /> */}
             <Text>{t('bucket:reset_user_sk_title')}</Text>
           </ModalHeader>
-          <ModalBody
-            display={'flex'}
-            py={'24px'}
-            px={'16px'}
-            justifyContent={'flex-end'}
-            gap={'12px'}
-          >
+          <ModalBody>
+            <Text>{t('bucket:reset_user_sk_desc')}</Text>
+          </ModalBody>
+          <ModalFooter>
             <Button
-              variant={'outline'}
-              px="19.5px"
-              py="8px"
-              fontSize={'12px'}
-              fontWeight={'500'}
-              height={'auto'}
-              borderColor={'grayModern.250'}
-              onClick={() => onClose()}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              variant={'warningConfirm'}
+              variant={'solid'}
               {...styles}
+              px="13.5px"
+              py="10px"
+              fontSize={'14px'}
+              fontWeight={'500'}
               onClick={() => {
                 mutation.mutate();
                 onClose();
@@ -105,7 +96,18 @@ export default function UpdateSecretKeyModal({ ...styles }: ButtonProps & {}) {
             >
               {t('file:confirm')}
             </Button>
-          </ModalBody>
+            <Button
+              variant={'outline'}
+              px="17px"
+              py="10px"
+              fontSize={'14px'}
+              fontWeight={'500'}
+              borderColor={'#E4E4E7'}
+              onClick={() => onClose()}
+            >
+              {t('cancel')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

@@ -36,6 +36,8 @@ const SortButton = ({
         onClick={onClick}
         variant={'unstyled'}
         size={'xs'}
+        fontSize={'14px'}
+        fontWeight={'400'}
         display={'flex'}
         gap={'8px'}
         {...styles}

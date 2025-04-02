@@ -60,6 +60,7 @@ import {
   flexRender,
   getFilteredRowModel
 } from '@tanstack/react-table';
+import Image from 'next/image';
 
 type EntryType = {
   LastModified?: Date;
@@ -128,10 +129,12 @@ export default function FileManager({ ...styles }: FlexProps) {
         setpageStack((pageStack) => [...pageStack, token]);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [objectsQuery.data, objectsQuery.isError]);
   // clear delete items
   useEffect(() => {
     table.toggleAllRowsSelected(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bucket, prefix, pageStack, ContinuationToken]);
   const deleteMutation = useMutation({
     mutationFn: deleteObject(s3client!),
@@ -212,6 +215,7 @@ export default function FileManager({ ...styles }: FlexProps) {
         isDir: true
       })) || [])
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [objectsQuery.data]
   );
   // get url
@@ -421,7 +425,7 @@ export default function FileManager({ ...styles }: FlexProps) {
       }),
       columnHelper.display({
         header() {
-          return t('action');
+          // return t('action');
         },
         id: TableHeaderID.action,
         enablePinning: true,
@@ -484,6 +488,7 @@ export default function FileManager({ ...styles }: FlexProps) {
         }
       })
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t, Bucket, s3client]);
   const table = useReactTable<EntryType>({
     data: fileList,
@@ -538,12 +543,6 @@ export default function FileManager({ ...styles }: FlexProps) {
         >
           <UploadModal />
           <CreateFolderModal />
-          <DeleteFileModal
-            onDelete={() => {
-              multiDeleteEntry(table.getSelectedRowModel().rows.map((v) => v.original.Key));
-            }}
-            fileListLength={table.getSelectedRowModel().rows.length}
-          />
           <Button
             display={'flex'}
             gap="8px"
@@ -557,11 +556,17 @@ export default function FileManager({ ...styles }: FlexProps) {
               });
             }}
           >
-            <RefreshIcon boxSize={'24px'} color="grayModern.500" />
-            <Text color={'grayModern.900'} display={['none', null, null, null, 'initial']}>
+            {/* <RefreshIcon boxSize={'24px'} color="grayModern.500" /> */}
+            <Text color={'#1C4EF5'} display={['none', null, null, null, 'initial']}>
               {commonT('refresh')}
             </Text>
           </Button>
+          <DeleteFileModal
+            onDelete={() => {
+              multiDeleteEntry(table.getSelectedRowModel().rows.map((v) => v.original.Key));
+            }}
+            fileListLength={table.getSelectedRowModel().rows.length}
+          />
         </ButtonGroup>
       </HStack>
       {deleteMutation.isLoading || objectsQuery.isLoading ? (
@@ -573,15 +578,18 @@ export default function FileManager({ ...styles }: FlexProps) {
           overflowY={'auto'}
           h="0"
           flex={'auto'}
+          border={'1px solid #EDEDED'}
+          borderRadius={'12px'}
+          px={'24px'}
           sx={{
             th: {
               px: '4px',
-              py: '7px'
+              py: '13px'
             },
             td: {
               px: '4px',
               py: '7px',
-              fontSize: '12px'
+              fontSize: '14px'
             }
           }}
           position={'relative'}
@@ -692,14 +700,15 @@ export default function FileManager({ ...styles }: FlexProps) {
           </Table>
           {fileList.length === 0 && (
             <AbsoluteCenter flex="auto">
-              <Center
-                borderWidth={'0.8px'}
-                borderStyle={'dashed'}
-                borderColor={'grayModern.400'}
-                borderRadius={'50%'}
-                p="12px"
-              >
-                <StorageIcon boxSize="64px" color={'grayModern.500'} />
+              <Center flexDirection={'column'}>
+                {/* <StorageIcon boxSize="64px" color={'grayModern.500'} /> */}
+                <Image width={60} height={60} src="/images/emptyFile.png" alt=""></Image>
+                <Text mt={'12px'} mb={'4px'} fontSize="14px" fontWeight={600}>
+                  {t('noFile')}
+                </Text>
+                <Text fontSize="14px" lineHeight={'20px'} color={'#737373'}>
+                  {t('noFileDesc')}
+                </Text>
               </Center>
             </AbsoluteCenter>
           )}

@@ -1,15 +1,19 @@
 {
-  "privateBucket": "Private Bucket, Not Open",
-  "sharedBucketRead": "Shared Bucket, Open for Public Read",
-  "sharedBucketReadWrite": "Shared Bucket, Open for Public Read and Write",
+  "privateBucket": " ",
+  "sharedBucketRead": "PublicRead allows unauthorized users to read data in your bucket. This results in high security risks. To ensure data security, we recommend that you set the parameter to Private.",
+  "sharedBucketReadWrite": "PublicReadWrite allows unauthorized users to read and write data in your bucket. This results in high security risks. To ensure data security, we recommend that you set the parameter to Private.",
   "bucketName": "Bucket Name",
-  "bucketPermission": "Bucket Permission",
+  "bucketPermission": "Bucket Permissions",
   "bucketList": "Bucket List",
+  "deleteBucket": "Delete Bucket",
   "noBucket": "You haven't created any buckets yet",
+  "noBucketTitle": "No bucket yet",
+  "noBucketDesc": "Click the button below to create a bucket",
   "bucketConfig": "Bucket Configuration",
-  "confirmDeleteBucket": "Are you sure you want to delete this bucket? This action will delete all data in the bucket.",
+  "confirmDeleteBucket": "This action will delete all data in the bucket.",
   "enterBucketNameConfirmation": "Please enter bucket name {{bucketName}} confirmation",
   "enterValidBucketName": "Please enter a valid bucket name",
   "initializing": "Initializing",
-	"reset_user_sk_title": "Confirm Reset Secret Key"
+  "reset_user_sk_title": "Reset secret key",
+  "reset_user_sk_desc": "Are you sure you want to reset secret key?"
 }

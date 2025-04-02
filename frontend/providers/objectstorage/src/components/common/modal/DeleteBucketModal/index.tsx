@@ -9,22 +9,26 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalOverlay,
   useDisclosure,
   Button,
   ButtonProps,
   Input,
-  Flex
+  Flex,
+  FlexProps,
+  Highlight
 } from '@chakra-ui/react';
 import { WarnTriangeIcon } from '@sealos/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useState } from 'react';
+
 export default function DeleteBucketModal({
   bucketName,
   layout = 'md',
   ...styles
-}: ButtonProps & { bucketName: string; layout?: 'md' | 'sm' }) {
+}: (ButtonProps | FlexProps) & { bucketName: string; layout?: 'md' | 'sm' }) {
   const { onOpen, onClose, isOpen } = useDisclosure();
   const { toast } = useToast();
   const { t } = useTranslation(['common', 'bucket', 'file']);
@@ -43,9 +47,9 @@ export default function DeleteBucketModal({
           gap="8px"
           px="24px"
           py="10px"
-          {...styles}
           fill={'grayModern.600'}
           color={'grayModern.600'}
+          {...(styles as ButtonProps)}
           onClick={() => {
             onOpen();
           }}
@@ -62,29 +66,37 @@ export default function DeleteBucketModal({
           }}
           w="full"
           align={'center'}
+          color={'grayModern.600'}
+          {...(styles as FlexProps)}
         >
-          <DeleteIcon w="16px" h="16px" color={'grayModern.600'} mr="8px" />
-          <Text color={'grayModern.600'}>{t('delete')}</Text>
+          <DeleteIcon w="16px" h="16px" color={'inherit'} mr="8px" />
+          <Text color={'inherit'}>{t('delete')}</Text>
         </Flex>
       )}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
-        <ModalContent maxW={'400px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
+        <ModalContent maxW={'448px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
           <ModalCloseButton />
           <ModalHeader display={'flex'} alignItems={'center'}>
-            <WarnTriangeIcon
+            {/* <WarnTriangeIcon
               color={'yellow.500'}
               boxSize={'20px'}
               mr={'10px'}
               fill={'yellow.500'}
-            />
-            <Text>{t('deleteWarning')}</Text>
+            /> */}
+            <Text>{t('bucket:deleteBucket')}</Text>
           </ModalHeader>
-          <ModalBody h="100%" w="100%" display={'flex'} flexDir={'column'}>
-            <Text mb="12px">{t('bucket:confirmDeleteBucket')}</Text>
-            <Text mb="12px">{t('bucket:enterBucketNameConfirmation', { bucketName })}</Text>
+          <ModalBody gap={'16px'} h="100%" w="100%" display={'flex'} flexDir={'column'}>
+            <Text fontSize={'14px'} p={'16px'} color={'#DC2626'} bg={'#FEF2F2'}>
+              {t('bucket:confirmDeleteBucket')}
+            </Text>
+            <Text fontSize={'14px'}>
+              <Highlight styles={{ fontWeight: 600 }} query={bucketName}>
+                {t('bucket:enterBucketNameConfirmation', { bucketName })}
+              </Highlight>
+            </Text>
             <Input
-              mb="24px"
+              h={'40px'}
               type="text"
               variant={'outline'}
               width={'full'}
@@ -92,39 +104,43 @@ export default function DeleteBucketModal({
               value={inputVal}
               onChange={(v) => setInputVal(v.target.value.trim())}
             />
-            <Flex justifyContent={'flex-end'} gap={'12px'}>
-              <Button
-                variant={'outline'}
-                px="19.5px"
-                py="8px"
-                fontSize={'12px'}
-                fontWeight={'500'}
-                height={'auto'}
-                onClick={onClose}
-              >
-                {t('cancel')}
-              </Button>
-              <Button
-                variant={'warningConfirm'}
-                {...styles}
-                onClick={() => {
-                  if (inputVal !== bucketName) {
-                    toast({
-                      title: t('bucket:enterValidBucketName'),
-                      status: 'error'
-                    });
-                    return;
-                  }
-                  mutation.mutate({
-                    bucketName
-                  });
-                  onClose();
-                }}
-              >
-                {t('file:confirm')}
-              </Button>
-            </Flex>
           </ModalBody>
+          <ModalFooter>
+            <Button
+              variant={'warningConfirm'}
+              {...(styles as ButtonProps)}
+              px="16px"
+              py="10px"
+              borderRadius={'8px'}
+              fontWeight={'500'}
+              color={'#FEF2F2'}
+              onClick={() => {
+                if (inputVal !== bucketName) {
+                  toast({
+                    title: t('bucket:enterValidBucketName'),
+                    status: 'error'
+                  });
+                  return;
+                }
+                mutation.mutate({
+                  bucketName
+                });
+                onClose();
+              }}
+            >
+              {t('file:delete')}
+            </Button>
+            <Button
+              variant={'outline'}
+              px="17px"
+              py="10px"
+              borderRadius={'8px'}
+              fontWeight={'500'}
+              onClick={onClose}
+            >
+              {t('cancel')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

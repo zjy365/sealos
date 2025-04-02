@@ -6,6 +6,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalOverlay,
   useDisclosure,
   ButtonProps,
@@ -16,7 +17,8 @@ import {
   Spinner,
   VStack,
   Grid,
-  GridItem
+  GridItem,
+  Flex
 } from '@chakra-ui/react';
 import ListIcon from '@/components/Icons/ListIcon';
 import { initUser } from '@/api/bucket';
@@ -61,6 +63,7 @@ export default function ParamterModal({ ...styles }: ButtonProps) {
     } else {
       setIsUpdating(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [miniouser.data]);
 
   const accessKey = secret?.CONSOLE_ACCESS_KEY || '';
@@ -74,6 +77,7 @@ export default function ParamterModal({ ...styles }: ButtonProps) {
       { key: 'Internal', value: internal },
       { key: 'External', value: external }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [secret]
   );
   return (
@@ -81,20 +85,11 @@ export default function ParamterModal({ ...styles }: ButtonProps) {
       <Button
         onClick={onOpen}
         gap={'8px'}
-        variant={'secondary'}
-        bgColor="grayModern.150"
-        borderColor={'grayModern.250'}
-        color={'grayModern.600'}
+        variant={'outline'}
+        color={'#18181B'}
         fontWeight={500}
-        fontSize={'12px'}
         {...styles}
-        fill={'grayModern.600'}
-        _hover={{
-          fill: 'brightBlue.600',
-          color: 'brightBlue.600'
-        }}
       >
-        <ListIcon w="16px" h="16px" />
         <Text>{t('s3ServiceParams')}</Text>
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered trapFocus={false}>
@@ -102,57 +97,62 @@ export default function ParamterModal({ ...styles }: ButtonProps) {
         <ModalContent maxW={'600px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
           <ModalCloseButton />
           <ModalHeader>{t('s3ServiceParams')}</ModalHeader>
-          <ModalBody h="100%" w="100%" px="52px" py="32px">
+          <ModalBody h="100%" w="100%">
             {miniouser.isSuccess ? (
-              <VStack gap={'36px'} width={'full'} flex={1}>
-                <Grid
-                  templateColumns={'1fr 280px'}
-                  width={'full'}
-                  rowGap={'16px'}
-                  columnGap={'60px'}
-                >
+              <VStack gap={'16px'} width={'full'} flex={1}>
+                <Flex p={'16px'} w={'full'} bg={'#EFF6FF'} borderRadius={'8px'}>
+                  <Text fontSize={'14px'}>{t('accessKeyTip')}</Text>
+                </Flex>
+                <Flex flexDirection={'column'} width={'full'} rowGap={'16px'} columnGap={'60px'}>
                   {itemList.map((item) => (
-                    <>
-                      <GridItem key={item.key}>
-                        <Text>{item.key}</Text>
-                      </GridItem>
-                      <GridItem>
-                        <HStack gap="9px" color={'grayModern.700'}>
-                          <Text textOverflow={'ellipsis'} whiteSpace={'nowrap'} overflow={'hidden'}>
-                            {item.value}
-                          </Text>
-                          <IconButton
-                            aria-label={'copy'}
-                            variant={'white-bg-icon'}
-                            p="4px"
-                            icon={<CopyIcon boxSize={'14px'} />}
-                            onClick={() => {
-                              copyData(item.value);
-                            }}
-                          />
-                          {'Secret Key' === item.key && <UpdateSecretKeyModal />}
-                        </HStack>
-                      </GridItem>
-                    </>
+                    <Flex
+                      h={'48px'}
+                      borderBottom={'1px solid #F1F1F3'}
+                      key={item.key}
+                      alignItems={'center'}
+                    >
+                      <Text width={'120px'}>{item.key}</Text>
+                      <HStack flex={1} gap="9px" color={'grayModern.700'}>
+                        <Text textOverflow={'ellipsis'} whiteSpace={'nowrap'} overflow={'hidden'}>
+                          {item.value}
+                        </Text>
+                        <IconButton
+                          aria-label={'copy'}
+                          variant={'white-bg-icon'}
+                          p="4px"
+                          icon={<CopyIcon boxSize={'14px'} />}
+                          onClick={() => {
+                            copyData(item.value);
+                          }}
+                        />
+                        {'Secret Key' === item.key && (
+                          <Flex flex={1} justifyContent={'flex-end'}>
+                            <UpdateSecretKeyModal />
+                          </Flex>
+                        )}
+                      </HStack>
+                    </Flex>
                   ))}
-                </Grid>
-                <Button
-                  variant={'solid'}
-                  alignSelf={'self-end'}
-                  px="25.5px"
-                  py="8px"
-                  fontWeight={'500'}
-                  onClick={() => {
-                    onClose();
-                  }}
-                >
-                  {t('confirm')}
-                </Button>
+                </Flex>
               </VStack>
             ) : (
               <Spinner />
             )}
           </ModalBody>
+          <ModalFooter>
+            <Button
+              variant={'solid'}
+              alignSelf={'self-end'}
+              px="13.5px"
+              py="10px"
+              fontWeight={'500'}
+              onClick={() => {
+                onClose();
+              }}
+            >
+              {t('confirm')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

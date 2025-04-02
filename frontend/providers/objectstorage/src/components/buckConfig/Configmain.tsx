@@ -20,6 +20,7 @@ const ConfigMain = () => {
   const [yamlList, setYamlList] = useState<{ filename: string; value: string }[]>([]);
   useEffect(() => {
     activeId === TabId.Yaml && setYamlList(json2Bucket(getValues()));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeId]);
   const editList = useMemo(() => {
     if (activeId === TabId.Yaml)
@@ -31,7 +32,7 @@ const ConfigMain = () => {
   }, [activeId]);
   return (
     <Flex w="100%" h="100%" justifyContent={'center'} px="32px" gap="36px">
-      <Box w="220px">
+      <Box display={'none'} w="220px">
         <Tabs
           list={[
             { id: TabId.Form, label: t('configForm') }
@@ -42,7 +43,7 @@ const ConfigMain = () => {
             setActiveId(id as TabId);
           }}
         />
-        {
+        {/* {
           // yaml output
           activeId === TabId.Yaml ? (
             <Box bgColor={'white'} mt={'6px'}>
@@ -63,7 +64,7 @@ const ConfigMain = () => {
           ) : (
             <></>
           )
-        }
+        } */}
       </Box>
       <Stack h="100%">
         {activeId === TabId.Yaml ? (

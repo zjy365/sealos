@@ -71,6 +71,7 @@ export default function DataMonitor({ ...styles }: BoxProps) {
       }
     }
     return data;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monitorQuery.data]);
   return (
     <Box mt="32px" flex={'1 1 0'} h="0" overflowY={'auto'} {...styles}>

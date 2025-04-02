@@ -23,5 +23,9 @@
   "selectedItems": "已选择 {{count}} 项",
   "clickToAscend": "点击升序",
   "clickToDescend": "点击降序",
-  "clickToCancelSort": "点击取消排序"
+  "clickToCancelSort": "点击取消排序",
+  "allDelete": "删除所有选中文件",
+  "noFile": "还没有文件",
+  "noFileDesc": "这个桶未找到数据",
+  "uploading": "上传中"
 }

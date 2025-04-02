@@ -6,6 +6,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  ModalFooter,
   useDisclosure,
   IconButtonProps,
   Button,
@@ -53,45 +54,59 @@ export default function CreateFolderModal({ ...styles }: Omit<IconButtonProps, '
         onClick={() => onOpen()}
         {...styles}
       >
-        <CreateFolderIcon boxSize="24px" color={'grayModern.500'} />
-        <Text color="grayModern.900" display={['none', null, null, null, 'initial']}>
+        {/* <CreateFolderIcon boxSize="24px" color={'grayModern.500'} /> */}
+        <Text color="#1C4EF5" display={['none', null, null, null, 'initial']}>
           {t('createFolder')}
         </Text>
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
-        <ModalContent maxW={'530px'} backdropFilter="blur(150px)">
+        <ModalContent maxW={'448px'} backdropFilter="blur(150px)">
           <ModalCloseButton />
           <ModalHeader>{t('createFolder')}</ModalHeader>
-          <ModalBody h="100%" w="100%" px="52px" py="32px" display={'flex'} flexDir={'column'}>
-            <Flex gap={'70px'} alignItems={'center'} mb={'36px'}>
-              <Text color={'grayModern.900'} fontSize={'14px'} fontWeight={'500'}>
-                {commonT('name')}
+          <ModalBody h="100%" w="100%" display={'flex'} flexDir={'column'}>
+            <Flex gap={'8px'} direction={'column'}>
+              <Text color={'#71717A'} fontSize={'14px'} fontWeight={'500'}>
+                {t('folderName')}
               </Text>
               <Input
                 type="text"
                 variant={'outline'}
+                h={'40px'}
+                w={'100%'}
                 placeholder={t('folderName')}
                 value={folderName}
-                flex={1}
                 onChange={(v) => setFolderName(v.target.value.trim())}
               />
             </Flex>
+          </ModalBody>
+          <ModalFooter>
             <Button
               variant={'solid'}
-              alignSelf={'self-end'}
-              px="25.5px"
-              py="8px"
+              px="13.5px"
+              py="10px"
               fontWeight={'500'}
               onClick={() => {
                 const Bucket = oss.currentBucket?.name;
                 const Key = [...oss.prefix, folderName, FolderPlaceholder].join('/');
                 Bucket && Key && mutation.mutate({ Bucket, Key });
+                setFolderName('');
               }}
+              isDisabled={!folderName}
             >
               {t('confirm')}
             </Button>
-          </ModalBody>
+            <Button
+              variant={'outline'}
+              px="13.5px"
+              py="10px"
+              fontWeight={'500'}
+              onClick={onClose}
+              isDisabled={mutation.isLoading}
+            >
+              {commonT('cancel')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

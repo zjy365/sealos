@@ -287,13 +287,13 @@ const Header = ({
             ))}
           </Flex>
           <Center
-            cursor={'pointer'}
-            onClick={(e) =>
-              goGithub(
-                e,
-                templateDetail.spec?.i18n?.[i18n.language]?.gitRepo ?? templateDetail?.spec?.gitRepo
-              )
-            }
+          // cursor={'pointer'}
+          // onClick={(e) =>
+          //   goGithub(
+          //     e,
+          //     templateDetail.spec?.i18n?.[i18n.language]?.gitRepo ?? templateDetail?.spec?.gitRepo
+          //   )
+          // }
           >
             <MyIcon name="usersround" color={'transparent'} />
             <Text fontSize={'12px'} color={'#A3A3A3'} ml={'4px'}>

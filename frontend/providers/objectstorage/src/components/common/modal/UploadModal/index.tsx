@@ -12,9 +12,11 @@ import {
   Center,
   Spinner,
   HStack,
-  Link
+  Link,
+  Flex
 } from '@chakra-ui/react';
 import UploadIcon from '@/components/Icons/UploadIcon';
+import MyIcon from '@/components/Icon';
 
 type TFileItem = {
   file: File;
@@ -28,6 +30,7 @@ import { useDropzone } from 'react-dropzone';
 import { FolderPlaceholder, QueryKey } from '@/consts';
 import { useTranslation } from 'next-i18next';
 import { useToast } from '@/hooks/useToast';
+import style from './index.module.css';
 
 export default function UploadModal({ ...styles }: Omit<IconButtonProps, 'aria-label'> & {}) {
   const { onOpen, onClose, isOpen } = useDisclosure();
@@ -184,89 +187,88 @@ export default function UploadModal({ ...styles }: Omit<IconButtonProps, 'aria-l
         onClick={() => onOpen()}
         {...styles}
       >
-        <UploadIcon boxSize="24px" color={'grayModern.500'} />
-        <Text display={['none', null, null, null, 'initial']} color={'grayModern.900'}>
+        {/* <UploadIcon boxSize="24px" color={'grayModern.500'} /> */}
+        <Text display={['none', null, null, null, 'initial']} color={'#1C4EF5'}>
           {t('upload')}
         </Text>
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent maxW={'530px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
+        <ModalContent maxW={'448px'} bgColor={'#FFF'} backdropFilter="blur(150px)">
           <ModalCloseButton />
-          <ModalHeader>{t('upload')}</ModalHeader>
+          {!isLoading && <ModalHeader>{t('upload')}</ModalHeader>}
           <ModalBody h="100%" w="100%">
             {isLoading ? (
-              <Center w="full">
-                <Spinner size={'md'} mx="auto" />
+              <Center h={'288px'} w="full" flexDirection={'column'} gap={'26px'}>
+                {/* <Spinner size={'md'} mx="auto" /> */}
+                <MyIcon className={style.loader} name="loader"></MyIcon>
+                <Text fontWeight={600} fontSize={'20px'}>
+                  {t('uploading')}
+                </Text>
               </Center>
             ) : (
-              <Center
-                // width={'510px'}
-                h="180px"
-                borderRadius={'4px'}
-                border={'dashed'}
-                borderColor={'grayModern.300'}
-                transition={'0.3s'}
-                bgColor={'grayModern.25'}
-                {...getRootProps()}
-              >
-                <input {...getInputProps({ multiple: true })} />
-                {i18n.language === 'zh' ? (
-                  <HStack spacing={'5px'}>
-                    <Text>打开</Text>
-                    <Link
-                      _hover={{
-                        color: 'blue'
-                      }}
-                      variant={'unstyled'}
-                      onClick={() => {
-                        onButtonClick('file');
-                      }}
-                    >
-                      文件
-                    </Link>
-                    <Text>或</Text>
-                    <Link
-                      _hover={{
-                        color: 'blue'
-                      }}
-                      onClick={() => {
-                        onButtonClick('folder');
-                      }}
-                      variant={'unstyled'}
-                    >
-                      文件夹
-                    </Link>
-                  </HStack>
-                ) : (
-                  <HStack spacing={'5px'}>
-                    <Text>open</Text>
-                    <Link
-                      _hover={{
-                        color: 'blue'
-                      }}
-                      onClick={() => {
-                        onButtonClick('file');
-                      }}
-                      variant={'unstyled'}
-                    >
-                      file
-                    </Link>
-                    <Text>or</Text>
-                    <Link
-                      _hover={{
-                        color: 'blue'
-                      }}
-                      onClick={() => {
-                        onButtonClick('folder');
-                      }}
-                      variant={'unstyled'}
-                    >
-                      folder
-                    </Link>
-                  </HStack>
-                )}
-              </Center>
+              <Flex gap={'8px'} w={'full'}>
+                <Center
+                  // width={'510px'}
+                  cursor={'pointer'}
+                  _hover={{
+                    color: '#1C4EF5'
+                  }}
+                  flex={1}
+                  h="120px"
+                  borderRadius={'6px'}
+                  border={'dashed'}
+                  borderColor={'#E4E4E7'}
+                  transition={'0.3s'}
+                  {...getRootProps()}
+                  onClick={() => {
+                    onButtonClick('file');
+                  }}
+                >
+                  <input {...getInputProps({ multiple: true })} />
+                  {i18n.language === 'zh' ? (
+                    <HStack spacing={'8px'}>
+                      <UploadIcon></UploadIcon>
+                      <Text>打开文件</Text>
+                    </HStack>
+                  ) : (
+                    <HStack spacing={'8px'}>
+                      <UploadIcon></UploadIcon>
+                      <Text>Upload file</Text>
+                    </HStack>
+                  )}
+                </Center>
+                <Center
+                  // width={'510px'}
+                  cursor={'pointer'}
+                  _hover={{
+                    color: '#1C4EF5'
+                  }}
+                  flex={1}
+                  h="120px"
+                  borderRadius={'6px'}
+                  border={'dashed'}
+                  borderColor={'#E4E4E7'}
+                  transition={'0.3s'}
+                  {...getRootProps()}
+                  onClick={() => {
+                    onButtonClick('folder');
+                  }}
+                >
+                  <input {...getInputProps({ multiple: true })} />
+                  {i18n.language === 'zh' ? (
+                    <HStack spacing={'8px'}>
+                      <UploadIcon></UploadIcon>
+                      <Text>打开文件夹</Text>
+                    </HStack>
+                  ) : (
+                    <HStack spacing={'8px'}>
+                      <UploadIcon></UploadIcon>
+                      <Text>Upload folder</Text>
+                    </HStack>
+                  )}
+                </Center>
+              </Flex>
             )}
           </ModalBody>
         </ModalContent>

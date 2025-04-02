@@ -138,13 +138,13 @@ export const emailSmsReq = async (email: string) => {
       transporter.sendMail({
         from: emailConfig.user,
         to: email,
-        subject: '【sealos】验证码',
+        subject: '【ClawCloud】验证码',
         html: `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>【sealos】验证码</title>
+				<title>【ClawCloud】验证码</title>
 				<style>
 					body {
 						font-family: Arial, sans-serif;

@@ -4,6 +4,7 @@
   "configForm": "配置表单",
   "yamlFile": "YAML 文件",
   "edit": "编辑",
+  "copy": "复制",
   "delete": "删除",
   "totalObjects": "总对象数量",
   "total": "总计",
@@ -25,5 +26,8 @@
   "confirm": "确认",
   "cancel": "取消",
   "Unable to Access": "无法访问",
-  "reset_error": "重置错误"
+  "reset_error": "重置错误",
+  "create": "创建",
+  "objectStorage": "对象存储",
+  "accessKeyTip": "寻址样式：请使用路径样式请求"
 }

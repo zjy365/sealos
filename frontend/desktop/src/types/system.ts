@@ -258,7 +258,7 @@ export const DefaultCloudConfig: CloudConfigType = {
 };
 
 export const DefaultLayoutConfig: LayoutConfigType = {
-  title: 'Sealos Cloud',
+  title: 'ClawCloud',
   logo: '/logo.svg',
   backgroundImage: '/images/bg-blue.svg',
   protocol: {
@@ -272,9 +272,9 @@ export const DefaultLayoutConfig: LayoutConfigType = {
     }
   },
   meta: {
-    title: 'Sealos Cloud',
-    description: 'Sealos Cloud',
-    keywords: 'Sealos Cloud',
+    title: 'ClawCloud',
+    description: 'ClawCloud',
+    keywords: 'ClawCloud',
     scripts: []
   },
   common: {
