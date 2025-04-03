@@ -5,6 +5,7 @@ import { ErrorHandler } from '@/services/backend/middleware/error';
 import { filterAuthenticationToken } from '@/services/backend/middleware/access';
 import { initRegionTokenParamsSchema } from '@/schema/auth';
 import { HttpStatusCode } from 'axios';
+import { getRegionUid } from '@/services/enable';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
   await filterAuthenticationToken(req, res, async ({ userId, userUid }) => {
@@ -15,8 +16,13 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
         message: parseResult.error.message
       });
     }
-    const { workspaceName, regionUid } = parseResult.data;
-    const regionData = await initRegionToken({ userId, workspaceName, regionUid, userUid });
+    const { workspaceName } = parseResult.data;
+    const regionData = await initRegionToken({
+      userId,
+      workspaceName,
+      regionUid: getRegionUid(),
+      userUid
+    });
     return jsonRes(res, {
       code: 200,
       message: 'Successfully',

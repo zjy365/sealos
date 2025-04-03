@@ -43,7 +43,7 @@ const Callback: NextPage = () => {
     }
   });
   const initMutation = useMutation({
-    mutationFn(data: { regionUid: string; workspaceName: string }) {
+    mutationFn(data: { workspaceName: string }) {
       return initRegionToken(data);
     },
     onSuccess(data) {
@@ -63,16 +63,18 @@ const Callback: NextPage = () => {
       (async () => {
         try {
           let workspaceName: string | undefined;
-          if (!isString(query?.workspaceName)) throw Error();
+          if (!isString(query?.workspaceName)) throw Error('workspace not found');
           workspaceName = query.workspaceName;
+          // const regionUid = query.regionUid as unknown as string;
           if (!!curToken) {
             delSession();
             setToken('');
           }
+          // console.log(query, globalToken);
           setToken(globalToken);
           // await router.replace('/workspace');
           const initRegionTokenResult = await initMutation.mutateAsync({
-            regionUid: cloudConfig!.regionUID,
+            // regionUid: regionUid ,
             workspaceName
           });
           if (!initRegionTokenResult.data) {
