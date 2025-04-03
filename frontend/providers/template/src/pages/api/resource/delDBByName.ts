@@ -9,9 +9,7 @@ export async function getBackups({ dbName, req }: { dbName: string; req: NextApi
   const version = 'v1alpha1';
   const plural = 'backups';
 
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req.headers));
 
   const { body } = (await k8sCustomObjects.listNamespacedCustomObject(
     group,
@@ -39,9 +37,7 @@ export async function delBackupByName({
   const version = 'v1alpha1';
   const plural = 'backups';
 
-  const { k8sCustomObjects, namespace } = await getK8s({
-    kubeconfig: await authSession(req.headers)
-  });
+  const { k8sCustomObjects, namespace } = await getK8s(await authSession(req.headers));
   await k8sCustomObjects.deleteNamespacedCustomObject(
     group,
     version,
@@ -58,9 +54,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('deploy name is empty');
     }
 
-    const { namespace, k8sCustomObjects, k8sAuth, k8sCore } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace, k8sCustomObjects, k8sAuth, k8sCore } = await getK8s(
+      await authSession(req.headers)
+    );
 
     // get backup and delete
     const backups = await getBackups({ dbName: instanceName, req });

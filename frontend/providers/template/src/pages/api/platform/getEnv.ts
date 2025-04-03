@@ -10,9 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   let user_namespace = '';
 
   try {
-    const { namespace } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace } = await getK8s(await authSession(req.headers));
     user_namespace = namespace;
   } catch (error) {
     console.log(error, 'errpr-');

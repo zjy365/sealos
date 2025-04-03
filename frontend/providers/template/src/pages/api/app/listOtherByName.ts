@@ -9,9 +9,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
     const { instanceName } = req.query as { instanceName: string };
-    const { namespace, k8sCore, k8sCustomObjects, k8sBatch, k8sAuth } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace, k8sCore, k8sCustomObjects, k8sBatch, k8sAuth } = await getK8s(
+      await authSession(req.headers)
+    );
     const labelSelector = `${templateDeployKey}=${instanceName}`;
 
     const appCRD: CRDMeta = {

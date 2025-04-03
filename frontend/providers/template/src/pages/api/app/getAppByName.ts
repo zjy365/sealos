@@ -9,9 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   try {
     const { instanceName } = req.query as { instanceName: string };
 
-    const { k8sApp, namespace } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { k8sApp, namespace } = await getK8s(await authSession(req.headers));
 
     const labelSelectorKey = `${templateDeployKey}=${instanceName}`;
 

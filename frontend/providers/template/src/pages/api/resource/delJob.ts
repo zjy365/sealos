@@ -12,9 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('Job name is empty');
     }
 
-    const { namespace, k8sBatch } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace, k8sBatch } = await getK8s(await authSession(req.headers));
 
     const deleteOptions = {
       propagationPolicy: 'Foreground'

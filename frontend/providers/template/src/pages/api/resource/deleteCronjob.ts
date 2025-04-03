@@ -11,9 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       throw new Error('deploy name is empty');
     }
 
-    const { namespace, k8sBatch } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace, k8sBatch } = await getK8s(await authSession(req.headers));
 
     const result = await k8sBatch.deleteNamespacedCronJob(instanceName, namespace);
 

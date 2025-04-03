@@ -27,3 +27,16 @@ export const getUserSession = () => {
     return null;
   }
 };
+
+export const getToken = () => {
+  try {
+    const store = localStorage.getItem('session');
+    if (store) {
+      const session = JSON.parse(store) as SessionV1;
+      return session.token;
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};

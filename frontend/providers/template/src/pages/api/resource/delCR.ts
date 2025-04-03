@@ -16,9 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     const [group, version] = apiVersion.split('/');
     if (!version || !group) return jsonRes(res, { message: 'bad request', code: 400 });
-    const client = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const client = await getK8s(await authSession(req.headers));
     const plural = pluralize.plural(kind.toLocaleLowerCase());
     const result = await client.k8sCustomObjects.deleteNamespacedCustomObject(
       group,
