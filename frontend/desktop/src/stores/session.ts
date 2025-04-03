@@ -12,6 +12,7 @@ type SessionState = {
   session?: Session;
   token: string;
   provider?: OauthProvider;
+  lastSigninProvier?: string;
   oauth_state: string;
   firstUse: Date | null;
   setSession: (ss: Session) => void;
@@ -28,7 +29,7 @@ type SessionState = {
     action: string;
     statePayload: string[];
   };
-
+  setLastSigninProvider: (provider?: string) => void;
   setProvider: (provider?: OauthProvider) => void;
   setToken: (token: string, rememberMe?: boolean) => void;
   lastWorkSpaceId: string;
@@ -41,6 +42,7 @@ const useSessionStore = create<SessionState>()(
     immer((set, get) => ({
       session: undefined,
       provider: undefined,
+      lastSigninProvier: undefined,
       firstUse: null,
       oauth_state: '',
       token: '',
@@ -89,6 +91,9 @@ const useSessionStore = create<SessionState>()(
           action,
           statePayload
         };
+      },
+      setLastSigninProvider(provider?: string) {
+        set({ lastSigninProvier: provider });
       },
       setProvider: (provider?: OauthProvider) => {
         set({ provider });

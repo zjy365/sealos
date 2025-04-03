@@ -16,27 +16,14 @@ export const getUserKubeConfig = () => {
   return kubeConfig;
 };
 
-export const getUserSession = () => {
-  try {
-    const store = localStorage.getItem('session');
-    if (store) {
-      return JSON.parse(store) as SessionV1;
-    }
-    return null;
-  } catch (err) {
-    return null;
-  }
-};
-
 export const getToken = () => {
   try {
-    const store = localStorage.getItem('session');
-    if (store) {
-      const session = JSON.parse(store) as SessionV1;
-      return session.token;
+    const session = useSessionStore.getState()?.session;
+    if (session) {
+      return session?.token;
     }
-    return null;
   } catch (err) {
-    return null;
+    console.error(err);
   }
+  return '';
 };

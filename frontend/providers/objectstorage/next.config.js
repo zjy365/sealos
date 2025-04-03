@@ -65,7 +65,7 @@ module.exports = (phase, { defaultConfig }) => {
               {
                 key: 'Content-Security-Policy',
                 value:
-                  "default-src * blob: data: *; img-src * data: blob: resource: *; connect-src * wss: blob: resource:; style-src 'self' 'unsafe-inline' blob: * resource:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: * resource: *.baidu.com *.bdstatic.com; frame-src 'self' * mailto: tel: weixin: mtt: *.baidu.com; frame-ancestors 'self' *;upgrade-insecure-requests"
+                  "default-src * blob: data: *; img-src * data: blob: resource: *; connect-src * wss: blob: resource:; style-src 'self' 'unsafe-inline' blob: * resource:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: * resource: *.baidu.com *.bdstatic.com *.googletagmanager.com; frame-src 'self' * mailto: tel: weixin: mtt: *.baidu.com; frame-ancestors 'self' *;upgrade-insecure-requests"
               }
             ]
           }

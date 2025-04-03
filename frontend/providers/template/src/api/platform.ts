@@ -2,7 +2,6 @@ import { EnvResponse } from '@/types/index';
 import { GET } from '@/services/request';
 import { SystemConfigType, TemplateType } from '@/types/app';
 import type { UserQuotaItemType, UserTask, userPriceType } from '@/types/user';
-import { getUserSession } from '@/utils/user';
 import useSessionStore from '@/store/session';
 
 export const updateRepo = () => GET('/api/updateRepo');

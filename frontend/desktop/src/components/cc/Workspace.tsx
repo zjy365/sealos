@@ -31,7 +31,7 @@ export default function Workspace() {
   const router = useRouter();
   const { toast } = useCustomToast();
   const bg = useColorModeValue('white', 'gray.700');
-  const provider = useSessionStore((s) => s.provider);
+  const provider = useSessionStore((s) => s.lastSigninProvier);
   const { workspaceName, setWorkspaceName, setSelectedRegionUid, selectedRegionUid, setInitGuide } =
     useInitWorkspaceStore();
   // const [workspaceName, setWorkspaceName] = useState('');

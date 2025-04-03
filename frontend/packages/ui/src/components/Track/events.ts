@@ -1,7 +1,8 @@
 export const trackEvents = {
   signinGithub: 'signin_github',
   signinGoogle: 'signin_google',
-  signinComplete: (provider: string | undefined) => `signin_${provider?.toLowerCase()}_complete`,
+  signinComplete: (provider: string | undefined) =>
+    `signin${provider ? `_${provider.toLowerCase?.()}` : ''}_complete`,
   clickUpgradeInDesktop: 'main_upgrade',
   clickUpgradeInDesktopWorkspace: 'workspace_upgrade',
   purchase: (planName: string) => `${planName?.toLowerCase()}_purchase`,
