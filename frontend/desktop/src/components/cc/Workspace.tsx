@@ -69,6 +69,7 @@ export default function Workspace() {
         if (!token) throw Error('No token found');
         target.searchParams.append('token', token);
         target.searchParams.append('workspaceName', encodeURIComponent(workspaceName));
+        // target.searchParams.append('regionUid', encodeURIComponent(region.uid));
         target.searchParams.append('switchRegionType', SwitchRegionType.INIT);
         await router.replace(target);
         return;
