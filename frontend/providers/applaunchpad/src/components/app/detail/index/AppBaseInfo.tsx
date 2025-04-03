@@ -167,7 +167,7 @@ const AppBaseInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
           height={'36px'}
           mb={'16px'}
         >
-          {t('cc:basic')}
+          {t('cc.basic')}
         </Flex>
         <Box>
           <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px" mb="12px">
