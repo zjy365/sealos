@@ -18,7 +18,7 @@ import {
   Text,
   useDisclosure
 } from '@chakra-ui/react';
-import { CopyIcon, DocsIcon, DownloadIcon, LogoutIcon, NotificationIcon } from '@sealos/ui';
+import { CopyIcon, DocsIcon, DownloadIcon, LogoutIcon, NotificationIcon, Track } from '@sealos/ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -169,39 +169,41 @@ export default function Account() {
             </Flex>
           )} */}
           {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
-            <Box
-              cursor={'pointer'}
-              height="36px"
-              padding="8px 12px"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              gap="6px"
-              borderRadius="8px"
-              fontSize={'14px'}
-              background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
-              _hover={{
-                background:
-                  'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
-              }}
-              onClick={() => {
-                openDesktopApp({
-                  appKey: 'system-account-center',
-                  query: {
-                    scene: 'upgrade'
-                  },
-                  messageData: {
-                    scene: 'upgrade'
-                  },
-                  pathname: '/'
-                });
-              }}
-            >
-              <Sparkles size={16} color="#1C4EF5" />
-              <Text color="#1C4EF5" fontWeight="medium">
-                {t('cc:upgrade_plan')}
-              </Text>
-            </Box>
+            <Track.Click eventName={Track.events.clickUpgradeInDesktop}>
+              <Box
+                cursor={'pointer'}
+                height="36px"
+                padding="8px 12px"
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                gap="6px"
+                borderRadius="8px"
+                fontSize={'14px'}
+                background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
+                _hover={{
+                  background:
+                    'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
+                }}
+                onClick={() => {
+                  openDesktopApp({
+                    appKey: 'system-account-center',
+                    query: {
+                      scene: 'upgrade'
+                    },
+                    messageData: {
+                      scene: 'upgrade'
+                    },
+                    pathname: '/'
+                  });
+                }}
+              >
+                <Sparkles size={16} color="#1C4EF5" />
+                <Text color="#1C4EF5" fontWeight="medium">
+                  {t('cc:upgrade_plan')}
+                </Text>
+              </Box>
+            </Track.Click>
           )}
           <Center
             className="guide-button"

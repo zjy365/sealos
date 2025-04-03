@@ -1,5 +1,6 @@
 import { theme } from '@/styles/chakraTheme';
 import { ColorModeScript } from '@chakra-ui/react';
+import { Track } from '@sealos/ui';
 import { Head, Html, Main, NextScript } from 'next/document';
 
 export default function Document() {
@@ -25,6 +26,7 @@ export default function Document() {
         <link rel="icon" href="/favicon.ico?v=0327" sizes="any"></link>
         <link rel="apple-touch-icon" href="/logo.png?v=0327" />
         <link rel="manifest" href="/manifest.json" />
+        <Track.Scripts />
       </Head>
       <body>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />

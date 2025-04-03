@@ -11,6 +11,7 @@ import usePlanFeatureTexts from './usePlanFeatureTexts';
 import CircleCheck from '@/components/Icon/icons/circleCheck.svg';
 import { formatMoneyStr } from '@/utils/format';
 import CancelPlanButton from './CancelPlanButton';
+import { Track } from '@sealos/ui';
 
 export interface PlanSelectorItemProps {
   plan: TPlanApiResponse;
@@ -72,9 +73,11 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
       );
     }
     return (
-      <Button {...buttonStyle} onClick={handlePurchase}>
-        {t('PurchasePlan')}
-      </Button>
+      <Track.Click eventName={Track.events.purchase(plan.name)}>
+        <Button {...buttonStyle} onClick={handlePurchase}>
+          {t('PurchasePlan')}
+        </Button>
+      </Track.Click>
     );
   };
   return (

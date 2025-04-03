@@ -19,6 +19,10 @@ const DevboxStatusTag = ({
 } & FlexProps) => {
   const label = status?.label;
   const t = useTranslations();
+  const map: Record<string, string> = {
+    Stopped: 'Paused',
+    Stopping: 'Pausing',
+  }
 
   return (
     <Flex
@@ -39,7 +43,7 @@ const DevboxStatusTag = ({
     >
       <Box w={'6px'} h={'6px'} borderRadius={'10px'} backgroundColor={status.dotColor}></Box>
       <Box ml={2} flex={1}>
-        {t(label)}
+        {t(map[label] || label)}
       </Box>
     </Flex>
   );

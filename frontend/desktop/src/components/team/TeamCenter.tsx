@@ -33,7 +33,7 @@ import { TeamUserDto } from '@/types/user';
 import ReciveMessage from './ReciveMessage';
 import { nsListRequest, reciveMessageRequest, teamDetailsRequest } from '@/api/namespace';
 import { useTranslation } from 'next-i18next';
-import { CopyIcon, ListIcon, SettingIcon, StorageIcon } from '@sealos/ui';
+import { CopyIcon, ListIcon, SettingIcon, StorageIcon, Track } from '@sealos/ui';
 import NsListItem from '@/components/team/NsListItem';
 import RenameTeam from './RenameTeam';
 import { Plus } from 'lucide-react';
@@ -248,27 +248,29 @@ export default function TeamCenter({
                     </Flex>
                   </CreateTeam>
                   {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
-                    <Button
-                      ml={'auto'}
-                      fontSize={'12px'}
-                      variant={'unstyled'}
-                      display={'flex'}
-                      height={'22px'}
-                      padding={'10px 8px'}
-                      justifyContent={'center'}
-                      alignItems={'center'}
-                      gap={'8px'}
-                      borderRadius={'full'}
-                      background={'#18181B'}
-                      color={'#FFF'}
-                      onClick={() => {
-                        closeWorkspaceToggle();
-                        onClose();
-                        openAccountCenterApp('plan');
-                      }}
-                    >
-                      {t('cc:upgrade')}
-                    </Button>
+                    <Track.Click eventName={Track.events.clickUpgradeInDesktopWorkspace}>
+                      <Button
+                        ml={'auto'}
+                        fontSize={'12px'}
+                        variant={'unstyled'}
+                        display={'flex'}
+                        height={'22px'}
+                        padding={'10px 8px'}
+                        justifyContent={'center'}
+                        alignItems={'center'}
+                        gap={'8px'}
+                        borderRadius={'full'}
+                        background={'#18181B'}
+                        color={'#FFF'}
+                        onClick={() => {
+                          closeWorkspaceToggle();
+                          onClose();
+                          openAccountCenterApp('plan');
+                        }}
+                      >
+                        {t('cc:upgrade')}
+                      </Button>
+                    </Track.Click>
                   )}
                 </Flex>
               </Box>
@@ -364,18 +366,20 @@ export default function TeamCenter({
                     </Box>
                     {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
                       <Center color={'#71717A'} fontSize={'14px'} cursor={'pointer'}>
-                        <Box
-                          color={'#18181B'}
-                          fontWeight={600}
-                          pr={'4px'}
-                          onClick={() => {
-                            onClose();
-                            closeWorkspaceToggle();
-                            openAccountCenterApp('plan');
-                          }}
-                        >
-                          Upgrade
-                        </Box>
+                        <Track.Click eventName={Track.events.clickUpgradeInDesktopWorkspace}>
+                          <Box
+                            color={'#18181B'}
+                            fontWeight={600}
+                            pr={'4px'}
+                            onClick={() => {
+                              onClose();
+                              closeWorkspaceToggle();
+                              openAccountCenterApp('plan');
+                            }}
+                          >
+                            Upgrade
+                          </Box>
+                        </Track.Click>
                         to get more seats
                       </Center>
                     )}

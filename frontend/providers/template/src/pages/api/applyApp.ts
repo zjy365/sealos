@@ -1,6 +1,7 @@
 import { authSession } from '@/services/backend/auth';
 import { getK8s } from '@/services/backend/kubernetes';
 import { jsonRes } from '@/services/backend/response';
+import { sendEvent } from '@/services/eventBridge';
 import { ApiResp } from '@/services/kubernet';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -18,11 +19,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const { applyYamlList } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { kubeconfig, tokenPayload } = await authSession(req.headers);
+    const { applyYamlList } = await getK8s({ kubeconfig });
 
     const applyRes = await applyYamlList(yamlList, type);
+
+    await sendEvent('create_template', tokenPayload.userUid);
 
     jsonRes(res, { data: applyRes.map((item) => item.kind) });
   } catch (err: any) {

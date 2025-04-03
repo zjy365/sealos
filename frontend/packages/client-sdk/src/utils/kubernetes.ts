@@ -214,13 +214,22 @@ async function getUserBalance(kc: k8s.KubeConfig) {
 }
 
 async function authSession(header: IncomingHttpHeaders) {
+  type Authorization = {
+    kubeconfig: string;
+    token: string;
+  };
+
   if (!header) return Promise.reject('unAuthorization');
   const { authorization } = header;
   if (!authorization) return Promise.reject('unAuthorization');
 
   try {
-    const kubeConfig = decodeURIComponent(authorization);
-    return Promise.resolve(kubeConfig);
+    const originKubeconfig = decodeURIComponent(authorization);
+    try {
+      const { kubeconfig } = JSON.parse(originKubeconfig) as Authorization;
+      return Promise.resolve(kubeconfig);
+    } catch (err) {}
+    return Promise.resolve(originKubeconfig);
   } catch (err) {
     return Promise.reject('unAuthorization');
   }

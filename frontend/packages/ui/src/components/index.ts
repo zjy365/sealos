@@ -49,6 +49,7 @@ import SealosCoin from './icons/SealosCoin';
 import useMessage from './Message/index';
 import EditTabs from './EditTabs';
 import YamlCode from './YamlCode';
+import Track from './Track';
 import ProviderIcon from './icons/ProviderIcon';
 import WarnTriangeIcon from './icons/line/WarnTriange';
 import CurrencySymbol from './icons/CurrencySymbol';
@@ -119,5 +120,6 @@ export {
   ProviderIcon,
   WebHostIcon,
   WarnTriangeIcon,
-  CurrencySymbol
+  CurrencySymbol,
+  Track
 };

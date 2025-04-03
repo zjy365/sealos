@@ -28,6 +28,7 @@ import CancelPlanButton from './CancelPlanButton';
 import UpgradePlanModal from './UpgradeModal';
 import { isPlanCancelling } from './planStatus';
 import useScene from '@/hooks/useScene';
+import { Track } from '@sealos/ui';
 
 interface CurrentPlanProps {
   plans: TPlanApiResponse[];
@@ -202,14 +203,16 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
                 </Flex>
                 <Flex columnGap="12px">
                   {isUpgradable && (
-                    <Button
-                      h="36px"
-                      leftIcon={<UpgradeStarIcon width="13" height="13" stroke="currentColor" />}
-                      {...styleConfig.upgradeButton}
-                      onClick={openUpgradeModal}
-                    >
-                      {t('UpgradePlan')}
-                    </Button>
+                    <Track.Click eventName={Track.events.accountCenterUpgradeClick(plan.name)}>
+                      <Button
+                        h="36px"
+                        leftIcon={<UpgradeStarIcon width="13" height="13" stroke="currentColor" />}
+                        {...styleConfig.upgradeButton}
+                        onClick={openUpgradeModal}
+                      >
+                        {t('UpgradePlan')}
+                      </Button>
+                    </Track.Click>
                   )}
                   <CancelPlanButton
                     plan={plan}

@@ -40,6 +40,7 @@ import { OauthProvider } from '@/types/user';
 import { sessionConfig } from '@/utils/sessionConfig';
 import Link from 'next/link';
 import email from '@/pages/api/auth/email';
+import { Track } from '@sealos/ui';
 
 export default function SigninComponent() {
   const { t } = useTranslation();
@@ -276,33 +277,36 @@ export default function SigninComponent() {
         </Box>
 
         <Stack spacing={'12px'} mb={'24px'}>
-          <Button
-            borderRadius={'8px'}
-            variant="outline"
-            onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
-            w={'100%'}
-            _hover={{
-              bg: 'grayModern.50'
-            }}
-            boxShadow={'none'}
-            leftIcon={<GithubIcon />}
-          >
-            GitHub
-          </Button>
-
-          <Button
-            borderRadius={'8px'}
-            variant="outline"
-            onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
-            w={'100%'}
-            boxShadow={'none'}
-            _hover={{
-              bg: 'grayModern.50'
-            }}
-            leftIcon={<GoogleIcon />}
-          >
-            Google
-          </Button>
+          <Track.Click eventName={Track.events.signinGithub}>
+            <Button
+              borderRadius={'8px'}
+              variant="outline"
+              onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
+              w={'100%'}
+              _hover={{
+                bg: 'grayModern.50'
+              }}
+              boxShadow={'none'}
+              leftIcon={<GithubIcon />}
+            >
+              GitHub
+            </Button>
+          </Track.Click>
+          <Track.Click eventName={Track.events.signinGoogle}>
+            <Button
+              borderRadius={'8px'}
+              variant="outline"
+              onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
+              w={'100%'}
+              boxShadow={'none'}
+              _hover={{
+                bg: 'grayModern.50'
+              }}
+              leftIcon={<GoogleIcon />}
+            >
+              Google
+            </Button>
+          </Track.Click>
         </Stack>
 
         <Box fontSize="sm" color="gray.500">

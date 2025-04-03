@@ -13,9 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const { k8sApp, k8sCore, k8sAutoscaling, k8sNetworkingApp, namespace, k8sCustomObjects } =
-      await getK8s({
-        kubeconfig: await authSession(req.headers)
-      });
+      await getK8s(await authSession(req.headers));
 
     /* delete all sources */
     const delDependent = await Promise.allSettled([

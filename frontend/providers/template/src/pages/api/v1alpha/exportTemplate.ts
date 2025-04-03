@@ -15,9 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       templateForm: Record<string, string>;
     };
 
-    const { namespace } = await getK8s({
-      kubeconfig: await authSession(req.headers)
-    });
+    const { namespace } = await getK8s(await authSession(req.headers));
 
     const { code, message, dataSource, templateYaml, TemplateEnvs, appYaml } =
       await GetTemplateByName({
