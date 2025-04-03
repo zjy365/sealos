@@ -3,7 +3,14 @@ import request from '@/services/request';
 import useAppStore from '@/stores/app';
 import { formatTime } from '@/utils/tools';
 import { Box, Button, Center, Flex, Text, UseDisclosureReturn } from '@chakra-ui/react';
-import { ClearOutlineIcon, CloseIcon, NotificationIcon, WarnIcon, useMessage } from '@sealos/ui';
+import {
+  ClearOutlineIcon,
+  CloseIcon,
+  NotificationIcon,
+  Track,
+  WarnIcon,
+  useMessage
+} from '@sealos/ui';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { produce } from 'immer';
@@ -27,7 +34,7 @@ type NotificationProps = {
 export default function Notification(props: NotificationProps) {
   const { t, i18n } = useTranslation();
   const { disclosure, onAmount } = props;
-  const { installedApps, openApp } = useAppStore();
+  const { openDesktopApp } = useAppStore();
   const [notifications, setNotifications] = useState<TNotification[]>([]);
   const { message } = useMessage();
   const isForbiddenRef = useRef(false);
@@ -97,12 +104,15 @@ export default function Notification(props: NotificationProps) {
   };
 
   const handleCharge = () => {
-    const costCenter = installedApps.find((i) => i.key === 'system-costcenter');
-    if (!costCenter) return;
-    openApp(costCenter, {
+    openDesktopApp({
+      appKey: 'system-account-center',
       query: {
-        openRecharge: 'true'
-      }
+        page: 'plan'
+      },
+      messageData: {
+        page: 'plan'
+      },
+      pathname: '/redirect'
     });
   };
 
@@ -280,25 +290,29 @@ export default function Notification(props: NotificationProps) {
 
           <Flex alignItems={'center'} mt="16px">
             {MessageConfig.popupMessage?.i18n['en']?.from === 'Debt-System' && (
-              <Button
-                w="92px"
-                h="32px"
-                variant={'solid'}
-                color={'#FAFAFA'}
-                borderRadius={'8px'}
-                onClick={() => {
-                  const temp = MessageConfig.popupMessage;
-                  setMessageConfig(
-                    produce((draft) => {
-                      draft.popupMessage = undefined;
-                    })
-                  );
-                  readMsgMutation.mutate([temp?.name || '']);
-                  handleCharge();
-                }}
-              >
-                {t('common:charge')}
-              </Button>
+              <Track.Mount eventName={Track.events.lowCreditAlertNoPlan}>
+                <Track.Click eventName={Track.events.lowCreditAlertNoPlanClick}>
+                  <Button
+                    w="92px"
+                    h="32px"
+                    variant={'solid'}
+                    color={'#FAFAFA'}
+                    borderRadius={'8px'}
+                    onClick={() => {
+                      const temp = MessageConfig.popupMessage;
+                      setMessageConfig(
+                        produce((draft) => {
+                          draft.popupMessage = undefined;
+                        })
+                      );
+                      readMsgMutation.mutate([temp?.name || '']);
+                      handleCharge();
+                    }}
+                  >
+                    {t('common:charge')}
+                  </Button>
+                </Track.Click>
+              </Track.Mount>
             )}
           </Flex>
         </Box>

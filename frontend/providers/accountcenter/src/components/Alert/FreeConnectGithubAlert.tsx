@@ -7,6 +7,7 @@ import Alert from '.';
 import { Trans, useTranslation } from 'next-i18next';
 import { TSubscriptionApiResponse } from '@/schema/plan';
 import { differenceInDays } from 'date-fns';
+import { Track } from '@sealos/ui';
 
 interface FreeConnectGithubAlertProps extends Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'> {
   userInfo: TUserInfoReponse | undefined;
@@ -32,7 +33,7 @@ const FreeConnectGithubAlert: FC<FreeConnectGithubAlertProps> = ({
   );
   if (isNaN(daysToNextCycle)) return null;
   return (
-    <>
+    <Track.Mount eventName={Track.events.accountCenterUpgrade(rest.currentPlan.name)}>
       <Alert
         type="warn"
         text={
@@ -46,7 +47,7 @@ const FreeConnectGithubAlert: FC<FreeConnectGithubAlertProps> = ({
         }
       />
       {upgradeModal}
-    </>
+    </Track.Mount>
   );
 };
 export default FreeConnectGithubAlert;

@@ -1,5 +1,6 @@
 import UpgradePlanModal, { UpgradePlanModalProps } from '@/components/Plans/UpgradeModal';
 import { useDisclosure } from '@chakra-ui/react';
+import { Track } from '@sealos/ui';
 
 export default function useUpgradeModalInTranslation(
   restProps: Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'>
@@ -16,7 +17,15 @@ export default function useUpgradeModalInTranslation(
     currentPlan.upgradePlanList.length > 0;
   const transComponents = {
     Upgrade: (
-      <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={openUpgradeModal} />
+      <Track.TransClick
+        element={
+          <span
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+            onClick={openUpgradeModal}
+          />
+        }
+        eventName={Track.events.accountCenterUpgradeClick(currentPlan.name)}
+      />
     )
   };
   const upgradeModal = (

@@ -12,6 +12,7 @@ import useToastAPIResult, { useAPIErrorMessage } from '@/hooks/useToastAPIResult
 import { RepeatIcon } from '@chakra-ui/icons';
 import RadioOptionGroup from '../RadioOption/Group';
 import BorderGradient from '../Gradient/Border';
+import { Track } from '@sealos/ui';
 
 interface SummaryItems {
   amount: string;
@@ -238,17 +239,19 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
             </FormControl>
           </Box>
           <Box>
-            <ActionButton
-              w="100%"
-              borderRadius="8px"
-              display="block"
-              mt="50px"
-              mb="24px"
-              isDisabled={loading.cards || loading.summary || loadSummaryError}
-              onClick={handleCheckout}
-            >
-              {t('Checkout')}
-            </ActionButton>
+            <Track.Click eventName={Track.events.checkout}>
+              <ActionButton
+                w="100%"
+                borderRadius="8px"
+                display="block"
+                mt="50px"
+                mb="24px"
+                isDisabled={loading.cards || loading.summary || loadSummaryError}
+                onClick={handleCheckout}
+              >
+                {t('Checkout')}
+              </ActionButton>
+            </Track.Click>
             <Text fontSize="12px" lineHeight="16px" fontWeight="400" color="rgb(115, 115, 115)">
               <Trans
                 i18nKey={t('ReadTermsConditionsAndPrivacyPolicy')}

@@ -1,4 +1,4 @@
-import { MySelect } from '@sealos/ui';
+import { MySelect, Track } from '@sealos/ui';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import {
@@ -31,6 +31,7 @@ export default function Workspace() {
   const router = useRouter();
   const { toast } = useCustomToast();
   const bg = useColorModeValue('white', 'gray.700');
+  const provider = useSessionStore((s) => s.provider);
   const { workspaceName, setWorkspaceName, setSelectedRegionUid, selectedRegionUid, setInitGuide } =
     useInitWorkspaceStore();
   // const [workspaceName, setWorkspaceName] = useState('');
@@ -80,6 +81,7 @@ export default function Workspace() {
       if (!initRegionTokenResult.data) {
         throw new Error('No result data');
       }
+      Track.send(Track.events.signinComplete(provider));
       await sessionConfig(initRegionTokenResult.data);
       await router.replace('/');
     } catch (error) {

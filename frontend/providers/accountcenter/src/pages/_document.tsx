@@ -1,6 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
-import { Box } from '@chakra-ui/react';
-import Sidebar from '@/components/Sidebar';
+import { Track } from '@sealos/ui';
 
 export default function Document() {
   return (
@@ -13,6 +12,7 @@ export default function Document() {
         <meta name="apple-mobile-web-app-title" content="ClawCloud" />
         <meta name="description" content="ClawCloud" />
         <meta name="format-detection" content="telephone=no" />
+        <Track.Scripts />
       </Head>
       <body>
         <Main />
