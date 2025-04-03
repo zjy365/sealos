@@ -13,6 +13,7 @@ import { useCustomToast } from '@/hooks/useCustomToast';
 import { HttpStatusCode } from 'axios';
 export default function Callback() {
   const router = useRouter();
+  const setLastSigninProvider = useSessionStore((s) => s.setLastSigninProvider);
   const setProvider = useSessionStore((s) => s.setProvider);
   const setToken = useSessionStore((s) => s.setToken);
   const provider = useSessionStore((s) => s.provider);
@@ -70,6 +71,7 @@ export default function Callback() {
             if (data.code === 200 && data.data?.token) {
               const token = data.data?.token;
               setToken(token);
+              setLastSigninProvider(provider);
               const needInit = data.data.needInit;
               if (needInit) {
                 // await router.push('/personalinfo');
