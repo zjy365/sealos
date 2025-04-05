@@ -123,9 +123,9 @@ const ReferralPage: FC<ReferralPageProps> = () => {
         <Card variant="outline">
           <CardHeader>{t('ReferralShareLinkTitle')}</CardHeader>
           <CardBody>
-            <Text fontSize="14px" lineHeight="20px" color="rgb(17, 24, 36)" fontWeight="400">
+            {/* <Text fontSize="14px" lineHeight="20px" color="rgb(17, 24, 36)" fontWeight="400">
               {t('ReferralShareLinkDesc')}
-            </Text>
+            </Text> */}
             <Flex
               mt="24px"
               py="12px"
