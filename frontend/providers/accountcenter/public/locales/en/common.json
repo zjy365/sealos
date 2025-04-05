@@ -387,7 +387,7 @@
   "BonusWithIndex": "Bonus {{index}}",
   "ReferralBonus": [
     "Invite 5 new users to register and get: A 1-month Hobby plan (if on Free plan), OR a 1-month extension (if already on Hobby plan)",
-    "You can share the link unlimited times. Invite 120 new users and earn up to 24 months of the Hobby plan"
+    "You can share the link unlimited times. Invite 300 new users and earn up to 60 months of the Hobby plan"
   ],
   "ReferralRewardsCount": "<Strong>{{count}}</Strong> month of hobby plan",
   "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of hobby plan",
