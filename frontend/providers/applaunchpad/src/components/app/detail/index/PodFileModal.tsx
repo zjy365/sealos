@@ -13,7 +13,7 @@ import { UPLOAD_LIMIT } from '@/store/static';
 import type { PodDetailType } from '@/types/app';
 import { TFile } from '@/utils/kubeFileSystem';
 import { formatSize, formatTime } from '@/utils/tools';
-import { getUserKubeConfig } from '@/utils/user';
+import { getToken, getUserKubeConfig } from '@/utils/user';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -187,7 +187,12 @@ const PodFile = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: encodeURIComponent(getUserKubeConfig())
+          Authorization: encodeURIComponent(
+            JSON.stringify({
+              kubeconfig: getUserKubeConfig(),
+              token: getToken()
+            })
+          )
         },
         body: JSON.stringify({
           podName: podDetail.podName,

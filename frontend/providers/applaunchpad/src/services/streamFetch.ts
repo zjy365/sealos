@@ -1,4 +1,4 @@
-import { getUserKubeConfig } from '@/utils/user';
+import { getToken, getUserKubeConfig } from '@/utils/user';
 
 interface StreamFetchProps {
   url: string;
@@ -20,7 +20,12 @@ export const streamFetch = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: encodeURIComponent(getUserKubeConfig())
+          Authorization: encodeURIComponent(
+            JSON.stringify({
+              kubeconfig: getUserKubeConfig(),
+              token: getToken()
+            })
+          )
         },
         body: JSON.stringify(data),
         signal: abortSignal.signal
