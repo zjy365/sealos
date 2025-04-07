@@ -615,7 +615,7 @@ export const getGlobalTokenByOauth = async ({
       userUid: true
     }
   });
-  console.log('global ', user, email, ProviderType, providerId);
+  // console.log('global ', user, email, ProviderType, providerId);
   if (!_user) {
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
@@ -676,6 +676,28 @@ export const getGlobalTokenByOauth = async ({
       provider,
       id: providerId
     });
+    if (ProviderType.GITHUB === provider) {
+      const userInfo = await globalPrisma.userInfo.findUnique({
+        where: {
+          userUid: _user.userUid
+        }
+      });
+      if (!userInfo) {
+        throw Error('not found user info');
+      } else {
+        let defaultConfig = (userInfo.config || {}) as object;
+        defaultConfig = {
+          ...defaultConfig,
+          github: config
+        };
+        await globalPrisma.userInfo.update({
+          where: { userUid: _user.userUid },
+          data: {
+            config: defaultConfig
+          }
+        });
+      }
+    }
     if (result) {
       user = result.user;
       isInited = !!result.user.userInfo?.isInited;

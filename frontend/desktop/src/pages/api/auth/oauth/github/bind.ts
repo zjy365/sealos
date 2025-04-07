@@ -7,8 +7,9 @@ import {
   githubOAuthEnvFilter,
   githubOAuthGuard
 } from '@/services/backend/middleware/oauth';
-import { bindGithubSvc } from '@/services/backend/svc/bindProvider';
+import { bindGithubSvc, bindProviderV2Svc } from '@/services/backend/svc/bindProvider';
 import { ErrorHandler } from '@/services/backend/middleware/error';
+import { ProviderType } from 'prisma/global/generated/client';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!enableGithub()) {
@@ -21,8 +22,16 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           clientID,
           clientSecret,
           code
-        )(res, ({ id }) =>
-          bindGithubGuard(id, userUid)(res, () => bindGithubSvc(id, userUid)(res))
+        )(res, ({ id, config }) =>
+          bindGithubGuard(id, userUid)(res, () =>
+            // bindGithubSvc(id, userUid)(res)
+            bindProviderV2Svc({
+              providerId: id,
+              providerType: ProviderType.GITHUB,
+              userUid: userUid,
+              config: config
+            })(req, res)
+          )
         );
       });
     });

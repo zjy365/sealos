@@ -7,6 +7,7 @@ import { BIND_STATUS } from '@/types/response/bind';
 import { CHANGE_BIND_STATUS } from '@/types/response/changeBind';
 import { UNBIND_STATUS } from '@/types/response/unbind';
 import { PROVIDER_STATUS } from '@/types/response/utils';
+import { createMiddleware } from '@/utils/factory';
 async function addOauthProvider({
   providerType,
   providerId,
@@ -160,6 +161,63 @@ const bindProviderSvc =
       message: BIND_STATUS.RESULT_SUCCESS
     });
   };
+export const bindProviderV2Svc = createMiddleware<{
+  providerId: string;
+  providerType: ProviderType;
+  userUid: string;
+  config: any;
+}>(async ({ res, next, ctx }) => {
+  const { providerId, providerType, userUid, config } = ctx;
+  if (providerType !== ProviderType.GOOGLE && providerType !== ProviderType.GITHUB) {
+    return jsonRes(res, {
+      code: 409,
+      message: BIND_STATUS.NOT_SUPPORT
+    });
+  }
+
+  const user = await globalPrisma.user.findUnique({
+    where: { uid: userUid },
+    select: {
+      userInfo: true
+    }
+  });
+  if (!user)
+    return jsonRes(res, {
+      code: 409,
+      message: BIND_STATUS.USER_NOT_FOUND
+    });
+  await globalPrisma.$transaction(async (tx) => {
+    await tx.oauthProvider.create({
+      data: {
+        providerId,
+        providerType,
+        user: {
+          connect: {
+            uid: userUid
+          }
+        }
+      }
+    });
+    let defaultConfig = (user.userInfo?.config || {}) as object;
+    if (ProviderType.GITHUB === providerType) {
+      defaultConfig = {
+        ...defaultConfig,
+        github: config
+      };
+    }
+    await tx.userInfo.update({
+      where: { userUid },
+      data: {
+        config: defaultConfig
+      }
+    });
+  });
+
+  return jsonRes(res, {
+    code: 200,
+    message: BIND_STATUS.RESULT_SUCCESS
+  });
+});
 const unbindProviderSvc =
   (providerId: string, providerType: ProviderType, userUid: string) =>
   async (res: NextApiResponse, next?: () => void) => {
