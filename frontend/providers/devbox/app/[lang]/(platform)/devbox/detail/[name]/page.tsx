@@ -36,6 +36,7 @@ const DevboxDetailPage = ({ params }: { params: { name: string } }) => {
       onSuccess: () => {}
     }
   );
+
   useQuery(
     ['devbox-detail-pod'],
     () => {

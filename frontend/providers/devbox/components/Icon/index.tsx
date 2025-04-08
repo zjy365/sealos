@@ -100,6 +100,7 @@ const map = {
   question: require('./icons/question.svg').default,
   help: require('./icons/help.svg').default,
   ellipse: require('./icons/ellipse.svg').default,
+  ellipseFull: require('./icons/ellipseFull.svg').default
 };
 
 const MyIcon = ({

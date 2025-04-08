@@ -9,7 +9,7 @@ import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/re
 import { useRouter } from '@/i18n';
 import { useGlobalStore } from '@/stores/global';
 import { DevboxListItemTypeV2 } from '@/types/devbox';
-import { pauseDevbox, restartDevbox, startDevbox } from '@/api/devbox';
+import { restartDevbox, startDevbox } from '@/api/devbox';
 
 import MyIcon from '@/components/Icon';
 import IDEButton from '@/components/IDEButton';
@@ -19,6 +19,8 @@ import SwitchPage from '@/components/SwitchDevboxPage';
 import DevboxStatusTag from '@/components/DevboxStatusTag';
 import { startDriver, startguideIDE, startGuide5 } from '@/hooks/driver';
 import { useGuideStore } from '@/stores/guide';
+import { DevboxStatusEnum } from '@/constants/devbox';
+import ShutdownModal from '@/components/modals/ShutdownModal';
 
 const DelModal = dynamic(() => import('@/components/modals/DelModal'));
 
@@ -39,6 +41,7 @@ const DevboxList = ({
   // TODO: Unified Loading Behavior
   const { setLoading } = useGlobalStore();
   const [onOpenRelease, setOnOpenRelease] = useState(false);
+  const [onOpenShutdown, setOnOpenShutdown] = useState(false);
   const [delDevbox, setDelDevbox] = useState<DevboxListItemTypeV2 | null>(null);
   const showDevboxList = useMemo(() => {
     return devboxList.slice((page - 1) * pageSize, page * pageSize);
@@ -58,27 +61,7 @@ const DevboxList = ({
     setCurrentDevboxListItem(devbox);
     setOnOpenRelease(true);
   };
-  const handlePauseDevbox = useCallback(
-    async (devbox: DevboxListItemTypeV2) => {
-      try {
-        setLoading(true);
-        await pauseDevbox({ devboxName: devbox.name });
-        toast({
-          title: t('pause_success'),
-          status: 'success'
-        });
-      } catch (error: any) {
-        toast({
-          title: typeof error === 'string' ? error : error.message || t('pause_error'),
-          status: 'error'
-        });
-        console.error(error);
-      }
-      refetchDevboxList();
-      setLoading(false);
-    },
-    [refetchDevboxList, setLoading, t, toast]
-  );
+
   const handleRestartDevbox = useCallback(
     async (devbox: DevboxListItemTypeV2) => {
       try {
@@ -150,7 +133,7 @@ const DevboxList = ({
         id: 'status',
         enablePinning: true,
         cell(props) {
-          return <DevboxStatusTag status={props.getValue()} h={'27px'} px={'0'} thinMode />;
+          return <DevboxStatusTag status={props.getValue()} h={'27px'} thinMode />;
         }
       }),
       columnHelper.accessor((row) => row.usedCpu, {
@@ -286,7 +269,7 @@ const DevboxList = ({
                       ),
                       onClick: () => router.push(`/devbox/create?name=${item.name}`)
                     },
-                    ...(item.status.value === 'Stopped'
+                    ...(item.status.value === 'Stopped' || item.status.value === 'Shutdown'
                       ? [
                           {
                             child: (
@@ -309,12 +292,15 @@ const DevboxList = ({
                                 <Box ml={2}>Pause</Box>
                               </>
                             ),
-                            onClick: () => handlePauseDevbox(item)
+                            onClick: () => {
+                              setOnOpenShutdown(true);
+                              setCurrentDevboxListItem(item);
+                            }
                           }
                         ]
                       : []),
 
-                    ...(item.status.value !== 'Stopped'
+                    ...(item.status.value === 'Stopped' || item.status.value === 'Shutdown'
                       ? [
                           {
                             child: (
@@ -435,6 +421,18 @@ const DevboxList = ({
           onClose={() => setDelDevbox(null)}
           onSuccess={refetchDevboxList}
           refetchDevboxList={refetchDevboxList}
+        />
+      )}
+      {onOpenShutdown && currentDevboxListItem && (
+        <ShutdownModal
+          onSuccess={() => {
+            refetchDevboxList();
+            setOnOpenShutdown(false);
+          }}
+          onClose={() => {
+            setOnOpenShutdown(false);
+          }}
+          devbox={currentDevboxListItem}
         />
       )}
     </>

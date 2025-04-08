@@ -17,10 +17,10 @@ import { useMessage } from '@sealos/ui';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import { releaseDevbox, shutdownDevbox, startDevbox } from '@/api/devbox';
 import { useEnvStore } from '@/stores/env';
 import { versionSchema } from '@/utils/vaildate';
 import { DevboxListItemTypeV2 } from '@/types/devbox';
-import { pauseDevbox, releaseDevbox, startDevbox } from '@/api/devbox';
 import { TagCheckbox } from '@/app/[lang]/(platform)/template/TagCheckbox';
 import { startDriver, startGuide7 } from '@/hooks/driver';
 import { useGuideStore } from '@/stores/guide';
@@ -67,7 +67,10 @@ const ReleaseModal = ({
         setLoading(true);
         // 1.pause devbox
         if (devbox.status.value === 'Running') {
-          await pauseDevbox({ devboxName: devbox.name });
+          await shutdownDevbox({
+            devboxName: devbox.name,
+            shutdownMode: 'Stopped'
+          });
           // wait 3s
           await new Promise((resolve) => setTimeout(resolve, 3000));
         }
