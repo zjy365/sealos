@@ -82,8 +82,11 @@ export default function Carousel({}: {}) {
             p={'32px 28px'}
             transition={'all 0.5s'}
             onClick={() => {
-              setActiveIndex(index);
-              goDeploy(item.url);
+              if (activeIndex !== index) {
+                setActiveIndex(index);
+              } else {
+                goDeploy(item.url);
+              }
             }}
             borderRadius={'16px'}
             w={{ lg: activeIndex === index ? '720px' : '296px', base: '944px' }}
