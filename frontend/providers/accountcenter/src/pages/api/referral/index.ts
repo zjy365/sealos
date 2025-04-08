@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // GET method continues with the existing code
     const referral = await globalPrisma.referral.findUnique({
-      where: { user_uid: payload.userUid, available: true },
+      where: { uid: payload.userUid, available: true, verify: true },
       select: { code: true }
     });
 

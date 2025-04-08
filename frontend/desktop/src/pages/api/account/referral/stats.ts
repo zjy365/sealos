@@ -3,7 +3,7 @@ import { globalPrisma } from '@/services/backend/db/init';
 import { jsonRes } from '@/services/backend/response';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-async function calculateReward(referral_id: number) {
+async function calculateReward(referral_id: string) {
   const referral = await globalPrisma.referral.findFirst({
     where: { id: referral_id },
     select: { created_at: true, rewards: true }
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!status) return jsonRes(res, { code: 404, message: 'user is not found' });
 
     const referral = await globalPrisma.referral.findUnique({
-      where: { user_uid: payload.userUid, available: true },
+      where: { uid: payload.userUid, available: true },
       select: { id: true }
     });
 
