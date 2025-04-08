@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { 
   Box,
   Button,
@@ -36,6 +36,7 @@ const MonitorModal = dynamic(() => import('@/components/modals/MonitorModal'));
 const MainBody = () => {
   const t = useTranslations();
   const router = useRouter();
+  const locale = useLocale();
   const { copyData } = useCopyData();
   const { devboxDetail } = useDevboxStore();
   const { env } = useEnvStore();
@@ -186,17 +187,17 @@ const MainBody = () => {
                               )
                             })}
                           </Box>
-                          <Flex mt={'12px'} gap={'4px'} maxW={'610px'}>
+                          <Flex mt={'12px'} gap={'4px'} maxW={locale === 'zh' ? '410px' : '610px'}>
                             <Flex alignItems={'center'} direction={'column'} mt={'2px'}>
                               <MyIcon name="ellipse" w={'6px'} h={'6px'} />
                               <Box
-                                h={'22px'}
+                                h={locale === 'zh' ? '20px' : '22px'}
                                 w={'1px'}
                                 bg={'grayModern.250'}
                               />
                               <MyIcon name="ellipse" w={'6px'} h={'6px'} />
                               <Box
-                                h={'36px'}
+                                h={locale === 'zh' ? '38px' : '36px'}
                                 w={'1px'}
                                 bg={'grayModern.250'}
                               />
@@ -210,7 +211,7 @@ const MainBody = () => {
                                 fontWeight={400}
                                 minH={'fit-content'}
                               >
-                                <Box w={'20%'}>
+                                <Box w={locale === 'zh' ? 'auto' : '20%'}>
                                   {t('public_debug_address_tooltip_2_1')}
                                 </Box>
                                 <Box color={'grayModern.600'} w={'80%'}>
@@ -224,7 +225,7 @@ const MainBody = () => {
                                 fontWeight={400}
                                 minH={'fit-content'}
                               >
-                                <Box w={'20%'}>
+                                <Box w={locale === 'zh' ? 'auto' : '20%'}>
                                   {t('public_debug_address_tooltip_3_1')}
                                 </Box>
                                 <Box color={'grayModern.600'} w={'80%'}>
@@ -244,7 +245,7 @@ const MainBody = () => {
                                 fontWeight={400}
                                 minH={'fit-content'}
                               >
-                                <Box w={'20%'}>
+                                <Box w={locale === 'zh' ? 'auto' : '20%'}>
                                   {t('public_debug_address_tooltip_4_1')}
                                 </Box>
                                 <Box color={'grayModern.600'} w={'80%'}>

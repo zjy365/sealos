@@ -183,3 +183,20 @@ button.rdp-button.rdp-day.rdp-day_range_end {
   background-color: #111824;
   color: white;
 }
+
+.chakra-radio__control {
+  border-width: 1px !important;
+}
+
+.chakra-radio__control[data-checked] {
+  border-color: #219bf4 !important;
+  border-width: 1px !important;
+  background-color: white !important;
+  box-shadow: 0px 0px 0px 2.4px rgba(33, 155, 244, 0.15);
+}
+
+.chakra-radio__control[data-checked]::before {
+  background-color: #219bf4 !important;
+  width: 4px !important;
+  height: 4px !important;
+}
