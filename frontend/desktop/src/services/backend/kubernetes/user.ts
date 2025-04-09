@@ -1,6 +1,7 @@
 import * as k8s from '@kubernetes/client-node';
 import http from 'http';
 import * as yaml from 'js-yaml';
+import { json2Notification } from '@/utils/json2Yaml';
 
 export function K8sApi(config: string): k8s.KubeConfig {
   const kc = new k8s.KubeConfig();
@@ -253,4 +254,60 @@ export async function GetConfigMap(kc: k8s.KubeConfig, namespace: string, name: 
   const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
   const response = await k8sApi.readNamespacedConfigMap(name, namespace);
   return response;
+}
+
+export async function createYaml(
+  kc: k8s.KubeConfig,
+  specs: k8s.KubernetesObject[]
+): Promise<k8s.KubernetesObject[]> {
+  const client = k8s.KubernetesObjectApi.makeApiClient(kc);
+  const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
+  const created = [] as k8s.KubernetesObject[];
+
+  try {
+    for (const spec of validSpecs) {
+      spec.metadata = spec.metadata || {};
+      spec.metadata.annotations = spec.metadata.annotations || {};
+      delete spec.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'];
+      spec.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'] =
+        JSON.stringify(spec);
+      console.log('create yaml: ', spec.kind);
+      const response = await client.create(spec);
+      created.push(response.body);
+    }
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+  return created;
+}
+export async function CreateSignUpReferralNotificationIfNotExists(
+  kc: k8s.KubeConfig,
+  namespace: string
+) {
+  const signUpReferralNotification = json2Notification({
+    namespace: namespace,
+    name: 'signup-referral-notification',
+    desktopPopup: true,
+    i18ns: {
+      zh: {
+        from: 'Referral',
+        title: 'Refer dev friends',
+        message: 'Earn hobby plans 🔗 Get Your Unique Link.'
+      },
+      en: {
+        from: 'Referral',
+        title: 'Refer dev friends',
+        message: 'Earn hobby plans 🔗 Get Your Unique Link.'
+      }
+    }
+  });
+  try {
+    return await createYaml(kc, [signUpReferralNotification]);
+  } catch (err) {
+    if ((err as any).statusCode === 409) {
+      // 已存在
+      return;
+    }
+    console.error('CreateSignUpReferralNotificationIfNotExists error:', err);
+  }
 }

@@ -61,3 +61,5 @@ export type LicensePayload = {
   quota: number;
   paymentMethod: 'wechat' | 'stripe';
 };
+
+export const LicenseFrontendKey = 'cloud.sealos.io/license-frontend';
