@@ -5,7 +5,7 @@ import { jsonRes } from '@/service/backend/response';
 import { HttpStatusCode } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-async function calculateReward(referral_id: number) {
+async function calculateReward(referral_id: string) {
   const referral = await globalPrisma.referral.findFirst({
     where: { id: referral_id },
     select: { created_at: true, rewards: true }
@@ -33,18 +33,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!status) return jsonRes(res, { code: 404, message: 'user is not found' });
 
     const referral = await globalPrisma.referral.findUnique({
-      where: { user_uid: payload.userUid, available: true },
+      where: { uid: payload.userUid, available: true },
       select: { id: true }
     });
 
     if (!referral) return jsonRes(res, { code: 404, message: 'Referral code not found' });
 
     const inviteCount = await globalPrisma.referral.count({
-      where: { referrer_id: referral.id }
+      where: { referrer_id: referral.id, verify: true }
     });
 
     const pendingCount = await globalPrisma.referral.count({
-      where: { referrer_id: referral.id, used: false }
+      where: { referrer_id: referral.id, used: false, verify: true }
     });
 
     const reward = await calculateReward(referral.id);

@@ -573,29 +573,31 @@ model subscription_processor_locks {
 }
 
 model Referral {
-  id          Int      @id @default(sequence())
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code        String   @unique
-  user_uid    String   @unique @db.Uuid
-  referrer_id Int?
+  uid         String   @unique @db.Uuid
+  referrer_id String?  @db.Uuid
   created_at  DateTime @default(now()) @db.Timestamptz(3)
   updated_at  DateTime @updatedAt @db.Timestamptz(3)
   used        Boolean  @default(false)
   available   Boolean  @default(false)
+  verify      Boolean  @default(false)
 
-  user     User             @relation(references: [uid], fields: [user_uid])
   referrer Referral?        @relation("ReferrerReferral", references: [id], fields: [referrer_id], onDelete: NoAction, onUpdate: NoAction)
   referral Referral[]       @relation("ReferrerReferral")
   rewards  ReferralReward[]
+  user     User             @relation(references: [uid], fields: [uid])
 
-  @@unique([user_uid, referrer_id])
+  @@unique([uid, referrer_id])
   @@index([referrer_id])
-  @@index([code])
-  @@index([user_uid])
+  @@index([used])
+  @@index([available])
+  @@map("referral")
 }
 
 model ReferralReward {
-  id          Int        @id @default(sequence())
-  referral_id Int
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  referral_id String     @db.Uuid
   reward      RewardType
   created_at  DateTime   @default(now()) @db.Timestamptz(3)
   updated_at  DateTime   @updatedAt @db.Timestamptz(3)
@@ -603,10 +605,13 @@ model ReferralReward {
   referral Referral @relation(references: [id], fields: [referral_id])
 
   @@index([referral_id])
+  @@map("referral_reward")
 }
 
 enum RewardType {
   ONE_MONTH_HOBBY_LICENSE
+
+  @@map("reward_type_enum")
 }
 
 enum ProviderType {
