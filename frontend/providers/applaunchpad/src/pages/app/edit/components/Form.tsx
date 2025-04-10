@@ -350,10 +350,10 @@ const Form = ({
         pl={`${pxVal}px`}
       >
         <Box>
-          <Tabs
+          {/* <Tabs
             list={[
-              { id: 'form', label: t('Config Form') }
-              // { id: 'yaml', label: t('YAML File') }
+              { id: 'form', label: t('Config Form') },
+              { id: 'yaml', label: t('YAML File') }
             ]}
             activeId={'form'}
             onChange={() =>
@@ -364,7 +364,7 @@ const Form = ({
                 })}`
               )
             }
-          />
+          /> */}
           {/* <Box
             mt={3}
             borderRadius={'md'}

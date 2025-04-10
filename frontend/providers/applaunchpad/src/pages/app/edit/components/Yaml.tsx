@@ -27,7 +27,7 @@ const Yaml = ({ yamlList = [], pxVal }: { yamlList: YamlItemType[]; pxVal: numbe
       px={`${pxVal}px`}
     >
       <Box>
-        <Tabs
+        {/* <Tabs
           list={[
             { id: 'form', label: t('Config Form') },
             { id: 'yaml', label: t('YAML File') }
@@ -41,7 +41,7 @@ const Yaml = ({ yamlList = [], pxVal }: { yamlList: YamlItemType[]; pxVal: numbe
               })}`
             )
           }
-        />
+        /> */}
         <Flex
           flexDirection={'column'}
           mt={3}

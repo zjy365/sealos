@@ -51,10 +51,10 @@ const Form = ({
     >
       {/* left sidebar */}
       <Box>
-        <Tabs
+        {/* <Tabs
           list={[
-            { id: 'form', label: t('config_form') }
-            // { id: 'yaml', label: t('yaml_file') }
+            { id: 'form', label: t('config_form') },
+            { id: 'yaml', label: t('yaml_file') }
           ]}
           activeId={'form'}
           onChange={() =>
@@ -64,7 +64,7 @@ const Form = ({
               })}`
             )
           }
-        />
+        /> */}
         <Box mt={3} overflow={'hidden'}>
           <PriceBox
             components={[
