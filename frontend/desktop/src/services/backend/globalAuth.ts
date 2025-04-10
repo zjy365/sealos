@@ -4,8 +4,6 @@ import { prisma, globalPrisma } from '@/services/backend/db/init';
 import { AuthConfigType } from '@/types';
 import { SemData } from '@/types/sem';
 import { hashPassword } from '@/utils/crypto';
-import { K8sApiDefault } from '@/services/backend/kubernetes/admin';
-import { CreateSignUpReferralNotificationIfNotExists } from '@/services/backend/kubernetes/user';
 import { nanoid } from 'nanoid';
 import {
   Prisma,
@@ -181,39 +179,6 @@ async function createNewUserTasks(tx: TransactionClient, userUid: string) {
         completedAt: new Date(0)
       }
     });
-  }
-}
-
-async function createFirstSignUpNotification(user: User) {
-  try {
-    const userCrUid = await prisma.userCr.findUnique({
-      where: {
-        userUid: user.uid
-      },
-      select: {
-        uid: true
-      }
-    });
-    const currentNamespaces = await prisma.userWorkspace.findMany({
-      where: {
-        userCrUid: userCrUid?.uid,
-        status: 'IN_WORKSPACE',
-        role: Role.OWNER
-      },
-      include: {
-        workspace: {
-          select: {
-            id: true
-          }
-        }
-      }
-    });
-    const currentNamespacesId = currentNamespaces.map((item) => item.workspace.id);
-    const currentNamespaceId = currentNamespacesId[0];
-    const defaultKc = K8sApiDefault();
-    await CreateSignUpReferralNotificationIfNotExists(defaultKc, currentNamespaceId);
-  } catch (err) {
-    console.error('Error occurred while creating first sign up notification:', err);
   }
 }
 
@@ -464,7 +429,6 @@ export async function signUpByEmail({
 
   // Send event to EventBridge
   await sendEvent('user_signup', result.user.uid, referralCode);
-  await createFirstSignUpNotification(result.user);
 
   return {
     user: result.user
@@ -559,7 +523,6 @@ export const getGlobalToken = async ({
 
       // Send event to EventBridge
       await sendEvent('user_signup', user.uid, referralCode);
-      await createFirstSignUpNotification(user);
 
       if (inviterId) {
         inviteHandler({
@@ -702,7 +665,6 @@ export const getGlobalTokenByOauth = async ({
 
     // Send event to EventBridge
     await sendEvent('user_signup', user.uid, referralCode);
-    await createFirstSignUpNotification(user);
 
     if (enableTracking()) {
       await trackSignUp({

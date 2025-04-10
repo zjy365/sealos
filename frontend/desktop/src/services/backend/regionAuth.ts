@@ -7,6 +7,8 @@ import { retrySerially } from '@/utils/tools';
 import { AccessTokenPayload } from '@/types/token';
 import { JoinStatus, Role } from 'prisma/region/generated/client';
 import { generateAccessToken, generateAppToken } from '@/services/backend/auth';
+import { K8sApiDefault } from '@/services/backend/kubernetes/admin';
+import { CreateSignUpReferralNotificationIfNotExists } from '@/services/backend/kubernetes/user';
 import Workspace from '@/components/cc/Workspace';
 import { v4 } from 'uuid';
 import { iss } from 'tencentcloud-sdk-nodejs';
@@ -199,6 +201,15 @@ export async function getRegionToken({
   };
 }
 
+async function createFirstSignUpNotification(workspaceId: string) {
+  try {
+    const defaultKc = K8sApiDefault();
+    await CreateSignUpReferralNotificationIfNotExists(defaultKc, workspaceId);
+  } catch (err) {
+    console.error('Error occurred while creating first sign up notification:', err);
+  }
+}
+
 export async function initRegionToken({
   userUid,
   userId,
@@ -275,6 +286,7 @@ export async function initRegionToken({
     }
     // try {
     // db操作 做不到事务，只能用幂等解决
+    let firstSignUpWorkspaceId = '';
     const regionalDbResult = await prisma.$transaction(
       async (tx): Promise<AccessTokenPayload | null> => {
         //
@@ -311,6 +323,7 @@ export async function initRegionToken({
         } else {
           const crName = nanoid();
           const workspaceId = GetUserDefaultNameSpace(crName);
+          firstSignUpWorkspaceId = workspaceId;
           const result = await tx.userWorkspace.create({
             data: {
               status: JoinStatus.IN_WORKSPACE,
@@ -373,6 +386,10 @@ export async function initRegionToken({
     );
     if (!kubeconfig) {
       throw new Error('Failed to get user from k8s');
+    }
+    console.log('first sign up workspace id: ', firstSignUpWorkspaceId);
+    if (firstSignUpWorkspaceId) {
+      await createFirstSignUpNotification(firstSignUpWorkspaceId);
     }
 
     await globalPrisma.userInfo.update({
