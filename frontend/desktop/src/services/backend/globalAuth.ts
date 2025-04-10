@@ -715,20 +715,24 @@ export const getGlobalTokenByOauth = async ({
       provider,
       id: providerId
     });
-    if (ProviderType.GITHUB === provider) {
+    if (ProviderType.GITHUB === provider && config?.github) {
       const userInfo = await globalPrisma.userInfo.findUnique({
         where: {
           userUid: _user.userUid
+        },
+        select: {
+          config: true
         }
       });
-      if (!userInfo) {
-        throw Error('not found user info');
-      } else {
-        let defaultConfig = (userInfo.config || {}) as object;
-        defaultConfig = {
-          ...defaultConfig,
-          github: config
-        };
+      if (userInfo) {
+        let defaultConfig = (userInfo?.config || {}) as object;
+        // @ts-ignore
+        if (!defaultConfig?.github) {
+          defaultConfig = {
+            ...defaultConfig,
+            github: config.github
+          };
+        }
         await globalPrisma.userInfo.update({
           where: { userUid: _user.userUid },
           data: {
