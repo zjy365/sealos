@@ -271,7 +271,7 @@ export async function createYaml(
       delete spec.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'];
       spec.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'] =
         JSON.stringify(spec);
-      console.log('create yaml: ', spec.kind);
+      console.log('create yaml: ', spec.kind, spec.metadata.namespace);
       const response = await client.create(spec);
       created.push(response.body);
     }
@@ -302,6 +302,7 @@ export async function CreateSignUpReferralNotificationIfNotExists(
     }
   });
   try {
+    console.log('CreateSignUpReferralNotificationIfNotExists in namespace: ', namespace);
     return await createYaml(kc, [signUpReferralNotification]);
   } catch (err) {
     if ((err as any).statusCode === 409) {

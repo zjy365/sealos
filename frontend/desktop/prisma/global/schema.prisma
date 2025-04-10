@@ -124,6 +124,26 @@ model User {
   Referral                Referral?
 }
 
+model RegionConfig {
+  id              String   @id
+  key             String   
+  value           String
+  region          String 
+}
+
+model UserDebt {
+  user_id     String   @id
+  status       String
+}
+
+model UserKYC {
+  user_uid     String   @id
+  status       String
+  created_at  DateTime @default(now()) @db.Timestamptz(3)
+  updated_at  DateTime @default(now()) @db.Timestamptz(3)
+  next_at      DateTime @default(now()) @db.Timestamptz(3)
+}
+
 model Transfer {
   uid         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   fromUserUid String   @db.Uuid
