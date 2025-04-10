@@ -44,4 +44,5 @@ config.yaml
 .env
 .env.local
 data/config.local.yaml
+data/*.local.yaml
 #/prisma/region/generated/

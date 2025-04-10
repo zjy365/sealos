@@ -168,6 +168,13 @@ export default function Notification(props: NotificationProps) {
     refetch();
   };
 
+  const [expandedMessageId, setExpandedMessageId] = useState<string | null>(null);
+
+  const toggleExpand = (uid: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedMessageId(expandedMessageId === uid ? null : uid);
+  };
+
   return disclosure.isOpen ? (
     <>
       <Box className={styles.bg} onClick={() => disclosure.onClose()} cursor={'auto'}></Box>
@@ -186,6 +193,7 @@ export default function Notification(props: NotificationProps) {
             <Text color={'#1C4EF5'} fontSize={'12px'} fontWeight={500} onClick={markAllAsRead}>
               {t('common:read_all')}
             </Text>
+
             <X
               cursor={'pointer'}
               size={16}
@@ -238,21 +246,24 @@ export default function Notification(props: NotificationProps) {
                   {item.i18n[i18n.language]?.title}
                 </Text>
                 <Text
-                  height={'32px'}
+                  height={expandedMessageId === item.uid ? 'auto' : '32px'}
                   mt={'2px'}
                   whiteSpace="pre-wrap"
                   fontSize={'12px'}
                   color={'#737373'}
-                  noOfLines={2}
+                  noOfLines={expandedMessageId === item.uid ? undefined : 2}
                   overflow={'hidden'}
                   textOverflow={'ellipsis'}
+                  onClick={(e) => toggleExpand(item.uid, e)}
+                  cursor="pointer"
+                  position="relative"
                 >
                   {item?.i18n['en']?.from === 'Referral' ? (
                     <div style={{ cursor: 'pointer', marginTop: '10px' }} onClick={handleReferral}>
                       {item.i18n[i18n.language]?.message}
                     </div>
                   ) : (
-                    item.i18n[i18n.language]?.message
+                    <>{item.i18n[i18n.language]?.message}</>
                   )}
                 </Text>
                 <Text mt="8px" fontSize={'14px'} fontWeight={400} color={'#18181B'}>

@@ -60,7 +60,7 @@ const Header = ({
       </Flex>
       <Box flex={1}></Box>
       <Flex>
-        <Button
+        {/* <Button
           h={'40px'}
           flex={'0 0 114px'}
           mr={5}
@@ -71,7 +71,7 @@ const Header = ({
           color={'grayModern.900'}
         >
           {t('export_yaml')}
-        </Button>
+        </Button> */}
         <Box position={'relative'}>
           <Box
             p={'1px'}
