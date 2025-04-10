@@ -24,14 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // GET method continues with the existing code
     const referral = await globalPrisma.referral.findUnique({
-      where: { uid: payload.userUid, available: true, verify: true },
+      where: { uid: payload.userUid, available: true },
       select: { code: true }
     });
 
     if (!referral) return jsonRes(res, { code: 404, message: 'Referral code not found' });
 
     let domain = process.env.CLAWCLOUD_RUN_DOMAIN || 'not_config';
-    const referralLink = `https://${domain}/signin?referralCode=${referral.code}`;
+    const referralLink = `https://${domain}/signin?link=${referral.code}`;
 
     return jsonRes(res, {
       data: {
