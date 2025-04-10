@@ -65,7 +65,7 @@ const Form = ({
             )
           }
         /> */}
-        <Box mt={3} overflow={'hidden'}>
+        <Box overflow={'hidden'}>
           <PriceBox
             components={[
               {

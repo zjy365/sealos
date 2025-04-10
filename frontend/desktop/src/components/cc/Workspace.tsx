@@ -97,7 +97,7 @@ export default function Workspace() {
 
   return (
     <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
-      <ClawCloudIcon w={'160px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
+      <ClawCloudIcon w={'163px'} h={'22px'} position={'absolute'} top={'20px'} left={'20px'} />
       <Stack spacing={8} mx="auto" maxW="lg" px={4} h={'60%'}>
         <Box rounded="lg" p={8} w={'480px'}>
           <Heading mb={4}>{t('cc:workspace_welcome')}</Heading>

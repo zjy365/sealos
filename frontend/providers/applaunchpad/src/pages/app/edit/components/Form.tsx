@@ -413,7 +413,7 @@ const Form = ({
           )} */}
 
           {userSourcePrice && (
-            <Box mt={3} overflow={'hidden'}>
+            <Box overflow={'hidden'}>
               <PriceBox
                 pods={
                   getValues('hpa.use')

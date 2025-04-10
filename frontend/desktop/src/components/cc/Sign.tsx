@@ -265,7 +265,7 @@ export default function SigninComponent() {
 
   return (
     <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
-      <ClawCloudIcon w={'160px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
+      <ClawCloudIcon w={'163px'} h={'22px'} position={'absolute'} top={'20px'} left={'20px'} />
       <Box mx="auto" maxW="lg" px={4}>
         <Box fontSize={'24px'} fontWeight={600} mb={'12px'}>
           Welcome to ClawCloud Run

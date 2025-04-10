@@ -105,7 +105,7 @@ export default function EmailCheckComponent() {
   }
   return (
     <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
-      <ClawCloudIcon w={'160px'} h={'24px'} position={'absolute'} top={'20px'} left={'20px'} />
+      <ClawCloudIcon w={'163px'} h={'22px'} position={'absolute'} top={'20px'} left={'20px'} />
       <Stack spacing={8} mx="auto" maxW="lg" px={4} h={'60%'}>
         <Flex rounded="lg" p={8} w={'480px'} gap={'32px'} flexDirection={'column'}>
           <Box>
