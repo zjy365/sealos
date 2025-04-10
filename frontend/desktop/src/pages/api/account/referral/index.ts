@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!referral) return jsonRes(res, { code: 404, message: 'Referral code not found' });
 
-    const referralLink = `https://${global.AppConfig?.cloud.domain}/signin?referralCode=${referral.code}`;
+    const referralLink = `https://${global.AppConfig?.cloud.domain}/signin?link=${referral.code}`;
 
     return jsonRes(res, {
       data: {
