@@ -3,7 +3,7 @@ import { ApiResp } from '@/services/kubernet';
 import { authSession } from '@/services/backend/auth';
 import { getK8s } from '@/services/backend/kubernetes';
 import { jsonRes } from '@/services/backend/response';
-import { sendEvent } from '@/services/eventBridge';
+import { sendCreateAppEvent } from '@/services/event';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   const { yamlList }: { yamlList: string[] } = req.body;
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const applyRes = await applyYamlList(yamlList, 'create');
 
-    await sendEvent('create_app', tokenPayload.userUid);
+    await sendCreateAppEvent(tokenPayload.userUid);
 
     jsonRes(res, { data: applyRes.map((item) => item.kind) });
   } catch (err: any) {

@@ -23,6 +23,7 @@
     "@sealos/ui": "workspace:^",
     "@tanstack/react-query": "^4.35.3",
     "@tanstack/react-table": "^8.10.7",
+    "amqplib": "^0.10.7",
     "axios": "^1.7.3",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
@@ -58,6 +59,7 @@
   },
   "devDependencies": {
     "@svgr/webpack": "^6.5.1",
+    "@types/amqplib": "^0.10.7",
     "@types/ini": "^4.1.1",
     "@types/js-cookie": "^3.0.4",
     "@types/js-yaml": "^4.0.9",

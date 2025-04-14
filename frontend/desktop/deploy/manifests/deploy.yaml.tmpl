@@ -77,7 +77,7 @@ spec:
             - |
               REGION_DATABASE_URL=$(cat /app/data/config.yaml | awk '/regionalCockroachdbURI:/ {print $2}' | tr -d '"') \
               GLOBAL_DATABASE_URL=$(cat /app/data/config.yaml | awk '/globalCockroachdbURI:/ {print $2}' | tr -d '"') \
-              ALI_EVENT_BRIDGE_API=$(cat /app/data/config.yaml | awk '/aliEventBridgeAPi:/ {print $2}' | tr -d '"') \
+              RABBITMQ_URL=$(cat /app/data/config.yaml | awk '/rabbitmqURL:/ {print $2}' | tr -d '"') \
               node /app/desktop/server.js
           readinessProbe:
             httpGet:
