@@ -32,6 +32,7 @@ func NewPaymentService(client *defaultAlipayClient.DefaultAlipayClient, notifyUR
 
 // PaymentRequest 支付请求参数
 type PaymentRequest struct {
+	PaymentMethod string
 	RequestID     string
 	UserUID       uuid.UUID
 	Amount        int64
@@ -50,19 +51,19 @@ func (s *AtomPaymentService) GenSign(httpMethod string, path string, reqTime str
 }
 
 func (s *AtomPaymentService) CreateNewPayment(req PaymentRequest) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE", s.PaymentNotifyURL+"/payment/v1alpha1/notify")
+	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE", s.PaymentNotifyURL+"/payment/v1alpha1/notify")
 }
 
 func (s *AtomPaymentService) CreatePaymentWithCard(req PaymentRequest, card *types.CardInfo) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createCardPaymentMethod(card), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE", s.PaymentNotifyURL+"/payment/v1alpha1/notify")
+	return s.createPaymentWithMethod(req, s.createCardPaymentMethod(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE", s.PaymentNotifyURL+"/payment/v1alpha1/notify")
 }
 
 func (s *AtomPaymentService) CreateNewSubscriptionPay(req PaymentRequest) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
+	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
 }
 
 func (s *AtomPaymentService) CreateSubscriptionPayWithCard(req PaymentRequest, card *types.CardInfo) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.CreateSubscriptionPay(card), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
+	return s.createPaymentWithMethod(req, s.CreateSubscriptionPay(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
 }
 
 func (s *AtomPaymentService) GetPayment(paymentRequestID, paymentID string) (*responsePay.AlipayPayQueryResponse, error) {
@@ -145,9 +146,14 @@ func (s *AtomPaymentService) createOrder(req PaymentRequest) *model.Order {
 	}
 }
 
-func (s *AtomPaymentService) createNewCardPaymentMethod() *model.PaymentMethod {
+func (s *AtomPaymentService) createNewCardPaymentMethod(paymentMethod string) *model.PaymentMethod {
+	if paymentMethod == "PAYPAL_CHECKOUT" {
+		return &model.PaymentMethod{
+			PaymentMethodType: paymentMethod,
+		}
+	}
 	return &model.PaymentMethod{
-		PaymentMethodType: "CARD",
+		PaymentMethodType: paymentMethod,
 		PaymentMethodMetaData: map[string]any{
 			"is3DSAuthentication": false,
 			"tokenize":            true,
@@ -158,9 +164,14 @@ func (s *AtomPaymentService) createNewCardPaymentMethod() *model.PaymentMethod {
 	}
 }
 
-func (s *AtomPaymentService) createCardPaymentMethod(card *types.CardInfo) *model.PaymentMethod {
+func (s *AtomPaymentService) createCardPaymentMethod(paymentMethod string, card *types.CardInfo) *model.PaymentMethod {
+	if paymentMethod == "PAYPAL_CHECKOUT" {
+		return &model.PaymentMethod{
+			PaymentMethodType: paymentMethod,
+		}
+	}
 	return &model.PaymentMethod{
-		PaymentMethodType: "CARD",
+		PaymentMethodType: paymentMethod,
 		PaymentMethodMetaData: map[string]any{
 			"is3DSAuthentication": false,
 			"billingAddress": map[string]string{
@@ -172,9 +183,14 @@ func (s *AtomPaymentService) createCardPaymentMethod(card *types.CardInfo) *mode
 	}
 }
 
-func (s *AtomPaymentService) CreateSubscriptionPay(card *types.CardInfo) *model.PaymentMethod {
+func (s *AtomPaymentService) CreateSubscriptionPay(paymentMethod string, card *types.CardInfo) *model.PaymentMethod {
+	if paymentMethod == "PAYPAL_CHECKOUT" {
+		return &model.PaymentMethod{
+			PaymentMethodType: paymentMethod,
+		}
+	}
 	return &model.PaymentMethod{
-		PaymentMethodType: "CARD",
+		PaymentMethodType: paymentMethod,
 		PaymentMethodMetaData: map[string]any{
 			"isCardOnFile":                true,
 			"recurringType":               "SCHEDULED",
