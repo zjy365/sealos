@@ -70,6 +70,7 @@ export type LayoutConfigType = {
     workorderEnabled: boolean;
     accountSettingEnabled: boolean;
     docsUrl?: string;
+    helpUrl?: string;
     aiAssistantEnabled: boolean;
   };
 };

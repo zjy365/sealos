@@ -222,7 +222,12 @@ const ReferralPage: FC<ReferralPageProps> = () => {
                           {t('BonusWithIndex', { index: index + 1 })}
                         </TextGradient>
                       </Flex>
-                      <Text {...textCommonStyle} color="rgb(17, 24, 36)" flexGrow={1}>
+                      <Text
+                        {...textCommonStyle}
+                        color="rgb(17, 24, 36)"
+                        flexGrow={1}
+                        whiteSpace="pre-wrap"
+                      >
                         {hint}
                       </Text>
                     </Flex>

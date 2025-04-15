@@ -236,6 +236,20 @@ export default function Account() {
               {t('common:doc')}
             </Center>
           )}
+          {layoutConfig?.common.helpUrl && (
+            <Center
+              cursor={'pointer'}
+              {...baseItemStyle}
+              borderRadius={'8px'}
+              px={'8px'}
+              _hover={{
+                background: 'rgba(0, 0, 0, 0.05);'
+              }}
+              onClick={() => window.open(layoutConfig?.common?.helpUrl)}
+            >
+              {t('common:help')}
+            </Center>
+          )}
           <Box>
             <Center
               cursor={'pointer'}

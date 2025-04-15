@@ -117,6 +117,7 @@
   "have_read": "Read",
   "healthy_pod": "Healthy Pods: {{count}}",
   "hello_welcome": "Hello, welcome to",
+  "help": "Help",
   "help_you_enable_high_availability_database": "Help you enable high availability database",
   "home": "home",
   "in_payment": "In Payment ...",
