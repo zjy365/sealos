@@ -315,7 +315,7 @@
   "NextPaymentDate": "Next Payment Date",
   "CreditsAvailable": "Credits Available",
   "PlanGiftCreditsLabel": "Gift",
-  "FreeTraffic": "10G traffic",
+  "FreeTraffic": "10G traffic limited",
   "PlanTraffic": "Unlimited disk & traffic within plan",
   "Disk": "disk",
   "PerRegion": "{{text}} per region",
