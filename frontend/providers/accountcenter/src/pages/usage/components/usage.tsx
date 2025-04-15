@@ -37,9 +37,9 @@ const valuationMap = [
   ['cpu', { unit: 'Core', scale: 1000, bg: '#33BABB', idx: 0 }],
   ['memory', { unit: 'GB', scale: 1024, bg: '#36ADEF', idx: 1 }],
   ['storage', { unit: 'GB', scale: 1024, bg: '#9A8EE0', idx: 2 }],
-  ['gpu', { unit: 'GPU Unit', scale: 1000, bg: '#6FCA88', idx: 3 }],
-  ['network', { unit: 'M', scale: 1, bg: '#F182AA', idx: 4 }],
-  ['services.nodeports', { unit: 'port_unit', scale: 1000, bg: '#F182AA', idx: 5 }]
+  // ['pu', { unit: 'GPU Unit', scale: 1000, bg: '#6FCA88', idx: 3 }],
+  ['network', { unit: 'M', scale: 1, bg: '#F182AA', idx: 3 }],
+  ['services.nodeports', { unit: 'port_unit', scale: 1000, bg: '#F182AA', idx: 4 }]
 ] as const;
 
 const icons = {
