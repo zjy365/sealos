@@ -30,6 +30,7 @@ desktop:
       workorderEnabled: false
       accountSettingEnabled: true
       docsUrl: "https://sealos.run/docs/Intro/"
+      helpUrl: "https://question.run.claw.cloud/"
       aiAssistantEnabled: false
   auth:
     proxyAddress: ""

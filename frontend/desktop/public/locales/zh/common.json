@@ -112,6 +112,7 @@
   "have_read": "已读",
   "healthy_pod": "健康 Pods: {{count}}",
   "hello_welcome": "您好, 欢迎来到",
+  "help": "帮助",
   "help_you_enable_high_availability_database": "帮您启用高可用数据库",
   "home": "首页",
   "in_payment": "支付中 ...",
