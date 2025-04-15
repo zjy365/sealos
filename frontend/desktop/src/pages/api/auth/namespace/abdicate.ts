@@ -82,7 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     const seat = workspaceToRegionUsers.length;
     const maxSeat = targetUser.subscription.subscriptionPlan.max_seats;
-    if (isWithinLimit(seat, maxSeat)) {
+    if (!isWithinLimit(seat, maxSeat)) {
       return jsonRes(res, {
         code: 403,
         message: 'The targetUser has reached the maximum number of seats'
