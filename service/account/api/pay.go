@@ -53,178 +53,184 @@ func CreateCardPay(c *gin.Context) {
 		return
 	}
 
-	if req.Method == "CARD" {
-		paymentReq := services.PaymentRequest{
-			RequestID:     uuid.NewString(),
-			UserUID:       req.UserUID,
-			Amount:        req.Amount,
-			Currency:      dao.PaymentCurrency,
-			UserAgent:     c.GetHeader("User-Agent"),
-			ClientIP:      c.ClientIP(),
-			DeviceTokenID: c.GetHeader("Device-Token-ID"),
-		}
-		var paySvcResp *responsePay.AlipayPayResponse
-
-		var createPayHandler func(tx *gorm.DB) error
-		if req.BindCardInfo != nil {
-			createPayHandler = func(tx *gorm.DB) error {
-				card, err := dao.DBClient.GetCardInfo(req.BindCardInfo.CardID, req.UserUID)
-				if err != nil {
-					return fmt.Errorf("failed to get card info: %w", err)
-				}
-				paySvcResp, err = dao.PaymentService.CreatePaymentWithCard(paymentReq, card)
-				if err != nil {
-					return fmt.Errorf("failed to create payment with card: %w", err)
-				}
-				if (paySvcResp.Result.ResultCode == SuccessStatus && paySvcResp.Result.ResultStatus == "S") || (paySvcResp.Result.ResultCode == PaymentInProcess && paySvcResp.Result.ResultStatus == "U") {
-					return nil
-				}
-				return fmt.Errorf("payment result is not SUCCESS: %#+v", paySvcResp.Result)
-			}
-		} else {
-			createPayHandler = func(tx *gorm.DB) error {
-				paySvcResp, err = dao.PaymentService.CreateNewPayment(paymentReq)
-				if err != nil {
-					return fmt.Errorf("failed to create payment: %w", err)
-				}
-				if paySvcResp.Result.ResultCode != PaymentInProcess || paySvcResp.Result.ResultStatus != "U" {
-					return fmt.Errorf("payment result is not PAYMENT_IN_PROCESS: %#+v", paySvcResp.Result)
-				}
-				return nil
-			}
-		}
-
-		//if req.BindCardInfo != nil {
-		//	card, err := dao.DBClient.GetCardInfo(req.BindCardInfo.CardID, req.UserUID)
-		//	if err != nil {
-		//		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to get card info: ", err)})
-		//		return
-		//	}
-		//	if card == nil {
-		//		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "card not found"})
-		//		return
-		//	}
-		//	if card.CardToken == "" {
-		//		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "card token not set, please rebind card"})
-		//		return
-		//	}
-		//	err = dao.DBClient.PaymentWithFunc(&types.Payment{
-		//		PaymentRaw: types.PaymentRaw{
-		//			UserUID:      req.UserUID,
-		//			Amount:       req.Amount,
-		//			Method:       req.Method,
-		//			RegionUID:    dao.DBClient.GetLocalRegion().UID,
-		//			TradeNO:      paymentReq.RequestID,
-		//			Type:         types.PaymentTypeAccountRecharge,
-		//			ChargeSource: types.ChargeSourceBindCard,
-		//		},
-		//	}, nil, func(_ *gorm.DB) error {
-		//		paySvcResp, err = dao.PaymentService.CreatePaymentWithCard(paymentReq, card)
-		//		if err != nil {
-		//			return fmt.Errorf("failed to create payment with card: %w", err)
-		//		}
-		//		if paySvcResp.Result.ResultCode != SuccessStatus || paySvcResp.Result.ResultStatus != "S" {
-		//			return fmt.Errorf("payment result is not SUCCESS: %#+v", paySvcResp.Result)
-		//		}
-		//		return nil
-		//	})
-		//	if err != nil {
-		//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
-		//	} else {
-		//		SetSuccessResp(c)
-		//		// TODO 发邮箱通知
-		//		account, err := dao.DBClient.GetAccount(types.UserQueryOpts{UID: req.UserUID})
-		//		if err != nil {
-		//			logrus.Errorf("failed to get account: %v", err)
-		//		}
-		//		if account != nil {
-		//			if err = sendUserPayEmail(req.UserUID, &utils.EmailPayRender{
-		//				Type:           utils.EnvPaySuccessEmailTmpl,
-		//				Domain:         dao.DBClient.GetLocalRegion().Domain,
-		//				TopUpAmount:    req.Amount / 1_000_000,
-		//				AccountBalance: (account.Balance - account.DeductionBalance) / 1_000_000,
-		//			}); err != nil {
-		//				logrus.Errorf("failed to send user %s email: %v", req.UserID, err)
-		//			}
-		//		}
-		//	}
-		//	return
-		//} else {
-		//	paySvcResp, err = dao.PaymentService.CreateNewPayment(paymentReq)
-		//	if err != nil {
-		//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
-		//		return
-		//	}
-		//	if paySvcResp.Result.ResultCode != "PAYMENT_IN_PROCESS" || paySvcResp.Result.ResultStatus != "U" {
-		//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprintf("payment result is not PAYMENT_IN_PROCESS: %#+v", paySvcResp.Result)})
-		//		return
-		//	}
-		//
-		//	// do something
-		//	err = dao.DBClient.CreatePaymentOrder(&types.PaymentOrder{
-		//		PaymentRaw: types.PaymentRaw{
-		//			UserUID:   req.UserUID,
-		//			Amount:    req.Amount,
-		//			Method:    req.Method,
-		//			RegionUID: dao.DBClient.GetLocalRegion().UID,
-		//			TradeNO:   paymentReq.RequestID,
-		//			//CodeURL:      paySvcResp.NormalUrl,
-		//			Type:         types.PaymentTypeAccountRecharge,
-		//			ChargeSource: types.ChargeSourceNewCard,
-		//		},
-		//		Status: types.PaymentOrderStatusPending,
-		//	})
-		//	if err != nil {
-		//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment order: ", err)})
-		//		return
-		//	}
-		//	c.JSON(http.StatusOK, gin.H{
-		//		"redirectUrl": paySvcResp.NormalUrl,
-		//		"success":     true,
-		//	})
-		//}
-		paymentID, err := gonanoid.New(12)
-		if err != nil {
-			SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to create payment id: ", err)})
-			return
-		}
-		err = dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
-			return tx.Model(&types.PaymentOrder{}).Create(&types.PaymentOrder{
-				ID: paymentID,
-				PaymentRaw: types.PaymentRaw{
-					UserUID:   req.UserUID,
-					Amount:    req.Amount,
-					Method:    req.Method,
-					RegionUID: dao.DBClient.GetLocalRegion().UID,
-					TradeNO:   paymentReq.RequestID,
-					CreatedAt: time.Now().UTC(),
-					//CodeURL:      paySvcResp.NormalUrl,
-					Type:         types.PaymentTypeAccountRecharge,
-					ChargeSource: types.ChargeSourceNewCard,
-				},
-				Status: types.PaymentOrderStatusPending,
-			}).Error
-		}, createPayHandler, func(tx *gorm.DB) error {
-			if paySvcResp.NormalUrl != "" {
-				//Set payment order normalurl with paymentID
-				dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentID).Update("code_url", paySvcResp.NormalUrl).Error
-				if dErr != nil {
-					logrus.Warnf("failed to update payment order code url: %v", dErr)
-				}
-			}
-			return nil
-		})
-		if err != nil {
-			SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
-		} else {
-			c.JSON(http.StatusOK, gin.H{
-				"redirectUrl": paySvcResp.NormalUrl,
-				"success":     true,
-			})
-		}
+	if req.Method != "CARD" && req.Method != "PAYPAL_CHECKOUT" {
+		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": fmt.Sprint("unsupported payment method: ", req.Method)})
 		return
 	}
-	SetErrorResp(c, http.StatusBadGateway, gin.H{"error": "unsupported payment method"})
+
+	// if pay with paypal checkout, we don't need to bind card
+	if req.Method == "PAYPAL_CHECKOUT" { 
+		req.BindCardInfo = nil
+	}
+
+	paymentReq := services.PaymentRequest{
+		PaymentMethod: req.Method,
+		RequestID:     uuid.NewString(),
+		UserUID:       req.UserUID,
+		Amount:        req.Amount,
+		Currency:      dao.PaymentCurrency,
+		UserAgent:     c.GetHeader("User-Agent"),
+		ClientIP:      c.ClientIP(),
+		DeviceTokenID: c.GetHeader("Device-Token-ID"),
+	}
+	var paySvcResp *responsePay.AlipayPayResponse
+
+	var createPayHandler func(tx *gorm.DB) error
+	if req.BindCardInfo != nil {
+		createPayHandler = func(tx *gorm.DB) error {
+			card, err := dao.DBClient.GetCardInfo(req.BindCardInfo.CardID, req.UserUID)
+			if err != nil {
+				return fmt.Errorf("failed to get card info: %w", err)
+			}
+			paySvcResp, err = dao.PaymentService.CreatePaymentWithCard(paymentReq, card)
+			if err != nil {
+				return fmt.Errorf("failed to create payment with card: %w", err)
+			}
+			if (paySvcResp.Result.ResultCode == SuccessStatus && paySvcResp.Result.ResultStatus == "S") || (paySvcResp.Result.ResultCode == PaymentInProcess && paySvcResp.Result.ResultStatus == "U") {
+				return nil
+			}
+			return fmt.Errorf("payment result is not SUCCESS: %#+v", paySvcResp.Result)
+		}
+	} else {
+		createPayHandler = func(tx *gorm.DB) error {
+			paySvcResp, err = dao.PaymentService.CreateNewPayment(paymentReq)
+			if err != nil {
+				return fmt.Errorf("failed to create payment: %w", err)
+			}
+			if paySvcResp.Result.ResultCode != PaymentInProcess || paySvcResp.Result.ResultStatus != "U" {
+				return fmt.Errorf("payment result is not PAYMENT_IN_PROCESS: %#+v", paySvcResp.Result)
+			}
+			return nil
+		}
+	}
+
+	//if req.BindCardInfo != nil {
+	//	card, err := dao.DBClient.GetCardInfo(req.BindCardInfo.CardID, req.UserUID)
+	//	if err != nil {
+	//		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to get card info: ", err)})
+	//		return
+	//	}
+	//	if card == nil {
+	//		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "card not found"})
+	//		return
+	//	}
+	//	if card.CardToken == "" {
+	//		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "card token not set, please rebind card"})
+	//		return
+	//	}
+	//	err = dao.DBClient.PaymentWithFunc(&types.Payment{
+	//		PaymentRaw: types.PaymentRaw{
+	//			UserUID:      req.UserUID,
+	//			Amount:       req.Amount,
+	//			Method:       req.Method,
+	//			RegionUID:    dao.DBClient.GetLocalRegion().UID,
+	//			TradeNO:      paymentReq.RequestID,
+	//			Type:         types.PaymentTypeAccountRecharge,
+	//			ChargeSource: types.ChargeSourceBindCard,
+	//		},
+	//	}, nil, func(_ *gorm.DB) error {
+	//		paySvcResp, err = dao.PaymentService.CreatePaymentWithCard(paymentReq, card)
+	//		if err != nil {
+	//			return fmt.Errorf("failed to create payment with card: %w", err)
+	//		}
+	//		if paySvcResp.Result.ResultCode != SuccessStatus || paySvcResp.Result.ResultStatus != "S" {
+	//			return fmt.Errorf("payment result is not SUCCESS: %#+v", paySvcResp.Result)
+	//		}
+	//		return nil
+	//	})
+	//	if err != nil {
+	//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
+	//	} else {
+	//		SetSuccessResp(c)
+	//		// TODO 发邮箱通知
+	//		account, err := dao.DBClient.GetAccount(types.UserQueryOpts{UID: req.UserUID})
+	//		if err != nil {
+	//			logrus.Errorf("failed to get account: %v", err)
+	//		}
+	//		if account != nil {
+	//			if err = sendUserPayEmail(req.UserUID, &utils.EmailPayRender{
+	//				Type:           utils.EnvPaySuccessEmailTmpl,
+	//				Domain:         dao.DBClient.GetLocalRegion().Domain,
+	//				TopUpAmount:    req.Amount / 1_000_000,
+	//				AccountBalance: (account.Balance - account.DeductionBalance) / 1_000_000,
+	//			}); err != nil {
+	//				logrus.Errorf("failed to send user %s email: %v", req.UserID, err)
+	//			}
+	//		}
+	//	}
+	//	return
+	//} else {
+	//	paySvcResp, err = dao.PaymentService.CreateNewPayment(paymentReq)
+	//	if err != nil {
+	//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
+	//		return
+	//	}
+	//	if paySvcResp.Result.ResultCode != "PAYMENT_IN_PROCESS" || paySvcResp.Result.ResultStatus != "U" {
+	//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprintf("payment result is not PAYMENT_IN_PROCESS: %#+v", paySvcResp.Result)})
+	//		return
+	//	}
+	//
+	//	// do something
+	//	err = dao.DBClient.CreatePaymentOrder(&types.PaymentOrder{
+	//		PaymentRaw: types.PaymentRaw{
+	//			UserUID:   req.UserUID,
+	//			Amount:    req.Amount,
+	//			Method:    req.Method,
+	//			RegionUID: dao.DBClient.GetLocalRegion().UID,
+	//			TradeNO:   paymentReq.RequestID,
+	//			//CodeURL:      paySvcResp.NormalUrl,
+	//			Type:         types.PaymentTypeAccountRecharge,
+	//			ChargeSource: types.ChargeSourceNewCard,
+	//		},
+	//		Status: types.PaymentOrderStatusPending,
+	//	})
+	//	if err != nil {
+	//		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment order: ", err)})
+	//		return
+	//	}
+	//	c.JSON(http.StatusOK, gin.H{
+	//		"redirectUrl": paySvcResp.NormalUrl,
+	//		"success":     true,
+	//	})
+	//}
+	paymentID, err := gonanoid.New(12)
+	if err != nil {
+		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to create payment id: ", err)})
+		return
+	}
+	err = dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
+		return tx.Model(&types.PaymentOrder{}).Create(&types.PaymentOrder{
+			ID: paymentID,
+			PaymentRaw: types.PaymentRaw{
+				UserUID:   req.UserUID,
+				Amount:    req.Amount,
+				Method:    req.Method,
+				RegionUID: dao.DBClient.GetLocalRegion().UID,
+				TradeNO:   paymentReq.RequestID,
+				CreatedAt: time.Now().UTC(),
+				Type:         types.PaymentTypeAccountRecharge,
+				ChargeSource: types.ChargeSourceNewCard,
+			},
+			Status: types.PaymentOrderStatusPending,
+		}).Error
+	}, createPayHandler, func(tx *gorm.DB) error {
+		if paySvcResp.NormalUrl != "" {
+			//Set payment order normalurl with paymentID
+			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentID).Update("code_url", paySvcResp.NormalUrl).Error
+			if dErr != nil {
+				logrus.Warnf("failed to update payment order code url: %v", dErr)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"redirectUrl": paySvcResp.NormalUrl,
+			"success":     true,
+		})
+	}
 }
 
 type requestInfoStruct struct {

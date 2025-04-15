@@ -102,6 +102,7 @@ const (
 	Renewal   PlanType = "renewal"
 
 	CARD string = "CARD"
+	PAYPAL_CHECKOUT string = "PAYPAL_CHECKOUT"
 )
 
 func ParseSubscriptionOperatorReq(c *gin.Context) (*SubscriptionOperatorReq, error) {

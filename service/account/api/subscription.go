@@ -409,7 +409,7 @@ func SetErrorResp(c *gin.Context, code int, h map[string]any) {
 }
 
 func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, subTransaction types.SubscriptionTransaction) {
-	if req.PayMethod != helper.CARD {
+	if req.PayMethod != helper.CARD && req.PayMethod != helper.PAYPAL_CHECKOUT {
 		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "invalid pay method"})
 		return
 	}
@@ -555,6 +555,7 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 	}
 
 	paymentReq := services.PaymentRequest{
+		PaymentMethod: req.PayMethod,
 		RequestID:     uuid.NewString(),
 		UserUID:       req.UserUID,
 		Amount:        subTransaction.Amount,
