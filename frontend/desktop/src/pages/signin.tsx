@@ -3,7 +3,7 @@ import SignLayout from '@/components/cc/SignLayout';
 import LangSelectSimple from '@/components/LangSelect/simple';
 import { useConfigStore } from '@/stores/config';
 import { setCookie } from '@/utils/cookieUtils';
-import referral from '@/utils/referral';
+import { crmReferral, referral } from '@/utils/referral';
 import { compareFirstLanguages } from '@/utils/tools';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
@@ -47,10 +47,23 @@ export default function SigninPage() {
 }
 
 export async function getServerSideProps({ req, res, locales, query }: any) {
-  const cookies = referral.getCookiesUseInServerSideProps({
-    query,
-    host: global.AppConfig?.cloud.domain
-  });
+  const cookies = [];
+  const referralCookie = referral.getCookiesUseInServerSideProps(
+    { query, host: global.AppConfig?.cloud.domain },
+    'Track'
+  );
+  if (referralCookie) {
+    cookies.push(referralCookie);
+  }
+
+  const crmReferralCookie = crmReferral.getCookiesUseInServerSideProps(
+    { query, host: global.AppConfig?.cloud.domain },
+    'Track'
+  );
+  if (crmReferralCookie) {
+    cookies.push(crmReferralCookie);
+  }
+
   // const local =
   //   req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
   const local = 'en';

@@ -32,7 +32,7 @@ import { ShareIcon } from '@/components/icons';
 import { useGuideStore } from '@/store/guide';
 import { applistDriverObj, startDriver } from '@/hooks/driver';
 import { formatNum } from '@/utils/tools';
-import referral from '@/utils/referral';
+import { crmReferral, referral } from '@/utils/referral';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
@@ -292,7 +292,16 @@ export async function getServerSideProps(content: any) {
     forcedLanguage ||
     content?.req?.cookies?.NEXT_LOCALE ||
     compareFirstLanguages(content?.req?.headers?.['accept-language'] || 'en');
-  const cookies = referral.getCookiesUseInServerSideProps(content, 'Track');
+
+  const cookies = [];
+  const referralCookie = referral.getCookiesUseInServerSideProps(content, 'Track');
+  if (referralCookie) {
+    cookies.push(referralCookie);
+  }
+  const crmReferralCookie = crmReferral.getCookiesUseInServerSideProps(content, 'Track');
+  if (crmReferralCookie) {
+    cookies.push(crmReferralCookie);
+  }
   cookies.push(`NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
   content?.res.setHeader('Set-Cookie', cookies);
 

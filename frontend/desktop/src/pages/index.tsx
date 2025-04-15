@@ -10,7 +10,7 @@ import { SemData } from '@/types/sem';
 import { NSType } from '@/types/team';
 import { AccessTokenPayload } from '@/types/token';
 import { parseOpenappQuery } from '@/utils/format';
-import referral from '@/utils/referral';
+import { crmReferral, referral } from '@/utils/referral';
 import { sessionConfig, setBaiduId, setInviterId, setUserSemData } from '@/utils/sessionConfig';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
 import { compareFirstLanguages } from '@/utils/tools';
@@ -253,12 +253,26 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
 }
 
 export async function getServerSideProps({ req, res, locales, query }: any) {
-  // const local =
-  //   req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
-  const cookies = referral.getCookiesUseInServerSideProps(
+  const cookies = [];
+
+  const referralCookie = referral.getCookiesUseInServerSideProps(
     { query, host: global.AppConfig?.cloud.domain },
     'Track'
   );
+  if (referralCookie) {
+    cookies.push(referralCookie);
+  }
+
+  const crmReferralCookie = crmReferral.getCookiesUseInServerSideProps(
+    { query, host: global.AppConfig?.cloud.domain },
+    'Track'
+  );
+  if (crmReferralCookie) {
+    cookies.push(crmReferralCookie);
+  }
+
+  // const local =
+  //   req?.cookies?.NEXT_LOCALE || compareFirstLanguages(req?.headers?.['accept-language'] || 'en');
   const local = 'en';
   cookies.push(`NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
   res.setHeader('Set-Cookie', cookies);
