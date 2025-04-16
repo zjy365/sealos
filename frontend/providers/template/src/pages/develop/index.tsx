@@ -262,13 +262,14 @@ export default function Develop() {
               pr={{ sm: '20px', md: '60px' }}
               borderBottom={'1px solid #EFF0F1'}
               flexDirection={'column'}
+              flex={1}
             >
               <Text fontWeight={'500'} fontSize={'18px'} color={'#24282C'}>
                 {t('develop.Configure Form')}
               </Text>
               <Form formSource={templateSource!} formHook={formHook} platformEnvs={platformEnvs} />
             </Flex>
-            <Flex flex={1} pl="42px" pt="26px" flexDirection={'column'} position={'relative'}>
+            {/* <Flex flex={1} pl="42px" pt="26px" flexDirection={'column'} position={'relative'}>
               <Flex alignItems={'center'} justifyContent={'space-between'}>
                 <Text fontWeight={'500'} fontSize={'18px'} color={'#24282C'} cursor={'default'}>
                   {t('develop.YAML File')}
@@ -284,7 +285,7 @@ export default function Develop() {
                 </Button>
               </Flex>
               <YamlList yamlList={yamlList} />
-            </Flex>
+            </Flex> */}
           </Flex>
         </Flex>
       </Flex>

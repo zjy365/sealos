@@ -43,7 +43,7 @@ export const developGenerateYamlList = (value: string, labelName: string): YamlI
       .map((item: any) => {
         return {
           filename: `${item?.kind}-${item?.metadata?.name ? item.metadata.name : nanoid(6)}.yaml`,
-          value: JsYaml.dump(processEnvValue(item, labelName))
+          value: replaceClawcloudWithSealos(JsYaml.dump(processEnvValue(item, labelName)))
         };
       });
   } catch (error) {

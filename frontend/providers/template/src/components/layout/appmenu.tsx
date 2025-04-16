@@ -15,6 +15,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import SideBar from './sidebar';
 import { ApplicationType } from '@/types/app';
+import MyIcon from '../Icon';
 
 export default function AppMenu() {
   const { t, i18n } = useTranslation();
@@ -45,37 +46,55 @@ export default function AppMenu() {
         <Flex px="40px" position={'relative'} alignItems={'center'}>
           {
             insideCloud ? (
-              <Flex cursor={'default'} h="88px" alignItems={'center'} gap={'24px'}>
-                <Text
-                  fontSize={'24px'}
-                  fontWeight={600}
-                  lineHeight={'32px'}
-                  onClick={() => {
-                    router.replace('/');
-                    setAppType(ApplicationType.All);
-                  }}
-                  color={router.route === '/' ? '' : '#A3A3A3'}
-                  _hover={{
-                    color: '#2778FD'
-                  }}
-                >
-                  {t('SideBar.Explore')}
-                </Text>
-                <Text
-                  fontSize={'24px'}
-                  fontWeight={600}
-                  lineHeight={'32px'}
-                  onClick={() => {
-                    router.replace('/app');
-                    setAppType(ApplicationType.MyApp);
-                  }}
-                  color={router.route === '/app' ? '' : '#A3A3A3'}
-                  _hover={{
-                    color: '#2778FD'
-                  }}
-                >
-                  {t('SideBar.My App')}
-                </Text>
+              <Flex justifyContent={'space-between'} w="100%" alignItems={'center'}>
+                <Flex cursor={'default'} h="88px" alignItems={'center'} gap={'24px'}>
+                  <Text
+                    fontSize={'24px'}
+                    fontWeight={600}
+                    lineHeight={'32px'}
+                    onClick={() => {
+                      router.replace('/');
+                      setAppType(ApplicationType.All);
+                    }}
+                    color={router.route === '/' ? '' : '#A3A3A3'}
+                    _hover={{
+                      color: '#2778FD'
+                    }}
+                  >
+                    {t('SideBar.Explore')}
+                  </Text>
+                  <Text
+                    fontSize={'24px'}
+                    fontWeight={600}
+                    lineHeight={'32px'}
+                    onClick={() => {
+                      router.replace('/app');
+                      setAppType(ApplicationType.MyApp);
+                    }}
+                    color={router.route === '/app' ? '' : '#A3A3A3'}
+                    _hover={{
+                      color: '#2778FD'
+                    }}
+                  >
+                    {t('SideBar.My App')}
+                  </Text>
+                </Flex>
+                {router.route === '/app' ? (
+                  <Center
+                    cursor={'pointer'}
+                    h="40px"
+                    px={'19px'}
+                    border={'1px solid #E4E4E7'}
+                    borderRadius={'8px'}
+                    bottom={'28px'}
+                    onClick={() => router.push('/develop')}
+                  >
+                    <MyIcon name="tool" fill={'transparent'} />
+                    <Text ml="8px" color={'#18181B'} fontWeight={500} fontSize={'14px'}>
+                      {t('develop.Debugging Template')}
+                    </Text>
+                  </Center>
+                ) : null}
               </Flex>
             ) : null
             // <Center
