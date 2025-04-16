@@ -265,15 +265,21 @@ export function compareFirstLanguages(acceptLanguageHeader: string) {
 }
 
 export function getTemplateEnvs(namespace?: string): EnvResponse {
+  // CLAWCLOUD = SEALOS
   const TemplateEnvs: EnvResponse = {
     SEALOS_CLOUD_DOMAIN:
       process.env.SEALOS_USER_DOMAIN || process.env.SEALOS_CLOUD_DOMAIN || 'cloud.sealos.io',
     SEALOS_CERT_SECRET_NAME: process.env.SEALOS_CERT_SECRET_NAME || 'wildcard-cert',
+    CLAWCLOUD_CLOUD_DOMAIN:
+      process.env.SEALOS_USER_DOMAIN || process.env.SEALOS_CLOUD_DOMAIN || 'cloud.sealos.io',
+    CLAWCLOUD_CERT_SECRET_NAME: process.env.SEALOS_CERT_SECRET_NAME || 'wildcard-cert',
     TEMPLATE_REPO_URL:
       process.env.TEMPLATE_REPO_URL || 'https://github.com/labring-actions/templates',
     TEMPLATE_REPO_BRANCH: process.env.TEMPLATE_REPO_BRANCH || 'main',
     SEALOS_NAMESPACE: namespace || '',
     SEALOS_SERVICE_ACCOUNT: namespace?.replace('ns-', '') || '',
+    CLAWCLOUD_NAMESPACE: namespace || '',
+    CLAWCLOUD_SERVICE_ACCOUNT: namespace?.replace('ns-', '') || '',
     SHOW_AUTHOR: process.env.SHOW_AUTHOR || 'false',
     DESKTOP_DOMAIN: process.env.DESKTOP_DOMAIN || 'cloud.sealos.io',
     CURRENCY_SYMBOL: (process.env.CURRENCY_SYMBOL as 'shellCoin' | 'cny' | 'usd') || 'shellCoin',
@@ -293,4 +299,28 @@ export const formatNum = (num?: number) => {
   if (num < 1000000) return (num / 1000).toFixed(1) + 'k';
   if (num < 1000000000) return (num / 1000000).toFixed(1) + 'm';
   return (num / 1000000000).toFixed(1) + 'g';
+};
+
+/**
+ * 将ClawCloud域名替换为Sealos域名
+ * 精确匹配替换以下对应关系：
+ * claw.cloud > sealos.io
+ * run.claw.cloud > cloud.sealos.io
+ * clawcloud > sealos
+ * CLAWCLOUD > SEALOS
+ */
+export const replaceClawcloudWithSealos = (content: string): string => {
+  if (!content) return '';
+
+  // 替换全部大写的CLAWCLOUD为SEALOS
+  let result = content.replace(/CLAWCLOUD/g, 'SEALOS');
+
+  // 替换全部小写的clawcloud为sealos，但不影响域名部分
+  result = result.replace(/(?<!\.)clawcloud(?!\.)/g, 'sealos');
+
+  // 替换域名（完全匹配）
+  result = result.replace(/run\.claw\.cloud/g, 'cloud.sealos.io');
+  result = result.replace(/claw\.cloud/g, 'sealos.io');
+
+  return result;
 };

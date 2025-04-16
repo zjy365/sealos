@@ -9,7 +9,7 @@ import {
 import JsYaml from 'js-yaml';
 import { clone, cloneDeep, mapValues } from 'lodash';
 import { customAlphabet } from 'nanoid';
-import { processEnvValue } from './tools';
+import { processEnvValue, replaceClawcloudWithSealos } from './tools';
 import { EnvResponse } from '@/types/index';
 import Interpreter from 'js-interpreter';
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz');
@@ -21,7 +21,8 @@ export const generateYamlList = (value: string, labelName: string): YamlItemType
   try {
     let _value = JsYaml.loadAll(value)
       .filter((i) => i)
-      .map((item: any) => JsYaml.dump(processEnvValue(item, labelName)));
+      .map((item: any) => JsYaml.dump(processEnvValue(item, labelName)))
+      .map((item) => replaceClawcloudWithSealos(item));
 
     return [
       {
