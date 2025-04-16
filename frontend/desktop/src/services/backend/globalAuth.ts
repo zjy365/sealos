@@ -17,6 +17,8 @@ import { Role } from 'prisma/region/generated/client';
 import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
 import { sendEvent } from '../eventBridge';
+import { loginFailureCounter, TloginFailureMessage } from './promtheus/loginFailureCounter';
+import { HttpStatusCode } from 'axios';
 
 type TransactionClient = Omit<
   PrismaClient,
@@ -66,6 +68,8 @@ async function signIn({
       }
     }
   });
+  const failureMessage: TloginFailureMessage = 'user oauthprovider not found';
+  loginFailureCounter.labels(provider, failureMessage, '' + HttpStatusCode['Conflict']).inc();
   if (!userProvider) return null;
   try {
     await checkDeductionBalanceAndCreateTasks(userProvider.user.uid);
@@ -621,6 +625,8 @@ export const getGlobalTokenByOauth = async ({
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
     if (!email) {
+      const failureMessage: TloginFailureMessage = 'failed to get email';
+      loginFailureCounter.labels(provider, failureMessage, '' + HttpStatusCode['NotFound']).inc();
       // console.log('email is null');
       return null;
     }
@@ -634,7 +640,11 @@ export const getGlobalTokenByOauth = async ({
     });
     // 被占用了，待定？ 不绑该邮箱
     // let result;
-    if (!!emailUser) return 'email conflict';
+    if (!!emailUser) {
+      const failureMessage: TloginFailureMessage = 'email conflict';
+      loginFailureCounter.labels(provider, failureMessage, '' + HttpStatusCode['Conflict']).inc();
+      return 'email conflict';
+    }
     const result = await signUpWithEmail({
       email,
       provider,
