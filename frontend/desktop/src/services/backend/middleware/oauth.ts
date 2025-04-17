@@ -11,6 +11,8 @@ import { v4 } from 'uuid';
 import { BIND_STATUS } from '@/types/response/bind';
 import { UNBIND_STATUS } from '@/types/response/unbind';
 import { SemData } from '@/types/sem';
+import { HttpStatusCode } from 'axios';
+import { TloginFailureMessage, loginFailureCounter } from '../promtheus/loginFailureCounter';
 
 export const OauthCodeFilter = async (
   req: NextApiRequest,
@@ -87,6 +89,10 @@ export const googleOAuthGuard =
     const url = `https://oauth2.googleapis.com/token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}&redirect_uri=${callbackUrl}&grant_type=authorization_code`;
     const response = await fetch(url, { method: 'POST', headers: { Accept: 'application/json' } });
     if (!response.ok) {
+      const failureMessage: TloginFailureMessage = 'failed to get user from Google';
+      loginFailureCounter
+        .labels(ProviderType.GOOGLE, failureMessage, '' + HttpStatusCode['NotFound'])
+        .inc();
       console.log('gmail error!', await response.clone().text());
       return jsonRes(res, {
         code: 401,
@@ -172,6 +178,10 @@ export const githubOAuthGuard =
     ).json()) as TgithubToken;
     const access_token = __data.access_token;
     if (!access_token) {
+      const failureMessage: TloginFailureMessage = 'failed to connect to GitHub';
+      loginFailureCounter
+        .labels(ProviderType.GITHUB, failureMessage, '' + HttpStatusCode['InternalServerError'])
+        .inc();
       return jsonRes(res, {
         message: 'Failed to authenticate with GitHub',
         code: 500,
@@ -185,11 +195,17 @@ export const githubOAuthGuard =
         Authorization: `Bearer ${access_token}`
       }
     });
-    if (!response.ok)
+    if (!response.ok) {
+      const failureMessage: TloginFailureMessage = 'failed to get user from GitHub';
+      loginFailureCounter
+        .labels(ProviderType.GITHUB, failureMessage, '' + HttpStatusCode['NotFound'])
+        .inc();
       return jsonRes(res, {
         code: 401,
         message: 'Unauthorized'
       });
+    }
+
     // get userEmail
     const emailsUrl = `https://api.github.com/user/emails`;
     const emailsResponse = await fetch(emailsUrl, {
@@ -209,11 +225,17 @@ export const githubOAuthGuard =
       }>;
       // console.log('github', emails);
       // console.log('');
-      if (emails.length === 0)
+      if (emails.length === 0) {
+        const failureMessage: TloginFailureMessage = 'failed to get email from GitHub';
+        loginFailureCounter
+          .labels(ProviderType.GITHUB, failureMessage, '' + HttpStatusCode['NotFound'])
+          .inc();
         return jsonRes(res, {
           message: 'Failed to fetch user github emails',
           code: 401
         });
+      }
+
       const primaryEmail = emails.find((e) => e.primary && e.verified);
       // prefer primary email
       if (primaryEmail) {

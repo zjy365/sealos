@@ -1,4 +1,4 @@
-import { findUserCr, getUserCr, getUserKubeconfig } from '@/services/backend/kubernetes/admin';
+import { getUserKubeconfig } from '@/services/backend/kubernetes/admin';
 import { globalPrisma, prisma } from '@/services/backend/db/init';
 import { getRegionUid } from '@/services/enable';
 import { GetUserDefaultNameSpace } from '@/services/backend/kubernetes/user';
@@ -9,10 +9,9 @@ import { JoinStatus, Role } from 'prisma/region/generated/client';
 import { generateAccessToken, generateAppToken } from '@/services/backend/auth';
 import { K8sApiDefault } from '@/services/backend/kubernetes/admin';
 import { CreateSignUpReferralNotificationIfNotExists } from '@/services/backend/kubernetes/user';
-import Workspace from '@/components/cc/Workspace';
 import { v4 } from 'uuid';
-import { iss } from 'tencentcloud-sdk-nodejs';
-import { curry } from 'lodash';
+import { HttpStatusCode } from 'axios';
+import { TloginFailureMessage, loginFailureCounter } from './promtheus/loginFailureCounter';
 
 const LetterBytes = 'abcdefghijklmnopqrstuvwxyz0123456789';
 const HostnameLength = 8;
@@ -48,7 +47,14 @@ export async function getRegionToken({
       uid: getRegionUid()
     }
   });
-  if (!region) throw Error('The REGION_UID is undefined');
+
+  if (!region) {
+    const failureMessage: TloginFailureMessage = 'The REGION_UID is undefined';
+    loginFailureCounter
+      .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+      .inc();
+    throw Error('The REGION_UID is undefined');
+  }
   const result = await retrySerially(async () => {
     const userResult = await globalPrisma.user.findUnique({
       where: {
@@ -65,10 +71,18 @@ export async function getRegionToken({
     });
     // 没有该user
     if (!userResult?.userInfo) {
+      const failureMessage: TloginFailureMessage = 'user not found';
+      loginFailureCounter.labels('unknown', failureMessage, '' + HttpStatusCode['NotFound']).inc();
       return null;
     }
     // 还没初始化，不应该允许调用该接口
-    if (!userResult.userInfo.isInited) return null;
+    if (!userResult.userInfo.isInited) {
+      const failureMessage: TloginFailureMessage = 'user not initialized';
+      loginFailureCounter
+        .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+        .inc();
+      return null;
+    }
     let workspaceUid = v4();
     let curRegionWorkspaceUsage = userResult.WorkspaceUsage.filter(
       (u) => u.regionUid == region.uid
@@ -181,10 +195,18 @@ export async function getRegionToken({
       }
     });
     if (!payload) {
+      const failureMessage: TloginFailureMessage = 'failed to get user from db';
+      loginFailureCounter
+        .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+        .inc();
       throw new Error('Failed to get user from db');
     }
     const kubeconfig = await getUserKubeconfig(payload.userCrUid, payload.userCrName);
     if (!kubeconfig) {
+      const failureMessage: TloginFailureMessage = 'failed to get user from k8s';
+      loginFailureCounter
+        .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+        .inc();
       throw new Error('Failed to get user from k8s');
     }
     return {
@@ -230,7 +252,13 @@ export async function initRegionToken({
       uid: regionUid
     }
   });
-  if (!region) throw Error('The REGION_UID is undefined');
+  if (!region) {
+    const failureMessage: TloginFailureMessage = 'The REGION_UID is undefined';
+    loginFailureCounter
+      .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+      .inc();
+    throw Error('The REGION_UID is undefined');
+  }
   const result = await retrySerially(async () => {
     const userResult = await globalPrisma.user.findUnique({
       where: {
@@ -257,6 +285,8 @@ export async function initRegionToken({
     // 已经初始化，不应该允许调用该接口
     if (!!userResult.userInfo.isInited) {
       console.log(`user  already initialized userUid:${userUid}`);
+      const failureMessage: TloginFailureMessage = 'user already initialized userUid';
+      loginFailureCounter.labels('unknown', failureMessage, '' + HttpStatusCode['Conflict']).inc();
       return null;
     }
     // initalizing or error
@@ -268,6 +298,12 @@ export async function initRegionToken({
       if (workspaceUsage.regionUid !== region.uid) {
         // 其他可用区正在初始化
         console.log('other region is initializing');
+        console.log(`user  already initialized userUid:${userUid}`);
+        const failureMessage: TloginFailureMessage = 'other region is initializing';
+        loginFailureCounter
+          .labels('unknown', failureMessage, '' + HttpStatusCode['Conflict'])
+          .inc();
+
         return null;
       } else {
         // 当前可用区初始化中，用幂等逻辑
@@ -377,7 +413,11 @@ export async function initRegionToken({
       }
     );
     if (!regionalDbResult) {
-      throw new Error('Failed to get user from regional database');
+      const failureMessage: TloginFailureMessage = 'failed to get user from db';
+      loginFailureCounter
+        .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+        .inc();
+      throw new Error(failureMessage);
     }
     // k8s 操作会自动创建, 幂等
     const kubeconfig = await getUserKubeconfig(
@@ -385,7 +425,11 @@ export async function initRegionToken({
       regionalDbResult.userCrName
     );
     if (!kubeconfig) {
-      throw new Error('Failed to get user from k8s');
+      const failureMessage: TloginFailureMessage = 'failed to get user from k8s';
+      loginFailureCounter
+        .labels('unknown', failureMessage, '' + HttpStatusCode['InternalServerError'])
+        .inc();
+      throw new Error(failureMessage);
     }
     console.log('first sign up workspace id: ', firstSignUpWorkspaceId);
     if (firstSignUpWorkspaceId) {
