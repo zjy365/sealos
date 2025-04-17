@@ -3,7 +3,7 @@ import { useLoading } from '@/hooks/useLoading';
 import { TCardScheam } from '@/schema/card';
 import { Box, Center, Divider, Flex, FormControl, FormLabel, Link, Text } from '@chakra-ui/react';
 import { Trans, useTranslation } from 'next-i18next';
-import { FC, Fragment, ReactNode, useEffect, useState } from 'react';
+import { FC, Fragment, ReactNode, useEffect, useMemo, useState } from 'react';
 import Icon from '../Icon';
 import upperFirst from '@/utils/upperFirst';
 import lowerFirst from '@/utils/lowerFirst';
@@ -28,16 +28,34 @@ export interface Summary {
   periodicAmount?: string;
   items: SummaryItems[];
 }
+enum PayMethod {
+  card = 'CARD',
+  payPal = 'PAYPAL_CHECKOUT'
+}
+export interface CheckoutData {
+  cardID?: string;
+  payMethod: string;
+}
 interface CheckoutOrderProps {
   summary: Summary | (() => Promise<Summary>);
-  onCheckout: (cardId: string | undefined) => any;
+  onCheckout: (data: CheckoutData) => any;
   onPaySuccess?: () => void;
   autoProcessingPayAPIResult?: boolean;
   autoRedirectToPay?: boolean;
   minHeight?: string;
 }
+function checkoutDataToString(data: CheckoutData) {
+  return JSON.stringify(data);
+}
+function parseCheckoutData(str: string) {
+  try {
+    return JSON.parse(str) as CheckoutData;
+  } catch (e) {
+    return null;
+  }
+}
 // type FormData = { billingnAddress: string; cardID: string; };
-const newCardValue = 'newCard';
+const newCardValue = checkoutDataToString({ payMethod: PayMethod.card });
 const CheckoutOrder: FC<CheckoutOrderProps> = ({
   summary: propSummary,
   onCheckout,
@@ -59,7 +77,7 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
     typeof propSummary === 'function' ? null : propSummary
   );
   const [loadSummaryError, setLoadSummaryErrror] = useState<any>();
-  const [cardID, setCardID] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState(newCardValue);
   const fetchSummaryIfNeeded = () => {
     if (typeof propSummary === 'function') {
       setLoading((prev) => ({ ...prev, summary: true }));
@@ -84,7 +102,11 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
         setCards(cardList);
         setLoading((prev) => ({ ...prev, cards: false }));
         const defaultCard = cardList.find((card) => Boolean(card.default)) || cardList[0];
-        setCardID(defaultCard?.id || newCardValue);
+        setPaymentMethod(
+          defaultCard?.id
+            ? checkoutDataToString({ payMethod: PayMethod.card, cardID: defaultCard.id })
+            : newCardValue
+        );
       });
     fetchSummaryIfNeeded();
   }, []);
@@ -106,7 +128,12 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
     return renderTotalAmount(t('TotalBilledWithPeriod', { periodText }), summary.periodicAmount);
   };
   const handleCheckout = async () => {
-    const res = onCheckout(cardID === newCardValue ? undefined : cardID);
+    const checkoutData = parseCheckoutData(paymentMethod);
+    if (!checkoutData) {
+      toastError(t('UnknowError'));
+      return;
+    }
+    const res = onCheckout(checkoutData);
     if (!autoProcessingPayAPIResult) {
       return res;
     }
@@ -122,7 +149,7 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       }
       if (!data.redirectUrl) {
         // 已有卡才没redirect
-        if (cardID !== newCardValue) {
+        if (checkoutData.cardID && checkoutData.payMethod === PayMethod.card) {
           onPaySuccess?.();
         } else {
           toastError(t('UnknowError'));
@@ -182,31 +209,46 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       </>
     );
   };
-  const cardOptions = cards.map((card) => {
-    return {
-      label: t('CardEndsIn', { no: card.cardNo }),
-      value: card.id,
+  const cardOptions = useMemo(() => {
+    const res = cards.map((card) => {
+      return {
+        label: t('CardEndsIn', { no: card.cardNo }),
+        value: checkoutDataToString({
+          payMethod: PayMethod.card,
+          cardID: card.id
+        }),
+        icons: (
+          <Center h="24px">
+            <Icon name={card.cardBrand.toLowerCase() as 'mastercard' | 'visa'} />
+          </Center>
+        )
+      };
+    });
+    res.push({
+      label: t('CreditCard'),
+      value: newCardValue,
+      icons: (
+        <>
+          <Center h="24px">
+            <Icon name="visa" />
+          </Center>
+          <Center h="24px">
+            <Icon name="mastercard" />
+          </Center>
+        </>
+      )
+    });
+    res.push({
+      label: t('PayPal'),
+      value: checkoutDataToString({ payMethod: PayMethod.payPal }),
       icons: (
         <Center h="24px">
-          <Icon name={card.cardBrand.toLowerCase() as 'mastercard' | 'visa'} />
+          <Icon name="payPal" />
         </Center>
       )
-    };
-  });
-  cardOptions.push({
-    label: t('CreditCard'),
-    value: newCardValue,
-    icons: (
-      <>
-        <Center h="24px">
-          <Icon name="visa" />
-        </Center>
-        <Center h="24px">
-          <Icon name="mastercard" />
-        </Center>
-      </>
-    )
-  });
+    });
+    return res;
+  }, [cards, t]);
   return (
     <BorderGradient
       borderGradientWidth={1}
@@ -231,8 +273,8 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
               ) : (
                 <RadioOptionGroup
                   options={cardOptions}
-                  value={cardID}
-                  onChange={setCardID}
+                  value={paymentMethod}
+                  onChange={setPaymentMethod}
                   name="cardID"
                 />
               )}

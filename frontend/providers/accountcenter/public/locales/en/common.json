@@ -393,5 +393,6 @@
   "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of hobby plan",
   "ReferralStatsInvitedUsers": "Invited Users",
   "ReferralStatsRewards": "Bonus Gained",
-  "NotAvailableYet": "Not available yet"
+  "NotAvailableYet": "Not available yet",
+  "PayPal": "PayPal"
 }

@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { FC } from 'react';
-import CheckoutOrder from '../CheckoutOrder';
+import CheckoutOrder, { CheckoutData } from '../CheckoutOrder';
 import { recharge } from '@/api/plan';
 import { deFormatMoney } from '@/utils/format';
 import useToastAPIResult from '@/hooks/useToastAPIResult';
@@ -28,10 +28,10 @@ const RechargeCheckoutModal: FC<RechargeCheckoutModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { toastSuccess } = useToastAPIResult();
-  const handleCheckout = (cardID: string | undefined) => {
+  const handleCheckout = (data: CheckoutData) => {
     return recharge({
       amount: deFormatMoney(amount),
-      cardID
+      ...data
     });
   };
   const handlePaySuccess = () => {

@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       return jsonRes(resp, { code: 400, message: paramsResult.error.message });
     }
     // For internal requests
-    const { cardID, amount } = paramsResult.data;
+    const { cardID, amount, payMethod } = paramsResult.data;
     const payload = await authSession(req.headers);
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     const res = await client.post<TRechargeApiResponse>('/payment/v1alpha1/pay', {
       cardID,
       amount,
-      method: 'CARD'
+      method: payMethod || 'CARD'
     });
     if (!res.data.success) {
       console.log(res.data);

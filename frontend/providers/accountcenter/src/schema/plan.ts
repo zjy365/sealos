@@ -101,6 +101,7 @@ export const updatePlanApiRequestSchema = z.object({
   planType: z.enum(['upgrade', 'downgrade', 'renewal'])
 });
 export const updatePlanRequestSchema = z.object({
+  payMethod: z.string().optional(),
   cardID: z.string().optional(),
   planName: z.string(),
   planID: z.string(),

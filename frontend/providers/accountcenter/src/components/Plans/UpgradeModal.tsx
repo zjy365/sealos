@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'next-i18next';
 import { FC, useEffect, useState } from 'react';
 import PlanSelector, { PlanSelectorProps } from './PlanSelector';
-import CheckoutOrder from '../CheckoutOrder';
+import CheckoutOrder, { CheckoutData } from '../CheckoutOrder';
 import useGetPlanOrderSummary from '../CheckoutOrder/useGetPlanOrderSummary';
 import { getUpgradePlanAmount, updatePlan } from '@/api/plan';
 import useToastAPIResult from '@/hooks/useToastAPIResult';
@@ -32,13 +32,13 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({
   const { toastSuccess } = useToastAPIResult();
   const [selectedPlan, setSelectedPlan] = useState<TPlanApiResponse | null>(null);
   const getPlanOrderSummary = useGetPlanOrderSummary();
-  const handleCheckout = (cardID: string | undefined) => {
+  const handleCheckout = (data: CheckoutData) => {
     if (!selectedPlan) return;
     return updatePlan({
-      cardID,
       planID: selectedPlan.id,
       planName: selectedPlan.name,
-      planType: 'upgrade'
+      planType: 'upgrade',
+      ...data
     });
   };
   useEffect(() => {
