@@ -1,6 +1,6 @@
 import { uploadConvertData } from '@/api/platform';
 import { generateAuthenticationToken } from '@/services/backend/auth';
-import { prisma, globalPrisma } from '@/services/backend/db/init';
+import { globalPrisma } from '@/services/backend/db/init';
 import { AuthConfigType } from '@/types';
 import { SemData } from '@/types/sem';
 import { hashPassword } from '@/utils/crypto';
@@ -13,12 +13,11 @@ import {
   User,
   UserStatus
 } from 'prisma/global/generated/client';
-import { Role } from 'prisma/region/generated/client';
 import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
-import { sendEvent } from '../eventBridge';
 import { loginFailureCounter, TloginFailureMessage } from './promtheus/loginFailureCounter';
 import { HttpStatusCode } from 'axios';
+import { sendUserSigninEvent, sendUserSignupEvent } from './event';
 
 type TransactionClient = Omit<
   PrismaClient,
@@ -77,6 +76,10 @@ async function signIn({
     console.error('Error occurred while checking deduction balance:', error);
     throw Error();
   }
+
+  // Send User Signin Event to RabbitMQ
+  await sendUserSigninEvent(userProvider.user.uid);
+
   return userProvider;
 }
 
@@ -259,6 +262,7 @@ async function signUp({
     return null;
   }
 }
+
 async function signUpWithEmail({
   provider,
   id,
@@ -343,6 +347,7 @@ async function signUpWithEmail({
     return null;
   }
 }
+
 export async function signUpByPassword({
   id,
   name: nickname,
@@ -431,8 +436,14 @@ export async function signUpByEmail({
   });
   if (!result) throw Error('email signup error');
 
-  // Send event to EventBridge
-  await sendEvent('user_signup', result.user.uid, referralCode);
+  // Send User Signup Event to RabbitMQ
+  await sendUserSignupEvent({
+    uid: result.user.uid,
+    referral_code: referralCode,
+    firstname,
+    lastname,
+    email: id
+  });
 
   return {
     user: result.user
@@ -451,6 +462,7 @@ export async function signInByEmail({ id, password }: { id: string; password: st
 
   return result;
 }
+
 export async function updatePassword({ id, password }: { id: string; password: string }) {
   return globalPrisma.oauthProvider.update({
     where: {
@@ -464,6 +476,7 @@ export async function updatePassword({ id, password }: { id: string; password: s
     }
   });
 }
+
 export async function findUser({ userUid }: { userUid: string }) {
   return globalPrisma.user.findUnique({
     where: {
@@ -474,6 +487,7 @@ export async function findUser({ userUid }: { userUid: string }) {
     }
   });
 }
+
 // sign in + sign up
 export const getGlobalToken = async ({
   provider,
@@ -525,8 +539,12 @@ export const getGlobalToken = async ({
     if (result) {
       user = result.user;
 
-      // Send event to EventBridge
-      await sendEvent('user_signup', user.uid, referralCode);
+      // Send event to RabbitMQ
+      await sendUserSignupEvent({
+        uid: user.uid,
+        referral_code: referralCode,
+        email: ''
+      });
 
       if (inviterId) {
         inviteHandler({
@@ -561,7 +579,6 @@ export const getGlobalToken = async ({
       isInited = !!result.user.userInfo?.isInited;
     }
   }
-  // }
   if (!user) throw new Error('Failed to edit db');
   // user is deleted or banned
   if (user.status !== UserStatus.NORMAL_USER) return null;
@@ -580,6 +597,7 @@ export const getGlobalToken = async ({
     needInit: !isInited
   };
 };
+
 // 要绑定邮箱
 export const getGlobalTokenByOauth = async ({
   provider,
@@ -673,8 +691,12 @@ export const getGlobalTokenByOauth = async ({
         });
     }
 
-    // Send event to EventBridge
-    await sendEvent('user_signup', user.uid, referralCode);
+    // Send event to RabbitMQ
+    await sendUserSignupEvent({
+      uid: user.uid,
+      referral_code: referralCode,
+      email
+    });
 
     if (enableTracking()) {
       await trackSignUp({
@@ -718,7 +740,6 @@ export const getGlobalTokenByOauth = async ({
       isInited = !!result.user.userInfo?.isInited;
     }
   }
-  // }
   if (!user) throw new Error('Failed to edit db');
   // user is deleted or banned
   if (user.status !== UserStatus.NORMAL_USER) return null;

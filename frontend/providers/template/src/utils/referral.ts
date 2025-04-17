@@ -30,57 +30,58 @@ function getCookieString(options: {
   return result;
 }
 
-const validCookieDomains = ['claws.run', 'claw.cloud'];
-const referral = {
-  codeQueryKey: 'link',
-  codeCookieKey: 'CC_RUN_REFERRAL_CODE',
-  // 单位s 90天
-  codeCookieMaxAge: 3600 * 24 * 90,
-  // 监控用 单位s 90天
-  codeCookieTrackMaxAge: 3600 * 24 * 90,
-  getCookieDomain(host: string | undefined) {
+class Referral {
+  private static readonly VALID_COOKIE_DOMAINS = ['claws.run', 'claw.cloud'];
+  private static readonly COOKIE_MAX_AGE = 3600 * 24 * 90; // 90 days in seconds
+  private static readonly COOKIE_TRACK_MAX_AGE = 3600 * 24 * 90; // 90 days in seconds
+
+  private cookieKey: string;
+  private queryKey: string;
+
+  constructor(cookieKey: string, queryKey: string) {
+    this.cookieKey = cookieKey;
+    this.queryKey = queryKey;
+  }
+
+  private getCookieDomain(host: string | undefined): string | undefined {
     if (process.env.NODE_ENV === 'development' || typeof host !== 'string') return undefined;
     const hostname = host.split(':')[0];
-    const domain = validCookieDomains.find((d) => {
-      return hostname === d || hostname?.endsWith(`.${d}`);
-    });
-    return domain;
-  },
-  getSiginCookieStr(code: string, host?: string) {
-    const domain = referral.getCookieDomain(host || process.env.SEALOS_CLOUD_DOMAIN);
+    return Referral.VALID_COOKIE_DOMAINS.find((d) => hostname === d || hostname?.endsWith(`.${d}`));
+  }
+
+  private buildCookieString(code: string, host: string | undefined, maxAge: number): string {
+    const domain = this.getCookieDomain(host || process.env.SEALOS_CLOUD_DOMAIN);
     return getCookieString({
-      name: referral.codeCookieKey,
+      name: this.cookieKey,
       value: code,
-      maxAge: referral.codeCookieMaxAge,
+      maxAge,
       path: '/',
       httpOnly: true,
       secure: true,
       domain
     });
-  },
-  getTrackCookieStr(code: string, host?: string) {
-    const domain = referral.getCookieDomain(host || process.env.SEALOS_CLOUD_DOMAIN);
-    return getCookieString({
-      name: referral.codeCookieKey,
-      value: code,
-      maxAge: referral.codeCookieTrackMaxAge,
-      path: '/',
-      httpOnly: true,
-      secure: true,
-      domain
-    });
-  },
-  getCookiesUseInServerSideProps(
+  }
+
+  public getSiginCookieStr(code: string, host?: string): string {
+    return this.buildCookieString(code, host, Referral.COOKIE_MAX_AGE);
+  }
+
+  public getTrackCookieStr(code: string, host?: string): string {
+    return this.buildCookieString(code, host, Referral.COOKIE_TRACK_MAX_AGE);
+  }
+
+  public getCookiesUseInServerSideProps(
     { query, host }: { query: any; host?: any },
     type: 'Sigin' | 'Track' = 'Sigin'
-  ) {
-    const code = query[referral.codeQueryKey];
-    const cookies: string[] = [];
+  ): string | undefined {
+    const code = query[this.queryKey];
     if (code) {
       const method = `get${type}CookieStr` as 'getSiginCookieStr' | 'getTrackCookieStr';
-      cookies.push(referral[method]?.(code, host));
+      return this[method]?.(code, host);
     }
-    return cookies;
+    return undefined;
   }
-};
-export default referral;
+}
+
+export const referral = new Referral('CC_RUN_REFERRAL_CODE', 'link');
+export const crmReferral = new Referral('CC_RUN_CRM_REFERRAL_CODE', 'crmLink');

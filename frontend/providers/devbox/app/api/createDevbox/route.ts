@@ -7,7 +7,7 @@ import { devboxDB } from '@/services/db/init';
 import { DevboxEditTypeV2 } from '@/types/devbox';
 import { KBDevboxTypeV2 } from '@/types/k8s';
 import { json2DevboxV2, json2Ingress, json2Service } from '@/utils/json2Yaml';
-import { sendEvent } from '@/services/eventBridge';
+import { sendCreateDevboxEvent } from '@/services/event';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     const ingress = json2Ingress(devboxForm, INGRESS_SECRET as string);
     await applyYamlList([devbox, service, ingress], 'create');
 
-    await sendEvent('create_devbox', payload.userUid);
+    await sendCreateDevboxEvent(payload.userUid);
 
     return jsonRes({
       data: 'success create devbox'

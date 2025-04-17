@@ -10,7 +10,7 @@ import { updateBackupPolicyApi } from './backup/updatePolicy';
 import { BackupSupportedDBTypeList } from '@/constants/db';
 import { adaptDBDetail, convertBackupFormToSpec } from '@/utils/adapt';
 import { CustomObjectsApi, PatchUtils } from '@kubernetes/client-node';
-import { sendEvent } from '@/services/eventBridge';
+import { sendCreateDatabaseEvent } from '@/services/event';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
@@ -134,7 +134,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       });
     }
 
-    await sendEvent('create_database', tokenPayload.userUid);
+    await sendCreateDatabaseEvent(tokenPayload.userUid);
 
     jsonRes(res, {
       data: 'success create db'

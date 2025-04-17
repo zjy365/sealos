@@ -66,9 +66,6 @@ importers:
       '@alicloud/dysmsapi20170525':
         specifier: ^2.0.24
         version: 2.0.24
-      '@alicloud/eventbridge':
-        specifier: ^1.3.2
-        version: 1.3.2
       '@alicloud/openapi-client':
         specifier: ^0.4.6
         version: 0.4.7
@@ -123,6 +120,9 @@ importers:
       '@umami/node':
         specifier: ^0.4.0
         version: 0.4.0
+      amqplib:
+        specifier: ^0.10.7
+        version: 0.10.7
       axios:
         specifier: ^1.5.1
         version: 1.6.2
@@ -268,6 +268,9 @@ importers:
       '@testing-library/react':
         specifier: ^14.0.0
         version: 14.1.2(react-dom@18.2.0)(react@18.2.0)
+      '@types/amqplib':
+        specifier: ^0.10.7
+        version: 0.10.7
       '@types/jest':
         specifier: ^29.5.10
         version: 29.5.10
@@ -934,6 +937,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
+      amqplib:
+        specifier: ^0.10.7
+        version: 0.10.7
       ansi_up:
         specifier: ^5.2.1
         version: 5.2.1
@@ -1043,6 +1049,9 @@ importers:
       '@svgr/webpack':
         specifier: ^6.5.1
         version: 6.5.1
+      '@types/amqplib':
+        specifier: ^0.10.7
+        version: 0.10.7
       '@types/base64-stream':
         specifier: ^1.0.5
         version: 1.0.5
@@ -1646,6 +1655,9 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.10.8
         version: 3.10.8(react-dom@18.2.0)(react@18.2.0)
+      amqplib:
+        specifier: ^0.10.7
+        version: 0.10.7
       ansi_up:
         specifier: ^5.2.1
         version: 5.2.1
@@ -1752,6 +1764,9 @@ importers:
       '@svgr/webpack':
         specifier: ^6.5.1
         version: 6.5.1
+      '@types/amqplib':
+        specifier: ^0.10.7
+        version: 0.10.7
       '@types/ini':
         specifier: ^4.1.1
         version: 4.1.1
@@ -1830,6 +1845,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
+      amqplib:
+        specifier: ^0.10.7
+        version: 0.10.7
       axios:
         specifier: ^1.7.3
         version: 1.7.3
@@ -1930,6 +1948,9 @@ importers:
       '@svgr/webpack':
         specifier: ^6.5.1
         version: 6.5.1
+      '@types/amqplib':
+        specifier: ^0.10.7
+        version: 0.10.7
       '@types/ini':
         specifier: ^4.1.1
         version: 4.1.1
@@ -2663,6 +2684,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.35.3
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
+      amqplib:
+        specifier: ^0.10.7
+        version: 0.10.7
       axios:
         specifier: ^1.5.1
         version: 1.6.2
@@ -2781,6 +2805,9 @@ importers:
       '@svgr/webpack':
         specifier: ^6.5.1
         version: 6.5.1
+      '@types/amqplib':
+        specifier: ^0.10.7
+        version: 0.10.7
       '@types/js-cookie':
         specifier: ^3.0.4
         version: 3.0.6
@@ -3143,26 +3170,6 @@ packages:
     dependencies:
       '@alicloud/tea-typescript': 1.8.0
       kitx: 2.1.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@alicloud/eventbridge-util@1.0.0:
-    resolution: {integrity: sha512-yn+KQ7cEGIXjoDzmXQnbdP7R/H5sf3jjMoXH3O9pDIvefYcc1zwBYFBMK+FSCfE7gJebmOKgraNBIgpYZ+lvgA==}
-    dependencies:
-      '@alicloud/tea-typescript': 1.8.0
-      kitx: 2.1.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@alicloud/eventbridge@1.3.2:
-    resolution: {integrity: sha512-Vod2IlhZPuAbSAYGzs44wMAAz98uKbVEMJhtduymogw0MzyLt2BcV4a0uthYkkHl/oVDiIL6U0ggvZZ0cr4esQ==}
-    dependencies:
-      '@alicloud/credentials': 2.3.0
-      '@alicloud/eventbridge-util': 1.0.0
-      '@alicloud/tea-typescript': 1.8.0
-      '@alicloud/tea-util': 1.4.7
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -11451,6 +11458,12 @@ packages:
       polygon-clipping: 0.15.7
     dev: false
 
+  /@types/amqplib@0.10.7:
+    resolution: {integrity: sha512-IVj3avf9AQd2nXCx0PGk/OYq7VmHiyNxWFSb5HhU9ATh+i+gHWvVcljFTcTWQ/dyHJCTrzCixde+r/asL2ErDA==}
+    dependencies:
+      '@types/node': 20.10.0
+    dev: true
+
   /@types/aria-query@5.0.4:
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
     dev: true
@@ -12010,7 +12023,7 @@ packages:
       '@typescript-eslint/scope-manager': 5.62.0
       '@typescript-eslint/types': 5.62.0
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.2.2)
-      debug: 4.3.4
+      debug: 4.4.0
       eslint: 8.38.0
       typescript: 5.2.2
     transitivePeerDependencies:
@@ -12528,6 +12541,14 @@ packages:
   /amdefine@1.0.1:
     resolution: {integrity: sha512-S2Hw0TtNkMJhIabBwIojKL9YHO5T0n5eNqWJ7Lrlel/zDbftQpxpapi8tZs3X1HWa+u+QeydGmzzNU0m09+Rcg==}
     engines: {node: '>=0.4.2'}
+    dev: false
+
+  /amqplib@0.10.7:
+    resolution: {integrity: sha512-7xPSYKSX2kj/bT6iHZ3MlctzxdCW1Ds9xyN0EmuRi2DZxHztwwoG1YkZrgmLyuPNjfxlRiMdWJPQscmoa3Vgdg==}
+    engines: {node: '>=10'}
+    dependencies:
+      buffer-more-ints: 1.0.0
+      url-parse: 1.5.10
     dev: false
 
   /ansi-escapes@4.3.2:
@@ -13399,6 +13420,10 @@ packages:
 
   /buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+
+  /buffer-more-ints@1.0.0:
+    resolution: {integrity: sha512-EMetuGFz5SLsT0QTnXzINh4Ksr+oo4i+UGTXEshiGCQWnsgSs7ZhJ8fzlwQ+OzEMs0MpDAMr1hxnblp5a4vcHg==}
+    dev: false
 
   /buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -14917,14 +14942,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /enhanced-resolve@5.15.0:
-    resolution: {integrity: sha512-LXYT42KJ7lpIKECr2mAXIaMldcNCh/7E0KBKOu4KSfkHmP+mZmSs+8V5gBAqisWBy0OO4W5Oyys0GO1Y8KtdKg==}
-    engines: {node: '>=10.13.0'}
-    dependencies:
-      graceful-fs: 4.2.11
-      tapable: 2.2.1
-    dev: false
-
   /enhanced-resolve@5.18.1:
     resolution: {integrity: sha512-ZSW3ma5GkcQBIpwZTSRAI8N71Uuwgs93IezB7mf7R60tC8ZbJideoDNKjHn2O9KIlx6rkGTTEk1xUCK2E1Y2Yg==}
     engines: {node: '>=10.13.0'}
@@ -15457,8 +15474,8 @@ packages:
       eslint: '*'
       eslint-plugin-import: '*'
     dependencies:
-      debug: 4.3.6
-      enhanced-resolve: 5.15.0
+      debug: 4.4.0
+      enhanced-resolve: 5.18.1
       eslint: 8.38.0
       eslint-module-utils: 2.12.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.38.0)
       eslint-plugin-import: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.38.0)
@@ -22258,7 +22275,6 @@ packages:
 
   /querystringify@2.2.0:
     resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
-    dev: true
 
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -23603,7 +23619,6 @@ packages:
 
   /requires-port@1.0.0:
     resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
-    dev: true
 
   /resize-observer-polyfill@1.5.1:
     resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
@@ -25714,7 +25729,6 @@ packages:
     dependencies:
       querystringify: 2.2.0
       requires-port: 1.0.0
-    dev: true
 
   /use-callback-ref@1.3.0(@types/react@18.2.37)(react@18.2.0):
     resolution: {integrity: sha512-3FT9PRuRdbB9HfXhEq35u4oZkvpJ5kuYbpqhCfmiZyReuRgpnhDlbr2ZEnnuS0RrJAPn6l23xjFg9kpDM+Ms7w==}
