@@ -52,6 +52,7 @@ export const rechargeApiSchema = z
   })
   .optional();
 export const rechargeRequest = z.object({
+  payMethod: z.string(),
   cardID: z.string().optional(),
   amount: z.number().min(1_000_000).max(10_000_000_000)
 });

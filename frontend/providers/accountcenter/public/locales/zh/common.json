@@ -356,5 +356,6 @@
   "storage": "存储卷",
   "time": "时间",
   "usage": "用量",
-  "workspace": "工作空间"
+  "workspace": "工作空间",
+  "PayPal": "PayPal"
 }

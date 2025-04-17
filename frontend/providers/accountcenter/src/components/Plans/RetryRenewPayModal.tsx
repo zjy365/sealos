@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import { FC } from 'react';
-import CheckoutOrder from '../CheckoutOrder';
+import CheckoutOrder, { CheckoutData } from '../CheckoutOrder';
 import useGetPlanOrderSummary from '../CheckoutOrder/useGetPlanOrderSummary';
 import { getPlans, updatePlan } from '@/api/plan';
 import useToastAPIResult from '@/hooks/useToastAPIResult';
@@ -32,12 +32,12 @@ const RetryRenewPayModal: FC<RetryRenewPayModalProps> = ({
   const { t } = useTranslation();
   const { toastSuccess } = useToastAPIResult();
   const getPlanOrderSummary = useGetPlanOrderSummary();
-  const handleCheckout = (cardID: string | undefined) => {
+  const handleCheckout = (data: CheckoutData) => {
     return updatePlan({
-      cardID,
       planID: lastTransaction.NewPlanID,
       planName: lastTransaction.NewPlanName,
-      planType: 'renewal'
+      planType: 'renewal',
+      ...data
     });
   };
   const handlePaySuccess = () => {

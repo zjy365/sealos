@@ -25,13 +25,13 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       return jsonRes(resp, { code: 400, message: validation.error.message });
     }
 
-    const { planName, planID, planType, cardID } = validation.data;
+    const { planName, planID, planType, cardID, payMethod } = validation.data;
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
     const res = await client.post<TUpdatePlanResponse>('payment/v1alpha1/subscription/pay', {
       planName,
       planID,
-      payMethod: 'CARD',
+      payMethod: payMethod || 'CARD',
       planType,
       cardID
     });

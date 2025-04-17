@@ -70,7 +70,8 @@ export const IconMap = {
   devBox: require('./icons/devBox.svg').default,
   job: require('./icons/job.svg').default,
   objectStorage: require('./icons/objectStorage.svg').default,
-  terminal: require('./icons/terminal.svg').default
+  terminal: require('./icons/terminal.svg').default,
+  payPal: require('./icons/payPal.svg').default
 };
 
 const MyIcon = ({
