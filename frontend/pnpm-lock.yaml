@@ -2684,6 +2684,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.35.3
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
+      amqplib:
+        specifier: ^0.10.7
+        version: 0.10.7
       axios:
         specifier: ^1.5.1
         version: 1.6.2
