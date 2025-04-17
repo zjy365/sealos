@@ -25,7 +25,7 @@ import RechargeCheckoutModal from './CheckoutModal';
 interface RechargeProps {
   onPaySuccess?: () => void;
 }
-const minCustomAmount = 10;
+const minCustomAmount = 5;
 const maxCustomAmount = 10000;
 const amounts = [10, 20, 30];
 const gridItemStyle: GridItemProps = {

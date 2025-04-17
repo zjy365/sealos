@@ -254,7 +254,8 @@ const Usage = ({
                       >
                         <Highlight styles={{ fontWeight: '600' }} query={'$'}>
                           {`$ ${formatMoney(
-                            item.used_amount[String(index) as '0' | '1' | '2' | '3' | '4' | '5']
+                            item.used_amount[String(index) as '0' | '1' | '2' | '3' | '4' | '5'] ??
+                              0
                           ).toFixed(6)}`}
                         </Highlight>
                       </Box>
