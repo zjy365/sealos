@@ -6,7 +6,7 @@ import {
 import { Box, Button, ButtonProps, Flex, GridItem, Text } from '@chakra-ui/react';
 import { upperFirst } from 'lodash';
 import { useTranslation } from 'next-i18next';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import usePlanFeatureTexts from './usePlanFeatureTexts';
 import CircleCheck from '@/components/Icon/icons/circleCheck.svg';
 import { formatMoneyStr } from '@/utils/format';
@@ -30,8 +30,10 @@ const buttonStyle: ButtonProps = {
   _disabled: {
     opacity: '0.5',
     cursor: 'not-allowed'
-  }
+  },
+  h: '40px'
 };
+const featureTextsMinLength = 6;
 const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   plan,
   currentPlan,
@@ -44,10 +46,24 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   const period = t(`Per${upperFirst(plan.period)}`, { defaultValue: '' }).toLowerCase();
   const isCurrent = currentPlan.id === plan.id;
   const isFree = plan.amount === 0;
-  const featurTexts = usePlanFeatureTexts(plan, {
+  const featureTexts = usePlanFeatureTexts(plan, {
     inlcudeCredits: true,
     hideFreeMaxResourcesPerRegionText: true
   });
+  const featureTextsPlaceholders: ReactNode[] = [];
+  const renderFeatureText = ({ key, text }: { key: string; text: string }) => {
+    return (
+      <Flex key={key} gap="8px" visibility={text === '' ? 'hidden' : undefined}>
+        <Box flexShrink={0} mt="2px">
+          <CircleCheck width="16px" height="16px" stroke="rgb(28, 78, 245)" strokeWidth="1.4px" />
+        </Box>
+        <Text lineHeight="20px">{text || 'placeholder'}</Text>
+      </Flex>
+    );
+  };
+  for (let i = 0; i < featureTextsMinLength - featureTexts.length; i++) {
+    featureTextsPlaceholders.push(renderFeatureText({ key: `placeholder${i}`, text: '' }));
+  }
   const handlePurchase = () => {
     onSelect?.(plan);
   };
@@ -125,19 +141,8 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
           </Flex>
           {renderButton()}
           <Flex mt="30px" flexDirection="column" gap="12px">
-            {featurTexts.map(({ key, text }) => (
-              <Flex key={key} gap="8px">
-                <Box flexShrink={0} mt="2px">
-                  <CircleCheck
-                    width="16px"
-                    height="16px"
-                    stroke="rgb(28, 78, 245)"
-                    strokeWidth="1.4px"
-                  />
-                </Box>
-                <Text lineHeight="20px">{text}</Text>
-              </Flex>
-            ))}
+            {featureTexts.map(renderFeatureText)}
+            {featureTextsPlaceholders}
           </Flex>
         </Box>
       </Flex>
