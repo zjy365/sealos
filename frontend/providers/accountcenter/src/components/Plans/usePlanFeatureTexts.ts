@@ -42,10 +42,12 @@ export function useGetPlanFeatureTexts() {
         key: 'resources'
       });
     }
-    res.push({
-      text: t(isFree ? 'FreeTraffic' : 'PlanTraffic'),
-      key: 'traffic'
-    });
+    if (isFree) {
+      res.push({
+        text: t('FreeTraffic'),
+        key: 'traffic'
+      });
+    }
     res.push({
       text: t('MultipleRegions'),
       key: 'regions'
