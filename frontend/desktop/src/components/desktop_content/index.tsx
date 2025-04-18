@@ -179,26 +179,28 @@ export default function Desktop(props: any) {
     <Box
       id="desktop"
       className={styles.desktop}
-      backgroundImage={`url(${backgroundImage || '/images/bg-blue.svg'})`}
+      backgroundImage={`url(${backgroundImage || '/images/light-bg.svg'})`}
       backgroundRepeat={'no-repeat'}
       backgroundSize={'cover'}
       position={'relative'}
     >
       {isClient && layoutConfig?.customerServiceURL && <OnlineServiceButton />}
       <ChakraIndicator />
+      <Flex height={'68px'} px="32px">
+        <Account />
+      </Flex>
+
       <Flex
-        gap={'8px'}
         width={'100%'}
-        height={'calc(100% - 87px)'}
-        pt={'24px'}
-        px={'24px'}
+        height={'calc(100% - 68px)'}
+        pt={'60px'}
+        pb={'84px'}
+        px={'180px'}
         mx={'auto'}
-        maxW={'1300px'}
-        maxH={'1000px'}
         position={'relative'}
       >
         {/* monitor  */}
-        <Flex
+        {/* <Flex
           flex={'0 0 250px'}
           flexDirection={'column'}
           display={{
@@ -210,22 +212,13 @@ export default function Desktop(props: any) {
           {layoutConfig?.common.aiAssistantEnabled && <Assistant />}
           <Monitor />
           <Warn />
-        </Flex>
+        </Flex> */}
 
-        {/* apps */}
         <Flex flexDirection={'column'} gap={'8px'} flex={1} position={'relative'}>
-          <Flex zIndex={2} flexShrink={0} height={{ base: '32px', sm: '48px' }} gap={'8px'}>
-            <Box display={{ base: 'block', xl: 'none' }}>
-              {layoutConfig?.common.aiAssistantEnabled && <Assistant />}
-            </Box>
-            <SearchBox />
-            <TriggerAccountModule showAccount={showAccount} setShowAccount={setShowAccount} />
-          </Flex>
           <Apps />
         </Flex>
 
-        {/* user account */}
-        <Box position={'relative'}>
+        {/* <Box position={'relative'}>
           {showAccount && (
             <Box
               position={'fixed'}
@@ -252,9 +245,10 @@ export default function Desktop(props: any) {
             <Account />
             <Cost />
           </Box>
-        </Box>
+        </Box> */}
 
-        {isClient && (
+        {/* onboarding  */}
+        {/* {isClient && (
           <Box>
             {desktopGuide && (
               <>
@@ -310,7 +304,7 @@ export default function Desktop(props: any) {
               />
             )}
           </Box>
-        )}
+        )} */}
       </Flex>
 
       {isAppBar ? <AppDock /> : <FloatButton />}
