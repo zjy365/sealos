@@ -55,7 +55,7 @@ export default function Desktop(props: any) {
   const { commonConfig } = useConfigStore();
   const realNameAuthNotificationIdRef = useRef<string | number | undefined>();
   const [isClient, setIsClient] = useState(false);
-  const { authConfig: conf, layoutConfig } = useConfigStore();
+  const { authConfig: conf, cloudConfig, layoutConfig } = useConfigStore();
   const { setProvider, generateState } = useSessionStore();
 
   useEffect(() => {
@@ -171,6 +171,10 @@ export default function Desktop(props: any) {
       url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&scope=${scope}&include_granted_scopes=true`
     })('BIND');
   }, [conf?.callbackURL, conf?.idp.google, actionCbGen]);
+  const deleteUser = useCallback(() => {
+    localStorage.setItem('session', '');
+    router.replace(`https://${cloudConfig?.domain || 'console.run.claw.cloud'}/login`);
+  }, [cloudConfig?.domain]);
   const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
   // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
 
@@ -181,6 +185,10 @@ export default function Desktop(props: any) {
 
   useEffect(() => {
     const cleanup = masterApp?.addEventListen('openDesktopApp', openDesktopApp);
+    return cleanup;
+  }, [openDesktopApp]);
+  useEffect(() => {
+    const cleanup = masterApp?.addEventListen('deleteUser', deleteUser);
     return cleanup;
   }, [openDesktopApp]);
   useEffect(() => {
