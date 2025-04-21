@@ -162,7 +162,7 @@ export default function AppDock() {
       onMouseLeave={handleMouseLeave}
     >
       <Flex
-        onContextMenu={(e) => displayMenu(e)}
+        // onContextMenu={(e) => displayMenu(e)} // 删除右键菜单
         borderRadius="100px"
         border={'0.5px solid var(--dock-str, #E5E5E5)'}
         background={

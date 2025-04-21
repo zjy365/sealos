@@ -17,7 +17,8 @@ function genResCloudConfig(conf: CloudConfigType): CloudConfigType {
   return {
     domain: conf.domain,
     port: conf.port,
-    regionUID: conf.regionUID
+    regionUID: conf.regionUID,
+    proxyDomain: conf.proxyDomain
   } as CloudConfigType;
 }
 
