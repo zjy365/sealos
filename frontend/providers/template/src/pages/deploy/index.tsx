@@ -11,7 +11,23 @@ import { ApplicationType, TemplateSourceType } from '@/types/app';
 import { serviceSideProps } from '@/utils/i18n';
 import { generateYamlList, parseTemplateString } from '@/utils/json-yaml';
 import { compareFirstLanguages, deepSearch, useCopyData } from '@/utils/tools';
-import { Box, Flex, Icon, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Icon,
+  Text,
+  Divider,
+  Grid,
+  Center,
+  Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import debounce from 'lodash/debounce';
 import { useTranslation } from 'next-i18next';
@@ -27,6 +43,10 @@ import { getResourceUsage } from '@/utils/usage';
 import Head from 'next/head';
 import { useMessage } from '@sealos/ui';
 import Carousel from './components/Carousel';
+import MyIcon from '@/components/Icon';
+import { formatNum } from '@/utils/tools';
+import { HtmlIcon } from '@/components/icons';
+import Image from 'next/image';
 
 const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 const Header = dynamic(() => import('./components/Header'), { ssr: false });
@@ -68,6 +88,15 @@ export default function EditApp({
     loadUserQuota();
     // eslint-disable-next-line
   }, []);
+
+  const shareLink = useMemo(
+    () => ({
+      link: 'https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3Dalist',
+      html: `<a href="https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3Dalist"><img src="https://raw.githubusercontent.com/ClawCloud/Run-Template/refs/heads/main/Run-on-ClawCloud.svg" alt="Run on ClawCloud"/></a>`,
+      markdown: `[![](https://raw.githubusercontent.com/ClawCloud/Run-Template/refs/heads/main/Run-on-ClawCloud.svg)](https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3Dalist)`
+    }),
+    []
+  );
 
   const detailName = useMemo(
     () => templateSource?.source?.defaults?.app_name?.value || '',
@@ -400,9 +429,212 @@ export default function EditApp({
               />
             ) : null}
             {/* <Yaml yamlList={yamlList} pxVal={pxVal}></Yaml> */}
-            {readmeContent ? (
-              <ReadMe key={readUrl} readUrl={readUrl} readmeContent={readmeContent} />
-            ) : null}
+            <Flex p={'32px 120px'} flexDirection={'row'} gap={'60px'} justifyContent={'center'}>
+              <Flex w={'320px'} pt={'40px'} gap={'16px'} flexDirection={'column'}>
+                <Text color={'#71717A'} fontSize={'12px'} fontWeight={500}>
+                  {t('templateDetails')}
+                </Text>
+                <Flex flexDirection={'column'} gap={'12px'}>
+                  <Grid
+                    templateColumns={'16px 92px 1fr'}
+                    alignItems={'center'}
+                    gap={'12px'}
+                    fontSize={'14px'}
+                  >
+                    <MyIcon w={'16px'} h={'16px'} name="activity" fill={'none'} />
+                    <Text color={'#71717A'}>{t('running')}</Text>
+                    <Text color={'#18181B'}>
+                      {data?.templateYaml?.spec.deployCount
+                        ? formatNum(data?.templateYaml?.spec.deployCount)
+                        : 0}
+                    </Text>
+                  </Grid>
+                  <Grid
+                    templateColumns={'16px 92px 1fr'}
+                    alignItems={'center'}
+                    gap={'12px'}
+                    fontSize={'14px'}
+                  >
+                    <MyIcon w={'16px'} h={'16px'} name="usersround" fill={'none'} />
+                    <Text color={'#71717A'}>{t('publisher')}</Text>
+                    <Text color={'#18181B'}>{data?.templateYaml?.spec.author}</Text>
+                  </Grid>
+                  <Grid
+                    templateColumns={'16px 92px 1fr'}
+                    alignItems={'center'}
+                    gap={'12px'}
+                    fontSize={'14px'}
+                  >
+                    <MyIcon w={'16px'} h={'16px'} name="calendar" fill={'none'} />
+                    <Text color={'#71717A'}>{t('created')}</Text>
+                    <Text color={'#18181B'}>
+                      {data?.templateYaml?.spec.date
+                        ? new Date(data.templateYaml.spec.date).toLocaleString()
+                        : 'N/A'}
+                    </Text>
+                  </Grid>
+                  <Grid
+                    templateColumns={'16px 92px 1fr'}
+                    alignItems={'center'}
+                    gap={'12px'}
+                    fontSize={'14px'}
+                  >
+                    <MyIcon w={'16px'} h={'16px'} name="userCog" fill={'none'} />
+                    <Text color={'#71717A'}>{t('developer')}</Text>
+                    <Text color={'#18181B'}>
+                      {data?.templateYaml?.spec.gitRepo.split('/').at(-2)}
+                    </Text>
+                  </Grid>
+                  <Grid
+                    templateColumns={'16px 92px 1fr'}
+                    alignItems={'center'}
+                    gap={'12px'}
+                    fontSize={'14px'}
+                  >
+                    <MyIcon w={'16px'} h={'16px'} name="link" fill={'none'} />
+                    <Text color={'#71717A'}>{t('githubRepo')}</Text>
+                    <Flex
+                      cursor={'pointer'}
+                      alignItems={'center'}
+                      gap={'4px'}
+                      onClick={() => window.open(data?.templateYaml?.spec.gitRepo, '_blank')}
+                    >
+                      <Text color={'#18181B'}>{t('view')}</Text>
+                      <MyIcon w={'16px'} h={'16px'} name="outLink" fill={'none'} />
+                    </Flex>
+                  </Grid>
+                </Flex>
+                {/* <Divider />
+                <Text color={'#71717A'} fontSize={'12px'} fontWeight={500}>{t('templateContent')}</Text>
+                <Flex flexDirection={'column'} gap={'12px'}>
+                  {
+                    data?.templateYaml?.metadata?.annotations?.map((item: any) => (
+                      <Flex key={item.originImageName} gap={'12px'} alignItems={'center'}>
+                        <Center w={'44px'} h={'44px'} borderRadius={'8px'} backgroundColor={'#FAFAFA'}>
+                          <MyIcon w={'16px'} h={'16px'} name='container' fill={'none'} />
+                        </Center>
+                        <Flex flexDirection={'column'}>
+                          <Text fontSize={'14px'} color={'#18181B'} lineHeight={'20px'}>{item.originImageName}</Text>
+                          <Text fontSize={'12px'} color={'#71717A'}>{123}</Text>
+                        </Flex>
+                      </Flex>
+                    ))
+                  }
+                </Flex> */}
+                <Divider />
+                <Popover placement="bottom-start">
+                  <PopoverTrigger>
+                    <Flex alignItems={'center'} gap={'4px'} cursor={'pointer'}>
+                      <Text color={'#71717A'} fontSize={'14px'} fontWeight={500}>
+                        {t('shareTemplate')}
+                      </Text>
+                      <MyIcon w={'16px'} h={'16px'} name="share" fill={'none'} />
+                    </Flex>
+                  </PopoverTrigger>
+                  <PopoverContent w={'240px'}>
+                    <PopoverArrow />
+                    <PopoverBody p={'16px'} gap={'12px'} display={'flex'} flexDirection={'column'}>
+                      <Flex
+                        gap={'12px'}
+                        alignItems={'center'}
+                        cursor={'pointer'}
+                        onClick={() => copyData(shareLink.link)}
+                      >
+                        <Center
+                          w={'36px'}
+                          h={'36px'}
+                          borderRadius={'6px'}
+                          border={'1px solid #E4E4E7'}
+                        >
+                          <MyIcon w={'16px'} h={'16px'} name="link" fill={'none'} />
+                        </Center>
+                        <Text color={'#18181B'} fontSize={'14px'}>
+                          {t('shareTemplate')}
+                        </Text>
+                      </Flex>
+                      <Divider />
+                      <Text color={'#71717A'} fontSize={'12px'} fontWeight={500}>
+                        {t('clickDeploy')}
+                      </Text>
+                      <Flex
+                        gap={'12px'}
+                        alignItems={'center'}
+                        cursor={'pointer'}
+                        onClick={() => copyData(shareLink.html)}
+                      >
+                        <Center
+                          w={'36px'}
+                          h={'36px'}
+                          borderRadius={'6px'}
+                          border={'1px solid #E4E4E7'}
+                        >
+                          <HtmlIcon w={'16px'} h={'16px'} fill={'none'} color={'#737373'} />
+                        </Center>
+                        <Text color={'#18181B'} fontSize={'14px'}>
+                          {t('htmlSnippet')}
+                        </Text>
+                      </Flex>
+                      <Flex
+                        gap={'12px'}
+                        alignItems={'center'}
+                        cursor={'pointer'}
+                        onClick={() => copyData(shareLink.markdown)}
+                      >
+                        <Center
+                          w={'36px'}
+                          h={'36px'}
+                          borderRadius={'6px'}
+                          border={'1px solid #E4E4E7'}
+                        >
+                          <MyIcon
+                            w={'16px'}
+                            h={'16px'}
+                            name="markdown"
+                            fill={'none'}
+                            color={'#737373'}
+                          />
+                        </Center>
+                        <Text color={'#18181B'} fontSize={'14px'}>
+                          {t('markdownSnippet')}
+                        </Text>
+                      </Flex>
+                      <Divider />
+                      <Text color={'#71717A'} fontSize={'12px'} fontWeight={500}>
+                        {t('buttonAppearance')}
+                      </Text>
+                      <Image src={'/images/buttonAppearance.png'} alt="" width={208} height={135} />
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Flex>
+              <Box w={'804px'} border={'1px solid #E4E4E7'} borderRadius={'16px'} p={'24px'}>
+                {readmeContent ? (
+                  <ReadMe
+                    py={'0px'}
+                    px={'0px'}
+                    key={readUrl}
+                    readUrl={readUrl}
+                    readmeContent={readmeContent}
+                  />
+                ) : null}
+              </Box>
+            </Flex>
+            <Flex p={'80px 120px'} bg={'#F6F7F9'} flexDirection={'column'}>
+              <Text fontWeight={600} fontSize={'24px'} lineHeight={'32px'}>
+                {t('submitTemplate')}
+              </Text>
+              <Text fontSize={'14px'} w={'560px'} lineHeight={'20px'} mt={'12px'} mb={'24px'}>
+                {t('submitTemplateDesc')}
+              </Text>
+              <Button
+                w={'fit-content'}
+                onClick={() => {
+                  window.open('https://github.com/ClawCloud/Run-Template', '_blank');
+                }}
+              >
+                {t('develop.Submit Template')}
+              </Button>
+            </Flex>
           </Flex>
         </Flex>
       </Flex>

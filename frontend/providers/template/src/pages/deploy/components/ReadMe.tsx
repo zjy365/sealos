@@ -24,7 +24,7 @@ const ReadMe = ({
   };
 
   return (
-    <Box {...props} px={'42px'} py={'32px'} flexGrow={1}>
+    <Box px={'42px'} py={'32px'} {...props} flexGrow={1}>
       {/* <Box color={'#24282C'} fontSize={'20px'} lineHeight={'28px'} fontWeight={500} mb={'16px'}>
         <MyIcon name={'markdown'} mr={'8px'} w={'20px'} ml={'42px'} color={'myGray.500'} />
         Readme

@@ -39,7 +39,7 @@ const Carousel = ({
   }, [handleScroll]);
 
   return (
-    <Box gap={'20px'} {...props} px={'40px'} py={'32px'} bg={'#F3F4F7'} flexGrow={1}>
+    <Box gap={'20px'} {...props} px={'40px'} py={'32px'} flexGrow={1}>
       <Flex position={'relative'} w="100%" justifyContent="center">
         <Icon
           cursor={'pointer'}
@@ -55,10 +55,11 @@ const Carousel = ({
           color={'transparent'}
           name="polygon"
         ></Icon>
-        <Box ref={scrollRef} overflow={'scroll'}>
+        <Box ref={scrollRef} overflowX={'scroll'} pb={'20px'}>
           <Flex w={'fit-content'} gap={'20px'}>
             {data?.map((item, index) => (
               <Box
+                shadow={'0px 4px 6px -2px #0000000D, 0px 10px 15px -3px #0000001A'}
                 overflow={'hidden'}
                 h={'319px'}
                 w={'568px'}
@@ -87,7 +88,7 @@ const Carousel = ({
           name="polygon"
         ></Icon>
       </Flex>
-      <Flex mt={'24px'} gap={'15px'} justifyContent="center">
+      <Flex mt={'4px'} gap={'15px'} justifyContent="center">
         {data?.map((item, index) => (
           <Box
             transition={'all 0.5s'}

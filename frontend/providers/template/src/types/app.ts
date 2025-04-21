@@ -5,6 +5,9 @@ export type TemplateType = {
     name: string;
   };
   spec: {
+    author_id: string;
+    type: 'official' | 'community' | 'developer';
+    date: Date;
     // local json data
     fileName: string;
     filePath: string;

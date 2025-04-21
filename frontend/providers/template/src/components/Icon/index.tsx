@@ -54,7 +54,18 @@ const map = {
   oss: require('./icons/oss.svg').default,
   others: require('./icons/others.svg').default,
   dot: require('./icons/dot.svg').default,
-  noapp: require('./icons/noapp.svg').default
+  noapp: require('./icons/noapp.svg').default,
+  official: require('./icons/official.svg').default,
+  developer: require('./icons/developer.svg').default,
+  community: require('./icons/community.svg').default,
+  activity: require('./icons/activity.svg').default,
+  fileQuestion: require('./icons/fileQuestion.svg').default,
+  calendar: require('./icons/calendar.svg').default,
+  container: require('./icons/container.svg').default,
+  link: require('./icons/link.svg').default,
+  outLink: require('./icons/outLink.svg').default,
+  share: require('./icons/share.svg').default,
+  userCog: require('./icons/userCog.svg').default
 };
 
 const MyIcon = ({
