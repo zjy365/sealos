@@ -123,7 +123,7 @@ const Usage = ({
       {
         id: 'totalCost',
         header: t('TotalCost'),
-        cell: ({ row }) => <Text>{displayMoney(formatMoney(row.original.amount))}</Text>
+        cell: ({ row }) => <Text>{displayMoney(formatMoney(row.original.amount), 4)}</Text>
       },
       {
         id: 'status',
