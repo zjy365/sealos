@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { FC, SyntheticEvent, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
+import { sealosApp } from 'sealos-desktop-sdk/app';
 import { deleteUser } from '@/api/user';
 import useToastAPIResult from '@/hooks/useToastAPIResult';
 import Icon from '@/components/Icon';
@@ -49,7 +50,7 @@ const DeleteAccount: FC<DeleteAccountProps> = ({ userName }) => {
     }
     return deleteUser().then(
       () => {
-        location.reload();
+        sealosApp.runEvents('deleteUser', {});
         onClose();
       },
       (e) => {
