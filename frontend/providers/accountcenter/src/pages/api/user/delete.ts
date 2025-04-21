@@ -17,10 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     const client = makeDesktopAPIClient(payload);
     if (!client) throw Error('get api client error');
-    const response = await client.post('/api/delete');
+    const response = await client.post('/api/v1alpha/account/delete');
 
     const data = response.data as ApiResp;
     if (data.code !== HttpStatusCode.Ok) {
+      console.log(data);
       return jsonRes(res, {
         code: data.code,
         message: 'delete user error',
