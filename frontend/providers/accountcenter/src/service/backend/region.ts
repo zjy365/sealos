@@ -98,11 +98,20 @@ export function makeDesktopAPIClient(
       }
     });
   }
-  const token = generateRegionalToken(payload);
+  const { userUid, userId, userCrUid, userCrName, regionUid, workspaceId, workspaceUid } = payload;
+  const token = generateRegionalToken({
+    userId,
+    userUid,
+    userCrUid,
+    userCrName,
+    regionUid,
+    workspaceId,
+    workspaceUid
+  });
   return axios.create({
     baseURL,
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `${token}`,
       'Content-Type': 'application/json',
       'Accept-Encoding': 'gzip,deflate,compress'
     }
