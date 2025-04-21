@@ -170,6 +170,21 @@ const Header = ({
           <Text fontSize={'24px'} fontWeight={600} color={'#24282C'}>
             {templateDetail?.spec?.i18n?.[i18n.language]?.title ?? templateDetail?.spec?.title}
           </Text>
+          <Tooltip
+            label={t('badge.' + (templateDetail?.spec?.type ?? 'community'))}
+            bg="#FFF"
+            placement="bottom"
+          >
+            <span>
+              <MyIcon
+                w={'16px'}
+                h={'16px'}
+                fill={'none'}
+                name={templateDetail?.spec?.type ?? 'community'}
+              ></MyIcon>
+            </span>
+          </Tooltip>
+
           {/* {DeployCountComponent} */}
           {/* <Flex
             cursor={'pointer'}
@@ -270,7 +285,7 @@ const Header = ({
             </PopoverContent>
           </Popover> */}
         </Flex>
-        <Flex mt="12px" justifyContent={'flex-start'} alignItems={'center'} gap={'20px'}>
+        {/* <Flex mt="12px" justifyContent={'flex-start'} alignItems={'center'} gap={'20px'}>
           <Flex alignItems={'center'} gap={'10px'} overflow={'hidden'}>
             {templateDetail?.spec?.categories?.map((i) => (
               <Tag
@@ -300,8 +315,8 @@ const Header = ({
               {formatNum(templateDetail?.spec.deployCount)}
             </Text>
           </Center>
-        </Flex>
-        {/* <Tooltip
+        </Flex> */}
+        <Tooltip
           label={
             templateDetail?.spec?.i18n?.[i18n.language]?.description ??
             templateDetail?.spec?.description
@@ -319,14 +334,14 @@ const Header = ({
             onClick={() =>
               copyData(
                 templateDetail?.spec?.i18n?.[i18n.language]?.description ??
-                templateDetail?.spec?.description
+                  templateDetail?.spec?.description
               )
             }
           >
             {templateDetail?.spec?.i18n?.[i18n.language]?.description ??
               templateDetail?.spec?.description}
           </Text>
-        </Tooltip> */}
+        </Tooltip>
       </Flex>
       <Popover trigger="hover" closeDelay={600}>
         <PopoverTrigger>
@@ -334,7 +349,7 @@ const Header = ({
             cursor={'pointer'}
             ml={'auto'}
             alignItems={'center'}
-            color={'brightBlue.600'}
+            color={'#1C4EF5'}
             fontSize={'20px'}
             fontWeight={'bold'}
             flexShrink={'0'}
@@ -343,7 +358,7 @@ const Header = ({
             {/* <CurrencySymbol type={envs?.CURRENCY_SYMBOL} /> */}
             {`$ ${priceList?.[priceList?.length - 1]?.value}`}
             <Text fontSize={'16px'}>/{t('Day')}</Text>
-            <MyIcon name="help" width={'16px'} height={'16px'} color={'grayModern.500'}></MyIcon>
+            <MyIcon name="help" width={'16px'} height={'16px'}></MyIcon>
           </Flex>
         </PopoverTrigger>
         <PopoverContent

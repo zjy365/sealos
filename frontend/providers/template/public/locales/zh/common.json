@@ -208,7 +208,8 @@
     "Preview": "预览",
     "Template Development": "模板开发",
     "YAML File": "YAML 文件",
-    "publish": "发布"
+    "publish": "发布",
+    "Submit Template": "提交模板"
   },
   "file": "文件",
   "file value": "文件值",
@@ -243,5 +244,25 @@
   "total_price_tip": "预估费用不包括流量费用,以实际使用为准",
   "users installed the app": "已有 {{count}} 名用户安装该应用",
   "websocket": "WebSocket",
-  "you_have_successfully_deployed_app": "您已成功部署一个应用！"
+  "you_have_successfully_deployed_app": "您已成功部署一个应用！",
+  "badge": {
+    "official": "ClawCloud Run 官方认证",
+    "developer": "由项目开发者提供",
+    "community": "社区开发者提供"
+  },
+  "templateDetails": "模板详情",
+  "running": "正在运行",
+  "publisher": "发布者",
+  "created": "创建于",
+  "developer": "开发者",
+  "githubRepo": "GitHub 仓库",
+  "view": "查看",
+  "templateContent": "模板内容",
+  "shareTemplate": "分享模板",
+  "submitTemplate": "提交模板",
+  "submitTemplateDesc": "通过将您的模板提交到 ClawCloud Run 的应用商店来获得免费的 Hobby 或 Pro 计划 - 只需在我们的 GitHub 存储库中创建一个拉取请求。",
+  "clickDeploy": "一键部署",
+  "htmlSnippet": "HTML 片段",
+  "markdownSnippet": "Markdown 片段",
+  "buttonAppearance": "按钮外观"
 }

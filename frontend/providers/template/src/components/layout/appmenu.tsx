@@ -88,10 +88,31 @@ export default function AppMenu() {
                     borderRadius={'8px'}
                     bottom={'28px'}
                     onClick={() => router.push('/develop')}
+                    _hover={{
+                      background: '#F4F4F5'
+                    }}
                   >
                     <MyIcon name="tool" fill={'transparent'} />
                     <Text ml="8px" color={'#18181B'} fontWeight={500} fontSize={'14px'}>
                       {t('develop.Debugging Template')}
+                    </Text>
+                  </Center>
+                ) : null}
+                {router.route === '/' ? (
+                  <Center
+                    cursor={'pointer'}
+                    h="40px"
+                    px={'19px'}
+                    borderRadius={'8px'}
+                    color={'#1C4EF5'}
+                    bottom={'28px'}
+                    onClick={() => {
+                      window.open('https://github.com/ClawCloud/Run-Template', '_blank');
+                    }}
+                  >
+                    <MyIcon name="fileQuestion" fill={'transparent'} />
+                    <Text ml="8px" fontWeight={500} fontSize={'14px'}>
+                      {t('develop.Submit Template')}
                     </Text>
                   </Center>
                 ) : null}

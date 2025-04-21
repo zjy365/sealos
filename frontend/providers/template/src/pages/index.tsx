@@ -13,6 +13,7 @@ import {
   AvatarGroup,
   Box,
   Center,
+  Divider,
   Flex,
   Grid,
   Icon,
@@ -160,7 +161,7 @@ export default function AppList({
                     }}
                     key={item?.metadata?.name}
                     flexDirection={'column'}
-                    h={'184px'}
+                    // h={'184px'}
                     p={'24px'}
                     borderRadius={'16px'}
                     backgroundColor={'#fff'}
@@ -184,9 +185,31 @@ export default function AppList({
                           loading="lazy"
                         />
                       </Box>
-                      <Flex ml="16px" noOfLines={2} flexDirection={'column'}>
-                        <Text fontSize={'18px'} fontWeight={600} color={'#111824'}>
-                          {item.spec.i18n?.[i18n.language]?.title ?? item.spec.title}
+                      <Flex position={'relative'} ml="16px" noOfLines={2} flexDirection={'column'}>
+                        <Flex alignItems={'center'} gap={'4px'}>
+                          <Text fontSize={'16px'} lineHeight={1} fontWeight={600} color={'#111824'}>
+                            {item.spec.i18n?.[i18n.language]?.title ?? item.spec.title}
+                          </Text>
+                          <Tooltip
+                            label={t('badge.' + (item?.spec?.type ?? 'community'))}
+                            bg="#FFF"
+                            placement="top"
+                          >
+                            <span>
+                              <MyIcon
+                                w={'16px'}
+                                h={'16px'}
+                                fill={'none'}
+                                name={item?.spec?.type ?? 'community'}
+                              ></MyIcon>
+                            </span>
+                          </Tooltip>
+                        </Flex>
+                        <Text fontSize={'12px'} fontWeight={400} color={'#737373'}>
+                          {item?.spec?.categories
+                            ?.reverse()
+                            .map((i) => t(`SideBar.${i}`))
+                            .join(' / ')}
                         </Text>
                         {envs?.SHOW_AUTHOR === 'true' && (
                           <Text fontSize={'12px'} fontWeight={400} color={'#5A646E'}>
@@ -220,13 +243,14 @@ export default function AppList({
                         overflow: hidden;
                         text-overflow: ellipsis;
                       `}
-                      my={'16px'}
+                      mt={'16px'}
                       fontSize={'12px'}
                       color={'5A646E'}
                       fontWeight={400}
                     >
                       {item.spec.i18n?.[i18n.language]?.description ?? item.spec.description}
                     </Text>
+                    <Divider borderColor={'#F1F1F3'} my={'8px'} />
                     <Flex
                       mt="auto"
                       justifyContent={'space-between'}
@@ -234,7 +258,7 @@ export default function AppList({
                       gap={'20px'}
                     >
                       <Flex alignItems={'center'} gap={'10px'} overflow={'hidden'}>
-                        {item?.spec?.categories?.map((i) => (
+                        {/* {item?.spec?.categories?.map((i) => (
                           <Tag
                             flexShrink={0}
                             key={i}
@@ -246,7 +270,21 @@ export default function AppList({
                           >
                             {t(`SideBar.${i}`)}
                           </Tag>
-                        ))}
+                        ))} */}
+                        <span>
+                          {item?.spec?.author_id && (
+                            <Image
+                              rounded={'50%'}
+                              w={'24px'}
+                              h={'24px'}
+                              src={`https://avatars.githubusercontent.com/u/${item?.spec?.author_id}?v=4`}
+                              alt=""
+                            />
+                          )}
+                        </span>
+                        <Text fontSize={'12px'} fontWeight={400} color={'#737373'}>
+                          {item?.spec?.author}
+                        </Text>
                       </Flex>
                       <Center
                       // cursor={'pointer'}
@@ -257,7 +295,7 @@ export default function AppList({
                       //   )
                       // }
                       >
-                        <MyIcon name="usersround" color={'transparent'} />
+                        <MyIcon name="activity" color={'transparent'} />
                         <Text fontSize={'12px'} color={'#A3A3A3'} ml={'4px'}>
                           {formatNum(item?.spec.deployCount)}
                         </Text>

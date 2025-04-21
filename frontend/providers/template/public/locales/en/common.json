@@ -208,7 +208,8 @@
     "Preview": "Preview",
     "Template Development": "Template Development",
     "YAML File": "YAML File",
-    "publish": "publish"
+    "publish": "publish",
+    "Submit Template": "Submit Template"
   },
   "file": "file",
   "file value": "File Content",
@@ -243,5 +244,25 @@
   "total_price_tip": "The estimated cost does not include traffic fees, and is subject to actual usage.",
   "users installed the app": "{{count}} users have installed this app",
   "websocket": "WebSocket",
-  "you_have_successfully_deployed_app": "You have successfully deployed an application!"
+  "you_have_successfully_deployed_app": "You have successfully deployed an application!",
+  "badge": {
+    "official": "by ClawCloud Run Official",
+    "developer": "by Project Developer",
+    "community": "by Open-source Community"
+  },
+  "templateDetails": "TEMPLATE DETAILS",
+  "running": "Running",
+  "publisher": "Publisher",
+  "created": "Created",
+  "developer": "Developer",
+  "githubRepo": "GitHub Repo",
+  "view": "view",
+  "templateContent": "TEMPLATE CONTENT",
+  "shareTemplate": "Share this template",
+  "submitTemplate": "Submit your template",
+  "submitTemplateDesc": "Earn FREE Hobby or Pro plans from submitting your template to ClawCloud Run's App Store  - simply creating a pull request in our GitHub repository.",
+  "clickDeploy": "One-Click deploy button",
+  "htmlSnippet": "HTML Snippet",
+  "markdownSnippet": "Markdown Snippet",
+  "buttonAppearance": "Button Appearance"
 }
