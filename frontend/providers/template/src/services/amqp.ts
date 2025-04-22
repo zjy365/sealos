@@ -1,5 +1,13 @@
 import amqp, { ChannelModel, Channel } from 'amqplib';
 import assert from 'assert';
+import { promises as fs } from 'fs';
+
+interface AmqpTlsOptions {
+  cert?: string; // client cert
+  key?: string; // client key
+  passphrase?: string; // passphrase for key
+  ca?: string; // trusted CA certs
+}
 
 export class AmqpClient {
   private connection: ChannelModel | null = null;
@@ -7,7 +15,14 @@ export class AmqpClient {
 
   constructor() {}
 
-  async connect(url?: string) {
+  async connect(url?: string, tlsOptions?: AmqpTlsOptions) {
+    interface AmqpSocketOptions {
+      cert?: Buffer; // client cert
+      key?: Buffer; // client key
+      passphrase?: string; // passphrase for key
+      ca?: Buffer[]; // trusted CA certs
+    }
+
     try {
       if (!url) {
         if (!process.env.RABBITMQ_URL) {
@@ -16,7 +31,28 @@ export class AmqpClient {
         url = process.env.RABBITMQ_URL;
       }
 
-      this.connection = await amqp.connect(url);
+      let socketOptions: AmqpSocketOptions | undefined = undefined;
+      if (url.includes('amqps://')) {
+        console.log('use tls with tlsOptions: ', tlsOptions);
+
+        let certPath = tlsOptions?.cert || process.env.RABBITMQ_CERT;
+        let keyPath = tlsOptions?.key || process.env.RABBITMQ_KEY;
+        let caPath = tlsOptions?.ca || process.env.RABBITMQ_CA;
+
+        let cert = certPath ? await fs.readFile(certPath) : undefined;
+        let key = keyPath ? await fs.readFile(keyPath) : undefined;
+        let passphrase = (tlsOptions?.passphrase || process.env.RABBITMQ_PASSPHRASE) ?? undefined;
+        let ca = caPath ? [await fs.readFile(caPath)] : undefined;
+
+        socketOptions = {
+          cert,
+          key,
+          passphrase,
+          ca
+        };
+      }
+
+      this.connection = await amqp.connect(url, socketOptions);
       this.channel = await this.connection.createChannel();
 
       // Handle connection close
