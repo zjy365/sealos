@@ -89,15 +89,6 @@ export default function EditApp({
     // eslint-disable-next-line
   }, []);
 
-  const shareLink = useMemo(
-    () => ({
-      link: 'https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3Dalist',
-      html: `<a href="https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3Dalist"><img src="https://raw.githubusercontent.com/ClawCloud/Run-Template/refs/heads/main/Run-on-ClawCloud.svg" alt="Run on ClawCloud"/></a>`,
-      markdown: `[![](https://raw.githubusercontent.com/ClawCloud/Run-Template/refs/heads/main/Run-on-ClawCloud.svg)](https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3Dalist)`
-    }),
-    []
-  );
-
   const detailName = useMemo(
     () => templateSource?.source?.defaults?.app_name?.value || '',
     [templateSource]
@@ -305,6 +296,15 @@ export default function EditApp({
     }
   );
 
+  const shareLink = useMemo(
+    () => ({
+      link: `https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3D${data?.templateYaml?.metadata?.name}`,
+      html: `<a href="https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3D${data?.templateYaml?.metadata?.name}"><img src="https://raw.githubusercontent.com/ClawCloud/Run-Template/refs/heads/main/Run-on-ClawCloud.svg" alt="Run on ClawCloud"/></a>`,
+      markdown: `[![](https://raw.githubusercontent.com/ClawCloud/Run-Template/refs/heads/main/Run-on-ClawCloud.svg)](https://template.run.claw.cloud/?openapp=system-fastdeploy%3FtemplateName%3D${data?.templateYaml?.metadata?.name})`
+    }),
+    [data?.templateYaml?.metadata?.name]
+  );
+
   const copyTemplateLink = () => {
     const str = `https://${platformEnvs?.DESKTOP_DOMAIN}/?openapp=system-template%3FtemplateName%3D${appName}`;
     copyData(str);
@@ -416,12 +416,16 @@ export default function EditApp({
             {/* <QuotaBox /> */}
             {!!templateSource?.source?.inputs?.length ? (
               <Form
+                w={'1268px'}
+                fontWeight={500}
+                mx={'auto'}
                 formHook={formHook}
                 pxVal={pxVal}
                 formSource={templateSource!}
                 platformEnvs={platformEnvs!}
               />
             ) : null}
+            <Divider />
             {images.length !== 0 ? (
               <Carousel
                 // data={images.length ? images : ['/1','/2','/3','/4','/1','/2','/3','/4']}
@@ -429,7 +433,7 @@ export default function EditApp({
               />
             ) : null}
             {/* <Yaml yamlList={yamlList} pxVal={pxVal}></Yaml> */}
-            <Flex p={'32px 120px'} flexDirection={'row'} gap={'60px'} justifyContent={'center'}>
+            <Flex p={'32px 42px'} flexDirection={'row'} gap={'60px'} justifyContent={'center'}>
               <Flex w={'320px'} pt={'40px'} gap={'16px'} flexDirection={'column'}>
                 <Text color={'#71717A'} fontSize={'12px'} fontWeight={500}>
                   {t('templateDetails')}
