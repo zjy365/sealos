@@ -110,7 +110,7 @@ export default function AppMenu() {
                       window.open('https://github.com/ClawCloud/Run-Template', '_blank');
                     }}
                   >
-                    <MyIcon name="fileQuestion" fill={'transparent'} />
+                    <MyIcon name="fileText" fill={'transparent'} />
                     <Text ml="8px" fontWeight={500} fontSize={'14px'}>
                       {t('develop.Submit Template')}
                     </Text>

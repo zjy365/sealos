@@ -331,12 +331,12 @@ const Header = ({
             fontSize={'12px'}
             color={'5A646E'}
             fontWeight={400}
-            onClick={() =>
-              copyData(
-                templateDetail?.spec?.i18n?.[i18n.language]?.description ??
-                  templateDetail?.spec?.description
-              )
-            }
+            // onClick={() =>
+            //   copyData(
+            //     templateDetail?.spec?.i18n?.[i18n.language]?.description ??
+            //       templateDetail?.spec?.description
+            //   )
+            // }
           >
             {templateDetail?.spec?.i18n?.[i18n.language]?.description ??
               templateDetail?.spec?.description}
