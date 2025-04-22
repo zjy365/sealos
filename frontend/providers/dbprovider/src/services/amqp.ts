@@ -161,14 +161,15 @@ export class AmqpClient {
     let channel = this.channel;
 
     // assert alternate exchange
-    await channel.assertExchange(`${exchange}_alt`, 'topic', {
+    let altExchange = `${exchange}_alt`;
+    await channel.assertExchange(altExchange, 'topic', {
       durable: true
     });
 
     // assert exchange
     await channel.assertExchange(exchange, 'topic', {
       durable: true,
-      alternateExchange: 'alt_exchange'
+      alternateExchange: altExchange
     });
 
     return channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)));
