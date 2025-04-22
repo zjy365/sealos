@@ -65,7 +65,8 @@ const map = {
   link: require('./icons/link.svg').default,
   outLink: require('./icons/outLink.svg').default,
   share: require('./icons/share.svg').default,
-  userCog: require('./icons/userCog.svg').default
+  userCog: require('./icons/userCog.svg').default,
+  fileText: require('./icons/fileText.svg').default
 };
 
 const MyIcon = ({
