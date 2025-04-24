@@ -120,9 +120,6 @@ importers:
       '@umami/node':
         specifier: ^0.4.0
         version: 0.4.0
-      amqplib:
-        specifier: ^0.10.7
-        version: 0.10.7
       axios:
         specifier: ^1.5.1
         version: 1.6.2
@@ -216,6 +213,9 @@ importers:
       randexp:
         specifier: ^0.5.3
         version: 0.5.3
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.7)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -268,9 +268,6 @@ importers:
       '@testing-library/react':
         specifier: ^14.0.0
         version: 14.1.2(react-dom@18.2.0)(react@18.2.0)
-      '@types/amqplib':
-        specifier: ^0.10.7
-        version: 0.10.7
       '@types/jest':
         specifier: ^29.5.10
         version: 29.5.10
@@ -298,6 +295,9 @@ importers:
       '@types/nprogress':
         specifier: ^0.2.1
         version: 0.2.3
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
       '@types/react':
         specifier: 18.2.37
         version: 18.2.37
@@ -937,9 +937,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
-      amqplib:
-        specifier: ^0.10.7
-        version: 0.10.7
       ansi_up:
         specifier: ^5.2.1
         version: 5.2.1
@@ -1012,6 +1009,9 @@ importers:
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.7)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -1076,6 +1076,9 @@ importers:
       '@types/nprogress':
         specifier: ^0.2.1
         version: 0.2.3
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
       '@types/react':
         specifier: 18.2.37
         version: 18.2.37
@@ -1655,9 +1658,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.10.8
         version: 3.10.8(react-dom@18.2.0)(react@18.2.0)
-      amqplib:
-        specifier: ^0.10.7
-        version: 0.10.7
       ansi_up:
         specifier: ^5.2.1
         version: 5.2.1
@@ -1727,6 +1727,9 @@ importers:
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.7)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -1794,6 +1797,9 @@ importers:
       '@types/papaparse':
         specifier: ^5.3.15
         version: 5.3.15
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
       '@types/react':
         specifier: 18.2.37
         version: 18.2.37
@@ -1845,9 +1851,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
-      amqplib:
-        specifier: ^0.10.7
-        version: 0.10.7
       axios:
         specifier: ^1.7.3
         version: 1.7.3
@@ -1911,6 +1914,9 @@ importers:
       prisma:
         specifier: ^5.10.2
         version: 5.10.2
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.7)
       react:
         specifier: ^18
         version: 18.2.0
@@ -1972,6 +1978,9 @@ importers:
       '@types/nprogress':
         specifier: ^0.2.3
         version: 0.2.3
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
       '@types/react':
         specifier: ^18
         version: 18.2.37
@@ -2684,9 +2693,6 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.35.3
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
-      amqplib:
-        specifier: ^0.10.7
-        version: 0.10.7
       axios:
         specifier: ^1.5.1
         version: 1.6.2
@@ -2756,6 +2762,9 @@ importers:
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.7)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -2829,6 +2838,9 @@ importers:
       '@types/pluralize':
         specifier: ^0.0.33
         version: 0.0.33
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
       '@types/react':
         specifier: 18.2.37
         version: 18.2.37
@@ -5986,6 +5998,14 @@ packages:
 
   /@babel/regjsgen@0.8.0:
     resolution: {integrity: sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==}
+
+  /@babel/runtime-corejs3@7.27.0:
+    resolution: {integrity: sha512-UWjX6t+v+0ckwZ50Y5ShZLnlk95pP5MyW/pon9tiYzl3+18pkTHTFNTKr7rQbfRXPkowt2QAn30o1b6oswszew==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      core-js-pure: 3.41.0
+      regenerator-runtime: 0.14.0
+    dev: false
 
   /@babel/runtime@7.23.4:
     resolution: {integrity: sha512-2Yv65nlWnWlSpe3fXEyX5i7fx5kIKo4Qbcj+hMO0odwaneFjfXw5fdum+4yL20O0QiaHpia0cYQ9xpNMqrBwHg==}
@@ -11815,6 +11835,13 @@ packages:
   /@types/range-parser@1.2.7:
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
 
+  /@types/rascal@10.2.1:
+    resolution: {integrity: sha512-q9hxMIzsryvDYODmbeKzh2uGWQtjLxy6Kc5J483uEdx7CW56Qz1j6JpNVJb5FB/ji2HRPiWUPCnjTxPYtN5IkQ==}
+    dependencies:
+      '@types/amqplib': 0.10.7
+      '@types/node': 20.10.0
+    dev: true
+
   /@types/react-dom@18.0.10:
     resolution: {integrity: sha512-E42GW/JA4Qv15wQdqJq8DL4JhNpB3prJgjgapN3qJT9K2zO5IIAQh4VXvCEDupoqAwnz0cY4RlXeC/ajX5SFHg==}
     dependencies:
@@ -13967,6 +13994,11 @@ packages:
     resolution: {integrity: sha512-cNzGqFsh3Ot+529GIXacjTJ7kegdt5fPXxCBVS1G0iaZpuo/tBz399ymceLJveQhFFZ8qThHiP3fzuoQjKN2ow==}
     dependencies:
       browserslist: 4.24.4
+
+  /core-js-pure@3.41.0:
+    resolution: {integrity: sha512-71Gzp96T9YPk63aUvE5Q5qP+DryB4ZloUZPSOebGM88VNw8VNfvdA7z6kGA8iGOTEzAomsRidp4jXSmUIJsL+Q==}
+    requiresBuild: true
+    dev: false
 
   /core-js@3.33.3:
     resolution: {integrity: sha512-lo0kOocUlLKmm6kv/FswQL8zbkH7mVsLJ/FULClOhv8WRVmKLVcs6XPNQAzstfeJTCHMyButEwG+z1kHxHoDZw==}
@@ -17321,6 +17353,10 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /forward-emitter@0.1.1:
+    resolution: {integrity: sha512-2B/uPHDqPIVRieu2XJ3RsoDaIN87uqpe3qJjRdWj31leDtDEQ2wLOoJN09UeVQGi/Z79Z5fR9su3OXabASyYqw==}
+    dev: false
+
   /fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
     dev: true
@@ -17419,6 +17455,11 @@ packages:
   /fuse.js@7.0.0:
     resolution: {integrity: sha512-14F4hBIxqKvD4Zz/XjDc3y94mNZN6pRv3U13Udo0lNLCWRBUsrMv2xwcF/y/Z5sV6+FQW+/ow68cHpm4sunt8Q==}
     engines: {node: '>=10'}
+    dev: false
+
+  /generic-pool@3.9.0:
+    resolution: {integrity: sha512-hymDOu5B53XvN4QT9dBmZxPX4CWhBPPLguTZ9MMFeFa/Kg0xWVfylOVNlJji/E7yTZWFd/q9GO5TxDLq156D7g==}
+    engines: {node: '>= 4'}
     dev: false
 
   /gensync@1.0.0-beta.2:
@@ -18123,6 +18164,10 @@ packages:
 
   /indexof@0.0.1:
     resolution: {integrity: sha512-i0G7hLJ1z0DE8dsqJa2rycj9dBmNKgXBvotXtZYXakU9oivfB9Uj2ZBC27qqef2U58/ZLwalxa1X/RDCdkHtVg==}
+    dev: false
+
+  /individual@2.0.0:
+    resolution: {integrity: sha512-pWt8hBCqJsUWI/HtcfWod7+N9SgAqyPEaF7JQjwzjn5vGrpg6aQ5qeAFQ7dx//UH4J1O+7xqew+gCeeFt6xN/g==}
     dev: false
 
   /inflight@1.0.6:
@@ -19901,6 +19946,11 @@ packages:
     requiresBuild: true
     dependencies:
       yallist: 4.0.0
+
+  /lru-cache@7.18.3:
+    resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
+    engines: {node: '>=12'}
+    dev: false
 
   /lucide-react@0.476.0(react@18.2.0):
     resolution: {integrity: sha512-x6cLTk8gahdUPje0hSgLN1/MgiJH+Xl90Xoxy9bkPAsMPOUiyRSKR4JCDPGVCEpyqnZXH3exFWNItcvra9WzUQ==}
@@ -22310,6 +22360,27 @@ packages:
     resolution: {integrity: sha512-wOH5LIH2ZHo0P7/bwkR+aNbJ+kv3CHVX4B8qs9GqbtY29fi1bGPV5xczrutN20G+Z4XhRqRMTW3q0S4iyJJPfw==}
     dev: false
 
+  /rascal@20.1.1(amqplib@0.10.7):
+    resolution: {integrity: sha512-7seygN1P9tHSNQRAEzJbwrFpByH5KAzqV50WxrcfVBkyQW80WeSk8P4mpoGDn7c61q98mCKW8XjfthkcQHFJAg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      amqplib: '>=0.5.5'
+    dependencies:
+      amqplib: 0.10.7
+      async: 3.2.5
+      debug: 4.4.0
+      forward-emitter: 0.1.1
+      generic-pool: 3.9.0
+      lodash: 4.17.21
+      lru-cache: 7.18.3
+      safe-json-parse: 4.0.0
+      stashback: 2.0.1
+      uuid: 8.3.2
+      xregexp: 5.1.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /raw-body@1.3.0:
     resolution: {integrity: sha512-iuI1bOSi9tEmVCrXq02ZysXatTrhAu+fSo7XOQHhMo4g87dSy9YB2W/9Udwhz0bPpFk4UcoLhjrHgpPbRD3ktA==}
     engines: {node: '>= 0.8.0'}
@@ -23836,6 +23907,12 @@ packages:
     dependencies:
       queue-microtask: 1.2.3
 
+  /rust-result@1.0.0:
+    resolution: {integrity: sha512-6cJzSBU+J/RJCF063onnQf0cDUOHs9uZI1oroSGnHOph+CQTIJ5Pp2hK5kEQq1+7yE/EEWfulSNXAQ2jikPthA==}
+    dependencies:
+      individual: 2.0.0
+    dev: false
+
   /rw@1.3.3:
     resolution: {integrity: sha512-PdhdWy89SiZogBLaw42zdeqtRJ//zFd2PgQavcICDUgJT5oW10QCRKbJ6bg4r0/UY2M6BWd5tkxuGFRvCkgfHQ==}
     dev: false
@@ -23878,6 +23955,12 @@ packages:
 
   /safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
+
+  /safe-json-parse@4.0.0:
+    resolution: {integrity: sha512-RjZPPHugjK0TOzFrLZ8inw44s9bKox99/0AZW9o/BEQVrJfhI+fIHMErnPyRa89/yRXUUr93q+tiN6zhoVV4wQ==}
+    dependencies:
+      rust-result: 1.0.0
+    dev: false
 
   /safe-regex-test@1.0.0:
     resolution: {integrity: sha512-JBUUzyOgEwXQY1NuPtvcj/qcBDbDmEvWufhlnXZIm75DEHp+afM1r1ujJpJsV/gSM4t59tpDyPi1sd6ZaPFfsA==}
@@ -24465,6 +24548,15 @@ packages:
       error-stack-parser: 2.1.4
       stack-generator: 2.0.10
       stacktrace-gps: 3.1.2
+    dev: false
+
+  /stashback@2.0.1:
+    resolution: {integrity: sha512-NYYD9VxxtEF4YPJjcAm1irb/2kNLG1AYgSQp0bvogzCK6JGW3iNFOILu0jmkM8YsU27SdX93VFkktiqAAHW63w==}
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      debug: 4.4.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /state-local@1.0.7:
@@ -26556,6 +26648,12 @@ packages:
   /xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
     dev: true
+
+  /xregexp@5.1.2:
+    resolution: {integrity: sha512-6hGgEMCGhqCTFEJbqmWrNIPqfpdirdGWkqshu7fFZddmTSfgv5Sn9D2SaKloR79s5VUiUlpwzg3CM3G6D3VIlw==}
+    dependencies:
+      '@babel/runtime-corejs3': 7.27.0
+    dev: false
 
   /xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
