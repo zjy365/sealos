@@ -17,7 +17,7 @@ import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
 import { loginFailureCounter, TloginFailureMessage } from './promtheus/loginFailureCounter';
 import { HttpStatusCode } from 'axios';
-import { sendUserSigninEvent, sendUserSignupEvent } from './event';
+import { sendUserSigninEvent, sendUserSignupEvent } from './amqp';
 
 type TransactionClient = Omit<
   PrismaClient,
@@ -78,7 +78,7 @@ async function signIn({
   }
 
   // Send User Signin Event to RabbitMQ
-  await sendUserSigninEvent(userProvider.user.uid);
+  sendUserSigninEvent(userProvider.user.uid);
 
   return userProvider;
 }
@@ -437,7 +437,7 @@ export async function signUpByEmail({
   if (!result) throw Error('email signup error');
 
   // Send User Signup Event to RabbitMQ
-  await sendUserSignupEvent({
+  sendUserSignupEvent({
     uid: result.user.uid,
     referral_code: referralCode,
     firstname,
@@ -540,7 +540,7 @@ export const getGlobalToken = async ({
       user = result.user;
 
       // Send event to RabbitMQ
-      await sendUserSignupEvent({
+      sendUserSignupEvent({
         uid: user.uid,
         referral_code: referralCode,
         email: ''
@@ -692,7 +692,7 @@ export const getGlobalTokenByOauth = async ({
     }
 
     // Send event to RabbitMQ
-    await sendUserSignupEvent({
+    sendUserSignupEvent({
       uid: user.uid,
       referral_code: referralCode,
       email
