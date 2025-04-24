@@ -1,5 +1,6 @@
 DOCKER_USERNAME := $(DOCKER_USERNAME)
 IMAGE_TAG := $(IMAGE_TAG)
+CC_REGISTRY := $(CC_REGISTRY)
 
 ifneq ($(strip $(DOCKER_USERNAME)),)
   imageOwner := $(DOCKER_USERNAME)/
@@ -72,4 +73,12 @@ image-push-providers/%: image-build-providers/%
 	docker push $(imageOwner)sealos-$*:$(imageTag)
 image-push-%: image-build-%
 	docker push $(imageOwner)sealos-$*:$(imageTag)
+
+cc-image-push-providers/%: image-build-providers/%
+	docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/$*-frontend:$(imageTag)
+	docker push $(CC_REGISTRY)/$*-frontend:$(imageTag)
+
+cc-image-push-%: image-build-%
+	docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/$*-frontend:$(imageTag)
+	docker push $(CC_REGISTRY)/$*-frontend:$(imageTag)
 # Default target to run all builds.
