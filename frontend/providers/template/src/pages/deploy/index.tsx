@@ -473,7 +473,7 @@ export default function EditApp({
                     <Text color={'#71717A'}>{t('created')}</Text>
                     <Text color={'#18181B'}>
                       {data?.templateYaml?.spec.date
-                        ? new Date(data.templateYaml.spec.date).toLocaleString()
+                        ? new Date(data.templateYaml.spec.date).toLocaleDateString()
                         : 'N/A'}
                     </Text>
                   </Grid>

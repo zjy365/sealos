@@ -89,7 +89,7 @@ const Usage = ({
         regionUid: region.find((item: Region) => item.domain === selectApp.regionDomain)?.uid,
         startTime: data.startTime
       }).then((res) => {
-        setSelectDetail(res.costs);
+        setSelectDetail(res.costs || []);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
