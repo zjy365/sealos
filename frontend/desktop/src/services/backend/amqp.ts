@@ -1,7 +1,6 @@
 import { BrokerAsPromised, BrokerConfig } from 'rascal';
 import { promises as fs } from 'fs';
 import assert from 'assert';
-import https from 'https';
 
 const EXCHANGE_NAME = 'rcc_event_exchange';
 
@@ -129,7 +128,7 @@ export async function sendUserSignupEvent(event: UserSignupEvent) {
 }
 
 export async function sendUserSigninEvent(uid: string) {
-  await amqpClient.publishToExchange('userSignin', {
-    uid
-  });
+  // await amqpClient.publishToExchange('userSignin', {
+  //   uid
+  // });
 }
