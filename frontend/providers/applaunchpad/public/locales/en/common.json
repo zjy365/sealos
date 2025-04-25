@@ -16,7 +16,8 @@
     "The applied storage exceeds the quota": "The applied storage exceeds the quota",
     "The container exposed port cannot be empty": "Container port is required",
     "The maximum number of exposed ports is 65535": "Maximum port number is 65535",
-    "The minimum exposed port is 1": "Minimum port number is 1"
+    "The minimum exposed port is 1": "Minimum port number is 1",
+    "The applied nodeports exceeds the quota": "Requested nodeports exceeds your quota. Please contact admin."
   },
   "App Name": "Application Name",
   "Application Deployment": "Application Deployment",
@@ -334,5 +335,6 @@
   "search_keyword": "Search keywords",
   "Key": "Key",
   "Value": "Value",
-  "Manage": "Manage"
+  "Manage": "Manage",
+  "pending_to_allocated": "To be allocated"
 }
