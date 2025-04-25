@@ -153,6 +153,7 @@
   "login_with_google": "Login with Google",
   "login_with_oauth2": "login with OAuth2.0",
   "login_with_wechat": "Login with Wechat",
+  "massive_usage_notify": "Due to the massive increase of users, infrastructure in Japan is under HEAVY load. Our IT department is actively working on it. You may switch to another region. We really appreciate your patience.",
   "manage_team": "Manage Workspaces",
   "member_list": "Members",
   "memory": "Memory",
