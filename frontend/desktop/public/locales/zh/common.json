@@ -147,7 +147,7 @@
   "login_with_google": "Google 登录",
   "login_with_oauth2": "OAuth2.0 登录",
   "login_with_wechat": "Wechat 登录",
-  "massive_usage_notify": "由于用户数量的急剧增加，我们在日本地区的基础设施目前处于高负载状态。我们的IT部门正在积极解决这个问题。您可以切换到其他地区使用，感谢您的耐心等待。",
+  "massive_usage_notify": "由于用户数量的急剧增加，日本的基础设施负载很重。应用程序的部署可能需要大约3到5分钟。我们的IT部门正在积极处理此问题。我们非常感谢您的耐心等待。",
   "manage_team": "管理工作空间",
   "member_list": "成员列表",
   "memory": "内存",
