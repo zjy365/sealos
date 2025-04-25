@@ -37,7 +37,6 @@ data:
           docsUrl: "https://sealos.run/docs/Intro/"
           aiAssistantEnabled: false
       auth:
-        proxyAddress: ""
         callbackURL: "https://{{ .cloudDomain }}{{ if .cloudPort }}:{{ .cloudPort }}{{ end }}/callback"
         signUpEnabled: true
         billingUrl: "http://account-service.account-system.svc:2333"

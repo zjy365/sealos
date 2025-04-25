@@ -33,7 +33,6 @@ desktop:
       helpUrl: "https://question.run.claw.cloud/"
       aiAssistantEnabled: false
   auth:
-    proxyAddress: ""
     callbackURL: "https://127.0.0.1.nip.io/callback"
     signUpEnabled: "true"
     baiduToken: ""

@@ -62,7 +62,6 @@ spec:
               docsUrl: "https://sealos.run/docs/Intro/"
               aiAssistantEnabled: false
           auth:
-            proxyAddress: ""
             callbackURL: "https://127.0.0.1.nip.io/callback"
             signUpEnabled: "true"
             baiduToken: ""

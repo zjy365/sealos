@@ -1,180 +1,27 @@
-import {
-  AbsoluteCenter,
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  FormControl,
-  FormLabel,
-  Input,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  FormErrorMessage,
-  Flex,
-  useColorModeValue,
-  Text
-} from '@chakra-ui/react';
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { ArrowRight } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
-import { zodResolver } from '@hookform/resolvers/zod';
-
 import { useCustomToast } from '@/hooks/useCustomToast';
-import { GoogleIcon, GithubIcon, ClawCloudIcon } from '../icons';
-import {
-  ILoginParams,
-  IRegisterParamsWithoutName,
-  loginParamsSchema,
-  registerParamsWithoutNameSchema
-} from '@/schema/ccSvc';
-import { useSignupStore } from '@/stores/signup';
-import { ccEmailSignIn, ccEmailSignUpCheck, getRegionToken } from '@/api/auth';
 import { useConfigStore } from '@/stores/config';
 import useSessionStore from '@/stores/session';
 import { OauthProvider } from '@/types/user';
-import { sessionConfig } from '@/utils/sessionConfig';
-import Link from 'next/link';
-import email from '@/pages/api/auth/email';
+import { Box, Button, Flex, Stack, Text, useColorModeValue } from '@chakra-ui/react';
 import { Track } from '@sealos/ui';
+import { useTranslation } from 'next-i18next';
+import Link from 'next/link';
+import { ClawCloudIcon, GithubIcon, GoogleIcon } from '../icons';
 
 export default function SigninComponent() {
   const { t } = useTranslation();
   const { toast } = useCustomToast();
-  const [tabIndex, setTabIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const router = useRouter();
-  const { setSignupData, signupData } = useSignupStore();
-  const conf = useConfigStore().authConfig;
-  const { generateState, setProvider, setToken } = useSessionStore();
-  const {
-    register: registerSignin,
-    handleSubmit: handleSigninSubmit,
-    formState: { errors: signinErrors }
-  } = useForm<ILoginParams>({
-    resolver: zodResolver(loginParamsSchema),
-    mode: 'onChange'
-  });
-
-  const {
-    register: registerSignup,
-    handleSubmit: handleSignupSubmit,
-    formState: { errors: signupErrors }
-  } = useForm<IRegisterParamsWithoutName>({
-    resolver: zodResolver(registerParamsWithoutNameSchema),
-    mode: 'onChange',
-    defaultValues: {
-      email: signupData?.email || '',
-      password: signupData?.password || ''
-    }
-  });
-
-  const handleSubmit = (type: 'signin' | 'signup') => {
-    if (type === 'signin') {
-      return handleSigninSubmit(onSignin)();
-    } else {
-      return handleSignupSubmit(onSignup)();
-    }
-  };
-
-  const onSignin = async (data: ILoginParams) => {
-    try {
-      setIsLoading(true);
-      const result = await ccEmailSignIn(data);
-
-      const token = result.data?.token;
-      if (!token) throw Error('get token error');
-
-      setToken(token, rememberMe);
-
-      if (result.data?.needInit) {
-        toast({
-          title: t('cc:sign_in_success'),
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top'
-        });
-        await router.push('/unlockcard');
-      } else {
-        const regionTokenRes = await getRegionToken();
-        if (regionTokenRes?.data) {
-          await sessionConfig(regionTokenRes.data);
-          toast({
-            title: t('cc:sign_in_success'),
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-            position: 'top'
-          });
-          await router.replace('/');
-        }
-      }
-    } catch (error) {
-      console.error('Sign in error:', error);
-      // @ts-ignore
-      if (error.code === 403) {
-        // 提示英文的密码/用户错误
-        toast({
-          title: t('cc:sign_in_failed'),
-          description: 'Please check your username and password and try again.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top'
-        });
-        return;
-      }
-
-      toast({
-        title: t('cc:sign_in_failed'),
-        description: (error as Error)?.message || t('cc:unknown_error'),
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSignup = async (data: IRegisterParamsWithoutName) => {
-    try {
-      setIsLoading(true);
-      const result = await ccEmailSignUpCheck({ email: data.email });
-      if (result.code !== 201) {
-        toast({
-          title: t('cc:sign_up_failed'),
-          description: result.message || t('cc:unknown_error'),
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top'
-        });
-      }
-      setSignupData({
-        email: data.email,
-        password: data.password
-      });
-
-      router.push('/personalinfo');
-    } catch (error) {
-      console.error('Sign up error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { cloudConfig, authConfig } = useConfigStore();
+  const { generateState, setProvider } = useSessionStore();
 
   const handleSocialLogin = async (provider: OauthProvider) => {
-    if (!conf) {
+    if (!authConfig) {
       console.error('Auth config not found');
+      return;
+    }
+
+    if (!cloudConfig) {
+      console.error('Cloud config not found');
       return;
     }
 
@@ -185,67 +32,33 @@ export default function SigninComponent() {
       window.location.href = url;
     };
 
-    const oauthProxyLogin = async ({
-      state,
-      provider,
-      proxyAddress,
-      id
-    }: {
-      state: string;
-      proxyAddress: string;
-      provider: OauthProvider;
-      id: string;
-    }) => {
-      const target = new URL(proxyAddress);
-      const callback = new URL(conf.callbackURL);
-      target.searchParams.append(
-        'oauthProxyState',
-        encodeURIComponent(callback.toString()) + '_' + state
-      );
-      target.searchParams.append('oauthProxyClientID', id);
-      target.searchParams.append('oauthProxyProvider', provider);
-      router.replace(target.toString());
-    };
-
     try {
       switch (provider) {
         case 'GITHUB': {
-          const githubConf = conf.idp.github;
+          const githubConf = authConfig.idp.github;
           if (!githubConf) {
             throw new Error('GitHub configuration not found');
           }
-          if (githubConf.proxyAddress) {
-            await oauthProxyLogin({
-              provider,
-              state,
-              proxyAddress: githubConf.proxyAddress,
-              id: githubConf.clientID
-            });
-          } else {
-            await oauthLogin({
-              url: `https://github.com/login/oauth/authorize?client_id=${githubConf.clientID}&redirect_uri=${conf.callbackURL}&scope=user:email%20read:user&state=${state}`
-            });
-          }
+          const callbackUrl = encodeURIComponent(
+            `${authConfig.callbackURL}?regionDomain=${cloudConfig.domain}`
+          );
+          await oauthLogin({
+            url: `https://github.com/login/oauth/authorize?client_id=${githubConf.clientID}&redirect_uri=${callbackUrl}&scope=user:email%20read:user&state=${state}`
+          });
           break;
         }
         case 'GOOGLE': {
-          const googleConf = conf.idp.google;
+          const googleConf = authConfig.idp.google;
           if (!googleConf) {
             throw new Error('Google configuration not found');
           }
           const scope = encodeURIComponent(`profile openid email`);
-          if (googleConf.proxyAddress) {
-            await oauthProxyLogin({
-              state,
-              provider,
-              proxyAddress: googleConf.proxyAddress,
-              id: googleConf.clientID
-            });
-          } else {
-            await oauthLogin({
-              url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&state=${state}&scope=${scope}&include_granted_scopes=true`
-            });
-          }
+          const callbackUrl = encodeURIComponent(
+            `${authConfig.callbackURL}?regionDomain=${cloudConfig.domain}`
+          );
+          await oauthLogin({
+            url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${callbackUrl}&response_type=code&regionDomain=${cloudConfig.domain}&state=${state}&scope=${scope}&include_granted_scopes=true`
+          });
           break;
         }
       }
