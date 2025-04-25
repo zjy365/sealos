@@ -26,17 +26,38 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
 
   const networks = useMemo(
     () =>
-      app.networks.map((network) => ({
-        inline: `http://${app.appName}.${getUserNamespace()}.svc.cluster.local:${network.port}`,
-        public: network.openPublicDomain
-          ? `${ProtocolList.find((item) => item.value === network.protocol)?.label}${
-              network.customDomain
-                ? network.customDomain
-                : `${network.publicDomain}.${network.domain}${DOMAIN_PORT}`
-            }`
-          : '',
-        port: network.port
-      })),
+      app.networks.map((network) => {
+        const protocol = ProtocolList.find((item) => item.value === network.protocol);
+        const appProtocol = ProtocolList.find((item) => item.value === network.appProtocol);
+
+        if (network.openNodePort) {
+          return {
+            inline: `${protocol?.inline}${app.appName}.${getUserNamespace()}.svc.cluster.local:${
+              network.port
+            }`,
+            public: `${protocol?.label}${protocol?.value.toLowerCase()}.${network.domain}${
+              network?.nodePort ? `:${network.nodePort}` : ''
+            }`,
+            showReadyStatus: false,
+            port: network.port
+          };
+        }
+
+        return {
+          inline: `${appProtocol?.inline}${app.appName}.${getUserNamespace()}.svc.cluster.local:${
+            network.port
+          }`,
+          public: network.openPublicDomain
+            ? `${appProtocol?.label}${
+                network.customDomain
+                  ? network.customDomain
+                  : `${network.publicDomain}.${network.domain}${DOMAIN_PORT}`
+              }`
+            : '',
+          showReadyStatus: true,
+          port: network.port
+        };
+      }),
     [app]
   );
 

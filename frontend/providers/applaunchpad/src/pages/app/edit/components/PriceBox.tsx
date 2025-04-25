@@ -12,12 +12,14 @@ const PriceBox = ({
   cpu,
   memory,
   storage,
+  nodeports,
   gpu,
   pods = [1, 1]
 }: {
   cpu: number;
   memory: number;
   storage: number;
+  nodeports: number;
   gpu?: {
     type: string;
     amount: number;
@@ -33,6 +35,7 @@ const PriceBox = ({
     const cpuP = +((userSourcePrice.cpu * cpu * 24) / 1000).toFixed(2);
     const memoryP = +((userSourcePrice.memory * memory * 24) / 1024).toFixed(2);
     const storageP = +(userSourcePrice.storage * storage * 24).toFixed(2);
+    const nodeportsP = +(userSourcePrice.nodeports * nodeports * 24).toFixed(2);
 
     const gpuP = (() => {
       if (!gpu) return 0;
@@ -41,7 +44,7 @@ const PriceBox = ({
       return +(item.price * gpu.amount * 24).toFixed(2);
     })();
 
-    const totalP = +(cpuP + memoryP + storageP + gpuP).toFixed(2);
+    const totalP = +(cpuP + memoryP + storageP + gpuP + nodeportsP).toFixed(2);
 
     const podScale = (val: number) => {
       const min = (val * pods[0]).toFixed(2);
@@ -73,10 +76,15 @@ const PriceBox = ({
         value: podScale(storageP),
         icon: <HardDrive size={20} color="#A3A3A3" />
       },
+      { 
+        label: 'nodeports', 
+        color: '#FFA500', 
+        value: podScale(nodeportsP) 
+      },
       ...(userSourcePrice?.gpu ? [{ label: 'GPU', color: '#89CD11', value: podScale(gpuP) }] : []),
       { label: 'TotalPrice', color: '#485058', value: podScale(totalP) }
     ];
-  }, [cpu, gpu, memory, pods, storage, userSourcePrice]);
+  }, [cpu, gpu, memory, nodeports, pods, storage, userSourcePrice]);
 
   return (
     <Box bg={'#FFF'} borderRadius={'12px'} border={theme.borders.base}>
