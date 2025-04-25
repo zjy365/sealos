@@ -31,9 +31,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const { kubeconfig } = await authSession(req.headers);
-    const { namespace } = await getK8s({
-      kubeconfig: kubeconfig
+    const { kubeconfig: userKubeconfig } = await authSession(req.headers);
+    const { namespace, kc } = await getK8s({
+      kubeconfig: userKubeconfig
     });
 
     if (!req.body.app) {
@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       body: JSON.stringify(params),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: encodeURIComponent(kubeconfig)
+        Authorization: encodeURIComponent(kc.exportConfig())
       }
     });
     console.log('fetch /queryPodList: ', result.status);
