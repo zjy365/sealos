@@ -15,10 +15,12 @@ import { sessionConfig, setBaiduId, setInviterId, setUserSemData } from '@/utils
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
 import { compareFirstLanguages } from '@/utils/tools';
 import { Box, useColorMode } from '@chakra-ui/react';
+import { useMessage } from '@sealos/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { jwtDecode } from 'jwt-decode';
 import { isString } from 'lodash';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -43,6 +45,8 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
   const { session } = useSessionStore();
   const { layoutConfig, commonConfig, trackingConfig } = useConfigStore();
   const { workspaceInviteCode, setWorkspaceInviteCode } = useCallbackStore();
+  const { t } = useTranslation();
+  const { message } = useMessage();
   const { setCanShowGuide } = useDesktopConfigStore();
 
   useEffect(() => {
@@ -202,6 +206,13 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
       semData.additionalInfo = { semKeyword: k as string };
     }
     setUserSemData(semData);
+    if (!sealos_cloud_domain?.startsWith('ap-northeast-1')) return;
+    message({
+      title: t('massive_usage_notify'),
+      status: 'info',
+      duration: 30000,
+      isClosable: true
+    });
   }, []);
 
   // handle workspaceInvite
