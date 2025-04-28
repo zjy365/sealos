@@ -54,7 +54,7 @@ export default function Callback({ appConfig }: { appConfig: AppClientConfigType
           });
         } else if (oauthProvider === 'GOOGLE') {
           const scope = encodeURIComponent(
-            `https://www.googleapis.com/auth/userinfo.profile openid`
+            `https://www.googleapis.com/auth/userinfo.profile openid email`
           );
           oauthLogin({
             provider: 'GOOGLE',

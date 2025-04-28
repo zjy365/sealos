@@ -1,34 +1,26 @@
 import { jsonRes } from '@/services/backend/response';
-import { bindingRole } from '@/services/backend/team';
-import { UserRole } from '@/types/team';
-import { isUserRole, roleToUserRole, vaildManage } from '@/utils/tools';
+import { roleToUserRole, vaildManage } from '@/utils/tools';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { globalPrisma, prisma } from '@/services/backend/db/init';
-import { v4, validate } from 'uuid';
-import { JoinStatus } from 'prisma/region/generated/client';
 import { verifyAccessToken } from '@/services/backend/auth';
-import { getTeamInviteLimit } from '@/services/enable';
-const TEAM_INVITE_LIMIT = getTeamInviteLimit();
-import { Role } from 'prisma/region/generated/client';
-import { addOrUpdateInviteCode } from '@/services/backend/db/workspaceInviteCode';
+import { findInviteCode } from '@/services/backend/db/workspaceInviteCode';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const payload = await verifyAccessToken(req.headers);
     if (!payload) return jsonRes(res, { code: 401, message: 'token verify error' });
-    const { ns_uid, role } = req.body as {
-      ns_uid?: string;
-      role?: UserRole;
+    const { code } = req.body as {
+      code?: string;
     };
-    if (!ns_uid || !validate(ns_uid))
-      return jsonRes(res, { code: 400, message: 'ns_uid is invaild' });
-    if (!isUserRole(role)) return jsonRes(res, { code: 400, message: 'role is required' });
-    if (role === UserRole.Owner) return jsonRes(res, { code: 403, message: 'role must be others' });
+    if (!code) return jsonRes(res, { code: 400, message: 'code is required' });
+    const linkResults = await findInviteCode(code);
+    if (!linkResults) return jsonRes(res, { code: 404, message: 'the link is not found' });
 
     const queryResults = await prisma.userWorkspace.findMany({
       where: {
-        workspaceUid: ns_uid,
-        status: {
-          in: [JoinStatus.IN_WORKSPACE, JoinStatus.INVITED]
+        workspaceUid: linkResults.workspaceUid,
+        userCrUid: {
+          in: [linkResults.inviterCrUid, payload.userCrUid]
         }
       },
       include: {
@@ -36,33 +28,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userCr: true
       }
     });
-    const own = queryResults.find((x) => x.userCrUid === payload.userCrUid);
-    if (!own) return jsonRes(res, { code: 403, message: 'you are not in the namespace' });
-    const vaild = ([Role.OWNER, Role.MANAGER] as Role[]).includes(own.role);
-    if (!vaild) return jsonRes(res, { code: 403, message: 'you are not manager' });
-    if (queryResults.length >= TEAM_INVITE_LIMIT)
-      return jsonRes(res, { code: 403, message: 'these invitees are too many' });
-    const spec = {
-      inviterUid: payload.userUid,
-      workspaceUid: ns_uid,
-      inviterCrUid: payload.userCrUid,
-      role
-    };
-    const code = v4();
-    const result = await addOrUpdateInviteCode({
-      ...spec,
-      code
+    const inviteeStatus = queryResults.find((item) => item.userCrUid === payload.userCrUid);
+    if (inviteeStatus) return jsonRes(res, { code: 204, message: 'you are already in namespace' });
+    const inviterStatus = queryResults.find((r) => r.userCrUid === linkResults.inviterCrUid);
+    if (!inviterStatus || !vaildManage(roleToUserRole(inviterStatus.role))(linkResults.role, false))
+      return jsonRes(res, { code: 404, message: 'the inviter or the namespace is not found' });
+    const user = await globalPrisma.user.findUnique({
+      where: {
+        uid: inviterStatus.userCr.userUid
+      }
     });
-    if (!result) throw Error('invite member error');
+    if (!user) throw Error('invalid user');
     return jsonRes(res, {
       code: 200,
       data: {
-        code
+        workspace: inviterStatus.workspace.displayName,
+        role: linkResults.role,
+        inviterNickname: user.nickname
       },
       message: 'Successfully'
     });
   } catch (e) {
     console.log(e);
-    return jsonRes(res, { code: 500, message: 'invite member error' });
+    jsonRes(res, { code: 500, message: 'invite member error' });
   }
 }

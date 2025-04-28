@@ -8,11 +8,11 @@
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "removeComments": true
+    "removeComments": true,
+    "composite": true
   },
   "exclude": ["**/node_modules"]
 }
