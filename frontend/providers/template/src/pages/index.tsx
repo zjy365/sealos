@@ -1,39 +1,22 @@
 import { getTemplates } from '@/api/platform';
-import Banner from '@/components/Banner';
-import MyIcon from '@/components/Icon';
 import Carousel from '@/components/Carousel';
+import MyIcon from '@/components/Icon';
+import { applistDriverObj, startDriver } from '@/hooks/driver';
 import { useCachedStore } from '@/store/cached';
 import { useSystemConfigStore } from '@/store/config';
+import { useGuideStore } from '@/store/guide';
 import { useSearchStore } from '@/store/search';
 import { SystemConfigType, TemplateType } from '@/types/app';
 import { serviceSideProps } from '@/utils/i18n';
-import { compareFirstLanguages, formatStarNumber } from '@/utils/tools';
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  Center,
-  Divider,
-  Flex,
-  Grid,
-  Icon,
-  Image,
-  Spinner,
-  Tag,
-  Text,
-  Tooltip
-} from '@chakra-ui/react';
+import { agencyReferral, referral } from '@/utils/referral';
+import { compareFirstLanguages, formatNum } from '@/utils/tools';
+import { Box, Center, Divider, Flex, Grid, Image, Spinner, Text, Tooltip } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { customAlphabet } from 'nanoid';
 import { useTranslation } from 'next-i18next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { MouseEvent, useEffect, useMemo } from 'react';
-import Head from 'next/head';
-import { ShareIcon } from '@/components/icons';
-import { useGuideStore } from '@/store/guide';
-import { applistDriverObj, startDriver } from '@/hooks/driver';
-import { formatNum } from '@/utils/tools';
-import { crmReferral, referral } from '@/utils/referral';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
@@ -336,9 +319,9 @@ export async function getServerSideProps(content: any) {
   if (referralCookie) {
     cookies.push(referralCookie);
   }
-  const crmReferralCookie = crmReferral.getCookiesUseInServerSideProps(content, 'Track');
-  if (crmReferralCookie) {
-    cookies.push(crmReferralCookie);
+  const agencyReferralCookie = agencyReferral.getCookiesUseInServerSideProps(content, 'Track');
+  if (agencyReferralCookie) {
+    cookies.push(agencyReferralCookie);
   }
   cookies.push(`NEXT_LOCALE=${local}; Max-Age=2592000; Secure; SameSite=None`);
   content?.res.setHeader('Set-Cookie', cookies);

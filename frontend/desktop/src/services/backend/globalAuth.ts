@@ -413,6 +413,7 @@ export async function signUpByEmail({
   password,
   firstname,
   lastname,
+  referralType,
   referralCode,
   semData
 }: {
@@ -420,6 +421,7 @@ export async function signUpByEmail({
   password: string;
   firstname: string;
   lastname: string;
+  referralType?: 'agency' | 'rcc';
   referralCode?: string;
   semData?: SemData;
 }) {
@@ -439,6 +441,7 @@ export async function signUpByEmail({
   // Send User Signup Event to RabbitMQ
   sendUserSignupEvent({
     uid: result.user.uid,
+    referral_type: referralType,
     referral_code: referralCode,
     firstname,
     lastname,
@@ -496,6 +499,7 @@ export const getGlobalToken = async ({
   avatar_url,
   password,
   inviterId,
+  referralType,
   referralCode,
   semData,
   bdVid
@@ -506,6 +510,7 @@ export const getGlobalToken = async ({
   avatar_url: string;
   password?: string;
   inviterId?: string;
+  referralType?: 'agency' | 'rcc';
   referralCode?: string;
   semData?: SemData;
   bdVid?: string;
@@ -542,6 +547,7 @@ export const getGlobalToken = async ({
       // Send event to RabbitMQ
       sendUserSignupEvent({
         uid: user.uid,
+        referral_type: referralType,
         referral_code: referralCode,
         email: ''
       });
@@ -606,6 +612,7 @@ export const getGlobalTokenByOauth = async ({
   email,
   avatar_url,
   inviterId,
+  referralType,
   referralCode,
   semData,
   config,
@@ -618,6 +625,7 @@ export const getGlobalTokenByOauth = async ({
   avatar_url: string;
   password?: string;
   inviterId?: string;
+  referralType?: 'agency' | 'rcc';
   referralCode?: string;
   semData?: SemData;
   bdVid?: string;
@@ -694,6 +702,7 @@ export const getGlobalTokenByOauth = async ({
     // Send event to RabbitMQ
     sendUserSignupEvent({
       uid: user.uid,
+      referral_type: referralType,
       referral_code: referralCode,
       email
     });
