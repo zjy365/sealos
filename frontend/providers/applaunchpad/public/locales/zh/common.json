@@ -321,7 +321,7 @@
   "refresh": "刷新",
   "Ready": "准备中",
   "Accessible": "可访问",
-  "ReadyTip": "通常需要 3 到 5 分钟。",
+  "ReadyTip": "通常需要 3 到 10 分钟。",
   "cc": {
     "basic": "基础"
   },

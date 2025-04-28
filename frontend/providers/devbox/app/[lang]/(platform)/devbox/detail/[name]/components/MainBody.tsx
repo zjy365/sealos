@@ -97,7 +97,7 @@ const MainBody = () => {
           </Text>
         );
       },
-      width: '0.5fr'
+      width: '0.3fr'
     },
     {
       title: t('internal_address'),

@@ -321,7 +321,7 @@
   "refresh": "refresh",
   "Ready": "Pending",
   "Accessible": "Available",
-  "ReadyTip": "It usually takes 3 to 5 minutes.",
+  "ReadyTip": "It usually takes 3 to 10 minutes.",
   "cc": {
     "basic": "Basic"
   },

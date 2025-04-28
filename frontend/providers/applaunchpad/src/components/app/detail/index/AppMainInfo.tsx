@@ -220,7 +220,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                       </Flex>
                     </th>
                     <th>
-                      <Flex alignItems={'center'} gap={'2px'} justifyContent={'space-between'}>
+                      <Flex alignItems={'center'} gap={'2px'} justifyContent={'flex-start'}>
                         {network.public && (
                           <>
                             {statusMap[network.public]?.isReady ? (
