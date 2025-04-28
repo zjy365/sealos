@@ -243,34 +243,36 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                 {t('Accessible')}
                               </Center>
                             ) : (
-                              <Center
-                                fontSize={'12px'}
-                                fontWeight={400}
-                                bg={'rgba(17, 24, 36, 0.05)'}
-                                color={'#485264'}
-                                borderRadius={'full'}
-                                p={'2px 4px'}
-                                gap={'2px'}
-                                minW={'63px'}
-                              >
-                                <MyIcon
-                                  name={'loading'}
-                                  w={'12px'}
-                                  h={'12px'}
-                                  animation={'spin 1s linear infinite'}
-                                  sx={{
-                                    '@keyframes spin': {
-                                      '0%': {
-                                        transform: 'rotate(0deg)'
-                                      },
-                                      '100%': {
-                                        transform: 'rotate(360deg)'
+                              <MyTooltip label={t('ReadyTip')} placement={'bottom'}>
+                                <Center
+                                  fontSize={'12px'}
+                                  fontWeight={400}
+                                  bg={'rgba(17, 24, 36, 0.05)'}
+                                  color={'#485264'}
+                                  borderRadius={'full'}
+                                  p={'2px 4px'}
+                                  gap={'2px'}
+                                  minW={'63px'}
+                                >
+                                  <MyIcon
+                                    name={'loading'}
+                                    w={'12px'}
+                                    h={'12px'}
+                                    animation={'spin 1s linear infinite'}
+                                    sx={{
+                                      '@keyframes spin': {
+                                        '0%': {
+                                          transform: 'rotate(0deg)'
+                                        },
+                                        '100%': {
+                                          transform: 'rotate(360deg)'
+                                        }
                                       }
-                                    }
-                                  }}
-                                />
-                                {t('Ready')}
-                              </Center>
+                                    }}
+                                  />
+                                  {t('Ready')}
+                                </Center>
+                              </MyTooltip>
                             )}
                           </>
                         )}
