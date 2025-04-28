@@ -319,8 +319,9 @@
   "please_select": "Please Select",
   "refetching_success": "Refresh Successful",
   "refresh": "refresh",
-  "Ready": "Preparing",
-  "Accessible": "Accessible",
+  "Ready": "Pending",
+  "Accessible": "Available",
+  "ReadyTip": "It usually takes 3 to 5 minutes.",
   "cc": {
     "basic": "Basic"
   },
