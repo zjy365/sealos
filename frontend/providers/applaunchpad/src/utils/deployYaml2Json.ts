@@ -65,7 +65,7 @@ export const json2DeployCr = (data: AppEditType, type: 'deployment' | 'statefuls
         : [],
     resources: {
       requests: {
-        cpu: `${str2Num(Math.floor(data.cpu * 0.1))}m`,
+        cpu: `${str2Num(Math.floor(data.cpu * 0.05))}m`,
         memory: `${str2Num(Math.floor(data.memory * 0.1))}Mi`,
         ...(!!data.gpu?.type ? { [gpuResourceKey]: data.gpu.amount } : {})
       },

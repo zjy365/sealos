@@ -42,7 +42,7 @@ export const json2CreateCluster = (
       memory: `${str2Num(data.memory)}Mi`
     },
     requests: {
-      cpu: `${Math.floor(str2Num(data.cpu) * 0.1)}m`,
+      cpu: `${Math.floor(str2Num(data.cpu) * 0.05)}m`,
       memory: `${Math.floor(str2Num(data.memory) * 0.1)}Mi`
     }
   };
