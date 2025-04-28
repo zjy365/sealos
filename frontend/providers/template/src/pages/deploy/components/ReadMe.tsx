@@ -34,6 +34,14 @@ const ReadMe = ({
           linkTarget={'_blank'}
           rehypePlugins={[rehypeRaw, [rehypeRewrite, { rewrite: myRewrite }]]}
           remarkPlugins={[remarkGfm, remarkUnwrapImages]}
+          components={{
+            h3({ node, ...props }) {
+              return <h3 style={{ fontSize: '20px' }} {...props} />;
+            },
+            h2({ node, ...props }) {
+              return <h2 style={{ fontSize: '20px' }} {...props} />;
+            }
+          }}
         >
           {readmeContent}
         </ReactMarkdown>
