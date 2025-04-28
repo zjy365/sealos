@@ -97,7 +97,9 @@ const map = {
   refresh: require('./icons/refresh.svg').default,
   to: require('./icons/to.svg').default,
   calendar: require('./icons/calendar.svg').default,
-  question: require('./icons/question.svg').default
+  question: require('./icons/question.svg').default,
+  help: require('./icons/help.svg').default,
+  ellipse: require('./icons/ellipse.svg').default,
 };
 
 const MyIcon = ({
