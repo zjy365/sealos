@@ -10,7 +10,7 @@ import { SemData } from '@/types/sem';
 import { NSType } from '@/types/team';
 import { AccessTokenPayload } from '@/types/token';
 import { parseOpenappQuery } from '@/utils/format';
-import { crmReferral, referral } from '@/utils/referral';
+import { agencyReferral, referral } from '@/utils/referral';
 import { sessionConfig, setBaiduId, setInviterId, setUserSemData } from '@/utils/sessionConfig';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
 import { compareFirstLanguages } from '@/utils/tools';
@@ -274,12 +274,12 @@ export async function getServerSideProps({ req, res, locales, query }: any) {
     cookies.push(referralCookie);
   }
 
-  const crmReferralCookie = crmReferral.getCookiesUseInServerSideProps(
+  const agencyReferralCookie = agencyReferral.getCookiesUseInServerSideProps(
     { query, host: global.AppConfig?.cloud.domain },
     'Track'
   );
-  if (crmReferralCookie) {
-    cookies.push(crmReferralCookie);
+  if (agencyReferralCookie) {
+    cookies.push(agencyReferralCookie);
   }
 
   // const local =

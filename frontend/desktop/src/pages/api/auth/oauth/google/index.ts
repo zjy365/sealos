@@ -26,13 +26,27 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           const presistAvatarUrl =
             (await persistImage(avatar_url, 'avatar/' + ProviderType.GOOGLE + '/' + id)) || '';
           const referralCode = req.cookies?.CC_RUN_REFERRAL_CODE || undefined;
+          const agencyReferralCode = req.cookies?.CC_RUN_AGENCY_REFERRAL_CODE || undefined;
+          let referralType: 'agency' | 'rcc' | undefined;
+          let finalReferralCode: string | undefined;
+          if (!agencyReferralCode && !referralCode) {
+            referralType = undefined;
+            finalReferralCode = undefined;
+          } else if (agencyReferralCode) {
+            referralType = 'agency';
+            finalReferralCode = agencyReferralCode;
+          } else {
+            referralType = 'rcc';
+            finalReferralCode = referralCode;
+          }
           await getGlobalTokenByGoogleSvc(
             presistAvatarUrl,
             id,
             name,
             email,
             inviterId,
-            referralCode,
+            referralType,
+            finalReferralCode,
             semData,
             bdVid
           )(res);

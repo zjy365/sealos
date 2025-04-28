@@ -1,14 +1,14 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { enableGithub } from '@/services/enable';
-import { persistImage } from '@/services/backend/persistImage';
-import { ProviderType } from 'prisma/global/generated/client';
+import { ErrorHandler } from '@/services/backend/middleware/error';
 import {
   OauthCodeFilter,
   githubOAuthEnvFilter,
   githubOAuthGuard
 } from '@/services/backend/middleware/oauth';
+import { persistImage } from '@/services/backend/persistImage';
 import { getGlobalTokenByGithubSvc } from '@/services/backend/svc/access';
-import { ErrorHandler } from '@/services/backend/middleware/error';
+import { enableGithub } from '@/services/enable';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { ProviderType } from 'prisma/global/generated/client';
 
 export default ErrorHandler(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!enableGithub()) {
@@ -26,13 +26,27 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
           'avatar/' + ProviderType.GITHUB + '/' + id
         );
         const referralCode = req.cookies?.CC_RUN_REFERRAL_CODE || undefined;
+        const agencyReferralCode = req.cookies?.CC_RUN_AGENCY_REFERRAL_CODE || undefined;
+        let referralType: 'agency' | 'rcc' | undefined;
+        let finalReferralCode: string | undefined;
+        if (!agencyReferralCode && !referralCode) {
+          referralType = undefined;
+          finalReferralCode = undefined;
+        } else if (agencyReferralCode) {
+          referralType = 'agency';
+          finalReferralCode = agencyReferralCode;
+        } else {
+          referralType = 'rcc';
+          finalReferralCode = referralCode;
+        }
         await getGlobalTokenByGithubSvc(
           persistUrl || '',
           id,
           name,
           email,
           inviterId,
-          referralCode,
+          referralType,
+          finalReferralCode,
           semData,
           bdVid,
           {

@@ -34,12 +34,26 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
   const { payload, id } = result;
   const { password, firstName, lastName } = payload;
   const referralCode = req.cookies?.CC_RUN_REFERRAL_CODE || undefined;
+  const agencyReferralCode = req.cookies?.CC_RUN_AGENCY_REFERRAL_CODE || undefined;
+  let referralType: 'agency' | 'rcc' | undefined;
+  let finalReferralCode: string | undefined;
+  if (!agencyReferralCode && !referralCode) {
+    referralType = undefined;
+    finalReferralCode = undefined;
+  } else if (agencyReferralCode) {
+    referralType = 'agency';
+    finalReferralCode = agencyReferralCode;
+  } else {
+    referralType = 'rcc';
+    finalReferralCode = referralCode;
+  }
   const data = await signUpByEmail({
     id,
     password,
     firstname: firstName,
     lastname: lastName,
-    referralCode
+    referralType,
+    referralCode: finalReferralCode
   });
 
   const globalToken = generateAuthenticationToken({

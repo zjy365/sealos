@@ -1,10 +1,10 @@
 import { SemData } from '@/types/sem';
+import { HttpStatusCode } from 'axios';
 import { NextApiResponse } from 'next';
 import { ProviderType, UserStatus } from 'prisma/global/generated/client';
 import { globalPrisma } from '../db/init';
 import { getGlobalToken, getGlobalTokenByOauth } from '../globalAuth';
 import { jsonRes } from '../response';
-import { HttpStatusCode } from 'axios';
 
 export const getGlobalTokenSvcWithEmail =
   (
@@ -15,6 +15,7 @@ export const getGlobalTokenSvcWithEmail =
     email: string,
     password?: string,
     inviterId?: string,
+    referralType?: 'agency' | 'rcc',
     referralCode?: string,
     semData?: SemData,
     bdVid?: string,
@@ -29,6 +30,7 @@ export const getGlobalTokenSvcWithEmail =
       email,
       inviterId,
       password,
+      referralType,
       referralCode,
       semData,
       bdVid,
@@ -59,6 +61,7 @@ export const getGlobalTokenSvc =
     providerType: ProviderType,
     password?: string,
     inviterId?: string,
+    referralType?: 'agency' | 'rcc',
     referralCode?: string,
     semData?: SemData,
     bdVid?: string
@@ -70,6 +73,7 @@ export const getGlobalTokenSvc =
       avatar_url,
       name,
       inviterId,
+      referralType,
       referralCode,
       password,
       semData,
@@ -93,6 +97,7 @@ export const getGlobalTokenByGithubSvc = (
   name: string,
   email: string,
   inviterId?: string,
+  referralType?: 'agency' | 'rcc',
   referralCode?: string,
   semData?: SemData,
   bdVid?: string,
@@ -106,6 +111,7 @@ export const getGlobalTokenByGithubSvc = (
     email,
     undefined,
     inviterId,
+    referralType,
     referralCode,
     semData,
     bdVid,
@@ -116,6 +122,7 @@ export const getGlobalTokenByWechatSvc = (
   providerId: string,
   name: string,
   inviterId?: string,
+  referralType?: 'agency' | 'rcc',
   referralCode?: string,
   semData?: SemData,
   bdVid?: string
@@ -127,6 +134,7 @@ export const getGlobalTokenByWechatSvc = (
     ProviderType.WECHAT,
     undefined,
     inviterId,
+    referralType,
     referralCode,
     semData,
     bdVid
@@ -134,6 +142,7 @@ export const getGlobalTokenByWechatSvc = (
 export const getGlobalTokenByPhoneSvc = (
   phone: string,
   inviterId?: string,
+  referralType?: 'agency' | 'rcc',
   referralCode?: string,
   semData?: SemData,
   bdVid?: string
@@ -145,6 +154,7 @@ export const getGlobalTokenByPhoneSvc = (
     ProviderType.PHONE,
     undefined,
     inviterId,
+    referralType,
     referralCode,
     semData,
     bdVid
@@ -154,8 +164,23 @@ export const getGlobalTokenByPasswordSvc = (
   name: string,
   password: string,
   inviterId?: string,
-  referralCode?: string
-) => getGlobalTokenSvc('', name, name, ProviderType.PASSWORD, password, inviterId, referralCode);
+  referralType?: 'agency' | 'rcc',
+  referralCode?: string,
+  semData?: SemData,
+  bdVid?: string
+) =>
+  getGlobalTokenSvc(
+    '',
+    name,
+    name,
+    ProviderType.PASSWORD,
+    password,
+    inviterId,
+    referralType,
+    referralCode,
+    semData,
+    bdVid
+  );
 
 export const getGlobalTokenByGoogleSvc = (
   avatar_url: string,
@@ -163,6 +188,7 @@ export const getGlobalTokenByGoogleSvc = (
   name: string,
   email: string,
   inviterId?: string,
+  referralType?: 'agency' | 'rcc',
   referralCode?: string,
   semData?: SemData,
   bdVid?: string
@@ -175,6 +201,7 @@ export const getGlobalTokenByGoogleSvc = (
     email,
     undefined,
     inviterId,
+    referralType,
     referralCode,
     semData,
     bdVid

@@ -84,4 +84,4 @@ class Referral {
 }
 
 export const referral = new Referral('CC_RUN_REFERRAL_CODE', 'link');
-export const crmReferral = new Referral('CC_RUN_CRM_REFERRAL_CODE', 'crmLink');
+export const agencyReferral = new Referral('CC_RUN_AGENCY_REFERRAL_CODE', 'agencyLink');

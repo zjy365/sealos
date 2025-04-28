@@ -1,6 +1,6 @@
-import { BrokerAsPromised, BrokerConfig } from 'rascal';
-import { promises as fs } from 'fs';
 import assert from 'assert';
+import { promises as fs } from 'fs';
+import { BrokerAsPromised, BrokerConfig } from 'rascal';
 
 const EXCHANGE_NAME = 'rcc_event_exchange';
 
@@ -114,6 +114,7 @@ export class AmqpClient {
 const amqpClient = new AmqpClient();
 
 type UserSignupEvent = {
+  referral_type?: 'agency' | 'rcc';
   referral_code?: string;
   uid: string;
   email: string;
