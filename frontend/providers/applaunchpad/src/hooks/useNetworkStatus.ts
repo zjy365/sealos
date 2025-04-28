@@ -26,7 +26,7 @@ export const useNetworkStatus = (networks: { inline: string; public: string }[])
     queries: urlPairs.map(({ originalUrl, fetchUrl }) => ({
       queryKey: ['networkStatus', originalUrl],
       queryFn: async (): Promise<NetworkStatus> => {
-        const response = await fetch(`/api/check-ready?url=${encodeURIComponent(fetchUrl)}`);
+        const response = await fetch(`/api/checkReady?url=${encodeURIComponent(fetchUrl)}`);
         const data: ApiResponse = await response.json();
         if (data.code !== 200) {
           throw new Error(data.message || data.error || 'Service not ready');
