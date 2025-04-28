@@ -328,7 +328,6 @@ export default function EditApp({
     <Box
       flexDirection={'column'}
       height={'100%'}
-      overflow={'auto'}
       position={'relative'}
       borderRadius={'12px'}
       background={'linear-gradient(180deg, #FFF 0%, rgba(255, 255, 255, 0.70) 100%)'}
@@ -393,7 +392,7 @@ export default function EditApp({
           </Text>
         </Flex>
       </Flex> */}
-      <Flex pb="36px" flexDirection={'column'} alignItems={'center'} minWidth={'780px'}>
+      <Flex flexDirection={'column'} alignItems={'center'} minWidth={'780px'}>
         <Flex
           flexDirection={'column'}
           width={'100%'}
@@ -535,8 +534,7 @@ export default function EditApp({
                       <MyIcon w={'16px'} h={'16px'} name="share" fill={'none'} />
                     </Flex>
                   </PopoverTrigger>
-                  <PopoverContent w={'240px'}>
-                    <PopoverArrow />
+                  <PopoverContent w={'240px'} autoFocus={false}>
                     <PopoverBody p={'16px'} gap={'12px'} display={'flex'} flexDirection={'column'}>
                       <Flex
                         gap={'12px'}
