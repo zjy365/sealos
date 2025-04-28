@@ -2,7 +2,21 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { Box, Button, Center, Flex, Img, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { 
+  Box,
+  Button,
+  Center,
+  Flex,
+  Img,
+  Text,
+  Tooltip,
+  useDisclosure,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+} from '@chakra-ui/react';
 
 import MyIcon from '@/components/Icon';
 import MyTable from '@/components/MyTable';
@@ -11,8 +25,11 @@ import PodLineChart from '@/components/PodLineChart';
 import { useRouter } from '@/i18n';
 import { useEnvStore } from '@/stores/env';
 import { useCopyData } from '@/utils/tools';
+import { useMemo, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { NetworkType } from '@/types/devbox';
 import { useDevboxStore } from '@/stores/devbox';
+import { checkReady } from '@/api/platform';
 
 const MonitorModal = dynamic(() => import('@/components/modals/MonitorModal'));
 
@@ -23,6 +40,45 @@ const MainBody = () => {
   const { devboxDetail } = useDevboxStore();
   const { env } = useEnvStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const retryCount = useRef(0);
+  const { data: networkStatus, refetch } = useQuery({
+    queryKey: ['networkStatus', devboxDetail?.name],
+    queryFn: () =>
+      devboxDetail?.name && devboxDetail?.status.value === 'Running'
+        ? checkReady(devboxDetail?.name)
+        : [],
+    retry: 5,
+    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
+    onSuccess: (data) => {
+      const hasUnready = data.some((item) => !item.ready);
+      if (!hasUnready) {
+        retryCount.current = 0;
+        return;
+      }
+      if (retryCount.current < 14) {
+        const delay = Math.min(1000 * Math.pow(2, retryCount.current), 32000);
+        retryCount.current += 1;
+        setTimeout(() => {
+          refetch();
+        }, delay);
+      }
+    },
+    refetchIntervalInBackground: false
+  });
+
+  const statusMap = useMemo(
+    () =>
+      networkStatus
+        ? networkStatus.reduce((acc, item) => {
+            if (item?.url) {
+              acc[item.url] = item;
+            }
+            return acc;
+          }, {} as Record<string, { ready: boolean; url: string }>)
+        : {},
+    [networkStatus]
+  );
 
   const networkColumn: {
     title: string;
@@ -72,8 +128,143 @@ const MainBody = () => {
       render: (item: NetworkType) => {
         if (item.openPublicDomain) {
           const address = item.customDomain || item.publicDomain;
+          const displayAddress = `https://${address}`;
           return (
             <Flex alignItems={'center'}>
+              {displayAddress && (
+                <>
+                  {statusMap[displayAddress]?.ready ? (
+                    <Center
+                      fontSize={'12px'}
+                      fontWeight={400}
+                      bg={'rgba(3, 152, 85, 0.05)'}
+                      color={'#039855'}
+                      borderRadius={'full'}
+                      p={'2px 8px 2px 8px'}
+                      gap={'2px'}
+                      minW={'63px'}
+                    >
+                      <Center w={'6px'} h={'6px'} borderRadius={'full'} bg={'#039855'}></Center>
+                      {t('Accessible')}
+                    </Center>
+                  ) : (
+                    <Popover trigger={'hover'}>
+                      <PopoverTrigger>
+                        <Flex
+                          alignItems={'center'}
+                          gap={'2px'}
+                          cursor="pointer"
+                          fontSize={'12px'}
+                          fontWeight={400}
+                          w={'fit-content'}
+                          bg={'rgba(17, 24, 36, 0.05)'}
+                          color={'#485264'}
+                          borderRadius={'full'}
+                          p={'2px 8px 2px 8px'}
+                        >
+                          <MyIcon name={'help'} w={'18px'} h={'18px'} />
+                          <Text fontSize={'12px'} w={'full'} color={'#485264'}>
+                            {t('prepare')}
+                          </Text>
+                        </Flex>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        minW={'410px'}
+                        h={'114px'}
+                        borderRadius={'10px'}
+                        w={'fit-content'}
+                        minH={'fit-content'}
+                      >
+                        <PopoverArrow />
+                        <PopoverBody>
+                          <Box h={'16px'} w={'100%'} fontSize={'12px'} fontWeight={400}>
+                            {t.rich('public_debug_address_tooltip_1', {
+                              blue: (chunks) => (
+                                <Text as={'span'} color={'brightBlue.600'}>
+                                  {chunks}
+                                </Text>
+                              )
+                            })}
+                          </Box>
+                          <Flex mt={'12px'} gap={'4px'} maxW={'610px'}>
+                            <Flex alignItems={'center'} direction={'column'} mt={'2px'}>
+                              <MyIcon name="ellipse" w={'6px'} h={'6px'} />
+                              <Box
+                                h={'22px'}
+                                w={'1px'}
+                                bg={'grayModern.250'}
+                              />
+                              <MyIcon name="ellipse" w={'6px'} h={'6px'} />
+                              <Box
+                                h={'36px'}
+                                w={'1px'}
+                                bg={'grayModern.250'}
+                              />
+                              <MyIcon name="ellipse" w={'6px'} h={'6px'} />
+                            </Flex>
+                            <Flex gap={'6px'} alignItems={'center'} direction={'column'}>
+                              <Flex
+                                h={'16px'}
+                                w={'100%'}
+                                fontSize={'12px'}
+                                fontWeight={400}
+                                minH={'fit-content'}
+                              >
+                                <Box w={'20%'}>
+                                  {t('public_debug_address_tooltip_2_1')}
+                                </Box>
+                                <Box color={'grayModern.600'} w={'80%'}>
+                                  {t('public_debug_address_tooltip_2_2')}
+                                </Box>
+                              </Flex>
+                              <Flex
+                                h={'16px'}
+                                w={'100%'}
+                                fontSize={'12px'}
+                                fontWeight={400}
+                                minH={'fit-content'}
+                              >
+                                <Box w={'20%'}>
+                                  {t('public_debug_address_tooltip_3_1')}
+                                </Box>
+                                <Box color={'grayModern.600'} w={'80%'}>
+                                  {t.rich('public_debug_address_tooltip_3_2', {
+                                    underline: (chunks) => (
+                                      <Text as={'span'} textDecoration={'underline'}>
+                                        {chunks}
+                                      </Text>
+                                    )
+                                  })}
+                                </Box>
+                              </Flex>
+                              <Flex
+                                h={'16px'}
+                                w={'100%'}
+                                fontSize={'12px'}
+                                fontWeight={400}
+                                minH={'fit-content'}
+                              >
+                                <Box w={'20%'}>
+                                  {t('public_debug_address_tooltip_4_1')}
+                                </Box>
+                                <Box color={'grayModern.600'} w={'80%'}>
+                                  {t.rich('public_debug_address_tooltip_4_2', {
+                                    underline: (chunks) => (
+                                      <Text as={'span'} textDecoration={'underline'}>
+                                        {chunks}
+                                      </Text>
+                                    )
+                                  })}
+                                </Box>
+                              </Flex>
+                            </Flex>
+                          </Flex>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </>
+              )}
               <Tooltip
                 label={t('open_link')}
                 hasArrow
