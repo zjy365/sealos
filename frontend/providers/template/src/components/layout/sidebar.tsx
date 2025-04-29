@@ -151,7 +151,7 @@ export default function SideBar() {
                 }}
               >
                 <Text whiteSpace={'nowrap'} color={'#525252'} fontSize={'14px'} fontWeight={500}>
-                  {t(item.value, { defaultValue: item.value })}
+                  {t(item.value, { defaultValue: item.id })}
                 </Text>
               </Flex>
             );

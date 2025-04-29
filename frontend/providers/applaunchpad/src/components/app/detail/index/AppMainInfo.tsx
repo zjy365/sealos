@@ -221,7 +221,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                     </th>
                     <th>
                       <Flex alignItems={'center'} gap={'2px'} justifyContent={'flex-start'}>
-                        {network.public && (
+                        {network.public && network.showReadyStatus && (
                           <>
                             {statusMap[network.public]?.isReady ? (
                               <Center
@@ -239,6 +239,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                   h={'6px'}
                                   borderRadius={'full'}
                                   bg={'#039855'}
+                                  flexShrink={0}
                                 ></Center>
                                 {t('Accessible')}
                               </Center>
