@@ -191,7 +191,7 @@ export default function AppList({
                         <Text fontSize={'12px'} fontWeight={400} color={'#737373'}>
                           {item?.spec?.categories
                             ?.reverse()
-                            .map((i) => t(`SideBar.${i}`))
+                            .map((i) => t(`SideBar.${i}`, { defaultValue: i }))
                             .join(' / ')}
                         </Text>
                         {envs?.SHOW_AUTHOR === 'true' && (
