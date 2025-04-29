@@ -54,6 +54,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           total: creditsData.currentPlanCreditsBalance,
           used: creditsData.currentPlanCreditsDeductionBalance
           // 如果需要时间信息，可以添加逻辑来计算，这里留空
+        },
+        bonus: {
+          total: creditsData.bonus,
+          used: creditsData.deductionBonus
         }
       };
     };

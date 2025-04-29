@@ -125,23 +125,23 @@ model User {
 }
 
 model RegionConfig {
-  id              String   @id
-  key             String   
-  value           String
-  region          String 
+  id     String @id
+  key    String
+  value  String
+  region String
 }
 
 model UserDebt {
-  user_id     String   @id
-  status       String
+  user_id String @id
+  status  String
 }
 
 model UserKYC {
-  user_uid     String   @id
-  status       String
-  created_at  DateTime @default(now()) @db.Timestamptz(3)
-  updated_at  DateTime @default(now()) @db.Timestamptz(3)
-  next_at      DateTime @default(now()) @db.Timestamptz(3)
+  user_uid   String   @id
+  status     String
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @default(now()) @db.Timestamptz(3)
+  next_at    DateTime @default(now()) @db.Timestamptz(3)
 }
 
 model Transfer {
@@ -632,6 +632,15 @@ enum RewardType {
   ONE_MONTH_HOBBY_LICENSE
 
   @@map("reward_type_enum")
+}
+
+model AgencyMark {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  uid        String   @unique @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("agency_mark")
 }
 
 enum ProviderType {

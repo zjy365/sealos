@@ -89,6 +89,11 @@ export const CreditsUsageResponse = z.object({
     total: z.number(),
     used: z.number(),
     time: z.string().optional()
+  }),
+  bonus: z.object({
+    total: z.number(),
+    used: z.number(),
+    time: z.string().optional()
   })
 });
 export type TCreditsUsageApiResponse = z.infer<typeof CreditsUsageApiResponse>;

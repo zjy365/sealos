@@ -601,6 +601,15 @@ enum RewardType {
   @@map("reward_type_enum")
 }
 
+model AgencyMark {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  uid        String   @unique @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("agency_mark")
+}
+
 enum ProviderType {
   PHONE
   GITHUB
