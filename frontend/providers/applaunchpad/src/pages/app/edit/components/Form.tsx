@@ -924,7 +924,7 @@ const Form = ({
                         }
                       })}
                     />
-                    {i === networks.length - 1 && (
+                    {/* {i === networks.length - 1 && (
                       <Box mt={3}>
                         <Button
                           w={'100px'}
@@ -949,7 +949,7 @@ const Form = ({
                           {t('Add Port')}
                         </Button>
                       </Box>
-                    )}
+                    )} */}
                   </Box>
 
                   <Box mx={7}>
@@ -1105,31 +1105,29 @@ const Form = ({
                   )}
                 </Flex>
               ))}
-              {networks.length === 0 && (
-                <Box pt={'12px'}>
-                  <Button
-                    w={'100px'}
-                    variant={'outline'}
-                    leftIcon={<MyIcon name="plus" w={'18px'} fill={'#485264'} />}
-                    onClick={() =>
-                      appendNetworks({
-                        networkName: '',
-                        portName: nanoid(),
-                        port: 80,
-                        protocol: 'TCP',
-                        appProtocol: 'HTTP',
-                        openNodePort: false,
-                        openPublicDomain: false,
-                        publicDomain: '',
-                        customDomain: '',
-                        domain: SEALOS_DOMAIN
-                      })
-                    }
-                  >
-                    {t('Add Port')}
-                  </Button>
-                </Box>
-              )}
+              <Box pt={'12px'}>
+                <Button
+                  w={'100px'}
+                  variant={'outline'}
+                  leftIcon={<MyIcon name="plus" w={'18px'} fill={'#485264'} />}
+                  onClick={() =>
+                    appendNetworks({
+                      networkName: '',
+                      portName: nanoid(),
+                      port: 80,
+                      protocol: 'TCP',
+                      appProtocol: 'HTTP',
+                      openNodePort: false,
+                      openPublicDomain: false,
+                      publicDomain: '',
+                      customDomain: '',
+                      domain: SEALOS_DOMAIN
+                    })
+                  }
+                >
+                  {t('Add Port')}
+                </Button>
+              </Box>
             </Box>
           </Box>
           {/* settings */}
