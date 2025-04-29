@@ -17,6 +17,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    // get user agency mark
+    const agencyMark = await globalPrisma.agencyMark.findUnique({
+      where: {
+        uid: payload.userUid
+      }
+    });
+
     // 查询用户信息
     const user = await globalPrisma.user.findUnique({
       where: {
@@ -56,7 +63,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           firstname: user.userInfo?.firstname || '',
           lastname: user.userInfo?.lastname || '',
           email: userOAuthProviders.find((p) => p.providerType === 'EMAIL')?.providerId || '',
-          createdAt: user.createdAt.getTime()
+          createdAt: user.createdAt.getTime(),
+          agency: agencyMark ? true : false
         },
         bindings: bindingsResp
       }

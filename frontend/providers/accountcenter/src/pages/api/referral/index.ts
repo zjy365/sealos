@@ -1,5 +1,5 @@
-import { authSession } from '@/service/backend/auth';
 import { AccessTokenPayload } from '@/service/auth';
+import { authSession } from '@/service/backend/auth';
 import { globalPrisma } from '@/service/backend/db/init';
 import { jsonRes } from '@/service/backend/response';
 import { HttpStatusCode } from 'axios';
@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // GET method continues with the existing code
     const referral = await globalPrisma.referral.findUnique({
       where: { uid: payload.userUid, available: true },
-      select: { code: true }
+      select: { code: true, type: true }
     });
 
     if (!referral) return jsonRes(res, { code: 404, message: 'Referral code not found' });
@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return jsonRes(res, {
       data: {
         code: referral.code,
+        type: referral.type,
         link: referralLink
       }
     });
