@@ -48,6 +48,8 @@ const (
 	CreditsStatusUsedUp  CreditsStatus = "used_up"
 
 	CreditsFromTypeSubscription CreditsFromType = "subscription"
+	CreditsFromTypeBonus        CreditsFromType = "bonus"
+	CreditsFromTypeGift         CreditsFromType = "gift"
 
 	CreditsRecordTypeIssue   CreditsRecordType = "issue"
 	CreditsRecordTypeConsume CreditsRecordType = "consume"
