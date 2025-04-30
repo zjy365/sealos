@@ -60,7 +60,19 @@ const PlanCredits: FC<CreditsProps> = ({
       </Flex>
     );
   };
+  const showBonus = userInfo?.user?.agency ?? false;
+  const isFreePlan = plan.amount === 0;
   const giftCredit: TCreditsUsageResponse['github'] = creditsUsage.github || { total: 0, used: 0 };
+  if (!isFreePlan) {
+    // 如果是免费，giftCredit的值就是creditsUsage.github
+    // 否则就是creditsUsage.gift - creditsUsage.currentPlan
+    giftCredit.total = Math.max(
+      0,
+      creditsUsage.gift.total - (creditsUsage.currentPlan?.total || 0)
+    );
+    giftCredit.used = Math.max(0, creditsUsage.gift.used - (creditsUsage.currentPlan?.used || 0));
+    giftCredit.time = creditsUsage.gift?.time || undefined;
+  }
   const planCredit: TCreditsUsageResponse['currentPlan'] = creditsUsage.currentPlan || {
     total: 0,
     used: 0
@@ -69,14 +81,12 @@ const PlanCredits: FC<CreditsProps> = ({
     total: 0,
     used: 0
   };
-  const bounsCredit: TCreditsUsageResponse['bonus'] = creditsUsage.bonus || { total: 0, used: 0 };
-  const showBouns = userInfo?.user?.agency || false;
-  const isFreePlan = plan.amount === 0;
+  const bonusCredit: TCreditsUsageResponse['bonus'] = creditsUsage.bonus || { total: 0, used: 0 };
   const restGift = giftCredit.total - giftCredit.used;
   const restCharged = chargedCredit.total - chargedCredit.used;
   const restPlan = planCredit.total - planCredit.used;
-  const restBouns = bounsCredit.total - bounsCredit.used;
-  const restAll = isFreePlan ? restGift : restCharged + restGift + restPlan + restBouns;
+  const restBonus = bonusCredit.total - bonusCredit.used;
+  const restAll = isFreePlan ? restGift : restCharged + restGift + restPlan + restBonus;
   const renderExpireDate = (date: any) => {
     return date ? (
       <Text
@@ -170,16 +180,16 @@ const PlanCredits: FC<CreditsProps> = ({
         </GridItem>
       );
     };
-    const renderBounsGridItem = (bounsExp: ReactNode) => {
+    const renderBonusGridItem = (bonusExp: ReactNode) => {
       return (
         <GridItem position="relative">
           {gridDivider}
           <Flex flexDirection="column">
-            {renderLabel(t('PlanBounsCreditsLabel'), '#8B5CF6')}
+            {renderLabel(t('PlanBonusCreditsLabel'), '#8B5CF6')}
             <Text mt="12px" fontSize="30px" fontWeight="600">
-              ${formatMoneyStr(restBouns, 'floor')}
+              ${formatMoneyStr(restBonus, 'floor')}
             </Text>
-            {bounsExp}
+            {bonusExp}
             {/* <BonusDetail></BonusDetail> */}
           </Flex>
         </GridItem>
@@ -223,10 +233,10 @@ const PlanCredits: FC<CreditsProps> = ({
     }
     const giftExp = renderExpireDate(giftCredit.time);
     const planExp = renderExpireDate(planCredit.time);
-    const bounsExp = renderExpireDate(bounsCredit.time);
+    const bonusExp = renderExpireDate(bonusCredit.time);
     return (
       <>
-        <Grid templateColumns={showBouns ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'} columnGap="48px">
+        <Grid templateColumns={showBonus ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'} columnGap="48px">
           <GridItem>
             <Flex flexDirection="column">
               {renderLabel(t('PlanGiftCreditsLabel'), '#1C4EF5')}
@@ -256,10 +266,10 @@ const PlanCredits: FC<CreditsProps> = ({
             </Flex>
           </GridItem>
           {renderChargedGridItem()}
-          {showBouns ? renderBounsGridItem(bounsExp) : null}
+          {showBonus ? renderBonusGridItem(bonusExp) : null}
         </Grid>
         <Box mt="48px">
-          <Recharge showBouns={showBouns} onPaySuccess={onPaySuccess} />
+          <Recharge showBonus={showBonus} onPaySuccess={onPaySuccess} />
         </Box>
       </>
     );
@@ -267,7 +277,7 @@ const PlanCredits: FC<CreditsProps> = ({
   return (
     <Card variant="outline">
       <CardHeader>
-        {showBouns && !isFreePlan
+        {showBonus && !isFreePlan
           ? `${t('CreditsAvailable')}: $${formatMoneyStr(restAll, 'floor')}`
           : t('CreditsAvailable')}
       </CardHeader>
