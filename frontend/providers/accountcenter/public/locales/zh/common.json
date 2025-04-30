@@ -145,7 +145,7 @@
   "PerYear": "年",
   "PeriodPrice": "价格/{{period}}",
   "Plan": "计划",
-  "PlanBounsCreditsLabel": "膨胀金额",
+  "PlanBonusCreditsLabel": "膨胀金额",
   "PlanFullName": "{{name}}套餐",
   "PlanGiftCreditsLabel": "赠送额度",
   "PlanIncludedCreditsLabel": "套餐包含",

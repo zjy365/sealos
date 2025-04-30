@@ -25,7 +25,7 @@ import RechargeCheckoutModal from './CheckoutModal';
 import { CircleAlert, ArrowRight } from 'lucide-react';
 
 interface RechargeProps {
-  showBouns?: boolean;
+  showBonus?: boolean;
   onPaySuccess?: () => void;
 }
 const minCustomAmount = 5;
@@ -49,7 +49,7 @@ function isInvalidAmount(numberValue: number) {
     !Number.isInteger(numberValue)
   );
 }
-const Recharge: FC<RechargeProps> = ({ showBouns, onPaySuccess }) => {
+const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [inputValue, setInputValue] = useState(String(minCustomAmount));
@@ -136,7 +136,7 @@ const Recharge: FC<RechargeProps> = ({ showBouns, onPaySuccess }) => {
       <Text lineHeight="28px" fontSize="18px" fontWeight="600" mb="16px">
         {t('Recharge')}
       </Text>
-      {showBouns ? (
+      {showBonus ? (
         <Flex
           p={'18px 24px'}
           background={
@@ -180,7 +180,7 @@ const Recharge: FC<RechargeProps> = ({ showBouns, onPaySuccess }) => {
         <ModalContent maxW="456px">
           <ModalHeader>{t('RechargeCustomAmountModalTitle')}</ModalHeader>
           <ModalBody>
-            {showBouns ? (
+            {showBonus ? (
               <>
                 <Flex
                   p={'16px'}
