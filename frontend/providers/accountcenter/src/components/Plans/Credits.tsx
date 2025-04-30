@@ -19,6 +19,7 @@ import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { TUserInfoReponse } from '@/schema/user';
 import { differenceInMonths } from 'date-fns';
+// import BounsDetail from './BounsDetail';
 
 interface CreditsProps {
   plan: TPlanApiResponse;
@@ -68,8 +69,14 @@ const PlanCredits: FC<CreditsProps> = ({
     total: 0,
     used: 0
   };
+  const bounsCredit: TCreditsUsageResponse['bouns'] = creditsUsage.bouns || { total: 0, used: 0 };
+  const showBouns = userInfo?.user?.agency || false;
+  const isFreePlan = plan.amount === 0;
   const restGift = giftCredit.total - giftCredit.used;
   const restCharged = chargedCredit.total - chargedCredit.used;
+  const restPlan = planCredit.total - planCredit.used;
+  const restBouns = bounsCredit.total - bounsCredit.used;
+  const restAll = isFreePlan ? restGift : restCharged + restGift + restPlan + restBouns;
   const renderExpireDate = (date: any) => {
     return date ? (
       <Text
@@ -154,7 +161,7 @@ const PlanCredits: FC<CreditsProps> = ({
         <GridItem position="relative">
           {gridDivider}
           <Flex flexDirection="column">
-            {renderLabel(t('PlanRechargedCreditsLabel'), null)}
+            {renderLabel(t('PlanRechargedCreditsLabel'), '#14B8A6')}
             <Text mt="12px" fontSize="30px" fontWeight="600">
               ${formatMoneyStr(restCharged, 'floor')}
             </Text>
@@ -163,7 +170,22 @@ const PlanCredits: FC<CreditsProps> = ({
         </GridItem>
       );
     };
-    if (plan.amount === 0) {
+    const renderBounsGridItem = (bounsExp: ReactNode) => {
+      return (
+        <GridItem position="relative">
+          {gridDivider}
+          <Flex flexDirection="column">
+            {renderLabel(t('PlanBounsCreditsLabel'), '#8B5CF6')}
+            <Text mt="12px" fontSize="30px" fontWeight="600">
+              ${formatMoneyStr(restBouns, 'floor')}
+            </Text>
+            {bounsExp}
+            {/* <BounsDetail></BounsDetail> */}
+          </Flex>
+        </GridItem>
+      );
+    };
+    if (isFreePlan) {
       const freePlanGift = (
         <Flex flexDirection="column" rowGap="12px" py="4px">
           <Flex alignItems="baseline" gap="12px">
@@ -179,6 +201,12 @@ const PlanCredits: FC<CreditsProps> = ({
             value={restGift === 0 ? 0 : (restGift / giftCredit.total) * 100}
             borderRadius="9999px"
             h="8px"
+            colorScheme={'facebook'}
+            style={
+              {
+                '--chakra-colors-facebook-500': '#1C4EF5'
+              } as CSSProperties
+            }
           />
           {renderLabel(t('PlanGiftCreditsLabel'), '#1C4EF5')}
         </Flex>
@@ -195,10 +223,10 @@ const PlanCredits: FC<CreditsProps> = ({
     }
     const giftExp = renderExpireDate(giftCredit.time);
     const planExp = renderExpireDate(planCredit.time);
-    const restPlan = planCredit.total - planCredit.used;
+    const bounsExp = renderExpireDate(bounsCredit.time);
     return (
       <>
-        <Grid templateColumns="1fr 1fr 1fr" columnGap="48px">
+        <Grid templateColumns={showBouns ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'} columnGap="48px">
           <GridItem>
             <Flex flexDirection="column">
               {renderLabel(t('PlanGiftCreditsLabel'), '#1C4EF5')}
@@ -228,16 +256,21 @@ const PlanCredits: FC<CreditsProps> = ({
             </Flex>
           </GridItem>
           {renderChargedGridItem()}
+          {showBouns ? renderBounsGridItem(bounsExp) : null}
         </Grid>
         <Box mt="48px">
-          <Recharge onPaySuccess={onPaySuccess} />
+          <Recharge showBouns={showBouns} onPaySuccess={onPaySuccess} />
         </Box>
       </>
     );
   };
   return (
     <Card variant="outline">
-      <CardHeader>{t('CreditsAvailable')}</CardHeader>
+      <CardHeader>
+        {showBouns && !isFreePlan
+          ? `${t('CreditsAvailable')}: $${formatMoneyStr(restAll, 'floor')}`
+          : t('CreditsAvailable')}
+      </CardHeader>
       <CardBody>{renderBody()}</CardBody>
     </Card>
   );
