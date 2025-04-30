@@ -1,15 +1,14 @@
-import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   CreditsUsageApiResponse,
   TCreditsUsageApiResponse,
   TCreditsUsageResponse
 } from '@/schema/plan';
-import { jsonRes } from '@/service/backend/response';
-import { authSession } from '@/service/backend/auth';
-import { AxiosError, HttpStatusCode } from 'axios';
 import { AccessTokenPayload } from '@/service/auth';
-import { github } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
+import { authSession } from '@/service/backend/auth';
+import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
+import { jsonRes } from '@/service/backend/response';
+import { AxiosError, HttpStatusCode } from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -56,8 +55,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           // 如果需要时间信息，可以添加逻辑来计算，这里留空
         },
         bonus: {
-          total: creditsData.bonus,
-          used: creditsData.deductionBonus
+          total: creditsData.bonusCreditsBalance,
+          used: creditsData.bonusCreditsDeductionBalance
         }
       };
     };
