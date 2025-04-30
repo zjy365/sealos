@@ -15,7 +15,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 
-const BounsDetail = () => {
+const BonusDetail = () => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -99,4 +99,4 @@ const BounsDetail = () => {
   );
 };
 
-export default BounsDetail;
+export default BonusDetail;

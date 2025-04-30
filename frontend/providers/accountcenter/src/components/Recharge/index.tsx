@@ -212,7 +212,7 @@ const Recharge: FC<RechargeProps> = ({ showBouns, onPaySuccess }) => {
                       {t('recharge')}
                     </Text>
                     <Text fontSize={'14px'} fontWeight={500} color={'#18181B'}>
-                      {t('bouns')}
+                      {t('bonus')}
                     </Text>
                   </Flex>
                   <Flex alignItems={'center'} gap={'12px'}>

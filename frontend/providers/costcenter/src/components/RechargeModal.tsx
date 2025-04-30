@@ -124,7 +124,7 @@ function WechatPayment(props: { complete: number; codeURL?: string; tradeNO?: st
 const BonusBox = (props: {
   onClick: () => void;
   selected: boolean;
-  bouns: number;
+  bonus: number;
   isFirst?: boolean;
   amount: number;
 }) => {
@@ -191,11 +191,11 @@ const BonusBox = (props: {
             <Flex align={'center'}>
               +
               <CurrencySymbol boxSize={'10px'} mr={'2px'} type={currency} />
-              <Text>{props.bouns}</Text>
+              <Text>{props.bonus}</Text>
             </Flex>
           </Flex>
         </Flex>
-      ) : props.bouns !== 0 ? (
+      ) : props.bonus !== 0 ? (
         <Flex
           position={'absolute'}
           minW={'max-content'}
@@ -214,7 +214,7 @@ const BonusBox = (props: {
         >
           <Text mr="4px">{t('Bonus')}</Text>
           <CurrencySymbol boxSize={'10px'} mr={'2px'} type={currency} />
-          <Text> {props.bouns}</Text>
+          <Text> {props.bonus}</Text>
         </Flex>
       ) : (
         <></>
@@ -382,7 +382,7 @@ const RechargeModal = forwardRef(
       if (steps && steps.length > 0) {
         const result = steps.map((v, idx) => [v, getBonus(v), idx]).filter(([k, v]) => v > 0);
         if (result.length > 0) {
-          const [key, bouns, idx] = result[0];
+          const [key, bonus, idx] = result[0];
           setSelectAmount(idx);
           setAmount(key);
         }
@@ -490,7 +490,7 @@ const RechargeModal = forwardRef(
                           key={index}
                           amount={amount}
                           isFirst={specialBonus.findIndex((a) => +a[0] === amount) >= 0}
-                          bouns={getBonus(amount)}
+                          bonus={getBonus(amount)}
                           onClick={() => {
                             setSelectAmount(index);
                             setAmount(amount);

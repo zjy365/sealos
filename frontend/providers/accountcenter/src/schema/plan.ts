@@ -66,7 +66,9 @@ export const CreditsUsageApiResponse = z.object({
     kycDeductionCreditsDeductionBalance: z.number(),
     kycDeductionCreditsBalance: z.number(),
     currentPlanCreditsBalance: z.number(),
-    currentPlanCreditsDeductionBalance: z.number()
+    currentPlanCreditsDeductionBalance: z.number(),
+    bonus: z.number(),
+    deductionBonus: z.number()
   })
 });
 export const CreditsUsageResponse = z.object({
@@ -90,7 +92,7 @@ export const CreditsUsageResponse = z.object({
     used: z.number(),
     time: z.string().optional()
   }),
-  bouns: z.object({
+  bonus: z.object({
     total: z.number(),
     used: z.number(),
     time: z.string().optional()

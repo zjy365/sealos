@@ -19,7 +19,7 @@ import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { TUserInfoReponse } from '@/schema/user';
 import { differenceInMonths } from 'date-fns';
-// import BounsDetail from './BounsDetail';
+// import BonusDetail from './BonusDetail';
 
 interface CreditsProps {
   plan: TPlanApiResponse;
@@ -69,7 +69,7 @@ const PlanCredits: FC<CreditsProps> = ({
     total: 0,
     used: 0
   };
-  const bounsCredit: TCreditsUsageResponse['bouns'] = creditsUsage.bouns || { total: 0, used: 0 };
+  const bounsCredit: TCreditsUsageResponse['bonus'] = creditsUsage.bonus || { total: 0, used: 0 };
   const showBouns = userInfo?.user?.agency || false;
   const isFreePlan = plan.amount === 0;
   const restGift = giftCredit.total - giftCredit.used;
@@ -180,7 +180,7 @@ const PlanCredits: FC<CreditsProps> = ({
               ${formatMoneyStr(restBouns, 'floor')}
             </Text>
             {bounsExp}
-            {/* <BounsDetail></BounsDetail> */}
+            {/* <BonusDetail></BonusDetail> */}
           </Flex>
         </GridItem>
       );
