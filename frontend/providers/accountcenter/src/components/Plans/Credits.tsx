@@ -65,12 +65,19 @@ const PlanCredits: FC<CreditsProps> = ({
   const giftCredit: TCreditsUsageResponse['github'] = creditsUsage.github || { total: 0, used: 0 };
   if (!isFreePlan) {
     // 如果是免费，giftCredit的值就是creditsUsage.github
-    // 否则就是creditsUsage.gift - creditsUsage.currentPlan
+    // 否则就是creditsUsage.gift - creditsUsage.currentPlan - creditsUsage.bonus
     giftCredit.total = Math.max(
       0,
-      creditsUsage.gift.total - (creditsUsage.currentPlan?.total || 0)
+      creditsUsage.gift.total -
+        (creditsUsage.currentPlan?.total || 0) -
+        (creditsUsage.bonus?.total || 0)
     );
-    giftCredit.used = Math.max(0, creditsUsage.gift.used - (creditsUsage.currentPlan?.used || 0));
+    giftCredit.used = Math.max(
+      0,
+      creditsUsage.gift.used -
+        (creditsUsage.currentPlan?.used || 0) -
+        (creditsUsage.bonus?.used || 0)
+    );
     giftCredit.time = creditsUsage.gift?.time || undefined;
   }
   const planCredit: TCreditsUsageResponse['currentPlan'] = creditsUsage.currentPlan || {
