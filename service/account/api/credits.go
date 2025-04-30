@@ -28,18 +28,25 @@ func GetCreditsInfo(c *gin.Context) {
 		return
 	}
 	type CreditsInfoReq struct {
-		UserUID          uuid.UUID `json:"userUid"`
-		Balance          int64     `json:"balance"`
-		DeductionBalance int64     `json:"deductionBalance"`
-		Credits          int64     `json:"credits"`
-		DeductionCredits int64     `json:"deductionCredits"`
+		UserUID uuid.UUID `json:"userUid"`
+
+		Balance          int64 `json:"balance"`
+		DeductionBalance int64 `json:"deductionBalance"`
+
+		Credits          int64 `json:"credits"`
+		DeductionCredits int64 `json:"deductionCredits"`
 
 		KYCDeductionCreditsDeductionBalance int64 `json:"kycDeductionCreditsDeductionBalance"`
 		KYCDeductionCreditsBalance          int64 `json:"kycDeductionCreditsBalance"`
-		CurrentPlanCreditsBalance           int64 `json:"currentPlanCreditsBalance"`
-		CurrentPlanCreditsDeductionBalance  int64 `json:"currentPlanCreditsDeductionBalance"`
+
+		CurrentPlanCreditsBalance          int64 `json:"currentPlanCreditsBalance"`
+		CurrentPlanCreditsDeductionBalance int64 `json:"currentPlanCreditsDeductionBalance"`
+
+		BonusCreditsBalance          int64 `json:"bonusCreditsBalance"`
+		BonusCreditsDeductionBalance int64 `json:"bonusCreditsDeductionBalance"`
 	}
 	var creditsInfo CreditsInfoReq
+
 	subscription, err := dao.DBClient.GetSubscription(&types.UserQueryOpts{UID: req.UserUID})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get subscription info: %v", err)})
@@ -58,6 +65,18 @@ func GetCreditsInfo(c *gin.Context) {
 	}
 	creditsInfo.CurrentPlanCreditsBalance = currentCredits.Amount
 	creditsInfo.CurrentPlanCreditsDeductionBalance = currentCredits.UsedAmount
+	creditsInfo.KYCDeductionCreditsBalance = currentCredits.Amount
+	creditsInfo.KYCDeductionCreditsDeductionBalance = currentCredits.UsedAmount
+
+	var bonusCredits types.Credits
+	err = dao.DBClient.GetGlobalDB().Model(&types.Credits{}).Where("expire_at > ? AND user_uid = ? AND from_type = ? AND status != ?", time.Now().UTC(), req.UserUID, types.CreditsFromTypeBonus, types.CreditsStatusExpired).Find(&bonusCredits).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get credits list: %v", err)})
+		return
+	}
+	creditsInfo.BonusCreditsBalance = bonusCredits.Amount
+	creditsInfo.BonusCreditsDeductionBalance = bonusCredits.UsedAmount
+
 	if subscription.PlanName != types.FreeSubscriptionPlanName {
 		freePlan, err := dao.DBClient.GetSubscriptionPlan(types.FreeSubscriptionPlanName)
 		if err != nil {
@@ -72,9 +91,6 @@ func GetCreditsInfo(c *gin.Context) {
 		}
 		creditsInfo.KYCDeductionCreditsBalance = freeCredits.Amount
 		creditsInfo.KYCDeductionCreditsDeductionBalance = freeCredits.UsedAmount
-	} else {
-		creditsInfo.KYCDeductionCreditsBalance = creditsInfo.CurrentPlanCreditsBalance
-		creditsInfo.KYCDeductionCreditsDeductionBalance = creditsInfo.CurrentPlanCreditsDeductionBalance
 	}
 
 	creditss, err := dao.DBClient.GetBalanceWithCredits(&types.UserQueryOpts{UID: req.UserUID})
@@ -83,10 +99,13 @@ func GetCreditsInfo(c *gin.Context) {
 		return
 	}
 	creditsInfo.UserUID = req.UserUID
+
 	creditsInfo.Balance = creditss.Balance
 	creditsInfo.DeductionBalance = creditss.DeductionBalance
+
 	creditsInfo.Credits = creditss.Credits
 	creditsInfo.DeductionCredits = creditss.DeductionCredits
+
 	c.JSON(http.StatusOK, gin.H{
 		"credits": creditsInfo,
 	})
