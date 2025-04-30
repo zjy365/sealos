@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  ModalCloseButton,
   Button,
   FormControl,
   FormLabel,
@@ -21,12 +22,14 @@ import {
 import { useTranslation } from 'next-i18next';
 import { FC, SyntheticEvent, useState } from 'react';
 import RechargeCheckoutModal from './CheckoutModal';
+import { CircleAlert, ArrowRight } from 'lucide-react';
 
 interface RechargeProps {
+  showBouns?: boolean;
   onPaySuccess?: () => void;
 }
 const minCustomAmount = 5;
-const maxCustomAmount = 10000;
+const maxCustomAmount = 25000;
 const amounts = [10, 20, 30];
 const gridItemStyle: GridItemProps = {
   bg: 'rgba(249, 249, 249, 1)',
@@ -46,7 +49,7 @@ function isInvalidAmount(numberValue: number) {
     !Number.isInteger(numberValue)
   );
 }
-const Recharge: FC<RechargeProps> = ({ onPaySuccess }) => {
+const Recharge: FC<RechargeProps> = ({ showBouns, onPaySuccess }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [inputValue, setInputValue] = useState(String(minCustomAmount));
@@ -55,6 +58,11 @@ const Recharge: FC<RechargeProps> = ({ onPaySuccess }) => {
     isOpen: isCheckoutModalOpen,
     onOpen: openCheckoutModal,
     onClose: closeCheckoutModal
+  } = useDisclosure();
+  const {
+    isOpen: isBonusMetricsOpen,
+    onOpen: openBonusMetricsOpen,
+    onClose: closeBonusMetricsOpen
   } = useDisclosure();
   const [checkoutAmount, setCheckoutAmount] = useState(0);
   const recharge = (amount: number) => {
@@ -86,11 +94,72 @@ const Recharge: FC<RechargeProps> = ({ onPaySuccess }) => {
     }
     setInputErrorKey('');
   };
+  const bonusMetrics = [
+    {
+      amount: 100,
+      expansion: 5
+    },
+    {
+      amount: 500,
+      expansion: 7
+    },
+    {
+      amount: 1000,
+      expansion: 10
+    },
+    {
+      amount: 2000,
+      expansion: 15
+    },
+    {
+      amount: 5000,
+      expansion: 20
+    },
+    {
+      amount: 10000,
+      expansion: 25
+    },
+    {
+      amount: 20000,
+      expansion: 30
+    }
+  ];
+  const getBonusMetrics = (amount: number) => {
+    const index = bonusMetrics.findLastIndex((item) => item.amount <= amount);
+    if (index === -1) {
+      return 0;
+    }
+    return ((bonusMetrics[index].expansion * amount) / 100).toFixed(2);
+  };
   return (
     <>
       <Text lineHeight="28px" fontSize="18px" fontWeight="600" mb="16px">
         {t('Recharge')}
       </Text>
+      {showBouns ? (
+        <Flex
+          p={'18px 24px'}
+          background={
+            'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
+          }
+          rounded={'8px'}
+          mb={'16px'}
+        >
+          <Text fontSize="14px" lineHeight={'20px'} fontWeight="400" color="#18181B" mr={'12px'}>
+            {t('RechargeHint')}
+          </Text>
+          <Text
+            fontSize="14px"
+            lineHeight={'20px'}
+            fontWeight="500"
+            color="#1C4EF5"
+            cursor={'pointer'}
+            onClick={openBonusMetricsOpen}
+          >
+            {t('RechargeHint2')}
+          </Text>
+        </Flex>
+      ) : null}
       <Grid templateColumns="repeat(4,1fr)" gap="12px">
         {amounts.map((amount) => (
           <GridItem key={amount} {...gridItemStyle} onClick={() => recharge(amount)}>
@@ -111,22 +180,90 @@ const Recharge: FC<RechargeProps> = ({ onPaySuccess }) => {
         <ModalContent maxW="456px">
           <ModalHeader>{t('RechargeCustomAmountModalTitle')}</ModalHeader>
           <ModalBody>
-            <FormControl isInvalid={Boolean(inputErrorKey)}>
-              <FormLabel>{t('RechargeCustomAmountHint')}</FormLabel>
-              <Input
-                type="number"
-                min={minCustomAmount}
-                max={maxCustomAmount}
-                step={1}
-                value={inputValue}
-                onChange={handleCustomAmountInputChange}
-              />
-              <Box minH="21px" overflow="hidden">
-                <FormErrorMessage>
-                  {inputErrorKey ? t(inputErrorKey, { label: t('Amount') }) : ''}
-                </FormErrorMessage>
-              </Box>
-            </FormControl>
+            {showBouns ? (
+              <>
+                <Flex
+                  p={'16px'}
+                  background={
+                    'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
+                  }
+                  rounded={'8px'}
+                  mb={'16px'}
+                >
+                  <Text
+                    fontSize="14px"
+                    lineHeight={'20px'}
+                    fontWeight="400"
+                    color="#18181B"
+                    mr={'12px'}
+                  >
+                    {t('bonusMetricsAlert')}
+                  </Text>
+                </Flex>
+                <FormControl isInvalid={Boolean(inputErrorKey)}>
+                  <Flex mb={'8px'} alignItems={'center'}>
+                    <Text
+                      width={'284px'}
+                      flexShrink={0}
+                      fontSize={'14px'}
+                      fontWeight={500}
+                      color={'#18181B'}
+                    >
+                      {t('recharge')}
+                    </Text>
+                    <Text fontSize={'14px'} fontWeight={500} color={'#18181B'}>
+                      {t('bouns')}
+                    </Text>
+                  </Flex>
+                  <Flex alignItems={'center'} gap={'12px'}>
+                    <Input
+                      width={'240px'}
+                      flexShrink={0}
+                      type="number"
+                      min={minCustomAmount}
+                      max={maxCustomAmount}
+                      step={1}
+                      value={inputValue}
+                      onChange={handleCustomAmountInputChange}
+                      placeholder={t('RechargeCustomAmountPlaceholder')}
+                    />
+                    <Box>
+                      <ArrowRight size={'20px'} color="#737373"></ArrowRight>
+                    </Box>
+                    <Input
+                      flex={1}
+                      type="number"
+                      readOnly
+                      value={getBonusMetrics(Number(inputValue))}
+                      cursor={'not-allowed'}
+                    />
+                  </Flex>
+                  {/* <FormLabel mt={"16px"} color={"#71717A"}>{t('RechargeCustomAmountHint')}</FormLabel> */}
+                  <Box minH="21px" overflow="hidden">
+                    <FormErrorMessage>
+                      {inputErrorKey ? t(inputErrorKey, { label: t('Amount') }) : ''}
+                    </FormErrorMessage>
+                  </Box>
+                </FormControl>
+              </>
+            ) : (
+              <FormControl isInvalid={Boolean(inputErrorKey)}>
+                <FormLabel>{t('RechargeCustomAmountHint')}</FormLabel>
+                <Input
+                  type="number"
+                  min={minCustomAmount}
+                  max={maxCustomAmount}
+                  step={1}
+                  value={inputValue}
+                  onChange={handleCustomAmountInputChange}
+                />
+                <Box minH="21px" overflow="hidden">
+                  <FormErrorMessage>
+                    {inputErrorKey ? t(inputErrorKey, { label: t('Amount') }) : ''}
+                  </FormErrorMessage>
+                </Box>
+              </FormControl>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleCustomAmountConfirm}>{t('Confirm')}</Button>
@@ -142,6 +279,54 @@ const Recharge: FC<RechargeProps> = ({ onPaySuccess }) => {
         amount={checkoutAmount}
         onPaySuccess={onPaySuccess}
       />
+      <Modal isOpen={isBonusMetricsOpen} onClose={closeBonusMetricsOpen} isCentered>
+        <ModalOverlay />
+        <ModalContent maxW="576px">
+          <ModalHeader>{t('bonusMetrics')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>{t('bonusMetricsHint')}</Text>
+            <Flex mt={'16px'} flexDirection={'column'}>
+              <Grid gridTemplateColumns={'1fr 1fr'} background={'#FAFAFA'} borderRadius={'8px'}>
+                <Text px={'16px'} fontSize={'14px'} lineHeight={'40px'} color={'#71717A'}>{`${t(
+                  'rechargeAmount'
+                )} ($)`}</Text>
+                <Text px={'16px'} fontSize={'14px'} lineHeight={'40px'} color={'#71717A'}>
+                  {t('creditExpansion')}
+                </Text>
+              </Grid>
+              {bonusMetrics.map((item, index, arr) => (
+                <Grid
+                  key={item.amount}
+                  gridTemplateColumns={'1fr 1fr'}
+                  borderBottom={'1px solid #F1F1F3'}
+                >
+                  <Text px={'16px'} fontSize={'14px'} lineHeight={'48px'} color={'#18181B'}>
+                    {index === arr.length - 1
+                      ? `>= ${item.amount}`
+                      : `${item.amount} - ${arr[index + 1].amount}`}
+                  </Text>
+                  <Text
+                    px={'16px'}
+                    fontSize={'14px'}
+                    lineHeight={'48px'}
+                    color={'#18181B'}
+                  >{`${item.expansion}%`}</Text>
+                </Grid>
+              ))}
+            </Flex>
+            <Flex mt={'16px'} gap={'8px'}>
+              <Box mt={'2px'}>
+                <CircleAlert size={'16px'} color={'#71717A'}></CircleAlert>
+              </Box>
+              <Text fontSize={'14px'} color={'#71717A'}>
+                {t('bonusMetricsAlert')}
+              </Text>
+            </Flex>
+            <Box minH="21px" overflow="hidden"></Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

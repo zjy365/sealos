@@ -90,7 +90,7 @@ export const CreditsUsageResponse = z.object({
     used: z.number(),
     time: z.string().optional()
   }),
-  bonus: z.object({
+  bouns: z.object({
     total: z.number(),
     used: z.number(),
     time: z.string().optional()
