@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const data = response.data as ApiResp;
     if (data.code !== HttpStatusCode.Ok) {
       console.log('delete user error');
-      console.log(data);
+      console.log(response);
       return jsonRes(res, {
         code: data.code,
         message: data.message || 'delete user error',
