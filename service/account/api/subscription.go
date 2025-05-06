@@ -9,6 +9,8 @@ import (
 	"text/template"
 	"time"
 
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	"github.com/labring/sealos/controllers/pkg/utils"
 
 	corev1 "k8s.io/api/core/v1"
@@ -202,7 +204,7 @@ func CheckSubscriptionQuota(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("new client set failed: %v", err)})
 		return
 	}
-	nsList, err := getOwnNsList(clientset, req.Owner)
+	nsList, err := getOwnNsListWithClt(dao.K8sManager.GetClient(), req.Owner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get own namespace list failed: %v", err)})
 		return
@@ -247,12 +249,12 @@ func Retry(attempts int, sleep time.Duration, f func() error) error {
 	return err
 }
 
-// getOwnNsWith *kubernetes.Clientset
-func getOwnNsList(clientset *kubernetes.Clientset, user string) ([]string, error) {
+func getOwnNsListWithClt(clt client.Client, user string) ([]string, error) {
 	if user == "" {
 		return nil, fmt.Errorf("user is empty")
 	}
-	nsList, err := clientset.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{LabelSelector: fmt.Sprintf("%s=%s", "user.sealos.io/owner", user)})
+	nsList := &corev1.NamespaceList{}
+	err := clt.List(context.Background(), nsList, client.MatchingLabels{dao.UserOwnerLabel: user})
 	if err != nil {
 		return nil, fmt.Errorf("list namespace failed: %w", err)
 	}
@@ -789,7 +791,7 @@ func sendUserPayEmail(userUID uuid.UUID, emailRender utils.EmailRenderBuilder) e
 		if err = tmp.Execute(&rendered, emailRender.Build()); err != nil {
 			return fmt.Errorf("failed to render email template: %w", err)
 		}
-		if err := dao.SMTPConfig.SendEmail(rendered.String(), emailProvider.ProviderID); err != nil {
+		if err := dao.SMTPConfig.SendEmailWithSubject(emailRender.GetSubject(), rendered.String(), emailProvider.ProviderID); err != nil {
 			return fmt.Errorf("failed to send email: %w", err)
 		}
 		return nil

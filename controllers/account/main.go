@@ -22,6 +22,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/labring/sealos/controllers/pkg/utils/env"
+
 	"github.com/labring/sealos/controllers/pkg/utils/maps"
 
 	"github.com/labring/sealos/controllers/account/controllers/cache"
@@ -267,9 +269,11 @@ func main() {
 		setupLog.Error(err, "unable to add billing task runner")
 		os.Exit(1)
 	}
-	if err := mgr.Add(debtController); err != nil {
-		setupLog.Error(err, "unable to add debt controller")
-		os.Exit(1)
+	if env.GetEnvWithDefault("SUPPORT_DEBT", "true") == "true" {
+		if err := mgr.Add(debtController); err != nil {
+			setupLog.Error(err, "unable to add debt controller")
+			os.Exit(1)
+		}
 	}
 
 	if err = (&controllers.PodReconciler{

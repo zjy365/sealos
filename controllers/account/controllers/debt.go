@@ -5,11 +5,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"math"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 	"text/template"
 	"time"
+
+	utils2 "github.com/labring/sealos/controllers/account/controllers/utils"
+
+	client2 "github.com/alibabacloud-go/dysmsapi-20170525/v3/client"
+	"github.com/alibabacloud-go/tea/tea"
 
 	dlock "github.com/labring/sealos/controllers/pkg/utils/lock"
 
@@ -45,13 +54,14 @@ func (r *DebtReconciler) start() {
 	db := r.AccountV2.GetGlobalDB()
 	var wg sync.WaitGroup
 
+	// 1.1 account update processing
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		r.processWithTimeRange(&types.Account{}, "updated_at", 1*time.Minute, 24*time.Hour, func(db *gorm.DB, start, end time.Time) {
 			users := getUniqueUsers(db, &types.Account{}, "updated_at", start, end)
 			if len(users) > 0 {
-				r.Logger.Info("processed account updates", "count", len(users), "users", users, "start", start, "end", end)
+				r.Logger.Info("processed account updates", "count", len(users), "start", start, "end", end)
 				r.processUsersInParallel(users)
 			}
 		})
@@ -134,10 +144,21 @@ func (r *DebtReconciler) start() {
 		})
 	}()
 
+	// 3 retry failed users
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		r.retryFailedUsers()
+	}()
+
 	wg.Wait()
 }
 
-func (r *DebtReconciler) refreshDebtStatus(userUID uuid.UUID) error {
+func (r *DebtReconciler) RefreshDebtStatus(userUID uuid.UUID) error {
+	return r.refreshDebtStatus(userUID, false)
+}
+
+func (r *DebtReconciler) refreshDebtStatus(userUID uuid.UUID, skipSendMsg bool) error {
 	account, err := r.AccountV2.GetAccountWithCredits(userUID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return fmt.Errorf("failed to get account %s: %v", userUID, err)
@@ -192,8 +213,10 @@ func (r *DebtReconciler) refreshDebtStatus(userUID uuid.UUID) error {
 		}
 		if types.StatusMap[currentStatus] > types.StatusMap[lastStatus] {
 			//TODO send sms
-			if err := r.SendUserDebtMsg(userUID, oweamount, currentStatus, isBasicUser); err != nil {
-				return fmt.Errorf("failed to send user debt message: %w", err)
+			if !skipSendMsg && account.Balance > 0 {
+				if err := r.SendUserDebtMsg(userUID, oweamount, currentStatus, isBasicUser); err != nil {
+					return NewErrSendMsg(err, userUID)
+				}
 			}
 		}
 	case types.DebtPeriod, types.DebtDeletionPeriod, types.FinalDeletionPeriod: // The current status may be: (Normal, LowBalance, CriticalBalance) Period [Service needs to be restored], DebtDeletionPeriod [Service suspended]
@@ -204,8 +227,10 @@ func (r *DebtReconciler) refreshDebtStatus(userUID uuid.UUID) error {
 		}
 		if currentStatus != types.FinalDeletionPeriod {
 			// TODO send sms
-			if err := r.SendUserDebtMsg(userUID, oweamount, currentStatus, isBasicUser); err != nil {
-				return fmt.Errorf("failed to send user debt message: %w", err)
+			if !skipSendMsg && account.Balance > 0 {
+				if err := r.SendUserDebtMsg(userUID, oweamount, currentStatus, isBasicUser); err != nil {
+					return fmt.Errorf("failed to send user debt message: %w", err)
+				}
 			}
 		}
 	}
@@ -272,6 +297,22 @@ func (r *DebtReconciler) ResumeBalance(userUID uuid.UUID) error {
 	return nil
 }
 
+type ErrSendMsg struct {
+	UserUID uuid.UUID `json:"userUID" bson:"userUID"`
+	Err     error     `json:"err" bson:"err"`
+}
+
+func NewErrSendMsg(err error, userUID uuid.UUID) error {
+	return ErrSendMsg{
+		UserUID: userUID,
+		Err:     err,
+	}
+}
+
+func (e ErrSendMsg) Error() string {
+	return fmt.Sprintf("failed to send message to user %s: %v", e.UserUID, e.Err)
+}
+
 func (r *DebtReconciler) SendUserDebtMsg(userUID uuid.UUID, oweamount int64, currentStatus types.DebtStatusType, isBasicUser bool) error {
 	if r.SmsConfig == nil && r.VmsConfig == nil && r.smtpConfig == nil {
 		return nil
@@ -280,7 +321,7 @@ func (r *DebtReconciler) SendUserDebtMsg(userUID uuid.UUID, oweamount int64, cur
 	if !ok {
 		return nil
 	}
-	if isBasicUser && currentStatus == types.CriticalBalancePeriod {
+	if isBasicUser && currentStatus == types.LowBalancePeriod {
 		return nil
 	}
 	_user, err := r.AccountV2.GetUser(&types.UserQueryOpts{UID: userUID})
@@ -304,29 +345,30 @@ func (r *DebtReconciler) SendUserDebtMsg(userUID uuid.UUID, oweamount int64, cur
 		}
 	}
 	fmt.Printf("user: %s, phone: %s, email: %s\n", userUID, phone, email)
-	//if phone != "" {
-	//	if r.SmsConfig != nil && r.SmsConfig.SmsCode[noticeType] != "" {
-	//		oweamount := strconv.FormatInt(int64(math.Abs(math.Ceil(float64(oweAmount)/1_000_000))), 10)
-	//		err = utils.SendSms(r.SmsConfig.Client, &client2.SendSmsRequest{
-	//			PhoneNumbers: tea.String(phone),
-	//			SignName:     tea.String(r.SmsConfig.SmsSignName),
-	//			TemplateCode: tea.String(r.SmsConfig.SmsCode[noticeType]),
-	//			// ｜ownAmount/1_000_000｜
-	//			TemplateParam: tea.String("{\"user_id\":\"" + user + "\",\"oweamount\":\"" + oweamount + "\"}"),
-	//		})
-	//		if err != nil {
-	//			return fmt.Errorf("failed to send sms notice: %w", err)
-	//		}
-	//	}
-	//	if r.VmsConfig != nil && noticeType == WarningNotice && r.VmsConfig.TemplateCode[noticeType] != "" {
-	//		err = utils.SendVms(phone, r.VmsConfig.TemplateCode[noticeType], r.VmsConfig.NumberPoll, GetSendVmsTimeInUTCPlus8(time.Now()), forbidTimes)
-	//		if err != nil {
-	//			return fmt.Errorf("failed to send vms notice: %w", err)
-	//		}
-	//	}
-	//}
+	if phone != "" {
+		if r.SmsConfig != nil && r.SmsConfig.SmsCode[string(currentStatus)] != "" {
+			oweamount := strconv.FormatInt(int64(math.Abs(math.Ceil(float64(oweamount)/1_000_000))), 10)
+			err = utils2.SendSms(r.SmsConfig.Client, &client2.SendSmsRequest{
+				PhoneNumbers: tea.String(phone),
+				SignName:     tea.String(r.SmsConfig.SmsSignName),
+				TemplateCode: tea.String(r.SmsConfig.SmsCode[string(currentStatus)]),
+				// ｜ownAmount/1_000_000｜
+				TemplateParam: tea.String("{\"user_id\":\"" + userUID.String() + "\",\"oweamount\":\"" + oweamount + "\"}"),
+			})
+			if err != nil {
+				return fmt.Errorf("failed to send sms notice: %w", err)
+			}
+		}
+		if r.VmsConfig != nil && types.ContainDebtStatus(types.DebtStates, currentStatus) && r.VmsConfig.TemplateCode[string(currentStatus)] != "" {
+			err = utils2.SendVms(phone, r.VmsConfig.TemplateCode[string(currentStatus)], r.VmsConfig.NumberPoll, GetSendVmsTimeInUTCPlus8(time.Now()), forbidTimes)
+			if err != nil {
+				return fmt.Errorf("failed to send vms notice: %w", err)
+			}
+		}
+	}
 	if r.smtpConfig != nil && email != "" {
 		var emailBody string
+		var emailSubject = "Low Account Balance Reminder"
 		if SubscriptionEnabled {
 			var userInfo types.UserInfo
 			err = r.AccountV2.GetGlobalDB().Where(types.UserInfo{UserUID: userUID}).Find(&userInfo).Error
@@ -334,8 +376,9 @@ func (r *DebtReconciler) SendUserDebtMsg(userUID uuid.UUID, oweamount int64, cur
 				return fmt.Errorf("failed to get user info: %w", err)
 			}
 			emailRender := &utils.EmailDebtRender{
-				Type:   string(currentStatus),
-				Domain: r.AccountV2.GetLocalRegion().Domain,
+				Type:          string(currentStatus),
+				CurrentStatus: currentStatus,
+				Domain:        r.AccountV2.GetLocalRegion().Domain,
 			}
 			if types.ContainDebtStatus(types.DebtStates, currentStatus) {
 				if oweamount <= 0 {
@@ -355,10 +398,11 @@ func (r *DebtReconciler) SendUserDebtMsg(userUID uuid.UUID, oweamount int64, cur
 				return fmt.Errorf("failed to render email template: %w", err)
 			}
 			emailBody = rendered.String()
+			emailSubject = emailRender.GetSubject()
 		} else {
 			emailBody = emailTmpl
 		}
-		if err = r.smtpConfig.SendEmail(emailBody, email); err != nil {
+		if err = r.smtpConfig.SendEmailWithTitle(emailSubject, emailBody, email); err != nil {
 			return fmt.Errorf("failed to send email notice: %w", err)
 		}
 	}
@@ -382,7 +426,11 @@ func (r *DebtReconciler) sendFlushDebtResourceStatusRequest(quotaReq AdminFlushR
 			return fmt.Errorf("failed to generate token: %w", err)
 		}
 
-		url := fmt.Sprintf("https://account-api.%s/admin/v1alpha1/flush-debt-resource-status", domain)
+		prefix := "https://"
+		if strings.Contains(domain, "nip.io") {
+			prefix = "http://"
+		}
+		url := fmt.Sprintf(prefix+"account-api.%s/admin/v1alpha1/flush-debt-resource-status", domain)
 
 		quotaReqBody, err := json.Marshal(quotaReq)
 		if err != nil {
@@ -413,7 +461,12 @@ func (r *DebtReconciler) sendFlushDebtResourceStatusRequest(quotaReq AdminFlushR
 					lastErr = nil
 					break
 				}
-				lastErr = fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					lastErr = fmt.Errorf("unexpected status code: %d, failed to read response body: %w", resp.StatusCode, err)
+				} else {
+					lastErr = fmt.Errorf("unexpected status code: %d, response body: %s", resp.StatusCode, string(body))
+				}
 			}
 
 			// 进行重试
@@ -424,7 +477,7 @@ func (r *DebtReconciler) sendFlushDebtResourceStatusRequest(quotaReq AdminFlushR
 			}
 		}
 		if lastErr != nil {
-			return lastErr
+			return fmt.Errorf("failed to send %s request after %d attempts: %w", url, maxRetries, lastErr)
 		}
 	}
 	return nil
@@ -450,23 +503,64 @@ func getUniqueUsers(db *gorm.DB, table interface{}, timeField string, startTime,
 	return users
 }
 
+func (r *DebtReconciler) retryFailedUsers() {
+	ticker := time.NewTicker(1 * time.Minute)
+	for range ticker.C {
+		var failedUsers []uuid.UUID
+		r.failedUserLocks.Range(func(key, value interface{}) bool {
+			userUID, ok := key.(uuid.UUID)
+			if ok {
+				failedUsers = append(failedUsers, userUID)
+			}
+			return true
+		})
+		if len(failedUsers) > 0 {
+			r.Logger.Info("retrying failed users", "count", len(failedUsers), "users", failedUsers)
+			r.processUsersInParallel(failedUsers)
+		}
+	}
+}
+
 // Parallel processing of user debt status, the same user simultaneously through the lock to implement a debt refresh processing.
 func (r *DebtReconciler) processUsersInParallel(users []uuid.UUID) {
-	var wg sync.WaitGroup
+	var (
+		wg        sync.WaitGroup
+		semaphore = make(chan struct{}, 50)
+	)
+
 	for _, user := range users {
 		wg.Add(1)
+		semaphore <- struct{}{}
 		go func(u uuid.UUID) {
 			defer wg.Done()
+			defer func() { <-semaphore }()
 			lock, _ := r.userLocks.LoadOrStore(u, &sync.Mutex{})
 			mutex := lock.(*sync.Mutex)
 			if !mutex.TryLock() {
-				r.Logger.Info("user debt processing skipped due to existing lock",
-					"userUID", u)
+				//r.Logger.V(1).Info("user debt processing skipped due to existing lock",
+				//	"userUID", u)
 				return
 			}
 			defer mutex.Unlock()
-			if err := r.refreshDebtStatus(u); err != nil {
+			if err := r.RefreshDebtStatus(u); err != nil {
 				r.Logger.Error(err, fmt.Sprintf("failed to refresh debt status for user %s", u))
+				sendMsgNumber := 1
+				if value, ok := r.failedUserLocks.LoadOrStore(u, sendMsgNumber); ok {
+					if sendMsgNumber, ok = value.(int); ok {
+						if sendMsgNumber >= 3 {
+							if err = r.refreshDebtStatus(u, true); err != nil {
+								r.Logger.Error(err, fmt.Sprintf("failed to refresh debt status for user %s", u))
+							} else {
+								r.failedUserLocks.Delete(u)
+							}
+							return
+						}
+						sendMsgNumber++
+						r.failedUserLocks.Store(u, sendMsgNumber)
+					}
+				}
+			} else {
+				r.failedUserLocks.Delete(u)
 			}
 		}(user)
 	}
@@ -480,7 +574,7 @@ func (r *DebtReconciler) processWithTimeRange(table interface{}, timeField strin
 	endTime := time.Now().Add(-2 * time.Minute)
 	users := getUniqueUsers(r.AccountV2.GetGlobalDB(), table, timeField, startTime, endTime)
 	r.processUsersInParallel(users)
-	r.Logger.Info("processed table updates", "table", fmt.Sprintf("%T", table), "count", len(users), "users", users, "start", startTime, "end", endTime)
+	r.Logger.Info("processed table updates", "table", fmt.Sprintf("%T", table), "count", len(users), "start", startTime, "end", endTime)
 
 	// 后续按时间区间轮询
 	lastEndTime := endTime
