@@ -14,9 +14,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	types2 "k8s.io/apimachinery/pkg/types"
 
-	"k8s.io/apimachinery/pkg/runtime"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	clt_log "sigs.k8s.io/controller-runtime/pkg/log"
@@ -30,8 +27,6 @@ import (
 	"github.com/labring/sealos/service/account/helper"
 	"gorm.io/gorm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 func init() {
@@ -56,32 +51,14 @@ func AdminFlushDebtResourceStatus(c *gin.Context) {
 	}
 	if owner == "" {
 		c.JSON(http.StatusOK, gin.H{"success": true})
-	}
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get in cluster config failed: %v", err)})
 		return
 	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("new client set failed: %v", err)})
-		return
-	}
-	namespaces, err := getOwnNsList(clientset, owner)
+	namespaces, err := getOwnNsListWithClt(dao.K8sManager.GetClient(), owner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get own namespace list failed: %v", err)})
 		return
 	}
-
-	emptyScheme := runtime.NewScheme()
-	utilruntime.Must(v1.AddToScheme(emptyScheme))
-	utilruntime.Must(corev1.AddToScheme(emptyScheme))
-	clt, err := client.New(config, client.Options{Scheme: emptyScheme})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("new client set failed: %v", err)})
-		return
-	}
-	if err = flushUserDebtResourceStatus(req, clt, namespaces); err != nil {
+	if err = flushUserDebtResourceStatus(req, dao.K8sManager.GetClient(), namespaces); err != nil {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to flush user resource status: %v", err)})
 		return
 	}
@@ -163,11 +140,16 @@ func updateNamespaceStatus(ctx context.Context, clt client.Client, status string
 		if ns.Annotations[DebtNamespaceAnnoStatusKey] == status {
 			continue
 		}
-		// 交给namespace controller处理
+
+		original := ns.DeepCopy()
 		ns.Annotations[DebtNamespaceAnnoStatusKey] = status
-		if err := clt.Update(ctx, ns); err != nil {
-			return err
+
+		if err := clt.Patch(ctx, ns, client.MergeFrom(original)); err != nil {
+			return fmt.Errorf("patch namespace annotation failed: %w", err)
 		}
+		//if err := clt.Update(ctx, ns); err != nil {
+		//	return err
+		//}
 	}
 	return nil
 }
@@ -293,18 +275,9 @@ func AdminFlushSubscriptionQuota(c *gin.Context) {
 	}
 	if owner == "" {
 		c.JSON(http.StatusOK, gin.H{"success": true})
-	}
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get in cluster config failed: %v", err)})
 		return
 	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("new client set failed: %v", err)})
-		return
-	}
-	nsList, err := getOwnNsList(clientset, owner)
+	nsList, err := getOwnNsListWithClt(dao.K8sManager.GetClient(), owner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get own namespace list failed: %v", err)})
 		return
@@ -317,8 +290,7 @@ func AdminFlushSubscriptionQuota(c *gin.Context) {
 	}
 	for _, ns := range nsList {
 		quota := getDefaultResourceQuota(ns, "quota-"+ns, rs)
-		_, err = clientset.CoreV1().ResourceQuotas(ns).Update(context.Background(), quota, metav1.UpdateOptions{})
-		if err != nil {
+		if err = dao.K8sManager.GetClient().Update(context.Background(), quota); err != nil {
 			c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("update resource quota failed: %v", err)})
 			return
 		}
@@ -362,21 +334,7 @@ func FlushSubscriptionQuota(c *gin.Context) {
 		return
 	}
 
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get in cluster config failed: %v", err)})
-		return
-	}
-	logWithDuration("In-cluster config retrieved")
-
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("new client set failed: %v", err)})
-		return
-	}
-	logWithDuration("Kubernetes client set created")
-
-	nsList, err := getOwnNsList(clientset, req.Owner)
+	nsList, err := getOwnNsListWithClt(dao.K8sManager.GetClient(), req.Owner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("get own namespace list failed: %v", err)})
 		return
@@ -395,10 +353,10 @@ func FlushSubscriptionQuota(c *gin.Context) {
 
 		quota := getDefaultResourceQuota(ns, "quota-"+ns, dao.SubPlanResourceQuota[userSub.PlanName])
 		err = Retry(2, time.Second, func() error {
-			_, err := clientset.CoreV1().ResourceQuotas(ns).Update(context.Background(), quota, metav1.UpdateOptions{})
+			fErr := dao.K8sManager.GetClient().Update(context.Background(), quota)
 			if err != nil {
-				log.Printf("Failed to update resource quota for %s: %v", ns, err)
-				return fmt.Errorf("failed to update resource quota for %s: %w", ns, err)
+				log.Printf("Failed to update resource quota for %s: %v", ns, fErr)
+				return fmt.Errorf("failed to update resource quota for %s: %w", ns, fErr)
 			}
 			return nil
 		})

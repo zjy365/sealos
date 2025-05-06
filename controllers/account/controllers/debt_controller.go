@@ -86,6 +86,7 @@ const (
 	SMTPHostEnv           = "SMTP_HOST"
 	SMTPPortEnv           = "SMTP_PORT"
 	SMTPFromEnv           = "SMTP_FROM"
+	SMTPUserEnv           = "SMTP_USER"
 	SMTPPasswordEnv       = "SMTP_PASSWORD"
 	SMTPTitleEnv          = "SMTP_TITLE"
 )
@@ -107,20 +108,21 @@ type DebtReconciler struct {
 	DebtUserMap            *maps.ConcurrentMap
 	// TODO need init
 	userLocks                   *sync.Map
+	failedUserLocks             *sync.Map
 	processID                   string
 	SkipExpiredUserTimeDuration time.Duration
 	SendDebtStatusEmailBody     map[accountv1.DebtStatusType]string
 }
 
 type VmsConfig struct {
-	TemplateCode map[int]string
+	TemplateCode map[string]string
 	NumberPoll   string
 }
 
 type SmsConfig struct {
 	Client      *client2.Client
 	SmsSignName string
-	SmsCode     map[int]string
+	SmsCode     map[string]string
 }
 
 var DebtConfig = accountv1.DefaultDebtConfig
@@ -414,9 +416,9 @@ func newStatusConversion(debt *accountv1.Debt) bool {
 
 func determineCurrentStatus(oweamount int64, updateIntervalSeconds int64, lastStatus accountv1.DebtStatusType) accountv1.DebtStatusType {
 	if oweamount > 0 {
-		if oweamount > 50*BaseUnit {
+		if oweamount > 10*BaseUnit {
 			return accountv1.NormalPeriod
-		} else if oweamount > 1*BaseUnit {
+		} else if oweamount > 5*BaseUnit {
 			return accountv1.LowBalancePeriod
 		}
 		return accountv1.CriticalBalancePeriod
@@ -540,8 +542,8 @@ var (
 )
 
 var (
-	//forbidTimes = []string{"00:00-10:00", "20:00-24:00"}
-	UTCPlus8 = time.FixedZone("UTC+8", 8*3600)
+	forbidTimes = []string{"00:00-10:00", "20:00-24:00"}
+	UTCPlus8    = time.FixedZone("UTC+8", 8*3600)
 )
 
 func (r *DebtReconciler) sendSMSNotice(user string, oweAmount int64, noticeType accountv1.DebtStatusType) error {
@@ -721,18 +723,14 @@ func (r *DebtReconciler) updateNamespaceStatus(ctx context.Context, status strin
 }
 
 // convert "1:code1,2:code2" to map[int]string
-func splitSmsCodeMap(codeStr string) (map[int]string, error) {
-	codeMap := make(map[int]string)
+func splitSmsCodeMap(codeStr string) (map[string]string, error) {
+	codeMap := make(map[string]string)
 	for _, code := range strings.Split(codeStr, ",") {
 		split := strings.SplitN(code, ":", 2)
 		if len(split) != 2 {
 			return nil, fmt.Errorf("invalid sms code map: %s", codeStr)
 		}
-		codeInt, err := strconv.Atoi(split[0])
-		if err != nil {
-			return nil, fmt.Errorf("invalid sms code map: %s", codeStr)
-		}
-		codeMap[codeInt] = split[1]
+		codeMap[split[0]] = split[1]
 	}
 	return codeMap, nil
 }
@@ -746,7 +744,12 @@ func (r *DebtReconciler) setupSmsConfig() error {
 	if err != nil {
 		return fmt.Errorf("split sms code map error: %w", err)
 	}
-
+	for key := range smsCodeMap {
+		if _, ok := pkgtypes.StatusMap[pkgtypes.DebtStatusType(key)]; !ok {
+			return fmt.Errorf("invalid sms code map key: %s", key)
+		}
+	}
+	r.Logger.Info("set sms code map", "smsCodeMap", smsCodeMap, "smsSignName", os.Getenv(SMSSignNameEnv))
 	smsClient, err := utils.CreateSMSClient(os.Getenv(SMSAccessKeyIDEnv), os.Getenv(SMSAccessKeySecretEnv), os.Getenv(SMSEndpointEnv))
 	if err != nil {
 		return fmt.Errorf("create sms client error: %w", err)
@@ -770,6 +773,12 @@ func (r *DebtReconciler) setupVmsConfig() error {
 	if err != nil {
 		return fmt.Errorf("split vms code map error: %w", err)
 	}
+	for key := range vmsCodeMap {
+		if _, ok := pkgtypes.StatusMap[pkgtypes.DebtStatusType(key)]; !ok {
+			return fmt.Errorf("invalid sms code map key: %s", key)
+		}
+	}
+	r.Logger.Info("set vms code map", "vmsCodeMap", vmsCodeMap)
 	r.VmsConfig = &VmsConfig{
 		TemplateCode: vmsCodeMap,
 		NumberPoll:   os.Getenv(VmsNumberPollEnv),
@@ -788,6 +797,7 @@ func (r *DebtReconciler) setupSMTPConfig() error {
 	r.smtpConfig = &utils.SMTPConfig{
 		ServerHost: os.Getenv(SMTPHostEnv),
 		ServerPort: serverPort,
+		Username:   env.GetEnvWithDefault(SMTPUserEnv, os.Getenv(SMTPFromEnv)),
 		FromEmail:  os.Getenv(SMTPFromEnv),
 		Passwd:     os.Getenv(SMTPPasswordEnv),
 		EmailTitle: os.Getenv(SMTPTitleEnv),
@@ -823,6 +833,7 @@ func (r *DebtReconciler) Init() {
 	debtDetectionCycleSecond := env.GetInt64EnvWithDefault(DebtDetectionCycleEnv, 1800)
 	r.DebtDetectionCycle = time.Duration(debtDetectionCycleSecond) * time.Second
 	r.userLocks = &sync.Map{}
+	r.failedUserLocks = &sync.Map{}
 	r.processID = uuid.NewString()
 
 	setupList := []func() error{
@@ -835,6 +846,7 @@ func (r *DebtReconciler) Init() {
 			r.Logger.Error(err, fmt.Sprintf("failed to set up %s", runtime2.FuncForPC(reflect.ValueOf(setupList[i]).Pointer()).Name()))
 		}
 	}
+	setDefaultDebtPeriodWaitSecond()
 	r.SendDebtStatusEmailBody = make(map[accountv1.DebtStatusType]string)
 	for _, status := range []accountv1.DebtStatusType{accountv1.LowBalancePeriod, accountv1.CriticalBalancePeriod, accountv1.DebtPeriod, accountv1.DebtDeletionPeriod, accountv1.FinalDeletionPeriod} {
 		email := os.Getenv(string(status) + "EmailBody")
@@ -845,6 +857,7 @@ func (r *DebtReconciler) Init() {
 		}
 		r.SendDebtStatusEmailBody[status] = email
 	}
+	r.Logger.Info("debt config", "DebtConfig", DebtConfig, "DebtDetectionCycle", r.DebtDetectionCycle)
 }
 
 func setDefaultDebtPeriodWaitSecond() {
@@ -895,8 +908,4 @@ func (OnlyCreatePredicate) Update(_ event.UpdateEvent) bool {
 
 func (OnlyCreatePredicate) Create(_ event.CreateEvent) bool {
 	return true
-}
-
-func init() {
-	setDefaultDebtPeriodWaitSecond()
 }

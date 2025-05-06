@@ -6,6 +6,15 @@ import (
 	"os"
 	"time"
 
+	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	ctrl "sigs.k8s.io/controller-runtime"
+
+	v1 "github.com/labring/sealos/controllers/pkg/notification/api/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	"github.com/labring/sealos/controllers/pkg/types"
 
 	"github.com/sirupsen/logrus"
@@ -56,6 +65,7 @@ var (
 	Cfg                  *Config
 	BillingTask          *helper.TaskQueue
 	FlushQuotaProcesser  *FlushQuotaTask
+	K8sManager           ctrl.Manager
 
 	SendDebtStatusEmailBody map[types.DebtStatusType]string
 	//Debug                bool
@@ -175,6 +185,7 @@ func Init(ctx context.Context) error {
 		ServerHost: os.Getenv(utils.EnvSMTPHost),
 		ServerPort: env.GetIntEnvWithDefault(utils.EnvSMTPPort, 465),
 		FromEmail:  os.Getenv(utils.EnvSMTPFrom),
+		Username:   env.GetEnvWithDefault(utils.EnvSMTPUser, os.Getenv(utils.EnvSMTPFrom)),
 		Passwd:     os.Getenv(utils.EnvSMTPPassword),
 		EmailTitle: os.Getenv(utils.EnvSMTPTitle),
 	}
@@ -183,6 +194,51 @@ func Init(ctx context.Context) error {
 	}
 	setDefaultDebtPeriodWaitSecond()
 	SetDebtConfig()
+	scheme := runtime.NewScheme()
+	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+	utilruntime.Must(corev1.AddToScheme(scheme))
+	utilruntime.Must(v1.AddToScheme(scheme))
+
+	K8sManager, err = ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+		Scheme: scheme,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to start manager: %v", err)
+	}
+	if err = SetupCache(K8sManager); err != nil {
+		return fmt.Errorf("setup cache error: %v", err)
+	}
+	go func() {
+		if err := K8sManager.Start(ctrl.SetupSignalHandler()); err != nil {
+			logrus.Errorf("unable to start manager: %v", err)
+			os.Exit(1)
+		}
+	}()
+	return nil
+}
+
+const UserOwnerLabel = "user.sealos.io/owner"
+
+func SetupCache(mgr ctrl.Manager) error {
+	ns := &corev1.Namespace{}
+	nsNameFunc := func(obj client.Object) []string {
+		return []string{obj.(*corev1.Namespace).Name}
+	}
+	nsOwnerFunc := func(obj client.Object) []string {
+		return []string{obj.(*corev1.Namespace).Labels[UserOwnerLabel]}
+	}
+
+	for _, idx := range []struct {
+		obj          client.Object
+		field        string
+		extractValue client.IndexerFunc
+	}{
+		{ns, accountv1.Name, nsNameFunc},
+		{ns, accountv1.Owner, nsOwnerFunc}} {
+		if err := mgr.GetFieldIndexer().IndexField(context.TODO(), idx.obj, idx.field, idx.extractValue); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
