@@ -43,6 +43,6 @@ export const verifyInternalToken = (token: string) => {
   return verifyJWT<AccessTokenPayload>(token, internalJwtSecret());
 };
 export const generateRegionalToken = (props: AccessTokenPayload) =>
-  sign(props, accessJwtSecret(), {
+  sign({ ...props, iat: Math.floor(Date.now() / 1000) - 30 }, accessJwtSecret(), {
     expiresIn: process.env.NODE_ENV === 'development' ? '1000d' : '2d'
   });
