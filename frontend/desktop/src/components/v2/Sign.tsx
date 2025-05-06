@@ -15,8 +15,12 @@ import {
   Tabs,
   FormErrorMessage,
   Flex,
-  useColorModeValue
+  useColorModeValue,
+  Text,
+  InputGroup,
+  InputLeftElement
 } from '@chakra-ui/react';
+import useProtocol from '@/components/signin/auth/useProtocol';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { ArrowRight } from 'lucide-react';
@@ -25,13 +29,13 @@ import { useTranslation } from 'next-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useCustomToast } from '@/hooks/useCustomToast';
-import { GoogleIcon, GithubIcon, ClawCloudIcon } from '../icons';
+import { GoogleIcon, GithubIcon } from '../icons';
 import {
   ILoginParams,
   IRegisterParamsWithoutName,
   loginParamsSchema,
   registerParamsWithoutNameSchema
-} from '@/schema/ccSvc';
+} from '@/schema/auth';
 import { useSignupStore } from '@/stores/signup';
 import { ccEmailSignIn, ccEmailSignUpCheck, getRegionToken } from '@/api/auth';
 import { useConfigStore } from '@/stores/config';
@@ -39,18 +43,24 @@ import useSessionStore from '@/stores/session';
 import { OauthProvider } from '@/types/user';
 import { sessionConfig } from '@/utils/sessionConfig';
 import Link from 'next/link';
-import email from '@/pages/api/auth/email';
-import { Track } from '@sealos/ui';
+import { WechatIcon } from '@sealos/ui';
+import useSmsStateStore from '@/stores/captcha';
+import { z } from 'zod';
 
 export default function SigninComponent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast } = useCustomToast();
+  const conf = useConfigStore();
   const [tabIndex, setTabIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
+  const needPhone = true;
+  // conf.authConfig?.idp.sms?.enabled && conf.authConfig.idp.sms.ali.enabled;
+  const needEmail = false;
+  // conf.authConfig?.idp.email.enabled;
   const { setSignupData, signupData } = useSignupStore();
-  const conf = useConfigStore().authConfig;
+  const authConfig = conf.authConfig;
   const { generateState, setProvider, setToken } = useSessionStore();
   const {
     register: registerSignin,
@@ -60,28 +70,27 @@ export default function SigninComponent() {
     resolver: zodResolver(loginParamsSchema),
     mode: 'onChange'
   });
-
-  const {
-    register: registerSignup,
-    handleSubmit: handleSignupSubmit,
-    formState: { errors: signupErrors }
-  } = useForm<IRegisterParamsWithoutName>({
-    resolver: zodResolver(registerParamsWithoutNameSchema),
-    mode: 'onChange',
-    defaultValues: {
-      email: signupData?.email || '',
-      password: signupData?.password || ''
-    }
-  });
+  let protocol_data: Parameters<typeof useProtocol>[0];
+  if (['zh', 'zh-Hans'].includes(i18n.language))
+    protocol_data = {
+      service_protocol: conf.layoutConfig?.protocol?.serviceProtocol.zh as string,
+      private_protocol: conf.layoutConfig?.protocol?.privateProtocol.zh as string
+    };
+  else
+    protocol_data = {
+      service_protocol: conf.layoutConfig?.protocol?.serviceProtocol.en as string,
+      private_protocol: conf.layoutConfig?.protocol?.privateProtocol.en as string
+    };
+  const { Protocol, isAgree, setIsInvalid } = useProtocol(protocol_data!);
 
   const handleSubmit = (type: 'signin' | 'signup') => {
-    if (type === 'signin') {
-      return handleSigninSubmit(onSignin)();
-    } else {
-      return handleSignupSubmit(onSignup)();
-    }
+    // if (type === 'signin') {
+    return handleSigninSubmit(onSignin)();
+    // } else {
+    //   return handleSignupSubmit(onSignup)();
+    // }
   };
-
+  const { remainTime, setRemainTime, setPhoneNumber } = useSmsStateStore();
   const onSignin = async (data: ILoginParams) => {
     try {
       setIsLoading(true);
@@ -93,25 +102,25 @@ export default function SigninComponent() {
       setToken(token, rememberMe);
 
       if (result.data?.needInit) {
-        toast({
-          title: t('cc:sign_in_success'),
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top'
-        });
+        // toast({
+        //   title: t('success'),
+        //   status: 'success',
+        //   duration: 3000,
+        //   isClosable: true,
+        //   position: 'top'
+        // });
         await router.push('/unlockcard');
       } else {
         const regionTokenRes = await getRegionToken();
         if (regionTokenRes?.data) {
           await sessionConfig(regionTokenRes.data);
-          toast({
-            title: t('cc:sign_in_success'),
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-            position: 'top'
-          });
+          // toast({
+          //   title: t('cc:sign_in_success'),
+          //   status: 'success',
+          //   duration: 3000,
+          //   isClosable: true,
+          //   position: 'top'
+          // });
           await router.replace('/');
         }
       }
@@ -120,59 +129,59 @@ export default function SigninComponent() {
       // @ts-ignore
       if (error.code === 403) {
         // 提示英文的密码/用户错误
-        toast({
-          title: t('cc:sign_in_failed'),
-          description: 'Please check your username and password and try again.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top'
-        });
+        // toast({
+        //   title: t('sign_in_failed'),
+        //   description: 'Please check your username and password and try again.',
+        //   status: 'error',
+        //   duration: 3000,
+        //   isClosable: true,
+        //   position: 'top'
+        // });
         return;
       }
 
-      toast({
-        title: t('cc:sign_in_failed'),
-        description: (error as Error)?.message || t('cc:unknown_error'),
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
+      // toast({
+      //   title: t('cc:sign_in_failed'),
+      //   description: (error as Error)?.message || t('unknown_error'),
+      //   status: 'error',
+      //   duration: 3000,
+      //   isClosable: true,
+      //   position: 'top'
+      // });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const onSignup = async (data: IRegisterParamsWithoutName) => {
-    try {
-      setIsLoading(true);
-      const result = await ccEmailSignUpCheck({ email: data.email });
-      if (result.code !== 201) {
-        toast({
-          title: t('cc:sign_up_failed'),
-          description: result.message || t('cc:unknown_error'),
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top'
-        });
-      }
-      setSignupData({
-        email: data.email,
-        password: data.password
-      });
+  // const onSignup = async (data: IRegisterParamsWithoutName) => {
+  //   try {
+  //     setIsLoading(true);
+  //     // const result = await ccEmailSignUpCheck({ email: data.providerId });
+  //     if (result.code !== 201) {
+  //       // toast({
+  //       //   title: t('cc:sign_up_failed'),
+  //       //   description: result.message || t('unknown_error'),
+  //       //   status: 'error',
+  //       //   duration: 3000,
+  //       //   isClosable: true,
+  //       //   position: 'top'
+  //       // });
+  //     }
+  //     setSignupData({
+  //       email: data.email,
+  //       password: data.password
+  //     });
 
-      router.push('/personalinfo');
-    } catch (error) {
-      console.error('Sign up error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     router.push('/personalinfo');
+  //   } catch (error) {
+  //     console.error('Sign up error:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleSocialLogin = async (provider: OauthProvider) => {
-    if (!conf) {
+    if (!authConfig) {
       console.error('Auth config not found');
       return;
     }
@@ -196,7 +205,7 @@ export default function SigninComponent() {
       id: string;
     }) => {
       const target = new URL(proxyAddress);
-      const callback = new URL(conf.callbackURL);
+      const callback = new URL(authConfig.callbackURL);
       target.searchParams.append(
         'oauthProxyState',
         encodeURIComponent(callback.toString()) + '_' + state
@@ -208,8 +217,27 @@ export default function SigninComponent() {
 
     try {
       switch (provider) {
+        case 'WECHAT': {
+          const wechatConf = authConfig.idp.wechat;
+          if (!wechatConf) {
+            throw new Error('wechat configuration not found');
+          }
+          if (wechatConf.proxyAddress) {
+            await oauthProxyLogin({
+              provider,
+              state,
+              proxyAddress: wechatConf.proxyAddress,
+              id: wechatConf.clientID
+            });
+          } else {
+            await oauthLogin({
+              url: `https://open.weixin.qq.com/connect/qrconnect?appid=${wechatConf?.clientID}&redirect_uri=${authConfig.callbackURL}&response_type=code&state=${state}&scope=snsapi_login&#wechat_redirect`
+            });
+          }
+          break;
+        }
         case 'GITHUB': {
-          const githubConf = conf.idp.github;
+          const githubConf = authConfig.idp.github;
           if (!githubConf) {
             throw new Error('GitHub configuration not found');
           }
@@ -222,13 +250,13 @@ export default function SigninComponent() {
             });
           } else {
             await oauthLogin({
-              url: `https://github.com/login/oauth/authorize?client_id=${githubConf.clientID}&redirect_uri=${conf.callbackURL}&scope=user:email%20read:user&state=${state}`
+              url: `https://github.com/login/oauth/authorize?client_id=${githubConf.clientID}&redirect_uri=${authConfig.callbackURL}&scope=user:email%20read:user&state=${state}`
             });
           }
           break;
         }
         case 'GOOGLE': {
-          const googleConf = conf.idp.google;
+          const googleConf = authConfig.idp.google;
           if (!googleConf) {
             throw new Error('Google configuration not found');
           }
@@ -242,7 +270,7 @@ export default function SigninComponent() {
             });
           } else {
             await oauthLogin({
-              url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&state=${state}&scope=${scope}&include_granted_scopes=true`
+              url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${authConfig.callbackURL}&response_type=code&state=${state}&scope=${scope}&include_granted_scopes=true`
             });
           }
           break;
@@ -250,86 +278,223 @@ export default function SigninComponent() {
       }
     } catch (error) {
       console.error(`${provider} login error:`, error);
-      toast({
-        title: t('cc:sign_in_failed'),
-        description: error instanceof Error ? error.message : t('cc:unknown_error'),
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
+      // toast({
+      //   title: t('cc:sign_in_failed'),
+      //   description: error instanceof Error ? error.message : t('cc:unknown_error'),
+      //   status: 'error',
+      //   duration: 3000,
+      //   isClosable: true,
+      //   position: 'top'
+      // });
     }
   };
 
   const bg = useColorModeValue('white', 'gray.700');
 
   return (
-    <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
-      <ClawCloudIcon w={'163px'} h={'22px'} position={'absolute'} top={'20px'} left={'20px'} />
-      <Box mx="auto" maxW="lg" px={4}>
-        <Box fontSize={'24px'} fontWeight={600} mb={'12px'}>
-          Welcome to ClawCloud Run
-        </Box>
-
-        <Box color={'#71717A'} fontWeight={400} fontSize={'14px'} mb={'24px'}>
-          Free $5 credits first month by signing up - No credit card required. 180-day GitHub users
-          unlock $5 free every month.
-        </Box>
-
-        <Stack spacing={'12px'} mb={'24px'}>
-          <Track.Click eventName={Track.events.signinGithub}>
+    <Flex minH="100vh" align="center" justify="center" bg={bg} direction={'column'}>
+      <Stack mx="auto" maxW="lg" px={4} gap={'16px'} width="360px" minW={'352px'}>
+        <Text fontSize={'24px'} fontWeight={600} mb={'16px'} mx="auto">
+          {t('v2:workspace_welcome')}
+        </Text>
+        {needPhone ? (
+          <>
+            <InputGroup width={'full'}>
+              <InputLeftElement color={'#71717A'} left={'12px'} h={'40px'}>
+                <Text
+                  pl="10px"
+                  pr="8px"
+                  height={'20px'}
+                  borderRight={'1px'}
+                  fontSize={'14px'}
+                  borderColor={'#E4E4E7'}
+                >
+                  +86
+                </Text>
+              </InputLeftElement>
+              <Input
+                height="40px"
+                w="full"
+                fontSize={'14px'}
+                background="#FFFFFF"
+                border="1px solid #E4E4E7"
+                borderRadius="8px"
+                placeholder={t('phone')}
+                py="10px"
+                pr={'12px'}
+                pl={'60px'}
+                color={'#71717A'}
+                value={signupData?.providerId || ''}
+                onChange={(e) => {
+                  console.log(e.target);
+                  if (!!e.target.value) {
+                    setSignupData({
+                      providerId: e.target.value,
+                      providerType: 'PHONE'
+                    });
+                  }
+                }}
+              />
+            </InputGroup>
+            <Button
+              variant={'solid'}
+              px={'0'}
+              borderRadius={'8px'}
+              onClick={() => {
+                console.log(signupData?.providerId);
+                if (signupData?.providerId) {
+                  setPhoneNumber(signupData.providerId);
+                  router.push('/phoneCheck');
+                }
+              }}
+              bgColor={'#0A0A0A'}
+              rightIcon={<ArrowRight size={'14px'}></ArrowRight>}
+            >
+              {t('v2:sign_in')}
+            </Button>
+          </>
+        ) : needEmail ? (
+          <>
+            <Input
+              boxSize="border-box"
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              padding="8px 12px"
+              gap="4px"
+              height="40px"
+              background="#FFFFFF"
+              border="1px solid #E4E4E7"
+              borderRadius="8px"
+              flex="none"
+              order="0"
+              placeholder={t('v2:email')}
+              alignSelf="stretch"
+              flexGrow="0"
+              onChange={(e) => {
+                if (!e.target.value) {
+                  setSignupData({
+                    providerId: e.target.value,
+                    providerType: 'EMAIL'
+                  });
+                }
+              }}
+            />
+            <Button
+              onClick={() => {
+                if (signupData?.providerId) {
+                  router.push('/emailCheck');
+                }
+              }}
+              bgColor={'#0A0A0A'}
+              borderRadius={'8px'}
+              variant={'solid'}
+              px={'0'}
+              rightIcon={<ArrowRight size={'16px'}></ArrowRight>}
+            >
+              {t('v2:email_sign_in')}
+            </Button>
+          </>
+        ) : (
+          <></>
+        )}
+        <Flex gap={'10px'} alignItems={'center'}>
+          <Divider />
+          <Flex justify="center" align="center" bg="white">
+            <Text color="#71717A" fontSize="12px" width={'max-content'}>
+              {t('v2:or')}
+            </Text>
+          </Flex>
+          <Divider />
+        </Flex>
+        <Stack spacing={'16px'}>
+          {authConfig?.idp.wechat?.enabled && (
+            <Button
+              borderRadius={'8px'}
+              variant="outline"
+              onClick={() => handleSocialLogin('WECHAT')}
+              w={'100%'}
+              leftIcon={<WechatIcon />}
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              padding="12px 16px"
+              gap="8px"
+              height="40px"
+              // background="#0A0A0A"
+            >
+              {t('common:wechat')}
+            </Button>
+          )}
+          {authConfig?.idp.github?.enabled && (
             <Button
               borderRadius={'8px'}
               variant="outline"
               onClick={() => handleSocialLogin('GITHUB' as OauthProvider)}
               w={'100%'}
-              _hover={{
-                bg: 'grayModern.50'
-              }}
-              boxShadow={'none'}
               leftIcon={<GithubIcon />}
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              padding="12px 16px"
+              gap="8px"
+              height="40px"
+              // background="#0A0A0A"
             >
               GitHub
             </Button>
-          </Track.Click>
-          <Track.Click eventName={Track.events.signinGoogle}>
+          )}
+          {authConfig?.idp.google?.enabled && (
             <Button
               borderRadius={'8px'}
               variant="outline"
               onClick={() => handleSocialLogin('GOOGLE' as OauthProvider)}
               w={'100%'}
-              boxShadow={'none'}
-              _hover={{
-                bg: 'grayModern.50'
-              }}
               leftIcon={<GoogleIcon />}
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              padding="12px 16px"
+              gap="8px"
+              height="40px"
+              // background="#0A0A0A"
             >
               Google
             </Button>
-          </Track.Click>
+          )}
         </Stack>
 
-        <Box fontSize="sm" color="gray.500">
-          By proceeding you acknowledge that you have read, understood and agree to our{' '}
+        <Box
+          mt={'8px'}
+          fontSize="14px"
+          color="gray.500"
+          width={'full'}
+          textAlign={'center'}
+          mr="2px"
+        >
+          {t('v2:terms_and_privacy_policy_text')}{' '}
           <Box
             as={Link}
-            href="https://docs.run.claw.cloud/app-platform/legal/terms-and-conditions"
+            href={protocol_data.service_protocol || ''}
             target="_blank"
             textDecoration="underline"
           >
-            Terms and Conditions
+            {t('v2:terms_and_conditions')}
           </Box>
-          &nbsp;and&nbsp;
+          ,
           <Box
             as={Link}
-            href="https://docs.run.claw.cloud/app-platform/legal/privacy-policy"
+            href={protocol_data.private_protocol || ''}
             target="_blank"
             textDecoration="underline"
           >
-            Privacy Policy.
+            {t('privacy_policy')}
           </Box>
         </Box>
-      </Box>
+      </Stack>
     </Flex>
   );
 }

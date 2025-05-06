@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es2015",
     "module": "esnext",
+    "noEmit": true,
     "moduleResolution": "node",
     "isolatedModules": true,
     "allowJs": true,
@@ -11,8 +12,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "removeComments": true,
-    "composite": true
+    "removeComments": true
   },
   "exclude": ["**/node_modules"]
 }

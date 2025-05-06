@@ -10,6 +10,7 @@ import { generateAccessToken, generateAppToken } from '@/services/backend/auth';
 import { K8sApiDefault } from '@/services/backend/kubernetes/admin';
 import { v4 } from 'uuid';
 import { HttpStatusCode } from 'axios';
+import { userInfo } from 'node:os';
 
 const LetterBytes = 'abcdefghijklmnopqrstuvwxyz0123456789';
 const HostnameLength = 8;
@@ -28,7 +29,6 @@ export async function get_k8s_username() {
     else return Promise.reject(null);
   }, 3);
 }
-
 export async function getRegionToken({
   userUid,
   userId
@@ -63,18 +63,57 @@ export async function getRegionToken({
         WorkspaceUsage: true
       }
     });
-    // 没有该user
-    if (!userResult?.userInfo) {
-      return null;
-    }
-    // 还没初始化，不应该允许调用该接口
-    if (!userResult.userInfo.isInited) {
+    // 没有user
+    if (!userResult) {
       return null;
     }
     let workspaceUid = v4();
     let curRegionWorkspaceUsage = userResult.WorkspaceUsage.filter(
       (u) => u.regionUid == region.uid
     );
+    if (!userResult.userInfo) {
+      // flush user workspace
+      const result = await prisma.userCr.findUnique({
+        where: {
+          userUid: userUid
+        },
+        select: {
+          uid: true,
+          userWorkspace: {
+            select: {
+              workspace: {
+                select: {
+                  uid: true,
+                  userWorkspace: true
+                }
+              },
+              status: true
+            }
+          }
+        }
+      });
+      const ownerWorkspace = result?.userWorkspace.filter((w) => w.status === 'IN_WORKSPACE') || [];
+      if (curRegionWorkspaceUsage.length === 0 && ownerWorkspace.length > 0)
+        globalPrisma.$transaction(async (tx) => {
+          Promise.all(
+            ownerWorkspace.map(async (r) => {
+              await tx.workspaceUsage.create({
+                data: {
+                  userUid: userUid,
+                  workspaceUid: r.workspace.uid,
+                  seat: r.workspace.userWorkspace.filter(
+                    (predicate) => predicate.status === 'INVITED'
+                  ).length,
+                  regionUid: region.uid
+                }
+              });
+            })
+          );
+        });
+    } else if (!userResult.userInfo.isInited) {
+      return null;
+    }
+
     let needCreating = curRegionWorkspaceUsage.length === 0;
     // 先处理全局状态
     if (!needCreating) {

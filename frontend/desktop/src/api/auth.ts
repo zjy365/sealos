@@ -1,5 +1,5 @@
 import { InitRegionTokenParams } from '@/schema/auth';
-import { ILoginParams, ILoginResult, IRegisterParams } from '@/schema/ccSvc';
+import { ILoginParams, ILoginResult, IRegisterParams } from '@/schema/auth';
 import { IEmailCheckParams } from '@/schema/email';
 import { SmsType } from '@/services/backend/db/verifyCode';
 import { RegionResourceType } from '@/services/backend/svc/checkResource';
@@ -92,6 +92,7 @@ export const _verifySmsBindRequest =
       typeof data,
       ApiResp<{ code: string | null | undefined }, ValueOf<typeof BIND_STATUS>>
     >(`/api/auth/${smsType}/bind/verify`, data);
+
 export const _verifySmsUnbindRequest =
   (request: AxiosInstance) => (smsType: SmsType) => (data: { id: string; code: string }) =>
     request.post<typeof data, ApiResp>(`/api/auth/${smsType}/unbind/verify`, data);
@@ -170,6 +171,9 @@ export const _faceAuthGenerateQRcodeUriRequest = (request: AxiosInstance) => () 
     '/api/account/generateRealNameQRcodeUri'
   );
 
+export const _refreshRealNameQRecodeUriRequest = (request: AxiosInstance) => () =>
+  request.post<any, ApiResp<null>>('/api/account/refreshRealNameQRecodeUri');
+
 export const _getFaceAuthStatusRequest = (request: AxiosInstance) => (data: { bizToken: string }) =>
   request.post<any, ApiResp<{ status: string; realName: string }>>(
     '/api/account/getFaceAuthStatus',
@@ -243,7 +247,7 @@ export const passwordModifyRequest = _passwordModifyRequest(request);
 export const UserInfo = _UserInfo(request);
 export const verifyToken = _verifyToken(request);
 export const regionList = _regionList(request);
-
+export const refreshRealNameQRecodeUriRequest = _refreshRealNameQRecodeUriRequest(request);
 export const getSmsBindCodeRequest = _getSmsBindCodeRequest(request);
 export const verifySmsBindRequest = _verifySmsBindRequest(request);
 export const getSmsUnbindCodeRequest = _getSmsUnbindCodeRequest(request);
@@ -259,7 +263,6 @@ export const mergeUserRequest = _mergeUser(request);
 export const deleteUserRequest = _deleteUser(request);
 export const checkRemainResource = _checkRemainResource(request);
 export const forceDeleteUser = _forceDeleteUser(request);
-
 export const enterpriseRealNameAuthPaymentRequest = _enterpriseRealNameAuthPaymentRequest(request);
 export const enterpriseRealNameAuthVerifyRequest = _enterpriseRealNameAuthVerifyRequest(request);
 export const enterpriseRealNameAuthInfoRequest = _enterpriseRealNameAuthInfoRequest(request);

@@ -179,8 +179,9 @@ export const getGlobalTokenSvc = createMiddleware<AuthContext, unknown>(
 //     next?.();
 //   };
 
-export const checkUserStatusSvc = (userUid: string) =>
-  createMiddleware(async ({ req, res, next }) => {
+export const checkUserStatusSvc = createMiddleware<{ userUid: string }>(
+  async ({ req, res, next, ctx }) => {
+    const { userUid } = ctx;
     const user = await globalPrisma.user.findUnique({
       where: {
         uid: userUid,
@@ -197,4 +198,5 @@ export const checkUserStatusSvc = (userUid: string) =>
       message: 'Successfully'
     });
     next?.();
-  });
+  }
+);
