@@ -5,16 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/labring/sealos/service/account/helper"
-
-	services "github.com/labring/sealos/service/pkg/pay"
-
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
 	"github.com/labring/sealos/controllers/pkg/types"
 	"github.com/labring/sealos/service/account/dao"
+	"github.com/labring/sealos/service/account/helper"
+	services "github.com/labring/sealos/service/pkg/pay"
 )
 
 const (
@@ -86,7 +84,7 @@ func (p *SubscriptionProcessor) StartFlushQuotaProcessing(ctx context.Context) {
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 
-	err := dao.FlushQuotaProcesser.Execute()
+	err := dao.FlushQuotaProcessor.Execute()
 	if err != nil {
 		logrus.Errorf("Failed to execute flush quota task: %v", err)
 	}
@@ -94,7 +92,7 @@ func (p *SubscriptionProcessor) StartFlushQuotaProcessing(ctx context.Context) {
 	for {
 		select {
 		case <-ticker.C:
-			err := dao.FlushQuotaProcesser.Execute()
+			err := dao.FlushQuotaProcessor.Execute()
 			if err != nil {
 				logrus.Errorf("Failed to execute flush quota task: %v", err)
 			}
@@ -185,7 +183,17 @@ func (p *SubscriptionProcessor) HandlerSubscriptionTransaction(subscription *typ
 		return fmt.Errorf("failed to get subscription plan: %w", err)
 	}
 
-	// TODO Gets a subscription transaction record and skips if there are already unprocessed renewal transactions
+	processingSubTransactionCount := int64(0)
+	err = p.db.Transaction(func(tx *gorm.DB) error {
+		return tx.Where("subscription_id = ? AND status = ?", subscription.ID, types.SubscriptionTransactionStatusProcessing).Count(&processingSubTransactionCount).Error
+	})
+	if err != nil {
+		return fmt.Errorf("failed to get subscription transaction: %w", err)
+	}
+	if processingSubTransactionCount > 0 {
+		logrus.Infof("There are already %d processing subscription transactions for subscription %s", processingSubTransactionCount, subscription.ID)
+		return nil
+	}
 
 	subTransaction := types.SubscriptionTransaction{
 		ID:             uuid.New(),
@@ -203,36 +211,13 @@ func (p *SubscriptionProcessor) HandlerSubscriptionTransaction(subscription *typ
 		Status:         types.SubscriptionTransactionStatusProcessing,
 	}
 
-	//TODO if free subscription, determine whether to bind github account. If bound, renewal subscription; otherwise, the status changes to Debt
 	if subscription.PlanName == types.FreeSubscriptionPlanName && subscription.Status == types.SubscriptionStatusNormal {
-		// TODO 待删除逻辑
-		//ok, err := HasGithubOauthProvider(p.db, subscription.UserUID)
-		//if err != nil {
-		//	return fmt.Errorf("failed to check github oauth provider: %w", err)
-		//}
-		//if ok {
-		//	subTransaction.PayStatus = types.SubscriptionPayStatusNoNeed
-		//	err = dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
-		//		return tx.Create(&subTransaction).Error
-		//	})
-		//	if err != nil {
-		//		return fmt.Errorf("failed to create subscription transaction: %w", err)
-		//	}
-		//} else {
-		//	subscription.Status = types.SubscriptionStatusDebt
-		//	err = dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
-		//		return tx.Model(&types.Subscription{}).Where(&types.Subscription{ID: subscription.ID}).Update("status", types.SubscriptionStatusDebt).Error
-		//	})
-		//	if err != nil {
-		//		return fmt.Errorf("failed to update subscription status: %w", err)
-		//	}
-		//}
 		return nil
 	}
 
-	//TODO card binding payment
 	if subscription.CardID != nil {
 		paymentReq := services.PaymentRequest{
+			PaymentMethod: "CARD",
 			RequestID:     uuid.NewString(),
 			UserUID:       subTransaction.UserUID,
 			Amount:        subTransaction.Amount,
@@ -262,8 +247,6 @@ func (p *SubscriptionProcessor) HandlerSubscriptionTransaction(subscription *typ
 		return nil
 	}
 	logrus.Errorf("Failed to pay by balance: %v, subscription: %v", err, subscription)
-
-	//TODO Send a subscription failure notification
 
 	if err := p.sendRenewalFailureNotification(subscription, subTransaction); err != nil {
 		logrus.Errorf("Failed to send renewal failure notification for subscription %s: %v",
@@ -361,77 +344,6 @@ func (p *SubscriptionProcessor) processSubscriptions() {
 		logrus.Errorf("Failed to process expired subscriptions: %v", err)
 	}
 }
-
-//func (p *SubscriptionProcessor) ProcessKYCStatus() {
-//	logrus.Info("Processing KYC")
-//
-//	// 获取分布式锁
-//	lockID := "kyc_processor"
-//	acquired, err := p.acquireProcessingLock(lockID)
-//	if err != nil {
-//		logrus.Errorf("Failed to acquire processing lock: %v", err)
-//		return
-//	}
-//
-//	if !acquired {
-//		logrus.Info("Another instance is currently processing KYC")
-//		return
-//	}
-//
-//	defer func() {
-//		if err := p.releaseProcessingLock(lockID); err != nil {
-//			logrus.Errorf("Failed to release processing lock: %v", err)
-//		}
-//	}()
-//
-//	if err = p.processKYCStatus(); err != nil {
-//		logrus.Errorf("Failed to process KYC: %v", err)
-//	}
-//}
-//
-//func (p *SubscriptionProcessor) processKYCStatus() error {
-//	logrus.Info("Processing KYC status")
-//
-//	var users []types.UserKYC
-//	err := p.db.Transaction(func(tx *gorm.DB) error {
-//		return tx.Where("status = ?", types.UserKYCStatusPending).Find(&users).Error
-//	})
-//	if err != nil {
-//		return fmt.Errorf("failed to query pending KYC: %w", err)
-//	}
-//
-//	logrus.Infof("Found %d pending KYC", len(users))
-//
-//	for _, user := range users {
-//		// If KYC is not processed within 30 days, the status is set to failed
-//		if !user.CreatedAt.Add(30 * 24 * time.Hour).Before(time.Now()) {
-//			dErr := p.db.Transaction(func(tx *gorm.DB) error {
-//				return tx.Model(&types.UserKYC{}).Where("user_uid = ?", user.UserUID).Update("status", types.UserKYCStatusFailed).Error
-//			})
-//			if dErr != nil {
-//				logrus.Errorf("Failed to update KYC status: %v", dErr)
-//			}
-//			continue
-//		}
-//
-//		// If github is bound, set the KYC status to completed
-//		err = p.db.Transaction(func(tx *gorm.DB) error {
-//			bindCount := int64(0)
-//			dErr := tx.Model(&types.OauthProvider{}).Where(`"userUid" = ? AND "providerType" = ?`, user.UserUID, types.OauthProviderTypeGithub).Count(&bindCount).Error
-//			if dErr != nil {
-//				return fmt.Errorf("failed to check github oauth provider: %w", dErr)
-//			}
-//			if bindCount == 0 {
-//				return nil
-//			}
-//			return tx.Model(&types.UserKYC{}).Where("user_uid = ?", user.UserUID).Update("status", types.UserKYCStatusCompleted).Error
-//		})
-//		if err != nil {
-//			logrus.Errorf("Failed to update KYC status: %v", err)
-//		}
-//	}
-//	return nil
-//}
 
 func (p *SubscriptionProcessor) ProcessKYCCredits() {
 	logrus.Info("Processing KYC credits")
