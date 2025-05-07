@@ -64,7 +64,7 @@ var (
 	JwtMgr               *utils.JWTManager
 	Cfg                  *Config
 	BillingTask          *helper.TaskQueue
-	FlushQuotaProcesser  *FlushQuotaTask
+	FlushQuotaProcessor  *FlushQuotaTask
 	K8sManager           ctrl.Manager
 
 	SendDebtStatusEmailBody map[types.DebtStatusType]string
@@ -171,7 +171,7 @@ func Init(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("parse resource limit with subscription error: %v", err)
 		}
-		FlushQuotaProcesser = &FlushQuotaTask{
+		FlushQuotaProcessor = &FlushQuotaTask{
 			LocalDomain: Cfg.LocalRegionDomain,
 		}
 	}
