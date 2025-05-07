@@ -3,15 +3,35 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"time"
+	"sync"
 
-	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/labring/sealos/controllers/pkg/types"
 	"github.com/labring/sealos/service/account/dao"
 	"github.com/labring/sealos/service/account/helper"
 )
+
+type CreditsInfoReq struct {
+	UserUID uuid.UUID `json:"userUid"`
+
+	Balance          int64 `json:"balance"`
+	DeductionBalance int64 `json:"deductionBalance"`
+
+	Credits          int64 `json:"credits"`
+	DeductionCredits int64 `json:"deductionCredits"`
+
+	KYCDeductionCreditsDeductionBalance int64 `json:"kycDeductionCreditsDeductionBalance"`
+	KYCDeductionCreditsBalance          int64 `json:"kycDeductionCreditsBalance"`
+
+	CurrentPlanCreditsBalance          int64 `json:"currentPlanCreditsBalance"`
+	CurrentPlanCreditsDeductionBalance int64 `json:"currentPlanCreditsDeductionBalance"`
+
+	BonusCreditsBalance          int64 `json:"bonusCreditsBalance"`
+	BonusCreditsDeductionBalance int64 `json:"bonusCreditsDeductionBalance"`
+}
 
 // @Summary Get credits info
 // @Description Get credits info
@@ -27,86 +47,103 @@ func GetCreditsInfo(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, helper.ErrorMessage{Error: fmt.Sprintf("authenticate error : %v", err)})
 		return
 	}
-	type CreditsInfoReq struct {
-		UserUID uuid.UUID `json:"userUid"`
-
-		Balance          int64 `json:"balance"`
-		DeductionBalance int64 `json:"deductionBalance"`
-
-		Credits          int64 `json:"credits"`
-		DeductionCredits int64 `json:"deductionCredits"`
-
-		KYCDeductionCreditsDeductionBalance int64 `json:"kycDeductionCreditsDeductionBalance"`
-		KYCDeductionCreditsBalance          int64 `json:"kycDeductionCreditsBalance"`
-
-		CurrentPlanCreditsBalance          int64 `json:"currentPlanCreditsBalance"`
-		CurrentPlanCreditsDeductionBalance int64 `json:"currentPlanCreditsDeductionBalance"`
-
-		BonusCreditsBalance          int64 `json:"bonusCreditsBalance"`
-		BonusCreditsDeductionBalance int64 `json:"bonusCreditsDeductionBalance"`
-	}
-	var creditsInfo CreditsInfoReq
-
-	subscription, err := dao.DBClient.GetSubscription(&types.UserQueryOpts{UID: req.UserUID})
+	creditsInfo, err := getCreditsInfo(req.UserUID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get subscription info: %v", err)})
-		return
-	}
-	currentPlan, err := dao.DBClient.GetSubscriptionPlan(subscription.PlanName)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get subscription plan info: %v", err)})
-		return
-	}
-	var currentCredits types.Credits
-	err = dao.DBClient.GetGlobalDB().Model(&types.Credits{}).Where("expire_at > ? AND user_uid = ? AND from_id = ? AND status != ?", time.Now().UTC(), req.UserUID, currentPlan.ID, types.CreditsStatusExpired).Find(&currentCredits).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get credits list: %v", err)})
-		return
-	}
-	creditsInfo.CurrentPlanCreditsBalance = currentCredits.Amount
-	creditsInfo.CurrentPlanCreditsDeductionBalance = currentCredits.UsedAmount
-	creditsInfo.KYCDeductionCreditsBalance = currentCredits.Amount
-	creditsInfo.KYCDeductionCreditsDeductionBalance = currentCredits.UsedAmount
-
-	var bonusCredits types.Credits
-	err = dao.DBClient.GetGlobalDB().Model(&types.Credits{}).Where("expire_at > ? AND user_uid = ? AND from_type = ? AND status != ?", time.Now().UTC(), req.UserUID, types.CreditsFromTypeBonus, types.CreditsStatusExpired).Find(&bonusCredits).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get credits list: %v", err)})
-		return
-	}
-	creditsInfo.BonusCreditsBalance = bonusCredits.Amount
-	creditsInfo.BonusCreditsDeductionBalance = bonusCredits.UsedAmount
-
-	if subscription.PlanName != types.FreeSubscriptionPlanName {
-		freePlan, err := dao.DBClient.GetSubscriptionPlan(types.FreeSubscriptionPlanName)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get subscription plan info: %v", err)})
-			return
-		}
-		var freeCredits types.Credits
-		err = dao.DBClient.GetGlobalDB().Model(&types.Credits{}).Where("expire_at > ? AND user_uid = ? AND from_id = ? AND status != ?", time.Now().UTC(), req.UserUID, freePlan.ID, types.CreditsStatusExpired).Find(&freeCredits).Error
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get credits list: %v", err)})
-			return
-		}
-		creditsInfo.KYCDeductionCreditsBalance = freeCredits.Amount
-		creditsInfo.KYCDeductionCreditsDeductionBalance = freeCredits.UsedAmount
-	}
-
-	creditss, err := dao.DBClient.GetBalanceWithCredits(&types.UserQueryOpts{UID: req.UserUID})
-	if err != nil {
+		logrus.Errorf("GetCreditsInfo error: %v", err)
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get credits info: %v", err)})
 		return
 	}
-	creditsInfo.UserUID = req.UserUID
-
-	creditsInfo.Balance = creditss.Balance
-	creditsInfo.DeductionBalance = creditss.DeductionBalance
-
-	creditsInfo.Credits = creditss.Credits
-	creditsInfo.DeductionCredits = creditss.DeductionCredits
-
 	c.JSON(http.StatusOK, gin.H{
 		"credits": creditsInfo,
 	})
+}
+
+func getCreditsInfo(userUID uuid.UUID) (any, error) {
+	var (
+		creditsInfo  CreditsInfoReq
+		subscription *types.Subscription
+		account      *types.Account
+		err          error
+		wg           sync.WaitGroup
+		errChan      = make(chan error, 2)
+	)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		subscription, err = dao.DBClient.GetSubscription(&types.UserQueryOpts{UID: userUID})
+		if err != nil {
+			errChan <- fmt.Errorf("failed to get subscription info: %v", err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		account, err = dao.DBClient.GetAccount(types.UserQueryOpts{UID: userUID})
+		if err != nil {
+			errChan <- fmt.Errorf("failed to get account: %v", err)
+		}
+	}()
+
+	wg.Wait()
+	close(errChan)
+
+	for e := range errChan {
+		if e != nil {
+			return nil, e
+		}
+	}
+
+	currentPlan, err := dao.DBClient.GetSubscriptionPlan(subscription.PlanName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get subscription plan info: %v", err)
+	}
+
+	freePlan, err := dao.DBClient.GetSubscriptionPlan(types.FreeSubscriptionPlanName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get free plan info: %v", err)
+	}
+
+	credits, err := dao.DBClient.GetAvailableCredits(&types.UserQueryOpts{UID: userUID})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get available credits: %v", err)
+	}
+
+	var totalCredits, totalDeductionCredits int64
+	for _, c := range credits {
+		totalCredits += c.Amount
+		totalDeductionCredits += c.UsedAmount
+	}
+
+	creditsInfo.UserUID = userUID
+	creditsInfo.Balance = account.Balance
+	creditsInfo.DeductionBalance = account.DeductionBalance
+	creditsInfo.Credits = totalCredits
+	creditsInfo.DeductionCredits = totalDeductionCredits
+
+	var currentCredits, freeCredits types.Credits
+	for i := range credits {
+		switch credits[i].FromType {
+		case types.CreditsFromTypeBonus:
+			creditsInfo.BonusCreditsBalance += credits[i].Amount
+			creditsInfo.BonusCreditsDeductionBalance += credits[i].UsedAmount
+		case types.CreditsFromTypeSubscription:
+			switch credits[i].FromID {
+			case currentPlan.ID.String():
+				currentCredits = credits[i]
+				creditsInfo.CurrentPlanCreditsBalance = currentCredits.Amount
+				creditsInfo.CurrentPlanCreditsDeductionBalance = currentCredits.UsedAmount
+			case freePlan.ID.String():
+				freeCredits = credits[i]
+				creditsInfo.KYCDeductionCreditsBalance = freeCredits.Amount
+				creditsInfo.KYCDeductionCreditsDeductionBalance = freeCredits.UsedAmount
+			}
+		}
+	}
+	if subscription.PlanName == types.FreeSubscriptionPlanName {
+		creditsInfo.KYCDeductionCreditsBalance = creditsInfo.CurrentPlanCreditsBalance
+		creditsInfo.KYCDeductionCreditsDeductionBalance = creditsInfo.CurrentPlanCreditsDeductionBalance
+	}
+	return creditsInfo, nil
 }
