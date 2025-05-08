@@ -842,7 +842,6 @@ func SubscriptionPayByBalance(req *helper.SubscriptionOperatorReq, subTransactio
 	}
 
 	err := dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
-		// TODO 检查没有订阅变更
 		count, dErr := cockroach.GetActiveSubscriptionTransactionCount(tx, req.UserUID)
 		if dErr != nil {
 			return fmt.Errorf("failed to get active subscription transaction count: %w", dErr)
@@ -850,6 +849,7 @@ func SubscriptionPayByBalance(req *helper.SubscriptionOperatorReq, subTransactio
 		if count > 0 {
 			return fmt.Errorf("there is active subscription transaction")
 		}
+
 		// check account balance
 		var account types.Account
 		if dErr = tx.Where(types.Account{UserUID: subTransaction.UserUID}).First(&account).Error; dErr != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
+	"github.com/labring/sealos/controllers/pkg/database/cockroach"
 	"github.com/labring/sealos/controllers/pkg/types"
 	"github.com/labring/sealos/service/account/dao"
 	"github.com/labring/sealos/service/account/helper"
@@ -183,16 +184,12 @@ func (p *SubscriptionProcessor) HandlerSubscriptionTransaction(subscription *typ
 		return fmt.Errorf("failed to get subscription plan: %w", err)
 	}
 
-	processingSubTransactionCount := int64(0)
-	err = p.db.Transaction(func(tx *gorm.DB) error {
-		return tx.Where("subscription_id = ? AND status = ?", subscription.ID, types.SubscriptionTransactionStatusProcessing).Count(&processingSubTransactionCount).Error
-	})
-	if err != nil {
-		return fmt.Errorf("failed to get subscription transaction: %w", err)
+	count, dErr := cockroach.GetActiveSubscriptionTransactionCount(p.db, subscription.UserUID)
+	if dErr != nil {
+		return fmt.Errorf("failed to get active subscription transaction count: %w", dErr)
 	}
-	if processingSubTransactionCount > 0 {
-		logrus.Infof("There are already %d processing subscription transactions for subscription %s", processingSubTransactionCount, subscription.ID)
-		return nil
+	if count > 0 {
+		return fmt.Errorf("there is active subscription transaction")
 	}
 
 	subTransaction := types.SubscriptionTransaction{
