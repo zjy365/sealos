@@ -29,6 +29,7 @@ import (
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/labring/sealos/controllers/account/controllers/utils"
 	"github.com/labring/sealos/controllers/pkg/database/cockroach"
 
 	"github.com/labring/sealos/controllers/pkg/types"
@@ -114,7 +115,7 @@ type AccountV2 interface {
 	SetAccountCreateLocalRegion(account *types.Account, region string) error
 	CreateUser(oAuth *types.OauthProvider, regionUserCr *types.RegionUserCr, user *types.User, workspace *types.Workspace, userWorkspace *types.UserWorkspace) error
 	AddBalance(user *types.UserQueryOpts, balance int64) error
-	AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, amount int64, orderIDs []string) error
+	AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, amount int64, orderIDs []string, eventCh chan<- *utils.BillingEvent) error
 	ReduceBalance(ops *types.UserQueryOpts, amount int64) error
 	ReduceDeductionBalance(ops *types.UserQueryOpts, amount int64) error
 	NewAccount(user *types.UserQueryOpts) (*types.Account, error)

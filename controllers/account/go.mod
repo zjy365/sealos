@@ -104,6 +104,7 @@ require (
 	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/prometheus/prom2json v1.3.3 // indirect
+	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/safchain/ethtool v0.3.0 // indirect
 	github.com/secure-io/sio-go v0.3.1 // indirect

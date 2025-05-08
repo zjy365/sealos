@@ -15,6 +15,8 @@
 package env
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"os"
 	"strconv"
@@ -66,4 +68,25 @@ func CheckEnvSetting(keys []string) error {
 		}
 	}
 	return nil
+}
+
+func GetTLSConfig(keyPrefix string) (*tls.Config, error) {
+	caCertPEM := GetEnvWithDefault(keyPrefix+"_CA_CERT", "")
+	certPEM := GetEnvWithDefault(keyPrefix+"_CERT", "")
+	keyPEM := GetEnvWithDefault(keyPrefix+"_KEY", "")
+	if caCertPEM == "" || certPEM == "" || keyPEM == "" {
+		return nil, fmt.Errorf("env %s_CA_CERT, %s_CERT, %s_KEY not set", keyPrefix, keyPrefix, keyPrefix)
+	}
+	caCertPool := x509.NewCertPool()
+	if ok := caCertPool.AppendCertsFromPEM([]byte(caCertPEM)); !ok {
+		return nil, fmt.Errorf("failed to append ca cert")
+	}
+	cert, err := tls.X509KeyPair([]byte(certPEM), []byte(keyPEM))
+	if err != nil {
+		return nil, fmt.Errorf("failed to load x509 key pair: %w", err)
+	}
+	return &tls.Config{
+		RootCAs:      caCertPool,
+		Certificates: []tls.Certificate{cert},
+	}, nil
 }

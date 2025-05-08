@@ -26,19 +26,20 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/google/uuid"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/labring/sealos/controllers/account/controllers/utils"
 	"github.com/labring/sealos/controllers/pkg/database"
 	"github.com/labring/sealos/controllers/pkg/resources"
 	"github.com/labring/sealos/controllers/pkg/types"
 	"github.com/labring/sealos/controllers/pkg/utils/env"
 	"github.com/labring/sealos/controllers/pkg/utils/maps"
-	userv1 "github.com/labring/sealos/controllers/user/api/v1"
+	userV1 "github.com/labring/sealos/controllers/user/api/v1"
 )
 
 type BillingTaskRunner struct {
@@ -99,6 +100,7 @@ type BillingReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 	logr.Logger
+	AMQP                 *utils.AMQP
 	DBClient             database.Account
 	AccountV2            database.AccountV2
 	Properties           *resources.PropertyTypeLS
@@ -111,7 +113,9 @@ func (r *BillingReconciler) ExecuteBillingTask() error {
 	r.Logger.Info("start billing reconcile", "time", time.Now().Format(time.RFC3339))
 	DebtUserMap = maps.NewConcurrentNullValueMap()
 	var users []string
-	if err := r.AccountV2.GetGlobalDB().Model(&types.Debt{}).Where("account_debt_status IN (?, ?, ?) ", types.DebtPeriod, types.DebtDeletionPeriod, types.FinalDeletionPeriod).
+	if err := r.AccountV2.GetGlobalDB().
+		Model(&types.Debt{}).
+		Where("account_debt_status IN (?, ?, ?) ", types.DebtPeriod, types.DebtDeletionPeriod, types.FinalDeletionPeriod).
 		Distinct("user_uid").Pluck("user_uid", &users).Error; err != nil {
 		return fmt.Errorf("failed to query unique users: %w", err)
 	}
@@ -227,7 +231,15 @@ func (r *BillingReconciler) reconcileBillingWithCredits(owner string, billings [
 	if err := r.DBClient.SaveBillings(billings...); err != nil {
 		return fmt.Errorf("save billings failed: %w", err)
 	}
-	if err := r.AccountV2.AddDeductionBalanceWithCredits(&types.UserQueryOpts{Owner: owner}, amount, orderIDs); err != nil {
+	eventCh := make(chan *utils.BillingEvent, 128)
+	go func() {
+		for event := range eventCh {
+			if err := r.AMQP.PublishBillingEvent(context.Background(), event); err != nil {
+				r.Logger.Error(err, "failed to publish billing event", "owner", owner, "amount", amount, "orderIDs", orderIDs)
+			}
+		}
+	}()
+	if err := r.AccountV2.AddDeductionBalanceWithCredits(&types.UserQueryOpts{Owner: owner}, amount, orderIDs, eventCh); err != nil {
 		r.Logger.Error(err, "AddDeductionBalanceWithCredits failed", "owner", owner, "amount", amount)
 		if updateErr := r.DBClient.UpdateBillingStatus(orderIDs, resources.Unsettled); updateErr != nil {
 			r.Logger.Error(updateErr, "update billing unsettled status failed", "owner", owner, "amount", amount, "orderIDs", orderIDs)
@@ -237,7 +249,7 @@ func (r *BillingReconciler) reconcileBillingWithCredits(owner string, billings [
 	return nil
 }
 
-// reconcileOwnerListBatch process ownerlistmap in batch mode
+// reconcileOwnerListBatch process ownerListMap in batch mode
 func (r *BillingReconciler) reconcileOwnerListBatch(
 	ownerListMap map[string][]string, // The owner -> namespaces mapping needs to be handled
 	batchSize int, // number of owners processed per batch
@@ -301,7 +313,6 @@ func (r *BillingReconciler) getRecentUsedOwners() (map[string][]string, error) {
 				}
 				_, inDebt := DebtUserMap.Get(userUID.String())
 				if inDebt {
-					//r.Logger.Info("user is in debt", "user uid", userUID.String())
 					continue
 				}
 				usedOwnerList[owner] = []string{}
@@ -332,7 +343,7 @@ func (r *BillingReconciler) Init() error {
 
 // map[namespace]owner
 func GetAllUser() (map[string]string, error) {
-	err := userv1.AddToScheme(scheme.Scheme)
+	err := userV1.AddToScheme(scheme.Scheme)
 	if err != nil {
 		return nil, fmt.Errorf("unable to add scheme: %v", err)
 	}
@@ -340,11 +351,6 @@ func GetAllUser() (map[string]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to build config: %v", err)
 	}
-	//TODO from cluster config
-	//config, err := clientcmd.BuildConfigFromFlags("", os.Getenv("KUBECONFIG"))
-	//if err != nil {
-	//	return nil, fmt.Errorf("unable to build config: %v", err)
-	//}
 	k8sClt, err := client.New(config, client.Options{Scheme: scheme.Scheme})
 	if err != nil {
 		return nil, fmt.Errorf("unable to create client: %v", err)
@@ -355,15 +361,15 @@ func GetAllUser() (map[string]string, error) {
 		Limit: 5000,
 	}
 	for {
-		userMetaList := &metav1.PartialObjectMetadataList{}
-		userMetaList.SetGroupVersionKind(userv1.GroupVersion.WithKind("UserList"))
+		userMetaList := &metaV1.PartialObjectMetadataList{}
+		userMetaList.SetGroupVersionKind(userV1.GroupVersion.WithKind("UserList"))
 
 		if err := k8sClt.List(context.Background(), userMetaList, listOpts); err != nil {
 			return nil, fmt.Errorf("failed to list instances: %v", err)
 		}
 
 		for _, user := range userMetaList.Items {
-			owner := user.Annotations[userv1.UserLabelOwnerKey]
+			owner := user.Annotations[userV1.UserLabelOwnerKey]
 			if owner == "" {
 				continue
 			}

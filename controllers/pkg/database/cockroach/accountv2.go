@@ -35,6 +35,7 @@ import (
 
 	"gorm.io/driver/postgres"
 
+	"github.com/labring/sealos/controllers/account/controllers/utils"
 	"github.com/labring/sealos/controllers/pkg/crypto"
 
 	"github.com/google/uuid"
@@ -677,7 +678,7 @@ func (c *Cockroach) GetUserOauthProvider(ops *types.UserQueryOpts) ([]types.Oaut
 	return provider, nil
 }
 
-func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, deductionAmount int64, orderIDs []string) error {
+func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, deductionAmount int64, orderIDs []string, eventCh chan<- *utils.BillingEvent) error {
 	err := RetryTransaction(3, 2*time.Second, c.DB, func(tx *gorm.DB) error {
 		userUID, dErr := c.GetUserUID(ops)
 		if dErr != nil {
@@ -690,13 +691,14 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 		now := time.Now().UTC()
 		accountTransactionID := uuid.New()
 		accountTransaction := types.AccountTransaction{
-			ID:            accountTransactionID,
-			RegionUID:     c.LocalRegion.UID,
-			Type:          "RESOURCE_BILLING",
-			UserUID:       userUID,
-			CreatedAt:     now,
-			UpdatedAt:     now,
-			BillingIDList: orderIDs,
+			ID:               accountTransactionID,
+			RegionUID:        c.LocalRegion.UID,
+			Type:             "RESOURCE_BILLING",
+			UserUID:          userUID,
+			CreatedAt:        now,
+			UpdatedAt:        now,
+			BillingIDList:    orderIDs,
+			DeductionBalance: 0,
 		}
 		var updateCredits []types.Credits
 		var updateCreditsIDs []string
@@ -704,31 +706,57 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 		var creditUsedAmountAll int64
 		for i := range credits {
 			creditAmt := credits[i].Amount - credits[i].UsedAmount
-			if creditAmt > 0 && deductionAmount > 0 {
-				usedAmount := int64(0)
-				if creditAmt > deductionAmount {
-					credits[i].UsedAmount += deductionAmount
-					usedAmount = deductionAmount
-				} else {
-					credits[i].UsedAmount = credits[i].Amount
-					credits[i].Status = types.CreditsStatusUsedUp
-					usedAmount = creditAmt
-				}
-				creditUsedAmountAll += usedAmount
-				deductionAmount -= usedAmount
-				creditTransactions = append(creditTransactions, types.CreditsTransaction{
-					ID:                   uuid.New(),
-					UserUID:              userUID,
-					RegionUID:            c.LocalRegion.UID,
-					AccountTransactionID: &accountTransactionID,
-					CreditsID:            credits[i].ID,
-					UsedAmount:           usedAmount,
-					CreatedAt:            now,
-					Reason:               types.CreditsRecordReasonResourceAccountTransaction,
-				})
-				credits[i].UpdatedAt = now
-				updateCredits = append(updateCredits, credits[i])
-				updateCreditsIDs = append(updateCreditsIDs, credits[i].ID.String())
+			if deductionAmount <= 0 {
+				break
+			}
+			if creditAmt <= 0 {
+				continue
+			}
+
+			usedAmount := int64(0)
+			if creditAmt > deductionAmount {
+				credits[i].UsedAmount += deductionAmount
+				usedAmount = deductionAmount
+			} else {
+				credits[i].UsedAmount = credits[i].Amount
+				credits[i].Status = types.CreditsStatusUsedUp
+				usedAmount = creditAmt
+			}
+			creditUsedAmountAll += usedAmount
+			deductionAmount -= usedAmount
+			creditTransactions = append(creditTransactions, types.CreditsTransaction{
+				ID:                   uuid.New(),
+				UserUID:              userUID,
+				RegionUID:            c.LocalRegion.UID,
+				AccountTransactionID: &accountTransactionID,
+				CreditsID:            credits[i].ID,
+				UsedAmount:           usedAmount,
+				CreatedAt:            now,
+				Reason:               types.CreditsRecordReasonResourceAccountTransaction,
+			})
+			credits[i].UpdatedAt = now
+			updateCredits = append(updateCredits, credits[i])
+			updateCreditsIDs = append(updateCreditsIDs, credits[i].ID.String())
+
+			// Send billing event
+			var kind string
+			var paymentID string
+			if credits[i].FromType == types.CreditsFromTypeBonus {
+				kind = "bonus"
+				paymentID = credits[i].FromID
+			} else if credits[i].FromType == types.CreditsFromTypeGift {
+				kind = "gift"
+				paymentID = credits[i].FromID
+			} else {
+				continue
+			}
+			eventCh <- &utils.BillingEvent{
+				ID:        credits[i].ID.String(),
+				UID:       userUID.String(),
+				Kind:      kind,
+				Amount:    usedAmount,
+				Currency:  "USD",
+				PaymentID: paymentID,
 			}
 		}
 		if len(updateCredits) > 0 {
@@ -745,8 +773,17 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 				return fmt.Errorf("failed to update balance: %v", dErr)
 			}
 			accountTransaction.DeductionBalance = deductionAmount
-		} else {
-			accountTransaction.DeductionBalance = 0
+
+			// Send billing event
+			eventCh <- &utils.BillingEvent{
+				ID:       accountTransactionID.String(),
+				UID:      userUID.String(),
+				Kind:     "recharge",
+				Currency: "USD",
+				Amount:   deductionAmount,
+				// Use userUID as paymentID for recharge event
+				PaymentID: userUID.String(),
+			}
 		}
 		if dErr = tx.Create(&accountTransaction).Error; dErr != nil {
 			return fmt.Errorf("failed to create account transaction: %v", dErr)
@@ -758,12 +795,13 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 		}
 		return nil
 	})
+	close(eventCh)
 	return err
 }
 
 func RetryTransaction(retryCount int, interval time.Duration, db *gorm.DB, f func(tx *gorm.DB) error) error {
 	var err error
-	for i := 0; i < retryCount; i++ {
+	for i := range retryCount {
 		err = db.Transaction(f)
 		if err == nil {
 			return nil

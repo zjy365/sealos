@@ -39,6 +39,7 @@ import (
 	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
 	"github.com/labring/sealos/controllers/account/controllers"
 	"github.com/labring/sealos/controllers/account/controllers/cache"
+	"github.com/labring/sealos/controllers/account/controllers/utils"
 	"github.com/labring/sealos/controllers/pkg/database"
 	"github.com/labring/sealos/controllers/pkg/database/cockroach"
 	"github.com/labring/sealos/controllers/pkg/database/mongo"
@@ -232,6 +233,32 @@ func main() {
 	//	setupManagerError(err, "Debt")
 	//}
 
+	tlsConfig, err := env.GetTLSConfig("BILLING_AMQP")
+	if err != nil {
+		setupLog.Error(err, "failed to get tls config")
+		os.Exit(1)
+	}
+	amqpURL, ok := os.LookupEnv("BILLING_AMQP_URL")
+	if !ok {
+		setupLog.Error(err, "BILLING_AMQP_URL is not set")
+		os.Exit(1)
+	}
+	amqp, err := utils.NewAMQP(&utils.AMQPConfig{
+		URL:       amqpURL,
+		Exchange:  env.GetEnvWithDefault("BILLING_AMQP_EXCHANGE", "rcc_event_exchange"),
+		TLSConfig: tlsConfig,
+	})
+	if err != nil {
+		setupLog.Error(err, "failed to create amqp")
+		os.Exit(1)
+	}
+	defer func() {
+		err := amqp.Close()
+		if err != nil {
+			setupLog.Error(err, "failed to close amqp")
+		}
+	}()
+
 	if err = cache.SetupCache(mgr); err != nil {
 		setupLog.Error(err, "unable to cache controller")
 		os.Exit(1)
@@ -254,6 +281,7 @@ func main() {
 		Scheme:      mgr.GetScheme(),
 		AccountV2:   v2Account,
 		DebtUserMap: debtUserMap,
+		AMQP:        amqp,
 	}
 	if err = billingReconciler.Init(); err != nil {
 		setupLog.Error(err, "unable to init billing reconciler")
