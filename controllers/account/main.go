@@ -22,21 +22,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/labring/sealos/controllers/pkg/utils/env"
-
-	"github.com/labring/sealos/controllers/pkg/utils/maps"
-
-	"github.com/labring/sealos/controllers/account/controllers/cache"
-	"github.com/labring/sealos/controllers/pkg/database"
-	"github.com/labring/sealos/controllers/pkg/database/cockroach"
-	"github.com/labring/sealos/controllers/pkg/database/mongo"
-	notificationv1 "github.com/labring/sealos/controllers/pkg/notification/api/v1"
-	"github.com/labring/sealos/controllers/pkg/resources"
-	"github.com/labring/sealos/controllers/pkg/types"
-	rate "github.com/labring/sealos/controllers/pkg/utils/rate"
-	userv1 "github.com/labring/sealos/controllers/user/api/v1"
-
-	kbv1alpha1 "github.com/apecloud/kubeblocks/apis/apps/v1alpha1"
+	//+kubebuilder:scaffold:imports
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -49,9 +35,20 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	kbv1alpha1 "github.com/apecloud/kubeblocks/apis/apps/v1alpha1"
 	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
 	"github.com/labring/sealos/controllers/account/controllers"
-	//+kubebuilder:scaffold:imports
+	"github.com/labring/sealos/controllers/account/controllers/cache"
+	"github.com/labring/sealos/controllers/pkg/database"
+	"github.com/labring/sealos/controllers/pkg/database/cockroach"
+	"github.com/labring/sealos/controllers/pkg/database/mongo"
+	notificationv1 "github.com/labring/sealos/controllers/pkg/notification/api/v1"
+	"github.com/labring/sealos/controllers/pkg/resources"
+	"github.com/labring/sealos/controllers/pkg/types"
+	"github.com/labring/sealos/controllers/pkg/utils/env"
+	"github.com/labring/sealos/controllers/pkg/utils/maps"
+	rate "github.com/labring/sealos/controllers/pkg/utils/rate"
+	userv1 "github.com/labring/sealos/controllers/user/api/v1"
 )
 
 var (

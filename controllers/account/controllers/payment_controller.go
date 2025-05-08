@@ -23,23 +23,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/labring/sealos/controllers/pkg/utils/env"
-
-	"github.com/google/uuid"
-
-	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	pkgtypes "github.com/labring/sealos/controllers/pkg/types"
-
-	"github.com/labring/sealos/controllers/pkg/pay"
-
 	"github.com/go-logr/logr"
+	"github.com/google/uuid"
 	"k8s.io/apimachinery/pkg/runtime"
-
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
+	"github.com/labring/sealos/controllers/pkg/pay"
+	pkgtypes "github.com/labring/sealos/controllers/pkg/types"
+	"github.com/labring/sealos/controllers/pkg/utils/env"
 )
 
 // PaymentReconciler reconciles a Payment object

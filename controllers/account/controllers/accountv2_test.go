@@ -18,7 +18,6 @@ import (
 	"testing"
 
 	"github.com/labring/sealos/controllers/pkg/database"
-
 	"github.com/labring/sealos/controllers/pkg/database/cockroach"
 	"github.com/labring/sealos/controllers/pkg/types"
 )

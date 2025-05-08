@@ -28,43 +28,32 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-
-	"github.com/labring/sealos/controllers/pkg/utils"
-
-	corev1 "k8s.io/api/core/v1"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/google/uuid"
-
-	gonanoid "github.com/matoous/go-nanoid/v2"
-
-	"gorm.io/gorm"
-
-	"k8s.io/client-go/rest"
-
-	"k8s.io/client-go/kubernetes"
-
 	"github.com/go-logr/logr"
-
-	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
-	"github.com/labring/sealos/controllers/pkg/database"
-	"github.com/labring/sealos/controllers/pkg/resources"
-	pkgtypes "github.com/labring/sealos/controllers/pkg/types"
-	"github.com/labring/sealos/controllers/pkg/utils/env"
-	"github.com/labring/sealos/controllers/pkg/utils/retry"
-	userv1 "github.com/labring/sealos/controllers/user/api/v1"
-
+	"github.com/google/uuid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"gorm.io/gorm"
+	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
+	"github.com/labring/sealos/controllers/pkg/database"
+	"github.com/labring/sealos/controllers/pkg/resources"
+	pkgtypes "github.com/labring/sealos/controllers/pkg/types"
+	"github.com/labring/sealos/controllers/pkg/utils"
+	"github.com/labring/sealos/controllers/pkg/utils/env"
+	"github.com/labring/sealos/controllers/pkg/utils/retry"
+	userv1 "github.com/labring/sealos/controllers/user/api/v1"
 )
 
 type CVMTaskRunner struct {

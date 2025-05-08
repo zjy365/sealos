@@ -22,21 +22,19 @@ import (
 	"os"
 	"strings"
 
-	"github.com/labring/sealos/controllers/pkg/database/cockroach"
-
-	account2 "github.com/labring/sealos/controllers/pkg/account"
-	"github.com/labring/sealos/controllers/pkg/code"
-	pkgtype "github.com/labring/sealos/controllers/pkg/types"
-	userv1 "github.com/labring/sealos/controllers/user/api/v1"
-
-	admissionv1 "k8s.io/api/admission/v1"
-	"k8s.io/apimachinery/pkg/types"
-
 	"github.com/go-logr/logr"
+	admissionv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
+
+	account2 "github.com/labring/sealos/controllers/pkg/account"
+	"github.com/labring/sealos/controllers/pkg/code"
+	"github.com/labring/sealos/controllers/pkg/database/cockroach"
+	pkgtype "github.com/labring/sealos/controllers/pkg/types"
+	userv1 "github.com/labring/sealos/controllers/user/api/v1"
 )
 
 const (

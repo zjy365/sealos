@@ -27,7 +27,6 @@ import (
 
 	kbv1alpha1 "github.com/apecloud/kubeblocks/apis/apps/v1alpha1"
 	"github.com/go-logr/logr"
-	v1 "github.com/labring/sealos/controllers/account/api/v1"
 	"github.com/minio/madmin-go/v3"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -46,6 +45,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+
+	v1 "github.com/labring/sealos/controllers/account/api/v1"
 )
 
 // NamespaceReconciler reconciles a Namespace object

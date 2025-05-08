@@ -27,21 +27,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/labring/sealos/controllers/pkg/database/cockroach"
-
-	"k8s.io/client-go/tools/clientcmd"
-
+	"github.com/google/uuid"
 	"gorm.io/gorm"
-
-	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/google/uuid"
-	"github.com/labring/sealos/controllers/pkg/types"
-
+	accountv1 "github.com/labring/sealos/controllers/account/api/v1"
 	"github.com/labring/sealos/controllers/pkg/database"
+	"github.com/labring/sealos/controllers/pkg/database/cockroach"
+	"github.com/labring/sealos/controllers/pkg/types"
 	"github.com/labring/sealos/controllers/pkg/utils"
 )
 

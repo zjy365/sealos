@@ -24,32 +24,21 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
-
-	"github.com/labring/sealos/controllers/pkg/utils/maps"
-
-	"k8s.io/client-go/rest"
-
-	"k8s.io/client-go/kubernetes/scheme"
-
-	"github.com/labring/sealos/controllers/pkg/utils/env"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	userv1 "github.com/labring/sealos/controllers/user/api/v1"
-
-	ctrl "sigs.k8s.io/controller-runtime"
-
-	"github.com/labring/sealos/controllers/pkg/types"
-
-	"github.com/labring/sealos/controllers/pkg/resources"
-
 	"github.com/go-logr/logr"
+	"github.com/google/uuid"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/labring/sealos/controllers/pkg/database"
-
-	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+	"github.com/labring/sealos/controllers/pkg/resources"
+	"github.com/labring/sealos/controllers/pkg/types"
+	"github.com/labring/sealos/controllers/pkg/utils/env"
+	"github.com/labring/sealos/controllers/pkg/utils/maps"
+	userv1 "github.com/labring/sealos/controllers/user/api/v1"
 )
 
 type BillingTaskRunner struct {
@@ -209,10 +198,13 @@ func (r *BillingReconciler) reconcileBilling(owner string, billings []*resources
 		amount += billing.Amount
 		orderIDs = append(orderIDs, billing.OrderID)
 	}
+	if amount <= 0 {
+		return nil
+	}
 	if err := r.DBClient.SaveBillings(billings...); err != nil {
 		return fmt.Errorf("save billings failed: %w", err)
 	}
-	if err := r.rechargeBalance(owner, amount); err != nil {
+	if err := r.AccountV2.AddDeductionBalance(&types.UserQueryOpts{Owner: owner}, amount); err != nil {
 		r.Logger.Error(err, "recharge balance failed", "owner", owner, "amount", amount)
 		if updateErr := r.DBClient.UpdateBillingStatus(orderIDs, resources.Unsettled); updateErr != nil {
 			r.Logger.Error(updateErr, "update billing unsettled status failed", "orderIDs", orderIDs)
@@ -278,16 +270,6 @@ func (r *BillingReconciler) reconcileOwnerListBatch(
 			return fmt.Errorf("failed to reconcile batch from %d to %d: %w", i, end, err)
 		}
 		r.Logger.Info("reconcile batch", "from", i, "to", end)
-	}
-	return nil
-}
-
-func (r *BillingReconciler) rechargeBalance(owner string, amount int64) (err error) {
-	if amount == 0 {
-		return nil
-	}
-	if err := r.AccountV2.AddDeductionBalance(&types.UserQueryOpts{Owner: owner}, amount); err != nil {
-		return fmt.Errorf("add balance failed: %w", err)
 	}
 	return nil
 }
