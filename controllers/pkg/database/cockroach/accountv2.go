@@ -548,6 +548,7 @@ func (c *Cockroach) GetBalanceWithCredits(ops *types.UserQueryOpts) (*types.Bala
                 WHERE c.user_uid = a."userUid"
                 AND (c.expire_at IS NULL OR c.expire_at > CURRENT_TIMESTAMP)
                 AND (c.start_at IS NULL OR c.start_at <= CURRENT_TIMESTAMP)
+				AND c.status != 'expired'
             ), 0) as credits,
             COALESCE((
                 SELECT SUM(c.used_amount)
@@ -555,6 +556,7 @@ func (c *Cockroach) GetBalanceWithCredits(ops *types.UserQueryOpts) (*types.Bala
                 WHERE c.user_uid = a."userUid"
                 AND (c.expire_at IS NULL OR c.expire_at > CURRENT_TIMESTAMP)
                 AND (c.start_at IS NULL OR c.start_at <= CURRENT_TIMESTAMP)
+				AND c.status != 'expired'
             ), 0) as deduction_credits
         FROM "Account" a
         WHERE a."userUid" = ?
