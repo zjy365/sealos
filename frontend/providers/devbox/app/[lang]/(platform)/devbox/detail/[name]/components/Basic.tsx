@@ -7,6 +7,7 @@ import { usePriceStore } from '@/stores/price';
 import { useDevboxStore } from '@/stores/devbox';
 import { getTemplateConfig } from '@/api/template';
 import { DevboxStatusMapType } from '@/types/devbox';
+import { DevboxStatusEnum } from '@/constants/devbox';
 import { getSSHConnectionInfo } from '@/api/devbox';
 import { downLoadBlob, parseTemplateConfig, useCopyData } from '@/utils/tools';
 
@@ -175,24 +176,35 @@ const BasicInfo = () => {
           {t('ssh_connect_info')}
         </Text>
         <Flex color={'grayModern.900'} w={'80%'} role="group">
-          <Text cursor="pointer" fontSize={'12px'}>
-            {sshCommand}
-          </Text>
-          <MyIcon
-            name="copy"
-            w={'16px'}
-            ml={1}
-            display={'none'}
-            _groupHover={{
-              display: 'inline-block'
-            }}
-            color={'grayModern.500'}
-            _hover={{
-              color: 'grayModern.600'
-            }}
-            cursor={'pointer'}
-            onClick={() => copyData(sshCommand)}
-          />
+          {
+            devboxDetail?.status.value === DevboxStatusEnum.Shutdown ? (
+              <Text fontSize={'12px'}>
+                -
+              </Text>
+            ) : (
+              <>
+                <Text cursor="pointer" fontSize={'12px'}>
+                  {sshCommand}
+                </Text>
+                <MyIcon
+                  name="copy"
+                  w={'16px'}
+                  ml={1}
+                  display={'none'}
+                  _groupHover={{
+                    display: 'inline-block'
+                  }}
+                  color={'grayModern.500'}
+                  _hover={{
+                    color: 'grayModern.600'
+                  }}
+                  cursor={'pointer'}
+                  onClick={() => copyData(sshCommand)}
+                />
+              </>
+            )
+          }
+
         </Flex>
       </Flex>
       <Flex px={2} alignItems={'center'} justify={'start'} gap={4}>
