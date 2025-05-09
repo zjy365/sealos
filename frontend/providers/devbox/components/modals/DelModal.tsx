@@ -76,12 +76,12 @@ const DelModal = ({
     <Modal isOpen onClose={onClose} lockFocusAcrossFrames={false} size={'lg'}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader bg={'white'} borderBottom={'0px'}>
-          <Flex pt={4} fontWeight={'600'} pl={4} fontSize={'20px'}>
+        <ModalHeader>
+          <Flex fontWeight={'600'} fontSize={'20px'}>
             {t('delete_warning')}
           </Flex>
         </ModalHeader>
-        <ModalBody pb={4} pt={4}>
+        <ModalBody>
           <Box fontSize={'12px'} color={'#DC2626'} bg={'#FEF2F2'} borderRadius={'4px'} p={2}>
             {t('delete_warning_content_2')}
           </Box>
@@ -114,7 +114,7 @@ const DelModal = ({
             p={2}
           />
         </ModalBody>
-        <ModalFooter mr={'auto'} gap={'4'}>
+        <ModalFooter gap={'4'}>
           <Button
             color={'white'}
             bg={'#DC2626'}

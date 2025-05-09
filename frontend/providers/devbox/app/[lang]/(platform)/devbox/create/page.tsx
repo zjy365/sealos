@@ -18,6 +18,7 @@ import type { YamlItemType } from '@/types';
 import type { DevboxEditType, DevboxEditTypeV2, DevboxKindsType } from '@/types/devbox';
 
 import { useConfirm } from '@/hooks/useConfirm';
+import { useScheduleModal } from '@/hooks/useScheduleModal';
 import { useLoading } from '@/hooks/useLoading';
 
 import { useDevboxStore } from '@/stores/devbox';
@@ -31,7 +32,7 @@ import { createDevbox, updateDevbox } from '@/api/devbox';
 import { defaultDevboxEditValueV2, editModeMap } from '@/constants/devbox';
 import { useTemplateStore } from '@/stores/template';
 import { generateYamlList } from '@/utils/json2Yaml';
-import { patchYamlList } from '@/utils/tools';
+import { patchYamlList, getScheduleTime } from '@/utils/tools';
 import { debounce } from 'lodash';
 import { useGuideStore } from '@/stores/guide';
 
@@ -78,9 +79,12 @@ const DevboxCreatePage = () => {
 
   const { title, applyBtnText, applyMessage, applySuccess, applyError } = editModeMap(isEdit);
 
-  const { openConfirm, ConfirmChild } = useConfirm({
+  const { openConfirm: openScheduleConfirm, ConfirmModal: ScheduleModal } = useScheduleModal({title: 'createDevbox'});
+  const { openConfirm: openUpdateConfirm, ConfirmChild: UpdateConfirmChild } = useConfirm({
     content: applyMessage
   });
+  const openConfirm = devboxName ? openUpdateConfirm : openScheduleConfirm;
+  const ConfirmModal = devboxName ? <UpdateConfirmChild /> : ScheduleModal;
 
   // compute container width
   const { screenWidth, lastRoute } = useGlobalStore();
@@ -169,7 +173,7 @@ const DevboxCreatePage = () => {
       }
     }
   );
-  const submitSuccess = async (formData: DevboxEditTypeV2) => {
+  const submitSuccess = async (formData: DevboxEditTypeV2, pauseTime?: number) => {
     setIsLoading(true);
     try {
       // gpu inventory check
@@ -237,7 +241,11 @@ const DevboxCreatePage = () => {
           devboxName: formData.name
         });
       } else {
-        await createDevbox({ devboxForm: formData });
+        if (pauseTime && pauseTime > 0) {
+          await createDevbox({ devboxForm: formData, schedulePause: { time: getScheduleTime(pauseTime), type: 'Stopped' } });
+        } else {
+          await createDevbox({ devboxForm: formData, schedulePause: { time: '', type: 'Stopped' } });
+        }
       }
       addDevboxIDE('vscode', formData.name);
       toast({
@@ -297,12 +305,19 @@ const DevboxCreatePage = () => {
             yamlList={yamlList}
             title={title}
             applyBtnText={applyBtnText}
-            applyCb={() =>
-              formHook.handleSubmit(
-                (data) => openConfirm(() => submitSuccess(data))(),
-                submitError
-              )()
-            }
+            applyCb={() => {
+              if (isEdit) {
+                formHook.handleSubmit(
+                  (data) => openConfirm(() => submitSuccess(data))(),
+                  submitError
+                )()
+              } else {
+                formHook.handleSubmit(
+                  (data) => openConfirm((pauseTime: number) => submitSuccess(data, pauseTime))(),
+                  submitError
+                )()
+              }
+            }}
           />
           <Box flex={'1 0 0'} h={0} w={'100%'} pb={4} pt={'32px'}>
             {tabType === 'form' ? (
@@ -313,7 +328,7 @@ const DevboxCreatePage = () => {
           </Box>
         </Flex>
       </FormProvider>
-      <ConfirmChild />
+      {ConfirmModal}
       <Loading />
 
       {!!errorMessage && (

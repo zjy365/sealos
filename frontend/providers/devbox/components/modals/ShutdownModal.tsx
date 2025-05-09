@@ -19,6 +19,8 @@ import { useCallback, useState } from 'react';
 import { shutdownDevbox } from '@/api/devbox';
 import { DevboxDetailTypeV2, DevboxListItemTypeV2, ShutdownModeType } from '@/types/devbox';
 import MyIcon from '../Icon';
+import { YamlKindEnum } from '@/constants/devbox';
+import { updateDevbox } from '@/api/devbox';
 
 const ReleaseModal = ({
   onSuccess,
@@ -37,7 +39,16 @@ const ReleaseModal = ({
   const handleShutdown = useCallback(async () => {
     try {
       setLoading(true);
-      await shutdownDevbox({ devboxName: devbox.name, shutdownMode });
+      const shutdownPromise = shutdownDevbox({ devboxName: devbox.name, shutdownMode });
+      const updatePromise = updateDevbox({
+        patch: [{
+          type: 'delete',
+          kind: YamlKindEnum.DevBoxSchedule,
+          name: `${devbox.name}-schedule-pause`
+        }],
+        devboxName: devbox.name
+      });
+      await Promise.all([shutdownPromise, updatePromise]);
       toast({
         title: t('pause_success'),
         status: 'success'
@@ -182,6 +193,9 @@ const ReleaseModal = ({
                     </Box>
                   </Flex>
                 </Box>
+              </Box>
+              <Box p={4} bg={'red.100'} borderRadius={'7px'} mt={4} fontSize={'14px'} color={'grayModern.900'}>
+                {t('shutdown_schedule_tip')}
               </Box>
             </RadioGroup>
           </ModalBody>

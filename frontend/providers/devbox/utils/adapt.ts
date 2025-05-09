@@ -104,7 +104,8 @@ export const adaptDevboxListItemV2 = ([devbox, template]: [
 export const adaptDevboxDetailV2 = ([
   devbox,
   portInfos,
-  template
+  template,
+  schedulePause
 ]: GetDevboxByNameReturn): DevboxDetailTypeV2 => {
   console.log('adaptDevboxDetailV2');
   const status =
@@ -114,6 +115,7 @@ export const adaptDevboxDetailV2 = ([
   return {
     id: devbox.metadata?.uid || ``,
     name: devbox.metadata.name || 'devbox',
+    schedulePause,
     templateUid: devbox.spec.templateID,
     templateName: template.name,
     templateRepositoryName: template.templateRepository.name,

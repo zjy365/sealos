@@ -82,18 +82,16 @@ export const useConfirm = ({
       () => (
         <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
           <AlertDialogOverlay>
-            <AlertDialogContent p={'16px'} gap={'16px'}>
+            <AlertDialogContent>
               <AlertDialogHeader
                 fontSize="20px"
                 fontWeight="bold"
-                bg={'white'}
                 borderBottom={'none'}
-                p={0}
               >
                 {t(title)}
               </AlertDialogHeader>
 
-              <AlertDialogBody p={0} alignItems={'center'}>
+              <AlertDialogBody alignItems={'center'}>
                 <Box h={'full'}>{t(content)}</Box>
                 <Box mt={'12px'}>
                   {showCheckbox && (
@@ -107,7 +105,7 @@ export const useConfirm = ({
                 </Box>
               </AlertDialogBody>
 
-              <AlertDialogFooter p={0} mr={'auto'} gap={'16px'}>
+              <AlertDialogFooter gap={'16px'}>
                 <Button
                   variant={'solid'}
                   h={'40px'}

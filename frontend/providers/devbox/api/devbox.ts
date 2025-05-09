@@ -7,7 +7,8 @@ import {
   DevboxListItemTypeV2,
   DevboxPatchPropsType,
   DevboxVersionListItemType,
-  ShutdownModeType
+  ShutdownModeType,
+  DevBoxSchedulePauseType
 } from '@/types/devbox';
 import { KBDevboxReleaseType, KBDevboxTypeV2 } from '@/types/k8s';
 import {
@@ -42,7 +43,7 @@ export const getDevboxByName = (devboxName: string) =>
 export const applyYamlList = (yamlList: string[], type: 'create' | 'replace' | 'update') =>
   POST('/api/applyYamlList', { yamlList, type });
 
-export const createDevbox = (payload: { devboxForm: DevboxEditTypeV2 }) =>
+export const createDevbox = (payload: { devboxForm: DevboxEditTypeV2, schedulePause: DevBoxSchedulePauseType }) =>
   POST(`/api/createDevbox`, payload);
 
 export const updateDevbox = (payload: { patch: DevboxPatchPropsType; devboxName: string }) =>

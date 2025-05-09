@@ -316,6 +316,10 @@ export const formatMoney = (mone: number) => {
   return mone / 1000000;
 };
 
+export const getScheduleTime = (pauseTime: number, unit: dayjs.ManipulateType = 'hour') => {
+  return dayjs().add(pauseTime, unit).toISOString();
+};
+
 export function calculateUptime(createdTime: Date): string {
   const now = dayjs();
   const created = dayjs(createdTime);

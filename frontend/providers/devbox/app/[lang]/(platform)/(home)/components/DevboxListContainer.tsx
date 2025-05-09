@@ -53,9 +53,12 @@ function useDevboxList() {
     ['intervalLoadPods', devboxList.length],
     () => {
       const viewportDevboxList = getViewportDevboxes();
-      return viewportDevboxList
+      // return viewportDevboxList
+      //   .filter((devbox) => devbox.status.value !== 'Stopped')
+      //   .map((devbox) => intervalLoadPods(devbox.name, false));
+      return intervalLoadPods(viewportDevboxList
         .filter((devbox) => devbox.status.value !== 'Stopped')
-        .map((devbox) => intervalLoadPods(devbox.name, false));
+        .map((devbox) => devbox.name), false);
     },
     {
       refetchOnMount: true,

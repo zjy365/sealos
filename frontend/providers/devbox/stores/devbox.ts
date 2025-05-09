@@ -44,7 +44,7 @@ type State = {
   ) => Promise<DevboxVersionListItemType[]>;
   devboxDetail?: DevboxDetailTypeV2;
   setDevboxDetail: (devboxName: string, sealosDomain: string) => Promise<DevboxDetailTypeV2>;
-  intervalLoadPods: (devboxName: string, updateDetail: boolean) => Promise<any>;
+  intervalLoadPods: (devboxNames: string[], updateDetail: boolean) => Promise<any[]>;
   loadDetailMonitorData: (
     devboxName: string,
     step?: string,
@@ -159,28 +159,30 @@ export const useDevboxStore = create<State>()(
 
         return detail;
       },
-      intervalLoadPods: async (devboxName, updateDetail) => {
-        if (!devboxName) return Promise.reject('devbox name is empty');
-
+      intervalLoadPods: async (devboxNames, updateDetail) => {
         const res = await getMyDevboxList();
-        const sshPort = res.find((item) => item.name === devboxName)?.sshPort;
-        const status = res.find((item) => item.name === devboxName)?.status;
+        return devboxNames.map(async (devboxName) => {
+          if (!devboxName) return Promise.reject('devbox name is empty');
 
-        if (!status) return Promise.reject('devbox status is empty');
+          const sshPort = res.find((item) => item.name === devboxName)?.sshPort;
+          const status = res.find((item) => item.name === devboxName)?.status;
 
-        set((state) => {
-          if (state?.devboxDetail?.name === devboxName && updateDetail) {
-            state.devboxDetail.status = status;
-            if (state.devboxDetail.sshConfig && sshPort) {
-              state.devboxDetail.sshConfig.sshPort = sshPort;
+          if (!status) return Promise.reject('devbox status is empty');
+
+          set((state) => {
+            if (state?.devboxDetail?.name === devboxName && updateDetail) {
+              state.devboxDetail.status = status;
+              if (state.devboxDetail.sshConfig && sshPort) {
+                state.devboxDetail.sshConfig.sshPort = sshPort;
+              }
             }
-          }
-          state.devboxList = state.devboxList.map((item) => ({
-            ...item,
-            status: item.name === devboxName ? status : item.status
-          }));
+            state.devboxList = state.devboxList.map((item) => ({
+              ...item,
+              status: item.name === devboxName ? status : item.status
+            }));
+          });
+          return 'success';
         });
-        return 'success';
       },
       loadDetailMonitorData: async (devboxName, step, start, end) => {
         const pods = await getDevboxPodsByDevboxName(devboxName);

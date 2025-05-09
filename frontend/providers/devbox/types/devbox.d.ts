@@ -28,6 +28,11 @@ export type ProtocolType = 'HTTP' | 'GRPC' | 'WS';
 
 export type ShutdownModeType = 'Stopped' | 'Shutdown';
 
+export interface DevBoxSchedulePauseType {
+  time: string; // new Date(Date.now() + after * 3600000).toISOString() time为空，则表示不设置定时关机
+  type: ShutdownModeType; // Stopped为普通关机，Shutdown为节省关机
+}
+
 export type GpuType = {
   manufacturers: string;
   type: string;
@@ -114,6 +119,7 @@ export interface DevboxDetailTypeV2 extends json2DevboxV2Data {
   upTime?: string;
   createTime: string;
   isPause?: boolean;
+  schedulePause?: DevBoxSchedulePauseType;
   iconId: string;
   templateName: string;
   templateRepositoryName: string;
