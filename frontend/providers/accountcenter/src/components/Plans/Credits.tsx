@@ -111,7 +111,7 @@ const PlanCredits: FC<CreditsProps> = ({
     if (loadingUserInfo && !userInfo) {
       return null;
     }
-    if (userInfo && !userInfo.bindings.github) {
+    if (userInfo && !userInfo.bindings.github && restGift === 0) {
       const userCreateMonthDiffToday =
         typeof userInfo.user.createdAt === 'number'
           ? differenceInMonths(new Date(), new Date(userInfo.user.createdAt))
