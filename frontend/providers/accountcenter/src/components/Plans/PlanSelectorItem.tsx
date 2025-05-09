@@ -3,7 +3,7 @@ import {
   TPlanApiResponse,
   TSubscriptionApiResponse
 } from '@/schema/plan';
-import { Box, Button, ButtonProps, Flex, GridItem, Text } from '@chakra-ui/react';
+import { Box, Button, ButtonProps, Flex, GridItem, Text, Tooltip } from '@chakra-ui/react';
 import { upperFirst } from 'lodash';
 import { useTranslation } from 'next-i18next';
 import { FC, ReactNode } from 'react';
@@ -12,6 +12,7 @@ import CircleCheck from '@/components/Icon/icons/circleCheck.svg';
 import { formatMoneyStr } from '@/utils/format';
 import CancelPlanButton from './CancelPlanButton';
 import { Track } from '@sealos/ui';
+import { Info } from 'lucide-react';
 
 export interface PlanSelectorItemProps {
   plan: TPlanApiResponse;
@@ -53,11 +54,16 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   const featureTextsPlaceholders: ReactNode[] = [];
   const renderFeatureText = ({ key, text }: { key: string; text: string }) => {
     return (
-      <Flex key={key} gap="8px" visibility={text === '' ? 'hidden' : undefined}>
+      <Flex key={key} gap="8px" visibility={text === '' ? 'hidden' : undefined} alignItems="center">
         <Box flexShrink={0} mt="2px">
           <CircleCheck width="16px" height="16px" stroke="rgb(28, 78, 245)" strokeWidth="1.4px" />
         </Box>
         <Text lineHeight="20px">{text || 'placeholder'}</Text>
+        {key === 'nodeport-withIcon' && (
+          <Tooltip label="Included Database public connection and Devbox SSH connection.">
+            <Info width="16px" height="16px" />
+          </Tooltip>
+        )}
       </Flex>
     );
   };
