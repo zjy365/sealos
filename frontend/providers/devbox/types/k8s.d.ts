@@ -297,3 +297,20 @@ export type KBRuntimeClassType = {
     description: string;
   };
 };
+
+
+export type KBDevBoxSchedulePauseType = {
+  apiVersion: 'devbox.sealos.io/v1alpha1';
+  kind: 'DevBoxSchedule';
+  metadata: {
+    name: string;
+    namespace: string;
+    uid: string;
+    creationTimestamp: string;
+  };
+  spec: {
+    devBoxName: string;
+    scheduleTime: string;
+    scheduleType: string;
+  };
+};

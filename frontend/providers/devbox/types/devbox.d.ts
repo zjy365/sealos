@@ -62,6 +62,11 @@ export interface DevboxEditTypeV2 {
   gpu?: GpuType;
   networks: PortInfos;
 }
+
+export interface DevBoxSchedulePauseType {
+  time: string;
+  type: string;
+}
 export interface DevboxStatusMapType {
   label: string;
   value: DevboxStatusValueType;

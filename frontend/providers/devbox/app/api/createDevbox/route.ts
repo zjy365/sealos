@@ -4,9 +4,9 @@ import { authSession, authSessionWithJWT } from '@/services/backend/auth';
 import { getK8s } from '@/services/backend/kubernetes';
 import { jsonRes } from '@/services/backend/response';
 import { devboxDB } from '@/services/db/init';
-import { DevboxEditTypeV2 } from '@/types/devbox';
+import { DevBoxSchedulePauseType, DevboxEditTypeV2 } from '@/types/devbox';
 import { KBDevboxTypeV2 } from '@/types/k8s';
-import { json2DevboxV2, json2Ingress, json2Service } from '@/utils/json2Yaml';
+import { json2DevboxV2, json2Ingress, json2SchedulePause, json2Service } from '@/utils/json2Yaml';
 import { sendCreateDevboxEvent } from '@/services/amqp';
 
 export const dynamic = 'force-dynamic';
@@ -14,8 +14,9 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
   try {
     // NOTE： runtimeNamespaceMap will be too big？
-    const { devboxForm } = (await req.json()) as {
+    const { devboxForm, schedulePause } = (await req.json()) as {
       devboxForm: DevboxEditTypeV2;
+      schedulePause?: DevBoxSchedulePauseType;
       // runtimeNamespaceMap: runtimeNamespaceMapType
     };
     const headerList = req.headers;
@@ -60,7 +61,11 @@ export async function POST(req: NextRequest) {
     const devbox = json2DevboxV2(devboxForm, DEVBOX_AFFINITY_ENABLE, SQUASH_ENABLE);
     const service = json2Service(devboxForm);
     const ingress = json2Ingress(devboxForm, INGRESS_SECRET as string);
-    await applyYamlList([devbox, service, ingress], 'create');
+    const yamlList = [devbox, service, ingress];
+    if (schedulePause && schedulePause.time) {
+      yamlList.push(json2SchedulePause({ devBoxName: devboxForm.name, namespace, schedulePause }));
+    } 
+    await applyYamlList(yamlList, 'create');
 
     sendCreateDevboxEvent(payload.userUid);
 
