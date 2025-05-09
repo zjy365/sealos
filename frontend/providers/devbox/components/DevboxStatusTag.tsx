@@ -27,6 +27,7 @@ const DevboxStatusTag = ({
   w?: string;
   h?: string;
   isShutdown?: boolean;
+  backgroundColor?: string;
 }) => {
   const label = status?.label;
   const t = useTranslations();
@@ -61,7 +62,7 @@ const DevboxStatusTag = ({
           display={thinMode ? 'none' : 'block'}
         ></Box>
         <Box ml={thinMode ? 0 : 2} flex={1}>
-          {t(label)}
+          {t(map[label] || label)}
         </Box>
       </Flex>
       {isShutdown && (
