@@ -33,12 +33,11 @@ import debounce from 'lodash/debounce';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import Form from './components/Form';
 import ReadMe from './components/ReadMe';
 import { getTemplateInputDefaultValues, getTemplateValues } from '@/utils/template';
-import { useUserStore } from '@/store/user';
 import { getResourceUsage } from '@/utils/usage';
 import Head from 'next/head';
 import { useMessage } from '@sealos/ui';
@@ -47,6 +46,7 @@ import MyIcon from '@/components/Icon';
 import { formatNum } from '@/utils/tools';
 import { HtmlIcon } from '@/components/icons';
 import Image from 'next/image';
+import { useUserStore } from '@/store/user';
 
 const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 const Header = dynamic(() => import('./components/Header'), { ssr: false });
@@ -99,9 +99,7 @@ export default function EditApp({
     return usage;
   }, [yamlList]);
 
-  const { data: platformEnvs } = useQuery(['getPlatformEnvs'], getPlatformEnv, {
-    staleTime: 5 * 60 * 1000
-  });
+  const { data: platformEnvs } = useQuery(['getPlatformEnvs'], getPlatformEnv);
 
   const { openConfirm, ConfirmChild } = useConfirm({
     content: insideCloud ? 'Confirm Deploy Application?' : 'Heading to ClawCloud soon'
@@ -138,19 +136,28 @@ export default function EditApp({
     },
     [platformEnvs]
   );
-  // eslint-disable-next-line
-  const formOnchangeDebounce = useCallback(
-    debounce((inputs: Record<string, string>) => {
+
+  const debouncedFnRef = useRef<any>(null);
+  useEffect(() => {
+    debouncedFnRef.current = debounce((inputValues: Record<string, string>) => {
       try {
         if (!templateSource) return;
-        const list = generateYamlData(templateSource, inputs);
+        const list = generateYamlData(templateSource, inputValues);
         setYamlList(list);
       } catch (error) {
         console.log(error);
       }
-    }, 500),
-    [templateSource, generateYamlData]
-  );
+    }, 500);
+    return () => {
+      debouncedFnRef.current = null;
+    };
+  }, [templateSource, generateYamlData]);
+
+  const formOnchangeDebounce = useCallback((inputs: Record<string, string>) => {
+    if (debouncedFnRef.current) {
+      debouncedFnRef.current(inputs);
+    }
+  }, []);
 
   const getCachedValue = ():
     | {
