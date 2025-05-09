@@ -1,7 +1,7 @@
 import yaml from 'js-yaml';
 
 import { devboxKey, gpuNodeSelectorKey, gpuResourceKey, publicDomainKey } from '@/constants/devbox';
-import { DevboxEditType, DevboxEditTypeV2, json2DevboxV2Data, ProtocolType } from '@/types/devbox';
+import { DevboxEditType, DevboxEditTypeV2, DevBoxSchedulePauseType, json2DevboxV2Data, ProtocolType } from '@/types/devbox';
 import { produce } from 'immer';
 import { parseTemplateConfig, str2Num } from './tools';
 import { getUserNamespace } from './user';
@@ -141,6 +141,43 @@ export const json2DevboxV2 = (
   }
   return yaml.dump(json);
 };
+export const json2SchedulePause = ({
+  devBoxName,
+  devBoxUid,
+  namespace,
+  schedulePause,
+}: {
+  devBoxName: string;
+  devBoxUid: string;
+  namespace: string;
+  schedulePause: DevBoxSchedulePauseType;
+}) => {
+  const { time, type } = schedulePause;
+  if (!time) return '';
+  const json = {
+    apiVersion: 'devbox.sealos.io/v1alpha1',
+    kind: 'DevBoxSchedule',
+    metadata: {
+      name: `${devBoxName}-schedule-pause`,
+      namespace,
+      ownerReferences: [
+        {
+          apiVersion: 'devbox.sealos.io/v1alpha1',
+          kind: 'DevBox',
+          name: devBoxName,
+          uid: devBoxUid,
+        }
+      ]
+    },
+    spec: {
+      devBoxName,
+      scheduleTime: time,
+      scheduleType: type
+    }
+  };
+  return yaml.dump(json);
+};
+
 export const json2StartOrStop = ({
   devboxName,
   type
