@@ -133,7 +133,7 @@ const DevboxList = ({
         id: 'status',
         enablePinning: true,
         cell(props) {
-          return <DevboxStatusTag status={props.getValue()} h={'27px'} thinMode />;
+          return <DevboxStatusTag status={props.getValue()} h={'27px'} backgroundColor={'transparent'} />;
         }
       }),
       columnHelper.accessor((row) => row.usedCpu, {
