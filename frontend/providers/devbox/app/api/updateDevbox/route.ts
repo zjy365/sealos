@@ -62,6 +62,33 @@ export async function POST(req: NextRequest) {
             name
           )
       },
+      [YamlKindEnum.DevBoxSchedule]: {
+        patch: (jsonPatch: Object) => {
+          // @ts-ignore
+          
+          const name = jsonPatch?.metadata?.name;
+          return k8sCustomObjects.patchNamespacedCustomObject(
+            'devbox.sealos.io',
+            'v1alpha1',
+            namespace,
+            'devboxschedules',
+            name,
+            jsonPatch,
+            undefined,
+            undefined,
+            undefined,
+            { headers: { 'Content-type': PatchUtils.PATCH_FORMAT_JSON_MERGE_PATCH } }
+          );
+        },
+        delete: (name) =>
+          k8sCustomObjects.deleteNamespacedCustomObject(
+            'devbox.sealos.io',
+            'v1alpha1',
+            namespace,
+            'devboxschedules',
+            name
+          )
+      },
       [YamlKindEnum.Service]: {
         patch: (jsonPatch: Object) =>
           k8sCore.replaceNamespacedService(devboxName, namespace, jsonPatch),

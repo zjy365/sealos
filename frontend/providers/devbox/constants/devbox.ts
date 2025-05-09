@@ -251,6 +251,7 @@ export const ProtocolList = [
 
 export enum YamlKindEnum {
   Devbox = 'Devbox',
+  DevBoxSchedule = 'DevBoxSchedule',
   Service = 'Service',
   Ingress = 'Ingress',
   Issuer = 'Issuer',

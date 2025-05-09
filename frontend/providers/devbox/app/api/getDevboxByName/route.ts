@@ -5,7 +5,7 @@ import { jsonRes } from '@/services/backend/response';
 import { devboxDB } from '@/services/db/init';
 import { ProtocolType } from '@/types/devbox';
 import { PortInfos } from '@/types/ingress';
-import { KBDevboxTypeV2 } from '@/types/k8s';
+import { KBDevboxTypeV2, KBDevBoxSchedulePauseType } from '@/types/k8s';
 import { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -35,6 +35,24 @@ export async function GET(req: NextRequest) {
       'devboxes',
       devboxName
     )) as { body: KBDevboxTypeV2 };
+    let schedulePause = {};
+    try {
+      const { body: devBoxSchedulePause } = (await k8sCustomObjects.getNamespacedCustomObject(
+        'devbox.sealos.io',
+        'v1alpha1',
+        namespace,
+        'devboxschedules',
+        `${devboxName}-schedule-pause`,
+      )) as { body: KBDevBoxSchedulePauseType };
+      schedulePause = {
+        type: devBoxSchedulePause.spec.scheduleType,
+        time: devBoxSchedulePause.spec.scheduleTime,
+      }
+    } catch (error) {
+      if ((error as any).response?.status !== 404) {
+        console.error('get devbox schedule pause error', error);
+      }
+    }
     const template = await devboxDB.template.findUnique({
       where: {
         uid: devboxBody.spec.templateID
@@ -96,7 +114,7 @@ export async function GET(req: NextRequest) {
           customDomain: ingressInfo?.customDomain
         };
       }) || [];
-    const resp = [devboxBody, portInfos, template] as const;
+    const resp = [devboxBody, portInfos, template, schedulePause] as const;
     return jsonRes({ data: resp });
   } catch (err: any) {
     return jsonRes({
