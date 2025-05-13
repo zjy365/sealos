@@ -59,6 +59,7 @@ export type ProtocolConfigType = {
 };
 
 export type LayoutConfigType = {
+  version: 'cn' | 'en';
   title: string;
   logo: string;
   backgroundImage: string;
@@ -263,6 +264,7 @@ export const DefaultCloudConfig: CloudConfigType = {
 };
 
 export const DefaultLayoutConfig: LayoutConfigType = {
+  version: 'cn',
   title: 'Sealos Cloud',
   logo: '/logo.svg',
   backgroundImage: '/images/bg-light.svg',
