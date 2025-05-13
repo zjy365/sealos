@@ -240,7 +240,6 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
     try {
       // quote check
       const nodeportsQuota = userQuota.find((item) => item.type === 'nodeports');
-
       if (nodeportsQuota && nodeportsQuota.used >= nodeportsQuota.limit) {
         return toast({
           status: 'warning',
