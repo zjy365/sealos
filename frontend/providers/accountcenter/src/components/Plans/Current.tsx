@@ -137,7 +137,7 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
   });
   const renderFeature = (text: string, key: string) => {
     return (
-      <GridItem key={key}>
+      <GridItem key={key} visibility={text === '' ? 'hidden' : undefined}>
         <Flex columnGap="8px" alignItems="center">
           <CircleCheck
             width="16"

@@ -19,7 +19,6 @@ export function useGetPlanFeatureTexts() {
   const { t } = useTranslation();
   return function (plan: TPlanApiResponse, opts: Options = {}) {
     const isFree = plan.amount === 0;
-    let placeholderCount = 0;
     const maxResourceObject = opts.maxResourceObject || parseMaxResourcesObject(plan);
     const res: Array<{ key: string; text: string }> = [];
     if (opts.inlcudeCredits) {
@@ -48,8 +47,6 @@ export function useGetPlanFeatureTexts() {
         text: t('FreeTraffic'),
         key: 'traffic'
       });
-    } else {
-      placeholderCount++;
     }
     res.push({
       text: t('MultipleRegions'),
@@ -88,15 +85,6 @@ export function useGetPlanFeatureTexts() {
       res.push({
         text: '1 NodePort (TCP/UDP)',
         key: 'nodeport-withIcon'
-      });
-    } else {
-      placeholderCount++;
-    }
-
-    for (let i = 0; i < placeholderCount; i++) {
-      res.push({
-        text: '',
-        key: `placeholder-${i}`
       });
     }
     return res;

@@ -34,7 +34,7 @@ const buttonStyle: ButtonProps = {
   },
   h: '40px'
 };
-const featureTextsMinLength = 6;
+const featureTextsMinLength = 7;
 const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   plan,
   currentPlan,
@@ -60,7 +60,13 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
         </Box>
         <Text lineHeight="20px">{text || 'placeholder'}</Text>
         {key === 'nodeport-withIcon' && (
-          <Tooltip label="Included Database public connection and Devbox SSH connection.">
+          <Tooltip
+            label="Included Database public connection and Devbox SSH connection."
+            bg="white"
+            color="black"
+            borderRadius="8px"
+            boxShadow="0px 2px 8px rgba(0, 0, 0, 0.15)"
+          >
             <Info width="16px" height="16px" />
           </Tooltip>
         )}
