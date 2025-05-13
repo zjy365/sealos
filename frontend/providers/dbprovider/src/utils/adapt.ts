@@ -184,7 +184,8 @@ export const adaptDBForm = (db: DBDetailType): DBEditType => {
     storage: 1,
     labels: 1,
     autoBackup: 1,
-    terminationPolicy: 1
+    terminationPolicy: 1,
+    nodeports: 1
   };
   const form: any = {};
 
