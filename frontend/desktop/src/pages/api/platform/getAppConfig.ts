@@ -60,29 +60,32 @@ export async function getAppConfig(): Promise<AppClientConfigType> {
     const conf = genResConfig(cloudConf, authConf, commonConf, layoutConf, tracking);
     if (!global.commitCroner) {
       // console.log('init commit croner');
-      global.commitCroner = new Cron('* * * * * *', commitTransactionjob, {
+      global.commitCroner = new Cron('*/3 * * * * *', commitTransactionjob, {
         name: 'commitTransactionJob',
         catch: (err) => {
           // console.log(err);
-        }
+        },
+        protect: true
       });
     }
     if (!global.runCroner) {
       // console.log('init run croner');
-      global.runCroner = new Cron('* * * * * *', runTransactionjob, {
+      global.runCroner = new Cron('*/3 * * * * *', runTransactionjob, {
         name: 'runTransactionJob',
         catch: (err) => {
           // console.log(err);
-        }
+        },
+        protect: true
       });
     }
     if (!global.finishCroner) {
       // console.log('init finish croner');
-      global.finishCroner = new Cron('* * * * * *', finishTransactionJob, {
+      global.finishCroner = new Cron('*/3 * * * * *', finishTransactionJob, {
         name: 'finishTransactionJob',
         catch: (err) => {
           // console.log(err);
-        }
+        },
+        protect: true
       });
     }
     return conf;
