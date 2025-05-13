@@ -14,8 +14,8 @@ export class DeleteUserCrJob implements CronJobStatus<DeleteUserTransactionInfo>
   // private userUid = '';
   private info: DeleteUserTransactionInfo;
   transactionType = TransactionType.DELETE_USER;
-  UNIT_TIMEOUT = 3000;
-  COMMIT_TIMEOUT = 30000;
+  UNIT_TIMEOUT = 10000;
+  COMMIT_TIMEOUT = 60000;
   constructor(private transactionUid: string, info: unknown) {
     this.info = DeleteUserTransactionInfoSchema.parse(info);
   }
@@ -25,7 +25,7 @@ export class DeleteUserCrJob implements CronJobStatus<DeleteUserTransactionInfo>
     //     uid: this.transactionUid
     //   }
     // });
-    if (!this.info || this.transactionUid) throw new Error('the transaction info not found');
+    if (!this.info || !this.transactionUid) throw new Error('the transaction info not found');
     // this.userUid = this.info.userUid;
   }
   async unit() {

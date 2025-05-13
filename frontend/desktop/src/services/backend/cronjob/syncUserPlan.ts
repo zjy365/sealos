@@ -17,14 +17,14 @@ export class SyncUserPlanCrJob implements CronJobStatus<SyncUserPlanTransactionI
   private info: SyncUserPlanTransactionInfo;
   transactionType = TransactionType.DELETE_USER;
   private regionUid: string;
-  UNIT_TIMEOUT = 3000;
-  COMMIT_TIMEOUT = 30000;
+  UNIT_TIMEOUT = 10000;
+  COMMIT_TIMEOUT = 60000;
   constructor(private transactionUid: string, info: unknown) {
     this.info = SyncUserPlanTransactionInfoSchema.parse(info);
     this.regionUid = getRegionUid();
   }
   async init() {
-    if (!this.info || this.transactionUid || !this.regionUid)
+    if (!this.info || !this.transactionUid || !this.regionUid)
       throw new Error('the transaction info not found');
   }
   async unit() {
