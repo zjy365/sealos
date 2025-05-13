@@ -72,6 +72,7 @@ export interface DBEditType {
   labels: { [key: string]: string };
   terminationPolicy: KubeBlockClusterTerminationPolicy;
   autoBackup?: AutoBackupFormType;
+  nodeports?: number;
 }
 
 export type DBSourceType = 'app_store' | 'sealaf';

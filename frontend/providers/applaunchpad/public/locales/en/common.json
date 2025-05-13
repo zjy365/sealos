@@ -17,7 +17,7 @@
     "The container exposed port cannot be empty": "Container port is required",
     "The maximum number of exposed ports is 65535": "Maximum port number is 65535",
     "The minimum exposed port is 1": "Minimum port number is 1",
-    "The applied nodeports exceeds the quota": "Requested nodeports exceeds your quota. Please contact admin."
+    "The applied nodeports exceeds the quota": "Free plan provides only 1 NodePort (TCP/UDP), please upgrade to Hobby or Pro."
   },
   "App Name": "Application Name",
   "Application Deployment": "Application Deployment",
