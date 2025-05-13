@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"text/template"
 	"time"
 
@@ -556,22 +557,32 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 		}
 	}
 
-	paymentReq := services.PaymentRequest{
-		PaymentMethod: req.PayMethod,
-		RequestID:     uuid.NewString(),
-		UserUID:       req.UserUID,
-		Amount:        subTransaction.Amount,
-		Currency:      dao.PaymentCurrency,
-		UserAgent:     c.GetHeader("User-Agent"),
-		ClientIP:      c.ClientIP(),
-		DeviceTokenID: c.GetHeader("Device-Token-ID"),
+	goodsID := os.Getenv(helper.ENVAtomSubscriptionGoodsID)
+	if goodsID == "" {
+		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("goods id is not set, please check env: ", helper.ENVAtomSubscriptionGoodsID)})
+		return
 	}
-	paymentID, err := gonanoid.New(12)
+
+	paymentOrderId, err := gonanoid.New(12)
 	if err != nil {
 		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to create payment id: ", err)})
 		return
 	}
-	subTransaction.PayID = paymentID
+
+	paymentReq := services.PaymentRequest{
+		PaymentMethod:    req.PayMethod,
+		RequestID:        uuid.NewString(),
+		UserUID:          req.UserUID,
+		ReferenceOrderId: paymentOrderId,
+		GoodsID:          goodsID,
+		Amount:           subTransaction.Amount,
+		Currency:         dao.PaymentCurrency,
+		UserAgent:        c.GetHeader("User-Agent"),
+		ClientIP:         c.ClientIP(),
+		DeviceTokenID:    c.GetHeader("Device-Token-ID"),
+	}
+
+	subTransaction.PayID = paymentOrderId
 	var paySvcResp *responsePay.AlipayPayResponse
 	var createPayHandler func(tx *gorm.DB) error
 	if req.CardID != nil {
@@ -620,7 +631,7 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 	}, func(tx *gorm.DB) error {
 		dErr := cockroach.CreatePaymentOrder(
 			tx, &types.PaymentOrder{
-				ID: paymentID,
+				ID: paymentOrderId,
 				PaymentRaw: types.PaymentRaw{
 					UserUID:   req.UserUID,
 					Amount:    subTransaction.Amount,
@@ -639,7 +650,7 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 		return nil
 	}, createPayHandler, func(tx *gorm.DB) error {
 		if paySvcResp.NormalUrl != "" {
-			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentID).Update("code_url", paySvcResp.NormalUrl).Error
+			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentOrderId).Update("code_url", paySvcResp.NormalUrl).Error
 			if dErr != nil {
 				logrus.Warnf("failed to update payment order code url: %v", dErr)
 			}
@@ -684,11 +695,7 @@ func SubscriptionWithOutPay(c *gin.Context, req *helper.SubscriptionOperatorReq,
 }
 
 func SubscriptionPayForBindCard(paymentReq services.PaymentRequest, req *helper.SubscriptionOperatorReq, subTransaction *types.SubscriptionTransaction) error {
-	paymentID, err := gonanoid.New(12)
-	if err != nil {
-		return fmt.Errorf("failed to create payment id: %w", err)
-	}
-	subTransaction.PayID = paymentID
+	subTransaction.PayID = paymentReq.ReferenceOrderId
 	var paySvcResp *responsePay.AlipayPayResponse
 	card, err := dao.DBClient.GetCardInfo(*req.CardID, req.UserUID)
 	if err != nil {
@@ -699,7 +706,7 @@ func SubscriptionPayForBindCard(paymentReq services.PaymentRequest, req *helper.
 	}
 
 	payment := types.Payment{
-		ID: paymentID,
+		ID: paymentReq.ReferenceOrderId,
 		PaymentRaw: types.PaymentRaw{
 			UserUID:      req.UserUID,
 			Amount:       subTransaction.Amount,

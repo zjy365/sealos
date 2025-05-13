@@ -32,14 +32,16 @@ func NewPaymentService(client *defaultAlipayClient.DefaultAlipayClient, notifyUR
 
 // PaymentRequest 支付请求参数
 type PaymentRequest struct {
-	PaymentMethod string
-	RequestID     string
-	UserUID       uuid.UUID
-	Amount        int64
-	Currency      string
-	UserAgent     string
-	ClientIP      string
-	DeviceTokenID string
+	PaymentMethod    string
+	RequestID        string
+	ReferenceOrderId string
+	UserUID          uuid.UUID
+	GoodsID          string
+	Amount           int64
+	Currency         string
+	UserAgent        string
+	ClientIP         string
+	DeviceTokenID    string
 }
 
 func (s *AtomPaymentService) CheckRspSign(requestURI, httpMethod, clientID, respTime, responseBody, signature string) (bool, error) {
@@ -125,14 +127,14 @@ func (s *AtomPaymentService) createOrder(req PaymentRequest) *model.Order {
 	amount := strconv.FormatInt(req.Amount/10000, 10)
 	return &model.Order{
 		OrderDescription: "payment",
-		ReferenceOrderId: uuid.NewString(),
+		ReferenceOrderId: req.ReferenceOrderId,
 		OrderAmount:      model.NewAmount(amount, req.Currency),
 		Buyer: &model.Buyer{
 			ReferenceBuyerId: req.UserUID.String(),
 		},
 		Goods: []model.Goods{
 			{
-				ReferenceGoodsId:   uuid.NewString(),
+				ReferenceGoodsId:   req.GoodsID,
 				GoodsName:          fmt.Sprintf("account %b balance", req.Amount/10000),
 				GoodsQuantity:      amount,
 				DeliveryMethodType: "DIGITAL",

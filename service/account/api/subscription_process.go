@@ -3,9 +3,11 @@ package api
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
@@ -212,16 +214,28 @@ func (p *SubscriptionProcessor) HandlerSubscriptionTransaction(subscription *typ
 		return nil
 	}
 
+	goodsID := os.Getenv(helper.ENVAtomSubscriptionGoodsID)
+	if goodsID == "" {
+		return fmt.Errorf("goods id is not set, please check env: %s", helper.ENVAtomSubscriptionGoodsID)
+	}
+
+	paymentOrderId, err := gonanoid.New(12)
+	if err != nil {
+		return fmt.Errorf("failed to create payment id: %w", err)
+	}
+
 	if subscription.CardID != nil {
 		paymentReq := services.PaymentRequest{
-			PaymentMethod: "CARD",
-			RequestID:     uuid.NewString(),
-			UserUID:       subTransaction.UserUID,
-			Amount:        subTransaction.Amount,
-			Currency:      dao.PaymentCurrency,
-			UserAgent:     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
-			ClientIP:      dao.ClientIP,
-			DeviceTokenID: dao.DeviceTokenID,
+			PaymentMethod:    "CARD",
+			RequestID:        uuid.NewString(),
+			ReferenceOrderId: paymentOrderId,
+			GoodsID:          goodsID,
+			UserUID:          subTransaction.UserUID,
+			Amount:           subTransaction.Amount,
+			Currency:         dao.PaymentCurrency,
+			UserAgent:        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+			ClientIP:         dao.ClientIP,
+			DeviceTokenID:    dao.DeviceTokenID,
 		}
 		err = SubscriptionPayForBindCard(paymentReq, &helper.SubscriptionOperatorReq{
 			AuthBase:  helper.AuthBase{Auth: &helper.Auth{UserUID: subTransaction.UserUID}},

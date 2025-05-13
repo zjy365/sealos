@@ -66,14 +66,16 @@ const PayNotificationPath = PaymentGroup + Notify
 
 // env
 const (
-	ConfigPath         = "/config/config.json"
-	EnvMongoURI        = "MONGO_URI"
-	EnvClientIP        = "CLIENT_IP"
-	EnvDeviceTokenID   = "DEVICE_TOKEN_ID"
-	ENVGlobalCockroach = "GLOBAL_COCKROACH_URI"
-	ENVLocalCockroach  = "LOCAL_COCKROACH_URI"
-	EnvLocalRegion     = "LOCAL_REGION"
-	EnvJwtSecret       = "ACCOUNT_API_JWT_SECRET"
+	ConfigPath                 = "/config/config.json"
+	EnvMongoURI                = "MONGO_URI"
+	EnvClientIP                = "CLIENT_IP"
+	EnvDeviceTokenID           = "DEVICE_TOKEN_ID"
+	ENVGlobalCockroach         = "GLOBAL_COCKROACH_URI"
+	ENVAtomRechargeGoodsID     = "ATOM_RECHARGE_GOODS_ID"
+	ENVAtomSubscriptionGoodsID = "ATOM_SUBSCRIPTION_GOODS_ID"
+	ENVLocalCockroach          = "LOCAL_COCKROACH_URI"
+	EnvLocalRegion             = "LOCAL_REGION"
+	EnvJwtSecret               = "ACCOUNT_API_JWT_SECRET"
 
 	EnvSubscriptionEnabled = "SUBSCRIPTION_ENABLED"
 	EnvKycProcessEnabled   = "KYC_PROCESS_ENABLED"

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	gonanoid "github.com/matoous/go-nanoid/v2"
@@ -63,15 +64,29 @@ func CreateCardPay(c *gin.Context) {
 		req.BindCardInfo = nil
 	}
 
+	goodsID := os.Getenv(helper.ENVAtomRechargeGoodsID)
+	if goodsID == "" {
+		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("goods id is not set, please check env: ", helper.ENVAtomRechargeGoodsID)})
+		return
+	}
+
+	paymentOrderId, err := gonanoid.New(12)
+	if err != nil {
+		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to create payment id: ", err)})
+		return
+	}
+
 	paymentReq := services.PaymentRequest{
-		PaymentMethod: req.Method,
-		RequestID:     uuid.NewString(),
-		UserUID:       req.UserUID,
-		Amount:        req.Amount,
-		Currency:      dao.PaymentCurrency,
-		UserAgent:     c.GetHeader("User-Agent"),
-		ClientIP:      c.ClientIP(),
-		DeviceTokenID: c.GetHeader("Device-Token-ID"),
+		PaymentMethod:    req.Method,
+		ReferenceOrderId: paymentOrderId,
+		RequestID:        uuid.NewString(),
+		UserUID:          req.UserUID,
+		Amount:           req.Amount,
+		Currency:         dao.PaymentCurrency,
+		GoodsID:          goodsID,
+		UserAgent:        c.GetHeader("User-Agent"),
+		ClientIP:         c.ClientIP(),
+		DeviceTokenID:    c.GetHeader("Device-Token-ID"),
 	}
 	var paySvcResp *responsePay.AlipayPayResponse
 
@@ -104,21 +119,16 @@ func CreateCardPay(c *gin.Context) {
 		}
 	}
 
-	paymentID, err := gonanoid.New(12)
-	if err != nil {
-		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to create payment id: ", err)})
-		return
-	}
 	err = dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
 		return tx.Model(&types.PaymentOrder{}).Create(&types.PaymentOrder{
-			ID: paymentID,
+			ID: paymentOrderId,
 			PaymentRaw: types.PaymentRaw{
-				UserUID:   req.UserUID,
-				Amount:    req.Amount,
-				Method:    req.Method,
-				RegionUID: dao.DBClient.GetLocalRegion().UID,
-				TradeNO:   paymentReq.RequestID,
-				CreatedAt: time.Now().UTC(),
+				UserUID:      req.UserUID,
+				Amount:       req.Amount,
+				Method:       req.Method,
+				RegionUID:    dao.DBClient.GetLocalRegion().UID,
+				TradeNO:      paymentReq.RequestID,
+				CreatedAt:    time.Now().UTC(),
 				Type:         types.PaymentTypeAccountRecharge,
 				ChargeSource: types.ChargeSourceNewCard,
 			},
@@ -127,7 +137,7 @@ func CreateCardPay(c *gin.Context) {
 	}, createPayHandler, func(tx *gorm.DB) error {
 		if paySvcResp.NormalUrl != "" {
 			//Set payment order normalurl with paymentID
-			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentID).Update("code_url", paySvcResp.NormalUrl).Error
+			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentOrderId).Update("code_url", paySvcResp.NormalUrl).Error
 			if dErr != nil {
 				logrus.Warnf("failed to update payment order code url: %v", dErr)
 			}
