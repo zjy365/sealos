@@ -64,7 +64,8 @@ export async function getAppConfig(): Promise<AppClientConfigType> {
         name: 'commitTransactionJob',
         catch: (err) => {
           // console.log(err);
-        }
+        },
+        protect: true
       });
     }
     if (!global.runCroner) {
@@ -73,7 +74,8 @@ export async function getAppConfig(): Promise<AppClientConfigType> {
         name: 'runTransactionJob',
         catch: (err) => {
           // console.log(err);
-        }
+        },
+        protect: true
       });
     }
     if (!global.finishCroner) {
@@ -82,7 +84,8 @@ export async function getAppConfig(): Promise<AppClientConfigType> {
         name: 'finishTransactionJob',
         catch: (err) => {
           // console.log(err);
-        }
+        },
+        protect: true
       });
     }
     return conf;
