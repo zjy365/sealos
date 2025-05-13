@@ -11,6 +11,7 @@ import { startDriver, detailDriverObj } from '@/hooks/driver';
 import useEnvStore from '@/store/env';
 import { useGuideStore } from '@/store/guide';
 import { SOURCE_PRICE } from '@/store/static';
+import { useUserStore } from '@/store/user';
 import type { DBDetailType } from '@/types/db';
 import { I18nCommonKey } from '@/types/i18next';
 import { json2NetworkService } from '@/utils/json2Yaml';
@@ -98,6 +99,7 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { message: toast } = useMessage();
+  const { checkQuotaAllow, userQuota } = useUserStore();
 
   const supportConnectDB = useMemo(() => {
     return !!['postgresql', 'mongodb', 'apecloud-mysql', 'redis', 'milvus', 'kafka'].find(
@@ -109,7 +111,7 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
     ['getDBStatefulSetByName', db.dbName, db.dbType],
     () => getDBStatefulSetByName(db.dbName, db.dbType),
     {
-      retry: 2,
+      retry: 3,
       enabled: !!db.dbName && !!db.dbType
     }
   );
@@ -235,13 +237,24 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
 
   const openNetWorkService = async () => {
     try {
-      console.log('openNetWorkService', dbStatefulSet, db);
+      // quote check
+      const nodeportsQuota = userQuota.find((item) => item.type === 'nodeports');
+      if (nodeportsQuota && nodeportsQuota.used >= nodeportsQuota.limit) {
+        return toast({
+          status: 'warning',
+          title: t('app.nodeports_exceeds_quota'),
+          duration: 5000,
+          isClosable: true
+        });
+      }
+
       if (!dbStatefulSet || !db) {
         return toast({
-          title: 'Missing Parameters',
+          title: 'Missing parameters, please refresh and try again.',
           status: 'error'
         });
       }
+
       const yaml = json2NetworkService({ dbDetail: db, dbStatefulSet: dbStatefulSet });
       await applyYamlList([yaml], 'create');
       onClose();

@@ -27,7 +27,7 @@ export const useUserStore = create<State>()(
         return null;
       },
       checkQuotaAllow: (
-        { cpu, memory, storage, replicas },
+        { cpu, memory, storage, replicas, nodeports = 0 },
         usedData
       ): I18nCommonKey | undefined => {
         const quote = get().userQuota;
@@ -35,7 +35,8 @@ export const useUserStore = create<State>()(
         const request = {
           cpu: (cpu / 1000) * replicas,
           memory: (memory / 1024) * replicas,
-          storage: storage * replicas
+          storage: storage * replicas,
+          nodeports: nodeports
         };
 
         if (usedData) {
@@ -48,13 +49,15 @@ export const useUserStore = create<State>()(
         const overLimitTip: { [key: string]: I18nCommonKey } = {
           cpu: 'app.cpu_exceeds_quota',
           memory: 'app.memory_exceeds_quota',
-          storage: 'app.storage_exceeds_quota'
+          storage: 'app.storage_exceeds_quota',
+          nodeports: 'app.nodeports_exceeds_quota'
         };
 
         const exceedQuota = quote.find((item) => {
           if (item.used + request[item.type] > item.limit) {
             return true;
           }
+          return false;
         });
 
         return exceedQuota?.type ? overLimitTip[exceedQuota.type] : undefined;

@@ -1,5 +1,6 @@
 import MyTooltip from '@/components/MyTooltip';
 import { useUserStore } from '@/store/user';
+import { I18nCommonKey } from '@/types/i18next';
 import { Box, Flex, Progress, css, useTheme } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
@@ -21,6 +22,10 @@ const sourceMap = {
   gpu: {
     color: '#89CD11',
     unit: 'Card'
+  },
+  nodeports: {
+    color: '#FFA500',
+    unit: ''
   }
 };
 
@@ -63,7 +68,7 @@ ${t('common.Surplus')}: ${(limit - used).toFixed(2)} ${unit}`;
           <MyTooltip key={item.type} label={item.tip} placement={'top-end'} lineHeight={1.7}>
             <Flex alignItems={'center'}>
               <Box flex={'0 0 60px'} textTransform={'capitalize'}>
-                {t(item.type)}
+                {t(item?.type as I18nCommonKey)}
               </Box>
               <Progress
                 flex={'1 0 0'}

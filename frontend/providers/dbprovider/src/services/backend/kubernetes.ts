@@ -237,6 +237,11 @@ export async function getUserQuota(
       type: 'storage',
       limit: memoryFormatToMi(status?.hard?.['requests.storage'] || '') / 1024,
       used: memoryFormatToMi(status?.used?.['requests.storage'] || '') / 1024
+    },
+    {
+      type: 'nodeports',
+      limit: Number(status?.hard?.['services.nodeports']) || 0,
+      used: Number(status?.used?.['services.nodeports']) || 0
     }
     // {
     //   type: 'gpu',

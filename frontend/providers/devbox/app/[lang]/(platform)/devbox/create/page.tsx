@@ -142,6 +142,10 @@ const DevboxCreatePage = () => {
     refetchInterval: 6000
   });
 
+  // get user quota
+  const { userQuota, loadUserQuota } = useUserStore();
+  useQuery(['getUserQuota'], loadUserQuota);
+
   useQuery(
     ['initDevboxCreateData'],
     () => {
