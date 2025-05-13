@@ -24,7 +24,7 @@ export class SyncUserPlanCrJob implements CronJobStatus<SyncUserPlanTransactionI
     this.regionUid = getRegionUid();
   }
   async init() {
-    if (!this.info || this.transactionUid || !this.regionUid)
+    if (!this.info || !this.transactionUid || !this.regionUid)
       throw new Error('the transaction info not found');
   }
   async unit() {

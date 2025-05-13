@@ -25,7 +25,7 @@ export class DeleteUserCrJob implements CronJobStatus<DeleteUserTransactionInfo>
     //     uid: this.transactionUid
     //   }
     // });
-    if (!this.info || this.transactionUid) throw new Error('the transaction info not found');
+    if (!this.info || !this.transactionUid) throw new Error('the transaction info not found');
     // this.userUid = this.info.userUid;
   }
   async unit() {
