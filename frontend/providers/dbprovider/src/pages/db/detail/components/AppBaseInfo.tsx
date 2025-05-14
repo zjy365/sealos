@@ -99,7 +99,8 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { message: toast } = useMessage();
-  const { checkQuotaAllow, userQuota } = useUserStore();
+  const { userQuota, loadUserQuota } = useUserStore();
+  useQuery(['getUserQuota'], loadUserQuota);
 
   const supportConnectDB = useMemo(() => {
     return !!['postgresql', 'mongodb', 'apecloud-mysql', 'redis', 'milvus', 'kafka'].find(
@@ -239,6 +240,7 @@ const AppBaseInfo = ({ db = defaultDBDetail }: { db: DBDetailType }) => {
     try {
       // quote check
       const nodeportsQuota = userQuota.find((item) => item.type === 'nodeports');
+
       if (nodeportsQuota && nodeportsQuota.used >= nodeportsQuota.limit) {
         return toast({
           status: 'warning',
