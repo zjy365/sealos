@@ -34,8 +34,8 @@ import (
 	"github.com/labring/sealos/controllers/pkg/code"
 	"github.com/labring/sealos/controllers/pkg/database/cockroach"
 	pkgtype "github.com/labring/sealos/controllers/pkg/types"
-	userv1 "github.com/labring/sealos/controllers/user/api/v1"
 	"github.com/labring/sealos/controllers/pkg/utils/maps"
+	userv1 "github.com/labring/sealos/controllers/user/api/v1"
 )
 
 const (
