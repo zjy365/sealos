@@ -26,11 +26,11 @@ import (
 	"github.com/go-logr/logr"
 	"golang.org/x/exp/rand"
 
-	utilcontroller "github.com/labring/operator-sdk/controller"
-	"github.com/labring/operator-sdk/hash"
-
 	"github.com/labring/sealos/controllers/user/controllers/helper/config"
+	"github.com/labring/sealos/controllers/user/controllers/helper/finalizer"
+	"github.com/labring/sealos/controllers/user/controllers/helper/hash"
 	"github.com/labring/sealos/controllers/user/controllers/helper/kubeconfig"
+	"github.com/labring/sealos/controllers/user/controllers/helper/ratelimiter"
 
 	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -71,7 +71,7 @@ type UserReconciler struct {
 	config   *rest.Config
 	*runtime.Scheme
 	client.Client
-	finalizer          *utilcontroller.Finalizer
+	finalizer          *finalizer.Finalizer
 	minRequeueDuration time.Duration
 	maxRequeueDuration time.Duration
 }
@@ -115,8 +115,8 @@ func (r *UserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *UserReconciler) SetupWithManager(mgr ctrl.Manager, opts utilcontroller.RateLimiterOptions,
-	minRequeueDuration time.Duration, maxRequeueDuration time.Duration) error {
+func (r *UserReconciler) SetupWithManager(mgr ctrl.Manager, opts ratelimiter.RateLimiterOptions,
+	minRequeueDuration time.Duration, maxRequeueDuration time.Duration, restartPredicateDuration time.Duration) error {
 	const controllerName = "user_controller"
 	if r.Client == nil {
 		r.Client = mgr.GetClient()
@@ -126,7 +126,7 @@ func (r *UserReconciler) SetupWithManager(mgr ctrl.Manager, opts utilcontroller.
 		r.Recorder = mgr.GetEventRecorderFor(controllerName)
 	}
 	if r.finalizer == nil {
-		r.finalizer = utilcontroller.NewFinalizer(r.Client, "sealos.io/user.finalizers")
+		r.finalizer = finalizer.NewFinalizer(r.Client, "sealos.io/user.finalizers")
 	}
 	r.Scheme = mgr.GetScheme()
 	r.cache = mgr.GetCache()
@@ -144,8 +144,8 @@ func (r *UserReconciler) SetupWithManager(mgr ctrl.Manager, opts utilcontroller.
 		Watches(&v1.Secret{}, ownerEventHandler).
 		Watches(&v1.ServiceAccount{}, ownerEventHandler).
 		WithOptions(kubecontroller.Options{
-			MaxConcurrentReconciles: utilcontroller.GetConcurrent(opts),
-			RateLimiter:             utilcontroller.GetRateLimiter(opts),
+			MaxConcurrentReconciles: ratelimiter.GetConcurrent(opts),
+			RateLimiter:             ratelimiter.GetRateLimiter(opts),
 		}).
 		Complete(r)
 }
