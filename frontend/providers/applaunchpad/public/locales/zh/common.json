@@ -26,7 +26,7 @@
   "Application Type": "应用类型",
   "Applications": "应用列表",
   "Are you sure you want to delete the file or folder?": "确定要删除该文件或文件夹吗？",
-  "Are you sure you want to delete this application? If you proceed, all data for this project will be deleted": "确定要删除此应用吗？如果继续，该项目的所有数据将被删除。",
+  "delete_app_tip": "确定要删除此应用吗？如果继续，该项目的所有数据将被删除。",
   "Attribute": "属性",
   "Auto scaling": "弹性伸缩",
   "Balance": "余额",
