@@ -115,6 +115,9 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
   const { openConfirm, ConfirmChild } = useConfirm({
     content: applyMessage
   });
+  const { userQuota, loadUserQuota } = useUserStore();
+  useQuery(['getUserQuota'], loadUserQuota);
+
   const pxVal = useMemo(() => {
     const val = Math.floor((screenWidth - 1050) / 2);
     if (val < 20) {
@@ -355,6 +358,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
               }
               // quote check
               const quoteCheckRes = checkQuotaAllow(data, oldAppEditData.current);
+
               if (quoteCheckRes) {
                 return toast({
                   status: 'warning',
