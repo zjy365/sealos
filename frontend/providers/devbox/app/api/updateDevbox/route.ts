@@ -87,7 +87,12 @@ export async function POST(req: NextRequest) {
             namespace,
             'devboxschedules',
             name
-          )
+          ).catch(err => {
+            if (err.response.statusCode === 404) {
+              return;
+            }
+            throw err;
+          })
       },
       [YamlKindEnum.Service]: {
         patch: (jsonPatch: Object) =>
