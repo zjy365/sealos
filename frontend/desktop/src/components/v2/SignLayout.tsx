@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import Script from 'next/script';
 import useScriptStore from '@/stores/script';
 import bgimage from 'public/images/signin_bg.png';
-import bgimageZh from 'public/images/signin_bg.png';
+import bgimageZh from 'public/images/signin_bg_zh.png';
 import LangSelectSimple from '../LangSelect/simple';
 import InviterPop from './InviterPop';
 import { useTranslation } from 'next-i18next';
