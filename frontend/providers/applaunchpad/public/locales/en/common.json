@@ -147,7 +147,7 @@
   "Number of Instances": "Instances",
   "Number of instances: 1 to 20": "Instance range: 1 to 20",
   "Open Link": "Open Link",
-  "Open Public Access": "Enable Internet Access",
+  "Open Public Access": "Public Access",
   "Operation": "Operation",
   "Option": "Optional",
   "original filename": "Original Filename",
@@ -339,5 +339,9 @@
   "Key": "Key",
   "Value": "Value",
   "Manage": "Manage",
-  "pending_to_allocated": "To be allocated"
+  "pending_to_allocated": "To be allocated",
+  "Network Configuration Tip": "TCP and UDP ports will be allocated after deployment.",
+  "nodePortLimit": "Free plan provides only 1 NodePort, please upgrade to Hobby or Pro.",
+  "learnMore": "Learn more",
+  "Hobby/Pro": "Hobby/Pro"
 }

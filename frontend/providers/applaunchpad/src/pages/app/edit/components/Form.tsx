@@ -30,7 +30,12 @@ import {
   useDisclosure,
   useTheme,
   Text,
-  Circle
+  Circle,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverBody
 } from '@chakra-ui/react';
 import { throttle } from 'lodash';
 import { customAlphabet } from 'nanoid';
@@ -47,7 +52,6 @@ import type { StoreType } from './StoreModal';
 import styles from './index.module.scss';
 import Tabs from '@/components/Tabs';
 import { ArrowRight, Plus } from 'lucide-react';
-
 const CustomAccessModal = dynamic(() => import('./CustomAccessModal'));
 const ConfigmapModal = dynamic(() => import('./ConfigmapModal'));
 const StoreModal = dynamic(() => import('./StoreModal'));
@@ -77,7 +81,7 @@ const Form = ({
   if (!formHook) return null;
   const { t } = useTranslation();
   const { formSliderListConfig } = useGlobalStore();
-  const { userSourcePrice } = useUserStore();
+  const { userSourcePrice, userQuota } = useUserStore();
   const router = useRouter();
   const { toast } = useToast();
   const { name } = router.query as QueryType;
@@ -315,6 +319,53 @@ const Form = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const SliderList = useMemo(() => countSliderList(), [already, refresh]);
+
+  const isNodePortUsed = useMemo(() => {
+    const nodePortQuota = userQuota?.find((item) => item.type === 'nodeports');
+    return nodePortQuota ? nodePortQuota.limit === 1 && nodePortQuota.used >= 1 : false;
+  }, [userQuota]);
+
+  const formatProtocolList = ProtocolList.map((protocol) => {
+    if (isNodePortUsed && (protocol.value === 'TCP' || protocol.value === 'UDP')) {
+      return {
+        ...protocol,
+        label: (
+          <Flex
+            cursor={'not-allowed'}
+            justifyContent={'space-between'}
+            alignItems={'center'}
+            w={'144px'}
+          >
+            <Text color={'#71717A'}>{protocol.label}</Text>
+
+            <Popover trigger="hover" placement="right">
+              <PopoverTrigger>
+                <Text
+                  color={'white'}
+                  p={'3px 8px'}
+                  borderRadius={'full'}
+                  bg={'linear-gradient(23.63deg, #5688FF 8.77%, #82A7FE 82.65%)'}
+                  fontSize={'12px'}
+                  fontWeight={500}
+                >
+                  {t('Hobby/Pro')}
+                </Text>
+              </PopoverTrigger>
+              <PopoverContent cursor={'default'}>
+                <PopoverArrow />
+                <PopoverBody>
+                  <Text color={'grayModern.900'} fontSize={'14px'}>
+                    {t('nodePortLimit')}
+                  </Text>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          </Flex>
+        )
+      };
+    }
+    return protocol;
+  });
 
   const persistentVolumes = useMemo(() => {
     return getValues('volumes')
@@ -876,20 +927,13 @@ const Form = ({
             borderRadius={'16px'}
             boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
           >
-            <Flex mb="24px">
+            <Flex mb="24px" flexDirection={'column'}>
               <Text color={'#000000'} fontWeight={'bold'} userSelect={'none'} fontSize={'20px'}>
                 {t('Network Configuration')}
               </Text>
-              {/* <Center
-                ml={'8px'}
-                height={'28px'}
-                padding={'10px'}
-                bg={'#EFF6FF'}
-                borderRadius={'100px'}
-                color={'#2563EB'}
-              >
-                $0.008/each
-              </Center> */}
+              <Text color={'grayModern.500'} fontSize={'14px'} mt={2}>
+                {t('Network Configuration Tip')}
+              </Text>
             </Flex>
 
             <Box userSelect={'none'}>
@@ -952,7 +996,7 @@ const Form = ({
                     )} */}
                   </Box>
 
-                  <Box mx={7}>
+                  <Box mx={5}>
                     <Box mb={'8px'} h={'20px'} fontSize={'base'} color={'grayModern.900'}>
                       {t('Open Public Access')}
                     </Box>
@@ -1013,7 +1057,7 @@ const Form = ({
                                 ? network.protocol
                                 : 'HTTP'
                             }
-                            list={ProtocolList}
+                            list={formatProtocolList}
                             onchange={(val: any) => {
                               if (APPLICATION_PROTOCOLS.includes(val)) {
                                 updateNetworks(i, {
@@ -1025,6 +1069,8 @@ const Form = ({
                                   networkName: network.networkName || `network-${nanoid()}`,
                                   publicDomain: network.publicDomain || nanoid()
                                 });
+                              } else if (isNodePortUsed) {
+                                return;
                               } else {
                                 updateNetworks(i, {
                                   ...getValues('networks')[i],
@@ -1092,7 +1138,7 @@ const Form = ({
                         height={'32px'}
                         width={'32px'}
                         aria-label={'button'}
-                        variant={'outline'}
+                        variant={'ghost'}
                         bg={'#FFF'}
                         _hover={{
                           color: 'red.600',

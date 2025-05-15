@@ -339,5 +339,9 @@
   "Key": "Key",
   "Value": "Value",
   "Manage": "管理",
-  "pending_to_allocated": "待分配"
+  "pending_to_allocated": "待分配",
+  "Network Configuration Tip": "TCP and UDP ports will be allocated after deployment.",
+  "nodePortLimit": "Free plan provides only 1 NodePort, please upgrade to Hobby or Pro.",
+  "learnMore": "Learn more",
+  "Hobby/Pro": "Hobby/Pro"
 }

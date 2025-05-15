@@ -61,25 +61,22 @@ const PriceBox = ({
       {
         label: 'CPU',
         color: '#33BABB',
-        value: podScale(cpuP),
-        icon: <Cpu size={20} color="#A3A3A3" />
+        value: podScale(cpuP)
       },
       {
         label: 'Memory',
         color: '#36ADEF',
-        value: podScale(memoryP),
-        icon: <MemoryStick size={20} color="#A3A3A3" />
+        value: podScale(memoryP)
       },
       {
         label: 'Storage',
         color: '#8172D8',
-        value: podScale(storageP),
-        icon: <HardDrive size={20} color="#A3A3A3" />
+        value: podScale(storageP)
       },
-      { 
-        label: 'nodeports', 
-        color: '#FFA500', 
-        value: podScale(nodeportsP) 
+      {
+        label: 'nodeports',
+        color: '#FFA500',
+        value: podScale(nodeportsP)
       },
       ...(userSourcePrice?.gpu ? [{ label: 'GPU', color: '#89CD11', value: podScale(gpuP) }] : []),
       { label: 'TotalPrice', color: '#485058', value: podScale(totalP) }
@@ -89,8 +86,7 @@ const PriceBox = ({
   return (
     <Box bg={'#FFF'} borderRadius={'12px'} border={theme.borders.base}>
       <Flex
-        py={3}
-        px={4}
+        p={'20px'}
         borderBottom={theme.borders.base}
         gap={'8px'}
         bg={'#FAFAFA'}
@@ -108,26 +104,27 @@ const PriceBox = ({
           <Flex
             key={item.label}
             alignItems={'center'}
-            fontSize={'12px'}
             fontWeight={500}
             height={'56px'}
-            px={'20px'}
+            p={'20px'}
             borderBottom={index !== priceList.length - 1 ? theme.borders.base : 'none'}
           >
             <Flex alignItems={'center'} gap={'2px'} flex={'0 0 60px'}>
-              {item?.icon}
-              <Text color={'#111824'} ml={index !== priceList.length - 1 ? '8px' : '0px'}>
-                {t(item.label)}
-              </Text>
+              <Text color={'#111824'}>{t(item.label)}</Text>
               {index === priceList.length - 1 && (
-                <MyTooltip label={t('total_price_tip')}>
-                  <Center width={'14px'} height={'14px'} cursor={'pointer'}>
-                    <MyIcon name="help" width={'14px'} height={'14px'} color={'grayModern.500'} />
+                <MyTooltip fontSize={'11px'} label={t('total_price_tip')}>
+                  <Center width={'16px'} height={'16px'} cursor={'pointer'}>
+                    <MyIcon name="help" width={'16px'} height={'16px'} color={'grayModern.500'} />
                   </Center>
                 </MyTooltip>
               )}
             </Flex>
-            <Box ml={'auto'} color={'#525252'} whiteSpace={'nowrap'}>
+            <Box
+              ml={'auto'}
+              color={index !== priceList.length - 1 ? '#525252' : '#18181B'}
+              whiteSpace={'nowrap'}
+              fontWeight={index !== priceList.length - 1 ? '500' : '600'}
+            >
               {item.value}
             </Box>
           </Flex>
