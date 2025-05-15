@@ -19,7 +19,7 @@ import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { TUserInfoReponse } from '@/schema/user';
 import { differenceInMonths } from 'date-fns';
-// import BonusDetail from './BonusDetail';
+import BonusDetail from './BonusDetail';
 
 interface CreditsProps {
   plan: TPlanApiResponse;
@@ -197,7 +197,7 @@ const PlanCredits: FC<CreditsProps> = ({
               ${formatMoneyStr(restBonus, 'floor')}
             </Text>
             {bonusExp}
-            {/* <BonusDetail></BonusDetail> */}
+            <BonusDetail></BonusDetail>
           </Flex>
         </GridItem>
       );

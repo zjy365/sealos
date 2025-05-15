@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import {
   Flex,
@@ -14,10 +14,84 @@ import {
   DrawerHeader,
   useDisclosure
 } from '@chakra-ui/react';
+import { useReactTable, ColumnDef } from '@tanstack/react-table';
+import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/react-table';
+import { TBonusItem } from '@/schema/plan';
+import { BaseTable } from '@/components/BaseTable/baseTable';
+import { CircleAlert } from 'lucide-react';
+import { MyTooltip } from '@sealos/ui';
+import { add } from 'date-fns';
+import { getBonusDetails } from '@/api/plan';
 
 const BonusDetail = () => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [bonusDetails, setBonusDetails] = useState<TBonusItem[]>([]);
+  const columns: ColumnDef<TBonusItem>[] = React.useMemo(
+    () => [
+      {
+        id: 'amount',
+        header: `${t('amount')} ($)`,
+        cell: ({ row }) => (
+          <Flex alignItems={'center'} cursor={'pointer'} gap={'4px'}>
+            <Text>{row.original.usedAmount}</Text>
+            <Text color={'#71717A'}>/</Text>
+            <Text color={'#71717A'}>{row.original.amount}</Text>
+          </Flex>
+        )
+      },
+      {
+        id: 'createdAt',
+        header: t('createdAt'),
+        cell: ({ row }) => <Text>{new Date(row.original.createdAt).toLocaleDateString()}</Text>
+      },
+      {
+        id: 'expiredAt',
+        header: t('expiredAt'),
+        cell: ({ row }) => {
+          const expireDate = new Date(row.original.expiredAt);
+          const isExpiringSoon = expireDate.getTime() < add(new Date(), { days: 14 }).getTime();
+          return (
+            <Flex alignItems="center" gap="4px">
+              <Text>{expireDate.toLocaleDateString()}</Text>
+              {isExpiringSoon && (
+                <MyTooltip label={t('expiredAtTooltip')} hasArrow placement="top" fontSize={'14px'}>
+                  <CircleAlert size="16px" color="#EA580C" cursor="help" />
+                </MyTooltip>
+              )}
+            </Flex>
+          );
+        }
+      }
+    ],
+    [t]
+  );
+  useEffect(() => {
+    const fetchBonusDetails = async () => {
+      try {
+        const res = await getBonusDetails();
+        setBonusDetails(
+          res.bonusItems.sort(
+            (a, b) => new Date(b.expiredAt).getTime() - new Date(a.expiredAt).getTime()
+          )
+        );
+      } catch (error) {}
+    };
+    fetchBonusDetails();
+  }, []);
+  const table = useReactTable<TBonusItem>({
+    columns,
+    data: bonusDetails,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 9
+      }
+    }
+  });
   return (
     <>
       <Text
@@ -33,7 +107,7 @@ const BonusDetail = () => {
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'xl'}>
         <DrawerOverlay />
         <DrawerContent borderRadius={'16px'} margin={'8px'} border={'1px solid #E4E4E7'}>
-          <DrawerHeader borderBottom={'1px solid #E4E4E7'}>Bonus History</DrawerHeader>
+          <DrawerHeader borderBottom={'1px solid #E4E4E7'}>{t('bonusHistory')}</DrawerHeader>
           <DrawerBody borderBottom={'1px solid #E4E4E7'} bg={'#F7F7F9'} padding={'24px'}>
             <Box background={'#EFF6FF'} borderRadius={'16px'}>
               <Box p={'12px 24px'}>
@@ -44,46 +118,22 @@ const BonusDetail = () => {
                   fontSize={'16px'}
                   fontWeight={500}
                 >
-                  Bonus with shorter remaining validity periods will be used first.
+                  {t('bonusHistoryDesc')}
                 </Text>
               </Box>
-              <Box
-                display="grid"
-                gridTemplateColumns="1fr 1fr 1fr"
-                border="1px solid #E4E4E7"
-                borderRadius="16px"
-                overflow="hidden"
-              >
-                {[1, 2, 3].map((config, index) => {
-                  return [
-                    <Box
-                      key={`type-${config}`}
-                      p="12px 24px"
-                      bg="white"
-                      borderBottom="1px solid #E4E4E7"
-                    >
-                      <Text>{config}</Text>
-                    </Box>,
-                    <Box
-                      key={`scale-${config}`}
-                      p="12px 24px"
-                      bg="white"
-                      borderBottom="1px solid #E4E4E7"
-                      textAlign="right"
-                    >
-                      123
-                    </Box>,
-                    <Box
-                      key={`amount-${config}`}
-                      p="12px 24px"
-                      bg="white"
-                      borderBottom="1px solid #E4E4E7"
-                      textAlign="right"
-                    >
-                      456
-                    </Box>
-                  ];
-                })}
+              <Box border="1px solid #E4E4E7" borderRadius="16px" overflow="hidden" bg={'white'}>
+                <BaseTable
+                  isLoading={false}
+                  table={table}
+                  tdStyle={{
+                    height: '52px',
+                    fontSize: '14px',
+                    lineHeight: '20px',
+                    fontWeight: 400,
+                    color: '#18181B'
+                  }}
+                  empty={<Center>{t('NoData')}</Center>}
+                />
               </Box>
             </Box>
           </DrawerBody>

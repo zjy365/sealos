@@ -150,6 +150,8 @@ export function BaseTable<T extends unknown>({
                         rounded={'full'}
                         _hover={{ bg: '#f4f4f5' }}
                         _active={{ bg: '#f4f4f5' }}
+                        w={'40px'}
+                        h={'40px'}
                       >
                         {page + 1}
                       </Button>

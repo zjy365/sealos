@@ -5,7 +5,8 @@ import {
   TPlanApiResponse,
   TSubscriptionApiResponse,
   TUpdatePlanRequest,
-  TUpdatePlanResponse
+  TUpdatePlanResponse,
+  TBonusDetailsApiResponse
 } from '@/schema/plan';
 import { GET, POST } from '@/service/request';
 
@@ -17,6 +18,9 @@ export function getPlanSubscription() {
 }
 export function getPlanCreditsUsage() {
   return GET<TCreditsUsageResponse>('/plan/creditsUsage');
+}
+export function getBonusDetails() {
+  return GET<TBonusDetailsApiResponse>('/plan/bonusDetails');
 }
 export type TCheckForCancelResponse = {
   workspaceReady: boolean;
