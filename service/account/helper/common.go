@@ -60,6 +60,7 @@ const (
 	CardSetDefault              = "/card/set-default"
 	CreditsList                 = "/credits/list"
 	CreditsInfo                 = "/credits/info"
+	CreditsBonusDetails         = "/credits/bonus-details"
 )
 
 const PayNotificationPath = PaymentGroup + Notify

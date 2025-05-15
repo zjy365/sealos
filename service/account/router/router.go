@@ -11,24 +11,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/labring/sealos/controllers/pkg/utils/env"
-
+	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	"github.com/labring/sealos/service/account/docs"
-
-	"github.com/labring/sealos/service/account/dao"
-
-	"github.com/labring/sealos/service/account/api"
-
-	"github.com/labring/sealos/service/account/helper"
-
-	swaggerfiles "github.com/swaggo/files"
+	"github.com/sirupsen/logrus"
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labring/sealos/controllers/pkg/utils/env"
+	"github.com/labring/sealos/service/account/api"
+	"github.com/labring/sealos/service/account/dao"
+	"github.com/labring/sealos/service/account/docs"
+	"github.com/labring/sealos/service/account/helper"
 )
 
 func RegisterPayRouter() {
@@ -85,7 +78,8 @@ func RegisterPayRouter() {
 		POST(helper.CardList, api.ListCard).
 		POST(helper.CardDelete, api.DeleteCard).
 		POST(helper.CardSetDefault, api.SetDefaultCard).
-		POST(helper.CreditsInfo, api.GetCreditsInfo)
+		POST(helper.CreditsInfo, api.GetCreditsInfo).
+		POST(helper.CreditsBonusDetails, api.GetBonusDetails)
 
 	if os.Getenv(helper.EnvSubscriptionEnabled) == "true" {
 		paymentGroup.POST(helper.SubscriptionUserInfo, api.GetSubscriptionUserInfo).
@@ -111,7 +105,7 @@ func RegisterPayRouter() {
 	}
 	//POST(helper.AdminActiveBilling, api.AdminActiveBilling)
 	docs.SwaggerInfo.Host = env.GetEnvWithDefault("SWAGGER_HOST", "localhost:2333")
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Create a buffered channel interrupt and use the signal.
 	rootCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

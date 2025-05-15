@@ -98,8 +98,27 @@ export const CreditsUsageResponse = z.object({
     time: z.string().optional()
   })
 });
+
+export const BonusItemSchema = z.object({
+  id: z.string(),
+  amount: z.number(),
+  usedAmount: z.number(),
+  createdAt: z.string(),
+  expireAt: z.string(),
+  status: z.string()
+});
+
+export const BonusDetailsApiResponse = z.object({
+  userUid: z.string(),
+  bonusItems: z.array(BonusItemSchema),
+  totalAmount: z.number(),
+  usedAmount: z.number()
+});
+
 export type TCreditsUsageApiResponse = z.infer<typeof CreditsUsageApiResponse>;
 export type TCreditsUsageResponse = z.infer<typeof CreditsUsageResponse>;
+export type TBonusItem = z.infer<typeof BonusItemSchema>;
+export type TBonusDetailsApiResponse = z.infer<typeof BonusDetailsApiResponse>;
 
 export const updatePlanApiRequestSchema = z.object({
   planName: z.string(),
