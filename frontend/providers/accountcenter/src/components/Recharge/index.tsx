@@ -29,7 +29,7 @@ interface RechargeProps {
   onPaySuccess?: () => void;
 }
 const minCustomAmount = 5;
-const maxCustomAmount = 25000;
+const maxCustomAmount = 10000;
 const amounts = [10, 20, 30];
 const gridItemStyle: GridItemProps = {
   bg: 'rgba(249, 249, 249, 1)',
@@ -96,31 +96,27 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
   };
   const bonusMetrics = [
     {
-      amount: 100,
+      amount: 5,
       expansion: 5
     },
     {
-      amount: 500,
-      expansion: 7
-    },
-    {
-      amount: 1000,
+      amount: 100,
       expansion: 10
     },
     {
-      amount: 2000,
+      amount: 500,
       expansion: 15
     },
     {
-      amount: 5000,
+      amount: 1000,
       expansion: 20
     },
     {
-      amount: 10000,
+      amount: 5000,
       expansion: 25
     },
     {
-      amount: 20000,
+      amount: 10000,
       expansion: 30
     }
   ];
