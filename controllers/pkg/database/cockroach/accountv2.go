@@ -715,29 +715,19 @@ func (c *Cockroach) GetUserOauthProvider(ops *types.UserQueryOpts) ([]types.Oaut
 
 func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, deductionAmount int64, orderIDs []string, eventCh chan<- *utils.BillingEvent) error {
 	err := RetryTransaction(3, 2*time.Second, c.DB, func(tx *gorm.DB) error {
+		now := time.Now().UTC()
 		userUID, dErr := c.GetUserUID(ops)
 		if dErr != nil {
 			return fmt.Errorf("failed to get user uid: %v", dErr)
 		}
+
 		var credits []types.Credits
 		if dErr = c.DB.Where("user_uid = ? AND expire_at > ? AND status = ?", userUID, time.Now().UTC(), types.CreditsStatusActive).Order("expire_at ASC").Find(&credits).Error; dErr != nil {
 			return fmt.Errorf("failed to get credits: %v", dErr)
 		}
-		now := time.Now().UTC()
+
 		accountTransactionID := uuid.New()
-		accountTransaction := types.AccountTransaction{
-			ID:               accountTransactionID,
-			RegionUID:        c.LocalRegion.UID,
-			Type:             "RESOURCE_BILLING",
-			UserUID:          userUID,
-			CreatedAt:        now,
-			UpdatedAt:        now,
-			BillingIDList:    orderIDs,
-			DeductionBalance: 0,
-		}
 		var updateCredits []types.Credits
-		var updateCreditsIDs []string
-		var creditTransactions []types.CreditsTransaction
 		var creditUsedAmountAll int64
 		for i := range credits {
 			creditAmt := credits[i].Amount - credits[i].UsedAmount
@@ -759,19 +749,9 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 			}
 			creditUsedAmountAll += usedAmount
 			deductionAmount -= usedAmount
-			creditTransactions = append(creditTransactions, types.CreditsTransaction{
-				ID:                   uuid.New(),
-				UserUID:              userUID,
-				RegionUID:            c.LocalRegion.UID,
-				AccountTransactionID: &accountTransactionID,
-				CreditsID:            credits[i].ID,
-				UsedAmount:           usedAmount,
-				CreatedAt:            now,
-				Reason:               types.CreditsRecordReasonResourceAccountTransaction,
-			})
+			creditsTransactionId := uuid.New()
 			credits[i].UpdatedAt = now
 			updateCredits = append(updateCredits, credits[i])
-			updateCreditsIDs = append(updateCreditsIDs, credits[i].ID.String())
 
 			// Send billing event
 			var kind string
@@ -786,7 +766,7 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 				continue
 			}
 			eventCh <- &utils.BillingEvent{
-				ID:        credits[i].ID.String(),
+				ID:        creditsTransactionId.String(),
 				UID:       userUID.String(),
 				Kind:      kind,
 				Amount:    usedAmount,
@@ -800,14 +780,11 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 					return fmt.Errorf("failed to update credits: %v", dErr)
 				}
 			}
-			accountTransaction.DeductionCredit = creditUsedAmountAll
-			accountTransaction.CreditIDList = updateCreditsIDs
 		}
 		if deductionAmount > 0 {
 			if dErr = c.updateBalance(tx, ops, deductionAmount, true, true); dErr != nil {
 				return fmt.Errorf("failed to update balance: %v", dErr)
 			}
-			accountTransaction.DeductionBalance = deductionAmount
 
 			// Send billing event
 			eventCh <- &utils.BillingEvent{
@@ -820,14 +797,6 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 				PaymentID: userUID.String(),
 			}
 		}
-		//if dErr = tx.Create(&accountTransaction).Error; dErr != nil {
-		//	return fmt.Errorf("failed to create account transaction: %v", dErr)
-		//}
-		//if len(creditTransactions) > 0 {
-		//	if dErr = tx.Create(&creditTransactions).Error; dErr != nil {
-		//		return fmt.Errorf("failed to create credit transactions: %v", dErr)
-		//	}
-		//}
 		return nil
 	})
 	close(eventCh)
