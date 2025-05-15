@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const region = await getRegionByUid(req.body.regionUid);
     const client = makeAPIClient(region, payload);
-    const response = await client.get('/payment/v1alpha1/credits/bonus-details');
+    const response = await client.post('/payment/v1alpha1/credits/bonus-details');
 
     const validation = BonusDetailsApiResponse.safeParse(response.data);
     if (!validation.success) {
