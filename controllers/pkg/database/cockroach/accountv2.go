@@ -820,14 +820,14 @@ func (c *Cockroach) AddDeductionBalanceWithCredits(ops *types.UserQueryOpts, ded
 				PaymentID: userUID.String(),
 			}
 		}
-		if dErr = tx.Create(&accountTransaction).Error; dErr != nil {
-			return fmt.Errorf("failed to create account transaction: %v", dErr)
-		}
-		if len(creditTransactions) > 0 {
-			if dErr = tx.Create(&creditTransactions).Error; dErr != nil {
-				return fmt.Errorf("failed to create credit transactions: %v", dErr)
-			}
-		}
+		//if dErr = tx.Create(&accountTransaction).Error; dErr != nil {
+		//	return fmt.Errorf("failed to create account transaction: %v", dErr)
+		//}
+		//if len(creditTransactions) > 0 {
+		//	if dErr = tx.Create(&creditTransactions).Error; dErr != nil {
+		//		return fmt.Errorf("failed to create credit transactions: %v", dErr)
+		//	}
+		//}
 		return nil
 	})
 	close(eventCh)
