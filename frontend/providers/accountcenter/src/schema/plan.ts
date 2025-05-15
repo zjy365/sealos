@@ -104,8 +104,8 @@ export const BonusItemSchema = z.object({
   amount: z.number(),
   usedAmount: z.number(),
   createdAt: z.string(),
-  expireAt: z.string(),
-  status: z.string()
+  expiredAt: z.string(),
+  status: z.enum(['active', 'expired', 'used_up'])
 });
 
 export const BonusDetailsApiResponse = z.object({

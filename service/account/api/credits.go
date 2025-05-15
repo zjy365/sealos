@@ -47,7 +47,7 @@ type BonusItem struct {
 	Amount     int64     `json:"amount"`
 	UsedAmount int64     `json:"usedAmount"`
 	CreatedAt  time.Time `json:"createdAt"`
-	ExpireAt   time.Time `json:"expireAt"`
+	ExpiredAt  time.Time `json:"expiredAt"`
 	Status     string    `json:"status"`
 }
 
@@ -209,7 +209,7 @@ func getBonusDetails(userUID uuid.UUID) (*BonusDetailResp, error) {
 				Amount:     credit.Amount,
 				UsedAmount: credit.UsedAmount,
 				CreatedAt:  credit.CreatedAt,
-				ExpireAt:   credit.ExpireAt,
+				ExpiredAt:  credit.ExpireAt,
 				Status:     string(credit.Status),
 			}
 			resp.BonusItems = append(resp.BonusItems, bonusItem)
