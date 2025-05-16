@@ -15,7 +15,8 @@ import {
   Tabs,
   FormErrorMessage,
   Flex,
-  useColorModeValue
+  useColorModeValue,
+  Text
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -272,8 +273,16 @@ export default function SigninComponent() {
         </Box>
 
         <Box color={'#71717A'} fontWeight={400} fontSize={'14px'} mb={'24px'}>
-          Free $5 credits first month by signing up - No credit card required. 180-day GitHub users
-          unlock $5 free every month.
+          <Text>First-Time Benefit: $5 Credit</Text>
+          <Text>
+            - For Github users, eligibility requires an account registered at least 7 days ago.
+          </Text>
+          <Text>- For Gmail users, no other requirements.</Text>
+          <Text>Recurring Monthly Benefit: $5 Credit</Text>
+          <Text>
+            - Unlock by binding your Github account (Your GitHub account needs to be registered for
+            180+ days).
+          </Text>
         </Box>
 
         <Stack spacing={'12px'} mb={'24px'}>
