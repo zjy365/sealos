@@ -31,12 +31,12 @@ const BonusDetail = () => {
     () => [
       {
         id: 'amount',
-        header: `${t('amount')} ($)`,
+        header: `${t('available')} ($)`,
         cell: ({ row }) => (
           <Flex alignItems={'center'} cursor={'pointer'} gap={'4px'}>
-            <Text>{row.original.usedAmount}</Text>
+            <Text>{((row.original.amount - row.original.usedAmount) / 10 ** 6).toFixed(2)}</Text>
             <Text color={'#71717A'}>/</Text>
-            <Text color={'#71717A'}>{row.original.amount}</Text>
+            <Text color={'#71717A'}>{(row.original.amount / 10 ** 6).toFixed(2)}</Text>
           </Flex>
         )
       },

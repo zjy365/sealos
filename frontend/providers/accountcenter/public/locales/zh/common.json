@@ -251,7 +251,7 @@
   "applist": {
     "Other": "其他"
   },
-  "avalible": "Available",
+  "available": "Available",
   "bonus": "膨胀金",
   "bonusHistory": "Bonus History",
   "bonusHistoryDesc": "Bonus with shorter remaining validity periods will be used first.",

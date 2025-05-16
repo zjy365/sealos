@@ -283,7 +283,7 @@
   "applist": {
     "Other": "others"
   },
-  "avalible": "Available",
+  "available": "Available",
   "bonus": "Bonus",
   "bonusHistory": "Bonus History",
   "bonusHistoryDesc": "Bonus with shorter remaining validity periods will be used first.",
