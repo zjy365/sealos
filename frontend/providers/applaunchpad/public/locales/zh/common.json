@@ -322,5 +322,19 @@
   "Ready": "准备中",
   "Accessible": "可访问",
   "network_not_ready": "内部网关需要 2~5 分钟准备，请耐心等待",
-  "pending_to_allocated": "待分配"
+  "pending_to_allocated": "待分配",
+  "driver": {
+    "create_launchpad": "创建启动台",
+    "define_settings": "定义您的应用设置并开始部署",
+    "next": "下一步",
+    "access_application": "访问应用",
+    "copy_address": "复制私有或公共地址以进行访问",
+    "click_anywhere": "点击任意位置完成教程",
+    "quit_guide": "退出指南",
+    "still_here": "我们还在这里！",
+    "find_guide_tip": "你可以随时在顶部导航栏重新打开本指南，祝你探索愉快！",
+    "create_launchpad_header": "请随意探索。本演示指南不会保存任何更改，也不会收取任何费用。",
+    "configure_launchpad": "配置启动台",
+    "define_image_settings": "定义镜像设置，并按需调整 CPU 和内存"
+  }
 }
