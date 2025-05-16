@@ -79,7 +79,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
   return (
     <>
       <Box id={'baseInfo'} {...props}>
-        <Flex h={'40px'} alignItems={'center'} w={'full'}>
+        <Flex h={'40px'} alignItems={'center'} w={'full'} mb={'8px'}>
           <Label w={180}>{t('network_settings')}</Label>
           <Box
             fontSize={'12px'}
@@ -95,7 +95,120 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
             $0.008/each
           </Box>
         </Flex>
-        <Box pt={'8px'} userSelect={'none'}>
+        <Text fontSize={'14px'} color={'#71717A'}>
+          {t('SSH Port Tips')}
+        </Text>
+        <Box pt={'24px'} userSelect={'none'}>
+          <Box>
+            <Flex
+              className="guide-network-configuration"
+              alignItems={'flex-start'}
+              _notFirst={{ pt: 6 }}
+            >
+              <Box>
+                <Box
+                  mb={'10px'}
+                  h={'20px'}
+                  fontSize={'base'}
+                  color={'grayModern.900'}
+                  fontWeight={'bold'}
+                >
+                  {t('SSH Port')}
+                </Box>
+                <Input
+                  h={'40px'}
+                  type={'number'}
+                  w={'110px'}
+                  bg={'white'}
+                  value={22}
+                  readOnly
+                  isDisabled
+                />
+              </Box>
+              <Box mx={7}>
+                <Box
+                  mb={'8px'}
+                  h={'20px'}
+                  fontSize={'base'}
+                  color={'grayModern.900'}
+                  fontWeight={'bold'}
+                >
+                  {t('SSH Connection')}
+                </Box>
+                <Flex alignItems={'center'} h={'40px'}>
+                  <Switch
+                    className="driver-deploy-network-switch"
+                    size={'lg'}
+                    isChecked={true}
+                    isDisabled
+                    readOnly
+                  />
+                  <Text fontSize={'14px'} ml={2} color={'#71717A'}>
+                    {t('enabled')}
+                  </Text>
+                </Flex>
+              </Box>
+              <Box flex={'1 0 0'}>
+                <Box mb={'8px'} h={'20px'}></Box>
+                <Flex alignItems={'center'} h={'40px'}>
+                  <MySelect
+                    width={'100px'}
+                    height={'40px'}
+                    bg={'white'}
+                    borderTopRightRadius={0}
+                    boxShadow={'none'}
+                    borderBottomRightRadius={0}
+                    color={'black'}
+                    value={'ssh://'}
+                    // border={theme.borders.base}
+                    isDisabled
+                    list={ProtocolList}
+                  />
+                  <Flex
+                    bg={'white'}
+                    maxW={'350px'}
+                    flex={'1 0 0'}
+                    alignItems={'center'}
+                    h={'40px'}
+                    px={2}
+                    border={theme.borders.base}
+                    borderLeft={0}
+                    borderTopRightRadius={'md'}
+                    borderBottomRightRadius={'md'}
+                  >
+                    <Box
+                      flex={1}
+                      userSelect={'all'}
+                      className="textEllipsis"
+                      color={'#71717A'}
+                      p={'0 8px'}
+                      isTruncated
+                    >
+                      {`devbox.${env.ingressDomain}`}
+                    </Box>
+                  </Flex>
+                </Flex>
+              </Box>
+              <Box ml={'12px'}>
+                <Box mb={'8px'} h={'20px'}></Box>
+                <IconButton
+                  height={'40px'}
+                  width={'40px'}
+                  boxShadow={'none'}
+                  aria-label={'button'}
+                  variant={''}
+                  isDisabled
+                  bg={'#FFF'}
+                  _hover={{
+                    color: 'red.600',
+                    bg: 'rgba(17, 24, 36, 0.05)'
+                  }}
+                  icon={<Trash2 size={16} color={'#737373'} />}
+                />
+              </Box>
+            </Flex>
+            <Divider my={'16px'} />
+          </Box>
           {networks.length === 0 && <AppendNetworksButton onClick={() => appendNetworks()} />}
           {networks.map((network, i) => (
             <Box key={network.id}>
@@ -262,7 +375,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
                       width={'40px'}
                       boxShadow={'none'}
                       aria-label={'button'}
-                      variant={'outline'}
+                      variant={'ghost'}
                       bg={'#FFF'}
                       _hover={{
                         color: 'red.600',
