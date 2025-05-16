@@ -15,10 +15,11 @@ import {
   Link,
   Image,
   PinInput,
-  PinInputField
+  PinInputField,
+  Center
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { ArrowLeft, MailCheck } from 'lucide-react';
+import { ArrowLeft, MailCheck, OctagonAlertIcon } from 'lucide-react';
 import { useForm, useFormContext, Controller } from 'react-hook-form';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
@@ -102,7 +103,8 @@ export default function EmailCheckComponent() {
   };
   const bg = useColorModeValue('white', 'gray.700');
 
-  if (!signupData) {
+  if (!signupData || signupData.providerType !== 'EMAIL') {
+    router.push('/');
     return null;
   }
   return (
@@ -226,4 +228,116 @@ export default function EmailCheckComponent() {
       </Stack>
     </Flex>
   );
+  // return (
+  //   <Flex minH="100vh" align="center" justify="center" bg={bg} w={'50%'} direction={'column'}>
+  //     <Stack spacing={8} mx="auto" maxW="lg" px={4} h={'60%'}>
+  //       <Flex rounded="lg" p={8} w={'480px'} gap={'16px'} flexDirection={'column'}>
+  //         <Box>
+  //           <MailCheck size={'32px'} color="#ADBDCE"></MailCheck>
+  //         </Box>
+  //         <Text fontWeight="600" fontSize="24px" lineHeight="31px" color="#000000" mt={'8px'}>
+  //           {t('v2:check_your_email')}
+  //         </Text>
+  //         <Text fontWeight="400" fontSize="14px" lineHeight="20px" color="#18181B" mb="4px">
+  //           {t('v2:verification_message', { email: signupData.providerId })}
+  //         </Text>
+  //         <FormControl id="verificationCode">
+  //           <FormLabel></FormLabel>
+  //           <PinInput
+  //             placeholder=""
+  //             focusBorderColor="#18181B"
+  //             autoFocus
+  //             isDisabled={verifyMutation.isLoading}
+  //             onComplete={(value) => {
+  //               // 处理验证码输入完成后的逻辑
+  //               console.log('Verification code:', value);
+  //               verifyMutation.mutate({ code: value, id: signupData.providerId });
+  //             }}
+  //           >
+  //             {Array.from({ length: 6 }, (_, index) => (
+  //               <PinInputField
+  //                 key={index}
+  //                 placeholder=""
+  //                 mr="8px"
+  //                 boxSize={'56px'}
+  //                 fontSize={'20px'}
+  //                 borderRadius={'12px'}
+  //               />
+  //             ))}
+  //           </PinInput>
+  //         </FormControl>
+
+  //         {verifyMutation.isLoading ? (
+  //           <Text>{t('v2:verifying')}</Text>
+  //         ) : (
+  //           <Flex>
+  //             {verifyMutation.isError && (
+  //               <Center boxSize={'20px'} mr={'2px'}>
+  //                 <OctagonAlertIcon size={14} color="#DC2626"></OctagonAlertIcon>
+  //               </Center>
+  //             )}
+  //             <Box>
+  //               {verifyMutation.isError && (
+  //                 <Text
+  //                   style={{
+  //                     fontWeight: 400,
+  //                     fontSize: '14px',
+  //                     lineHeight: '20px'
+  //                   }}
+  //                   color={'#DC2626'}
+  //                 >
+  //                   {t('common:invalid_verification_code')}
+  //                 </Text>
+  //               )}
+  //               {canResend ? (
+  //                 <Text
+  //                   as="a"
+  //                   fontWeight="400"
+  //                   fontSize="14px"
+  //                   lineHeight="20px"
+  //                   color="#2563EB"
+  //                   flex="none"
+  //                   alignSelf="stretch"
+  //                   flexGrow={0}
+  //                   cursor="pointer"
+  //                   onClick={() => onSubmit({ verificationCode: '' })}
+  //                   _hover={{ textDecoration: 'underline' }}
+  //                 >
+  //                   {t('v2:request_new_link')}
+  //                 </Text>
+  //               ) : (
+  //                 <Text
+  //                   fontWeight="400"
+  //                   fontSize="14px"
+  //                   lineHeight="20px"
+  //                   color="#18181B"
+  //                   flex="none"
+  //                   alignSelf="stretch"
+  //                   flexGrow={0}
+  //                 >
+  //                   {t('v2:can_request_new_link', { countdown: remainTime })}
+  //                 </Text>
+  //               )}
+  //             </Box>
+  //           </Flex>
+  //         )}
+  //         <Flex justifyContent={'space-between'} mt={'16px'}>
+  //           <Button
+  //             bg={'white'}
+  //             color={'#18181B'}
+  //             borderWidth={1}
+  //             borderColor={'grayModern.200'}
+  //             _hover={{ bg: 'grayModern.50' }}
+  //             leftIcon={<ArrowLeft size={'16px'} />}
+  //             onClick={handleBack}
+  //             borderRadius={'8px'}
+  //             type="button"
+  //           >
+  //             {t('v2:back')}
+  //           </Button>
+  //         </Flex>
+  //       </Flex>
+  //     </Stack>
+  //   </Flex>
+  // );
 }
