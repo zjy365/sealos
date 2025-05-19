@@ -49,7 +49,7 @@ export default function SignLayout({ children }: { children: React.ReactNode }) 
 
         <VStack w={'50%'} position={'relative'}>
           <Flex alignSelf={'flex-end'} gap={'8px'} mr={'20px'} mt={'22px'} position={'absolute'}>
-            <InviterPop></InviterPop>
+            {layoutConfig?.version === 'cn' && <InviterPop />}
             <LangSelectSimple />
           </Flex>
           {children}

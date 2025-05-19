@@ -1,33 +1,24 @@
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  Heading,
-  Input,
   Stack,
   Text,
   useToast,
   useColorModeValue,
-  Link,
-  Image,
   PinInput,
   PinInputField,
-  Icon,
   Center
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { ArrowLeft, MailCheck, OctagonAlertIcon } from 'lucide-react';
-import { useForm, useFormContext, Controller } from 'react-hook-form';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'next-i18next';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useSignupStore } from '@/stores/signup';
-import { ccEmailSignUp, getRegionToken, initRegionToken } from '@/api/auth';
+import { getRegionToken } from '@/api/auth';
 import useSessionStore from '@/stores/session';
 import { useMutation } from '@tanstack/react-query';
 import request from '@/services/request';
@@ -35,9 +26,7 @@ import { ApiResp } from '@/types';
 import { getBaiduId, getInviterId, getUserSemData, sessionConfig } from '@/utils/sessionConfig';
 import { HiddenCaptchaComponent, TCaptchaInstance } from '../signin/Captcha';
 import { useConfigStore } from '@/stores/config';
-import force from '@/pages/api/auth/delete/force';
 import useCustomError from '../signin/auth/useCustomError';
-import useSmsStateStore from '@/stores/captcha';
 import useScriptStore from '@/stores/script';
 
 export default function PhoneCheckComponent() {
@@ -46,9 +35,8 @@ export default function PhoneCheckComponent() {
   const toast = useToast();
   const conf = useConfigStore();
   const [isLoading, setIsLoading] = useState(false);
-  const { signupData, clearSignupData } = useSignupStore();
+  const { signupData, clearSignupData, startTime, updateStartTime } = useSignupStore();
   const { setToken } = useSessionStore();
-  const { startTime, updateStartTime, setPhoneNumber } = useSmsStateStore();
 
   const getRemainTime = () => 60000 - new Date().getTime() + startTime;
 
@@ -60,7 +48,7 @@ export default function PhoneCheckComponent() {
     const interval = setInterval(() => {
       const newRemainTime = getRemainTime();
 
-      if (newRemainTime < 0) {
+      if (newRemainTime <= 0) {
         setCanResend(true);
         clearInterval(interval);
       }
@@ -148,8 +136,6 @@ export default function PhoneCheckComponent() {
     }
   };
   useEffect(() => {
-    console.log(captchaRef.current);
-    console.log(captchaIsLoaded);
     if (captchaIsLoaded && startTime + 60_000 <= new Date().getTime()) {
       setTimeout(() => onSubmit(true), 2000);
     }
@@ -188,8 +174,6 @@ export default function PhoneCheckComponent() {
               autoFocus
               isDisabled={verifyMutation.isLoading}
               onComplete={(value) => {
-                // 处理验证码输入完成后的逻辑
-                // console.log('Verification code:', value);
                 verifyMutation.mutate({ code: value, id: signupData?.providerId || '' });
               }}
             >

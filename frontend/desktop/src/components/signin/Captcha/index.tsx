@@ -12,6 +12,7 @@ import useCustomError from '../auth/useCustomError';
 import { useTranslation } from 'next-i18next';
 import { I18nCommonKey } from '@/types/i18next';
 import { jsonRes } from '@/services/backend/response';
+import { useSignupStore } from '@/stores/signup';
 export type TCaptchaInstance = {
   invoke: () => void;
 };
@@ -58,14 +59,20 @@ const HiddenCaptchaComponent = forwardRef(function HiddenCaptchaComponent(
       async captchaVerifyCallback(captchaVerifyParam: string) {
         console.log('cvc');
         try {
-          const state = useSmsStateStore.getState();
+          const state = useSignupStore.getState();
           if (60_000 + state.startTime < new Date().getTime()) {
             return {
               captchaResult: false,
               bizResult: false
             };
           }
-          const id = state.phoneNumber;
+          const signupData = state.signupData;
+          if (!signupData || signupData.providerType !== 'PHONE')
+            return {
+              captchaResult: false,
+              bizResult: false
+            };
+          const id = signupData.providerId;
           const res = await request.post<
             any,
             ApiResp<
@@ -120,7 +127,7 @@ const HiddenCaptchaComponent = forwardRef(function HiddenCaptchaComponent(
       },
       onBizResultCallback(bizResult: boolean) {
         if (bizResult) {
-          const state = useSmsStateStore.getState();
+          const state = useSignupStore.getState();
           state.updateStartTime();
         } else {
           const message = i18n.t('common:get_code_failed') || 'Get code failed';
