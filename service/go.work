@@ -3,7 +3,6 @@ go 1.24.0
 use (
 	.
 	./account
-	./aiproxy
 	./database
 	./exceptionmonitor
 	./launchpad
