@@ -274,9 +274,7 @@ export default function SigninComponent() {
 
         <Box color={'#71717A'} fontWeight={400} fontSize={'14px'} mb={'24px'}>
           <Text>First-Time Benefit: $5 Credit</Text>
-          <Text>
-            - For Github users, eligibility requires an account registered at least 7 days ago.
-          </Text>
+          <Text>- For Github users, eligibility requires registration at least 7 days ago.</Text>
           <Text>- For Gmail users, no other requirements.</Text>
           <Text>Recurring Monthly Benefit: $5 Credit</Text>
           <Text>

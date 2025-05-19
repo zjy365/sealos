@@ -9,6 +9,10 @@ export const getUserQuota = () =>
     quota: UserQuotaItemType[];
   }>('/api/platform/getQuota');
 
+export const getUserIsOutStandingPayment = () =>
+  GET<{
+    isOutStandingPayment: boolean;
+  }>('/api/platform/getDebt');
 export const getRuntime = () => GET('/api/platform/getRuntime');
 
 export const getResourcePrice = () => GET('/api/platform/resourcePrice');

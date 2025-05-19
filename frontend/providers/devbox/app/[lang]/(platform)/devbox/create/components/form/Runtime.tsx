@@ -62,7 +62,8 @@ export default function Runtime({ isEdit }: RuntimeProps) {
         LANGUAGE: [],
         FRAMEWORK: [],
         OS: [],
-        CUSTOM: []
+        CUSTOM: [],
+        SERVICE: []
       } as Record<TemplateRepositoryKind, TemplateRepository[]>
     );
   }, [templateData]);
