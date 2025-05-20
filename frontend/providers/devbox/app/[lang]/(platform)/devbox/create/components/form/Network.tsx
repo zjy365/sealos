@@ -81,7 +81,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
       <Box id={'baseInfo'} {...props}>
         <Flex h={'40px'} alignItems={'center'} w={'full'} mb={'8px'}>
           <Label w={180}>{t('network_settings')}</Label>
-          <Box
+          {/* <Box
             fontSize={'12px'}
             color={'#2563EB'}
             fontWeight={'500'}
@@ -93,7 +93,7 @@ export default function NetworkConfiguration({ isEdit, ...props }: BoxProps & { 
             h={'28px'}
           >
             $0.008/each
-          </Box>
+          </Box> */}
         </Flex>
         <Text fontSize={'14px'} color={'#71717A'}>
           {t('SSH Port Tips')}
