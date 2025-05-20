@@ -98,19 +98,16 @@ export type AuthConfigType = {
     };
     github?: {
       enabled: boolean;
-      proxyAddress?: string;
       clientID: string;
       clientSecret?: string;
     };
     wechat?: {
       enabled: boolean;
-      proxyAddress?: string;
       clientID: string;
       clientSecret?: string;
     };
     google?: {
       enabled: boolean;
-      proxyAddress?: string;
       callbackURL?: string;
       clientID: string;
       clientSecret?: string;
@@ -119,7 +116,6 @@ export type AuthConfigType = {
       enabled: boolean;
       callbackURL: string;
       clientID: string;
-      proxyAddress?: string;
       clientSecret?: string;
       authURL: string;
       tokenURL: string;
@@ -300,19 +296,16 @@ export const DefaultAuthClientConfig: AuthClientConfigType = {
     },
     github: {
       enabled: false,
-      clientID: '',
-      proxyAddress: ''
+      clientID: ''
     },
     wechat: {
       enabled: false,
-      clientID: '',
-      proxyAddress: ''
+      clientID: ''
     },
     google: {
       enabled: false,
       clientID: '',
-      callbackURL: '',
-      proxyAddress: ''
+      callbackURL: ''
     },
     sms: {
       enabled: false,
@@ -329,8 +322,7 @@ export const DefaultAuthClientConfig: AuthClientConfigType = {
       clientID: '',
       authURL: '',
       tokenURL: '',
-      userInfoURL: '',
-      proxyAddress: ''
+      userInfoURL: ''
     }
   },
   billingToken: '',

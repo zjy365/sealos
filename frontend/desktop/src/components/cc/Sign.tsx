@@ -25,7 +25,10 @@ export default function SigninComponent() {
       return;
     }
 
-    const state = generateState();
+    const state = generateState('LOGIN', {
+      provider,
+      domain: cloudConfig.domain
+    });
     setProvider(provider);
 
     const oauthLogin = async ({ url }: { url: string }) => {
@@ -39,11 +42,8 @@ export default function SigninComponent() {
           if (!githubConf) {
             throw new Error('GitHub configuration not found');
           }
-          const callbackUrl = encodeURIComponent(
-            `${authConfig.callbackURL}?regionDomain=${cloudConfig.domain}`
-          );
           await oauthLogin({
-            url: `https://github.com/login/oauth/authorize?client_id=${githubConf.clientID}&redirect_uri=${callbackUrl}&scope=user:email%20read:user&state=${state}`
+            url: `https://github.com/login/oauth/authorize?client_id=${githubConf.clientID}&redirect_uri=${authConfig.callbackURL}&scope=user:email%20read:user&state=${state}`
           });
           break;
         }
@@ -53,11 +53,8 @@ export default function SigninComponent() {
             throw new Error('Google configuration not found');
           }
           const scope = encodeURIComponent(`profile openid email`);
-          const callbackUrl = encodeURIComponent(
-            `${authConfig.callbackURL}?regionDomain=${cloudConfig.domain}`
-          );
           await oauthLogin({
-            url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${callbackUrl}&response_type=code&regionDomain=${cloudConfig.domain}&state=${state}&scope=${scope}&include_granted_scopes=true`
+            url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${authConfig.callbackURL}&response_type=code&regionDomain=${cloudConfig.domain}&state=${state}&scope=${scope}&include_granted_scopes=true`
           });
           break;
         }

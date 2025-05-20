@@ -13,11 +13,8 @@ const AuthList = ({
 }: { zeroTab?: boolean; isAgreeCb: () => boolean } & FlexProps) => {
   const conf = useConfigStore().authConfig;
   const { t } = useTranslation(['common']);
-
   const router = useRouter();
-
   const logo = useConfigStore().layoutConfig?.logo;
-
   const { generateState, setProvider } = useSessionStore();
   const authList: { icon: typeof Icon; cb: MouseEventHandler; need: boolean; text: string }[] =
     useMemo(() => {
@@ -25,29 +22,6 @@ const AuthList = ({
       const oauthLogin = async ({ url, provider }: { url: string; provider?: OauthProvider }) => {
         setProvider(provider);
         window.location.href = url;
-      };
-      const oauthProxyLogin = async ({
-        state,
-        provider,
-        proxyAddress,
-        id
-      }: {
-        state: string;
-        proxyAddress: string;
-        provider: OauthProvider;
-        id: string;
-      }) => {
-        // if(!conf) return
-        setProvider(provider);
-        const target = new URL(proxyAddress);
-        const callback = new URL(conf.callbackURL);
-        target.searchParams.append(
-          'oauthProxyState',
-          encodeURIComponent(callback.toString()) + '_' + state
-        );
-        target.searchParams.append('oauthProxyClientID', id);
-        target.searchParams.append('oauthProxyProvider', provider);
-        router.replace(target.toString());
       };
       return [
         {
@@ -57,18 +31,10 @@ const AuthList = ({
             if (!isAgreeCb()) return;
             const state = generateState();
             const githubConf = conf?.idp.github;
-            if (githubConf.proxyAddress)
-              oauthProxyLogin({
-                provider: 'GITHUB',
-                state,
-                proxyAddress: githubConf.proxyAddress,
-                id: githubConf?.clientID as string
-              });
-            else
-              oauthLogin({
-                provider: 'GITHUB',
-                url: `https://github.com/login/oauth/authorize?client_id=${githubConf?.clientID}&redirect_uri=${conf?.callbackURL}&scope=user:email%20read:user&state=${state}`
-              });
+            oauthLogin({
+              provider: 'GITHUB',
+              url: `https://github.com/login/oauth/authorize?client_id=${githubConf?.clientID}&redirect_uri=${conf?.callbackURL}&scope=user:email%20read:user&state=${state}`
+            });
           },
           text: t('login_with_github'),
           need: conf.idp.github.enabled
@@ -80,18 +46,10 @@ const AuthList = ({
             const wechatConf = conf?.idp.wechat;
             e.preventDefault();
             const state = generateState();
-            if (wechatConf.proxyAddress)
-              oauthProxyLogin({
-                provider: 'WECHAT',
-                state,
-                proxyAddress: wechatConf.proxyAddress,
-                id: conf.idp.wechat?.clientID
-              });
-            else
-              oauthLogin({
-                provider: 'WECHAT',
-                url: `https://open.weixin.qq.com/connect/qrconnect?appid=${wechatConf?.clientID}&redirect_uri=${conf?.callbackURL}&response_type=code&state=${state}&scope=snsapi_login&#wechat_redirect`
-              });
+            oauthLogin({
+              provider: 'WECHAT',
+              url: `https://open.weixin.qq.com/connect/qrconnect?appid=${wechatConf?.clientID}&redirect_uri=${conf?.callbackURL}&response_type=code&state=${state}&scope=snsapi_login&#wechat_redirect`
+            });
           },
           text: t('login_with_wechat'),
           need: conf?.idp.wechat?.enabled as boolean
@@ -106,18 +64,10 @@ const AuthList = ({
             const scope = encodeURIComponent(
               `https://www.googleapis.com/auth/userinfo.profile openid`
             );
-            if (googleConf.proxyAddress)
-              oauthProxyLogin({
-                state,
-                provider: 'GOOGLE',
-                proxyAddress: googleConf.proxyAddress,
-                id: googleConf.clientID
-              });
-            else
-              oauthLogin({
-                provider: 'GOOGLE',
-                url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&state=${state}&scope=${scope}&include_granted_scopes=true`
-              });
+            oauthLogin({
+              provider: 'GOOGLE',
+              url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&state=${state}&scope=${scope}&include_granted_scopes=true`
+            });
           },
           text: t('login_with_google'),
           need: conf.idp.google.enabled as boolean
@@ -132,18 +82,10 @@ const AuthList = ({
             e.preventDefault();
             const state = generateState();
             const oauth2Conf = conf?.idp.oauth2;
-            if (oauth2Conf.proxyAddress)
-              oauthProxyLogin({
-                provider: 'OAUTH2',
-                state,
-                proxyAddress: oauth2Conf.proxyAddress,
-                id: oauth2Conf.clientID as string
-              });
-            else
-              oauthLogin({
-                provider: 'OAUTH2',
-                url: `${oauth2Conf?.authURL}?client_id=${oauth2Conf.clientID}&redirect_uri=${oauth2Conf.callbackURL}&response_type=code&state=${state}`
-              });
+            oauthLogin({
+              provider: 'OAUTH2',
+              url: `${oauth2Conf?.authURL}?client_id=${oauth2Conf.clientID}&redirect_uri=${oauth2Conf.callbackURL}&response_type=code&state=${state}`
+            });
           },
           text: t('login_with_oauth2'),
           need: conf.idp.oauth2?.enabled as boolean

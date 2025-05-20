@@ -22,57 +22,34 @@ export function AuthModifyList({
   WECHATIsBinding: boolean;
 }) {
   const router = useRouter();
-  const { authConfig: conf, layoutConfig } = useConfigStore();
+  const { authConfig: conf } = useConfigStore();
   const { setProvider, generateState } = useSessionStore();
   const { t } = useTranslation();
   const authActionList: {
     title: string;
-    actionCb: (actino: OauthAction) => void;
+    actionCb: (action: OauthAction) => void;
     isBinding: boolean;
   }[] = useMemo(() => {
     if (!conf) return [];
     const actionCbGen =
-      <T extends OauthAction>({
-        url,
-        provider,
-        clientId,
-        proxyAddress
-      }: {
-        url: string;
-        provider: OauthProvider;
-        clientId: string;
-        proxyAddress?: string;
-      }) =>
+      <T extends OauthAction>({ url, provider }: { url: string; provider: OauthProvider }) =>
       (action: T) => {
         const state = generateState(action);
         setProvider(provider);
-        if (proxyAddress) {
-          const target = new URL(proxyAddress);
-          const callback = new URL(conf.callbackURL);
-          target.searchParams.append(
-            'oauthProxyState',
-            encodeURIComponent(callback.toString()) + '_' + state
-          );
-          target.searchParams.append('oauthProxyClientID', clientId);
-          target.searchParams.append('oauthProxyProvider', provider);
-          router.replace(target.toString());
-        } else {
-          const target = new URL(url);
-          target.searchParams.append('state', state);
-          router.replace(target);
-        }
+
+        const target = new URL(url);
+        target.searchParams.append('state', state);
+        router.replace(target);
       };
     const result = [];
     if (conf.idp.github.enabled)
       result.push({
         title: t('common:github'),
         isBinding: GITHUBIsBinding,
-        actionCb(action: Exclude<OauthAction, 'LOGIN' | 'PROXY'>) {
+        actionCb(action: Exclude<OauthAction, 'LOGIN'>) {
           const githubConf = conf.idp.github;
           return actionCbGen({
             provider: 'GITHUB',
-            clientId: githubConf.clientID,
-            proxyAddress: githubConf?.proxyAddress,
             url: `https://github.com/login/oauth/authorize?client_id=${githubConf?.clientID}&redirect_uri=${conf?.callbackURL}&scope=user:email%20read:user`
           })(action);
         }
@@ -86,8 +63,6 @@ export function AuthModifyList({
           const wechatConf = conf.idp.wechat;
           return actionCbGen({
             provider: 'WECHAT',
-            clientId: wechatConf.clientID,
-            proxyAddress: wechatConf?.proxyAddress,
             url: `https://open.weixin.qq.com/connect/qrconnect?appid=${wechatConf?.clientID}&redirect_uri=${conf?.callbackURL}&response_type=code&scope=snsapi_login&#wechat_redirect`
           })(action);
         }
@@ -103,8 +78,6 @@ export function AuthModifyList({
           );
           return actionCbGen({
             provider: 'GOOGLE',
-            clientId: googleConf.clientID,
-            proxyAddress: googleConf?.proxyAddress,
             url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&scope=${scope}&include_granted_scopes=true`
           })(action);
         }
@@ -125,7 +98,7 @@ export function AuthModifyList({
                   borderRadius="full"
                   src={avatarUrl}
                   fallbackSrc={'/images/default-user.svg'}
-                  alt="user avator"
+                  alt="user avatar"
                   draggable={'false'}
                 />
               </Center>

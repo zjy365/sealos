@@ -1,35 +1,27 @@
+import { UserInfo } from '@/api/auth';
 import { getGlobalNotification } from '@/api/platform';
 import AppWindow from '@/components/app_window';
-import useDriver from '@/components/task/useDriver';
 import useAppStore from '@/stores/app';
 import { useConfigStore } from '@/stores/config';
 import { useDesktopConfigStore } from '@/stores/desktopConfig';
+import useSessionStore, { OauthAction } from '@/stores/session';
 import { WindowSize } from '@/types';
+import { OauthProvider } from '@/types/user';
 import { Box, Flex } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useRef } from 'react';
 import { createMasterAPP, masterApp } from 'sealos-desktop-sdk/master';
-import Cost from '../account/cost';
-import { ChakraIndicator } from './ChakraIndicator';
-import Apps from './apps';
-import Assistant from './assistant';
-import IframeWindow from './iframe_window';
-import styles from './index.module.scss';
-import Monitor from './monitor';
-import SearchBox from './searchBox';
-import Warn from './warn';
 import NeedToMerge from '../account/AccountCenter/mergeUser/NeedToMergeModal';
 import { useRealNameAuthNotification } from '../account/RealNameModal';
-import useSessionStore, { OauthAction } from '@/stores/session';
-import { useQuery } from '@tanstack/react-query';
-import { UserInfo } from '@/api/auth';
-import TaskModal from '../task/taskModal';
-import FloatingTaskButton from '../task/floatButton';
-import OnlineServiceButton from './serviceButton';
-import { OauthProvider } from '@/types/user';
-import { useRouter } from 'next/router';
+import { ChakraIndicator } from './ChakraIndicator';
+import Apps from './apps';
+import IframeWindow from './iframe_window';
+import styles from './index.module.scss';
+import SearchBox from './searchBox';
 
 const AppDock = dynamic(() => import('../AppDock'), { ssr: false });
 const FloatButton = dynamic(() => import('@/components/floating_button'), { ssr: false });
@@ -47,20 +39,13 @@ export default function Desktop(props: any) {
   const { i18n } = useTranslation();
   const { isAppBar } = useDesktopConfigStore();
   const { installedApps: apps, runningInfo, openApp, setToHighestLayerById } = useAppStore();
-  const backgroundImage = useConfigStore().layoutConfig?.backgroundImage;
   const { message } = useMessage();
   const { realNameAuthNotification } = useRealNameAuthNotification();
-  const [showAccount, setShowAccount] = useState(false);
   const { session } = useSessionStore();
   const { commonConfig } = useConfigStore();
   const realNameAuthNotificationIdRef = useRef<string | number | undefined>();
-  const [isClient, setIsClient] = useState(false);
-  const { authConfig: conf, cloudConfig, layoutConfig } = useConfigStore();
+  const { authConfig: conf, cloudConfig } = useConfigStore();
   const { setProvider, generateState } = useSessionStore();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const infoData = useQuery({
     queryFn: UserInfo,
@@ -116,67 +101,43 @@ export default function Desktop(props: any) {
   );
 
   const router = useRouter();
+
   const actionCbGen = useCallback(
-    <T extends OauthAction>({
-        url,
-        provider,
-        clientId,
-        proxyAddress
-      }: {
-        url: string;
-        provider: OauthProvider;
-        clientId: string;
-        proxyAddress?: string;
-      }) =>
+    <T extends OauthAction>({ url, provider }: { url: string; provider: OauthProvider }) =>
       (action: T) => {
         if (!conf) return;
         const state = generateState(action);
         setProvider(provider);
-        if (proxyAddress) {
-          const target = new URL(proxyAddress);
-          const callback = new URL(conf.callbackURL);
-          target.searchParams.append(
-            'oauthProxyState',
-            encodeURIComponent(callback.toString()) + '_' + state
-          );
-          target.searchParams.append('oauthProxyClientID', clientId);
-          target.searchParams.append('oauthProxyProvider', provider);
-          router.replace(target.toString());
-        } else {
-          const target = new URL(url);
-          target.searchParams.append('state', state);
-          router.replace(target);
-        }
+        const target = new URL(url);
+        target.searchParams.append('state', state);
+        router.replace(target);
       },
     [conf?.callbackURL]
   );
+
   const bindGithub = useCallback(() => {
     if (!conf?.idp.github.enabled) return;
     const githubConf = conf.idp.github;
     actionCbGen({
       provider: 'GITHUB',
-      clientId: githubConf.clientID,
-      proxyAddress: githubConf?.proxyAddress,
       url: `https://github.com/login/oauth/authorize?client_id=${githubConf?.clientID}&redirect_uri=${conf?.callbackURL}&scope=user:email%20read:user`
     })('BIND');
   }, [conf?.callbackURL, conf?.idp.github, actionCbGen]);
+
   const bindGmail = useCallback(() => {
     if (!conf?.idp.google.enabled) return;
     const googleConf = conf.idp.google;
     const scope = encodeURIComponent(`https://www.googleapis.com/auth/userinfo.profile openid`);
     return actionCbGen({
       provider: 'GOOGLE',
-      clientId: googleConf.clientID,
-      proxyAddress: googleConf?.proxyAddress,
       url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleConf.clientID}&redirect_uri=${conf.callbackURL}&response_type=code&scope=${scope}&include_granted_scopes=true`
     })('BIND');
   }, [conf?.callbackURL, conf?.idp.google, actionCbGen]);
+
   const deleteUser = useCallback(() => {
     localStorage.setItem('session', '');
     router.replace(`https://${cloudConfig?.domain || 'console.run.claw.cloud'}/login`);
   }, [cloudConfig?.domain]);
-  const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
-  // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
 
   useEffect(() => {
     const cleanup = createMasterAPP();

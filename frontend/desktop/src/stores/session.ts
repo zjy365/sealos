@@ -3,16 +3,14 @@ import { OauthProvider } from '@/types/user';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-type StatePayload = {
-  rad: string;
-  action: OauthAction;
-};
-export type OauthAction = 'LOGIN' | 'BIND' | 'UNBIND' | 'PROXY';
+
+export type OauthAction = 'LOGIN' | 'BIND' | 'UNBIND';
+
 type SessionState = {
   session?: Session;
   token: string;
   provider?: OauthProvider;
-  lastSigninProvier?: string;
+  lastSigninProvider?: string;
   oauth_state: string;
   firstUse: Date | null;
   setSession: (ss: Session) => void;
@@ -23,11 +21,12 @@ type SessionState = {
   /*
 			when proxy oauth2.0 ,the domainState need to be used
 	*/
-  generateState: (action?: OauthAction, domainState?: string) => string;
+  generateState: (action?: OauthAction, statePayload?: unknown) => string;
   compareState: (state: string) => {
     isSuccess: boolean;
     action: string;
-    statePayload: string[];
+    timestamp: number;
+    statePayload: unknown;
   };
   setLastSigninProvider: (provider?: string) => void;
   setProvider: (provider?: OauthProvider) => void;
@@ -42,7 +41,7 @@ const useSessionStore = create<SessionState>()(
     immer((set, get) => ({
       session: undefined,
       provider: undefined,
-      lastSigninProvier: undefined,
+      lastSigninProvider: undefined,
       firstUse: null,
       oauth_state: '',
       token: '',
@@ -69,31 +68,36 @@ const useSessionStore = create<SessionState>()(
         }
       },
       isUserLogin: () => !!get().session?.user,
-      // [LOGIN/UNBIND/BIND]_STATE
-      // PROXY_DOMAINSTATE, DOMAINSTATE = URL_[LOGIN/UNBIND/BIND]_STATE
-      generateState: (action = 'LOGIN', domainState) => {
-        let state = action as string;
-        if (domainState && action === 'PROXY') {
-          state = state + '_' + domainState;
-        } else {
-          state = state + '_' + new Date().getTime().toString();
-        }
-        set({ oauth_state: state });
-        return state;
+      generateState: (action, statePayload?: unknown) => {
+        const stateObj = {
+          action,
+          timestamp: new Date().getTime(),
+          statePayload
+        };
+        const stateJson = JSON.stringify(stateObj);
+        const base64State = Buffer.from(stateJson).toString('base64');
+        let encodedState = encodeURIComponent(base64State);
+        set({ oauth_state: encodedState });
+        return encodedState;
       },
       compareState: (state: string) => {
-        // fix wechat
-        let isSuccess = decodeURIComponent(state) === decodeURIComponent(get().oauth_state);
-        const [action, ...statePayload] = state.split('_');
+        state = decodeURIComponent(state);
+        const storedState = decodeURIComponent(get().oauth_state);
+        let isSuccess = state === storedState;
+        const decodedState = Buffer.from(state, 'base64').toString('utf-8');
+        const stateObj: {
+          action: string;
+          timestamp: number;
+          statePayload: unknown;
+        } = JSON.parse(decodedState);
         set({ oauth_state: undefined });
         return {
           isSuccess,
-          action,
-          statePayload
+          ...stateObj
         };
       },
       setLastSigninProvider(provider?: string) {
-        set({ lastSigninProvier: provider });
+        set({ lastSigninProvider: provider });
       },
       setProvider: (provider?: OauthProvider) => {
         set({ provider });

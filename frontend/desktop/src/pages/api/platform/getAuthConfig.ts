@@ -40,18 +40,15 @@ function genResAuthClientConfig(conf: AuthConfigType) {
       },
       github: {
         enabled: !!conf.idp.github?.enabled,
-        proxyAddress: conf.idp.github?.proxyAddress || '',
         clientID: conf.idp.github?.clientID || ''
       },
       wechat: {
         enabled: !!conf.idp.wechat?.enabled,
-        clientID: conf.idp.wechat?.clientID || '',
-        proxyAddress: conf.idp.wechat?.proxyAddress || ''
+        clientID: conf.idp.wechat?.clientID || ''
       },
       google: {
         enabled: !!conf.idp.google?.enabled,
         clientID: conf.idp.google?.clientID || '',
-        proxyAddress: conf.idp.google?.proxyAddress || '',
         callbackURL: conf.idp.google?.callbackURL || ''
       },
       oauth2: {
@@ -60,8 +57,7 @@ function genResAuthClientConfig(conf: AuthConfigType) {
         clientID: conf.idp.oauth2?.clientID || '',
         authURL: conf.idp.oauth2?.authURL || '',
         tokenURL: conf.idp.oauth2?.tokenURL || '',
-        userInfoURL: conf.idp.oauth2?.userInfoURL || '',
-        proxyAddress: conf.idp.oauth2?.proxyAddress || ''
+        userInfoURL: conf.idp.oauth2?.userInfoURL || ''
       }
     },
     captcha: {

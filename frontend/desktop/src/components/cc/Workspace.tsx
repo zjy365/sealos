@@ -1,37 +1,37 @@
-import { MySelect, Track } from '@sealos/ui';
-import { ArrowRight } from 'lucide-react';
-import { useTranslation } from 'next-i18next';
-import {
-  Box,
-  Heading,
-  Text,
-  Button,
-  Stack,
-  FormControl,
-  FormLabel,
-  Input,
-  Flex,
-  useColorModeValue
-} from '@chakra-ui/react';
-import { ClawCloudIcon } from '../icons';
-import { useState } from 'react';
-import { Region } from '@/types';
-import { Mutation, useMutation, useQuery } from '@tanstack/react-query';
 import { regionList as getRegionList, initRegionToken } from '@/api/auth';
-import { sessionConfig } from '@/utils/sessionConfig';
-import { useRouter } from 'next/router';
+import { SwitchRegionType } from '@/constants/account';
 import { useCustomToast } from '@/hooks/useCustomToast';
 import { useConfigStore } from '@/stores/config';
-import useSessionStore from '@/stores/session';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
-import { SwitchRegionType } from '@/constants/account';
+import useSessionStore from '@/stores/session';
+import { Region } from '@/types';
+import { sessionConfig } from '@/utils/sessionConfig';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  Text,
+  useColorModeValue
+} from '@chakra-ui/react';
+import { MySelect, Track } from '@sealos/ui';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { ClawCloudIcon } from '../icons';
 
 export default function Workspace() {
   const { t } = useTranslation();
   const router = useRouter();
   const { toast } = useCustomToast();
   const bg = useColorModeValue('white', 'gray.700');
-  const provider = useSessionStore((s) => s.lastSigninProvier);
+  const provider = useSessionStore((s) => s.lastSigninProvider);
   const { workspaceName, setWorkspaceName, setSelectedRegionUid, selectedRegionUid, setInitGuide } =
     useInitWorkspaceStore();
   // const [workspaceName, setWorkspaceName] = useState('');
