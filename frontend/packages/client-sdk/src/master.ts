@@ -69,8 +69,6 @@ class MasterSDK {
    * run in hook
    */
   init() {
-    console.log('init desktop onmessage');
-
     const windowMessage = ({ data, origin, source }: MessageEvent<AppSendMessageType>) => {
       const { apiName, messageId } = data || {};
 
@@ -96,9 +94,6 @@ class MasterSDK {
         return;
       }
 
-      // window check
-      console.log(`receive message: `, data, origin);
-
       this.apiFun[data.apiName](data, source, origin);
     };
 
@@ -106,7 +101,6 @@ class MasterSDK {
 
     return () => {
       window.removeEventListener('message', windowMessage);
-      console.log('stop desktop onmessage');
     };
   }
 

@@ -65,7 +65,6 @@ class ClientSDK {
   }
 
   init() {
-    console.log('ClawCloud app init');
     this.commonConfig.clientLocation = window.location.origin;
 
     const listenCb = ({ data, origin, source }: MessageEvent<AppMessageType>) => {
@@ -88,7 +87,6 @@ class ClientSDK {
     this.initialized = true;
 
     return () => {
-      console.log('ClawCloud app destroy');
       window.removeEventListener('message', listenCb);
     };
   }

@@ -5,6 +5,9 @@ export function formatTime(date: Date) {
 }
 
 export function infoLog(msg: string, obj: Record<string, any> = {}) {
+  if (process.env.NODE_ENV === 'development') {
+    return;
+  }
   console.log(`[INFO] %s %s`, formatTime(new Date()), msg, JSON.stringify(obj));
 }
 
