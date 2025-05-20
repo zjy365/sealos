@@ -1,30 +1,30 @@
 import { TCreditsUsageResponse, TPlanApiResponse } from '@/schema/plan';
+import { TUserInfoResponse } from '@/schema/user';
 import { formatDate, formatMoneyStr } from '@/utils/format';
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 import {
+  Box,
+  Button,
   Card,
-  CardHeader,
   CardBody,
+  CardHeader,
   Flex,
-  Text,
-  Progress,
   Grid,
   GridItem,
-  Box,
-  Button
+  Progress,
+  Text
 } from '@chakra-ui/react';
+import { differenceInMonths } from 'date-fns';
 import { useTranslation } from 'next-i18next';
 import { CSSProperties, FC, ReactNode } from 'react';
-import Recharge from '../Recharge';
-import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { sealosApp } from 'sealos-desktop-sdk/app';
-import { TUserInfoReponse } from '@/schema/user';
-import { differenceInMonths } from 'date-fns';
+import Recharge from '../Recharge';
 import BonusDetail from './BonusDetail';
 
 interface CreditsProps {
   plan: TPlanApiResponse;
   creditsUsage: TCreditsUsageResponse;
-  userInfo: TUserInfoReponse | undefined;
+  userInfo: TUserInfoResponse | undefined;
   isLoadingUserInfo?: boolean;
   onPaySuccess?: () => void;
 }

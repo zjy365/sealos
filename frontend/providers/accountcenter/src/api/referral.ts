@@ -1,5 +1,5 @@
-import { ApiResp } from '@/service/kubernet';
-import { GET, POST } from '@/service/request';
+import { ApiResp } from '@/service/kubernetes';
+import { GET } from '@/service/request';
 
 export interface ReferralStats {
   total: number;

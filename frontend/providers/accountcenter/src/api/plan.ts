@@ -1,13 +1,14 @@
 import { TRechargeApiResponse, TRechargeRequest } from '@/schema/card';
 import {
+  TBonusDetailsApiResponse,
   TCreditsUsageResponse,
   TLastTransactionResponse,
   TPlanApiResponse,
   TSubscriptionApiResponse,
   TUpdatePlanRequest,
-  TUpdatePlanResponse,
-  TBonusDetailsApiResponse
+  TUpdatePlanResponse
 } from '@/schema/plan';
+import { ExpansionRule } from '@/service/crmApi/expansionRule';
 import { GET, POST } from '@/service/request';
 
 export function getPlans() {
@@ -40,4 +41,12 @@ export function recharge(data: TRechargeRequest) {
 }
 export function getLastTransaction() {
   return GET<{ transcation: TLastTransactionResponse }>('/plan/lastTransaction');
+}
+
+export function getExpansionRule() {
+  return GET<{ rules: ExpansionRule[] }>('/plan/expansionRule');
+}
+
+export function calcExpansion(amount: number) {
+  return POST<{ amount: number }>('/plan/calcExpansion', { amount });
 }

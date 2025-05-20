@@ -1,8 +1,9 @@
-import { TUserInfoReponse } from '@/schema/user';
+import { TUserInfoResponse } from '@/schema/user';
 import { AccessTokenPayload } from '@/service/auth';
 import { authSession } from '@/service/backend/auth';
 import { globalPrisma } from '@/service/backend/db/init';
 import { jsonRes } from '@/service/backend/response';
+import { getReferralType } from '@/service/crmApi/referralType';
 import { HttpStatusCode } from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -18,11 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // get user agency mark
-    const agencyMark = await globalPrisma.agencyMark.findUnique({
-      where: {
-        uid: payload.userUid
-      }
-    });
+    let agencyMark = false;
+    const referral_type = await getReferralType(payload.userUid);
+    if (referral_type.referral_type === 'agency') {
+      agencyMark = true;
+    }
 
     // 查询用户信息
     const user = await globalPrisma.user.findUnique({
@@ -56,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       google: userOAuthProviders.some((p) => p.providerType === 'GOOGLE')
     };
 
-    return jsonRes<TUserInfoReponse>(res, {
+    return jsonRes<TUserInfoResponse>(res, {
       data: {
         user: {
           avatarUri: user.avatarUri,
@@ -70,6 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
   } catch (error) {
+    console.error(error);
     jsonRes(res, {
       code: 500,
       error: 'Internal Server Error'

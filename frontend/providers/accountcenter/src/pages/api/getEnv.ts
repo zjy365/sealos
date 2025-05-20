@@ -1,5 +1,5 @@
 import { jsonRes } from '@/service/backend/response';
-import { ApiResp } from '@/service/kubernet';
+import { ApiResp } from '@/service/kubernetes';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export type SystemEnvResponse = {

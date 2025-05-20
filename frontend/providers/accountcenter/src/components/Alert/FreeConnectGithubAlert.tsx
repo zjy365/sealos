@@ -1,16 +1,15 @@
-import { FC } from 'react';
-import { UpgradePlanModalProps } from '../Plans/UpgradeModal';
-import { TUserInfoReponse } from '@/schema/user';
-import { useDisclosure } from '@chakra-ui/react';
 import useUpgradeModalInTranslation from '@/hooks/useUpgradeModalInTranslation';
-import Alert from '.';
-import { Trans, useTranslation } from 'next-i18next';
 import { TSubscriptionApiResponse } from '@/schema/plan';
-import { differenceInDays } from 'date-fns';
+import { TUserInfoResponse } from '@/schema/user';
 import { Track } from '@sealos/ui';
+import { differenceInDays } from 'date-fns';
+import { Trans, useTranslation } from 'next-i18next';
+import { FC } from 'react';
+import Alert from '.';
+import { UpgradePlanModalProps } from '../Plans/UpgradeModal';
 
 interface FreeConnectGithubAlertProps extends Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'> {
-  userInfo: TUserInfoReponse | undefined;
+  userInfo: TUserInfoResponse | undefined;
   subscriptionResponse: TSubscriptionApiResponse | undefined;
 }
 const FreeConnectGithubAlert: FC<FreeConnectGithubAlertProps> = ({

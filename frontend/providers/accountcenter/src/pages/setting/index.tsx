@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import { serviceSideProps } from '@/utils/i18n';
+import { getUserInfo, updateUserInfo } from '@/api/user';
+import Alert from '@/components/Alert';
 import Layout from '@/components/Layout';
+import useToastAPIResult from '@/hooks/useToastAPIResult';
+import { TUserInfoResponse } from '@/schema/user';
+import { serviceSideProps } from '@/utils/i18n';
+import upperFirst from '@/utils/upperFirst';
 import {
   Avatar,
+  Box,
   Button,
   Card,
   CardBody,
   CardHeader,
-  Text,
-  Flex,
-  Box,
   Divider,
+  Flex,
   FormControl,
-  FormLabel,
-  Input,
   FormErrorMessage,
+  FormLabel,
   Grid,
   GridItem,
-  Image
+  Image,
+  Input,
+  Text
 } from '@chakra-ui/react';
-import { useTranslation } from 'next-i18next';
-import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'next-i18next';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { sealosApp } from 'sealos-desktop-sdk/app';
-import upperFirst from '@/utils/upperFirst';
 import DeleteAccount from './components/deleteAccount';
-import { getUserInfo, updateUserInfo } from '@/api/user';
-import { TUserInfoReponse } from '@/schema/user';
-import useToastAPIResult, { useAPIErrorMessage } from '@/hooks/useToastAPIResult';
-import Alert from '@/components/Alert';
 
 function AccountSettings() {
   const [initialized, setInitialized] = useState(false);
@@ -43,7 +43,7 @@ function AccountSettings() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isValid, isDirty }
-  } = useForm<TUserInfoReponse['user']>({
+  } = useForm<TUserInfoResponse['user']>({
     mode: 'onChange',
     values: data?.user
   });

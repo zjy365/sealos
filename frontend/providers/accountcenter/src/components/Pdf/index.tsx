@@ -1,8 +1,7 @@
-import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Svg, Rect, Path, Font } from '@react-pdf/renderer';
+import { TUserInfoResponse } from '@/schema/user';
 import { InvoicePayload } from '@/types/invoice';
-import { formatMoney, displayMoney } from '@/utils/format';
-import { TUserInfoReponse } from '@/schema/user';
+import { displayMoney, formatMoney } from '@/utils/format';
+import { Document, Font, Page, Path, Rect, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
 
 Font.register({
   family: 'Geist',
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
 });
 
 // 创建pdf文档
-const Pdf = ({ data, user }: { data?: InvoicePayload[]; user?: TUserInfoReponse }) => {
+const Pdf = ({ data, user }: { data?: InvoicePayload[]; user?: TUserInfoResponse }) => {
   const item = data?.[0];
   if (!item) return null;
   return (

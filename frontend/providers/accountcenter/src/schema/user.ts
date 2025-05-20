@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const UserInfoReponse = z.object({
+export const UserInfoResponse = z.object({
   user: z.object({
     avatarUri: z.string().optional(),
     firstname: z.string().optional(),
@@ -25,4 +25,4 @@ export const DeleteRequest = z.object({
 });
 export type TUpdateInfoRequest = z.infer<typeof UpdateInfoRequest>;
 
-export type TUserInfoReponse = z.infer<typeof UserInfoReponse>;
+export type TUserInfoResponse = z.infer<typeof UserInfoResponse>;
