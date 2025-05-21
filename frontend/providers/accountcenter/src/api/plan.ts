@@ -44,7 +44,7 @@ export function getLastTransaction() {
 }
 
 export function getExpansionRule() {
-  return GET<{ rules: ExpansionRule[] }>('/plan/expansionRule');
+  return GET<ExpansionRule[]>('/plan/expansionRule');
 }
 
 export function calcExpansion(amount: number) {

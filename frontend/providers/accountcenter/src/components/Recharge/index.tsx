@@ -20,9 +20,12 @@ import {
   Box
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
-import { FC, SyntheticEvent, useState } from 'react';
+import { FC, SyntheticEvent, useState, useEffect } from 'react';
 import RechargeCheckoutModal from './CheckoutModal';
 import { CircleAlert, ArrowRight } from 'lucide-react';
+import { getExpansionRule, calcExpansion } from '@/api/plan';
+import { ExpansionRule } from '@/service/crmApi/expansionRule';
+import { displayMoney } from '@/utils/format';
 
 interface RechargeProps {
   showBonus?: boolean;
@@ -94,39 +97,57 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
     }
     setInputErrorKey('');
   };
-  const bonusMetrics = [
-    {
-      amount: 5,
-      expansion: 5
-    },
-    {
-      amount: 100,
-      expansion: 10
-    },
-    {
-      amount: 500,
-      expansion: 15
-    },
-    {
-      amount: 1000,
-      expansion: 20
-    },
-    {
-      amount: 5000,
-      expansion: 25
-    },
-    {
-      amount: 10000,
-      expansion: 30
+  const [bonusMetrics, setBonusMetrics] = useState<ExpansionRule[]>([
+    // {
+    //   min_range: 5,
+    //   expansion_pct: 5
+    // },
+    // {
+    //   min_range: 100,
+    //   expansion_pct: 10
+    // },
+    // {
+    //   min_range: 500,
+    //   expansion_pct: 15
+    // },
+    // {
+    //   min_range: 1000,
+    //   expansion_pct: 20
+    // },
+    // {
+    //   min_range: 5000,
+    //   expansion_pct: 25
+    // },
+    // {
+    //   min_range: 10000,
+    //   expansion_pct: 30
+    // }
+  ]);
+  useEffect(() => {
+    async function fetchBonusMetrics() {
+      const res = await getExpansionRule();
+      setBonusMetrics(res.sort((a, b) => a.min_range - b.min_range));
     }
-  ];
-  const getBonusMetrics = (amount: number) => {
-    const index = bonusMetrics.findLastIndex((item) => item.amount <= amount);
-    if (index === -1) {
-      return 0;
-    }
-    return ((bonusMetrics[index].expansion * amount) / 100).toFixed(2);
-  };
+    fetchBonusMetrics();
+  }, []);
+  const [bonusCount, setBonusCount] = useState('0');
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!inputValue) return;
+      const res = await calcExpansion(Number(inputValue) * 100);
+      setBonusCount(displayMoney(res.amount / 100));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+  // const getBonusMetrics = (amount: number) => {
+  //   // const index = bonusMetrics.findLastIndex((item) => item.min_range <= amount);
+  //   // if (index === -1) {
+  //   //   return 0;
+  //   // }
+  //   // return ((bonusMetrics[index].expansion_pct * amount) / 100).toFixed(2);
+
+  // };
   return (
     <>
       <Text lineHeight="28px" fontSize="18px" fontWeight="600" mb="16px">
@@ -230,7 +251,7 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
                       flex={1}
                       type="number"
                       readOnly
-                      value={getBonusMetrics(Number(inputValue))}
+                      value={bonusCount}
                       cursor={'not-allowed'}
                     />
                   </Flex>
@@ -293,21 +314,21 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
               </Grid>
               {bonusMetrics.map((item, index, arr) => (
                 <Grid
-                  key={item.amount}
+                  key={item.min_range}
                   gridTemplateColumns={'1fr 1fr'}
                   borderBottom={'1px solid #F1F1F3'}
                 >
                   <Text px={'16px'} fontSize={'14px'} lineHeight={'48px'} color={'#18181B'}>
                     {index === arr.length - 1
-                      ? `>= ${item.amount}`
-                      : `${item.amount} - ${arr[index + 1].amount}`}
+                      ? `>= ${item.min_range}`
+                      : `${item.min_range} - ${arr[index + 1].min_range}`}
                   </Text>
                   <Text
                     px={'16px'}
                     fontSize={'14px'}
                     lineHeight={'48px'}
                     color={'#18181B'}
-                  >{`${item.expansion}%`}</Text>
+                  >{`${item.expansion_pct}%`}</Text>
                 </Grid>
               ))}
             </Flex>
