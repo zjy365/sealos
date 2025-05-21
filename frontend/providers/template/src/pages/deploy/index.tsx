@@ -25,6 +25,7 @@ import { getTemplateInputDefaultValues, getTemplateValues } from '@/utils/templa
 import { getResourceUsage } from '@/utils/usage';
 import Head from 'next/head';
 import { useMessage } from '@sealos/ui';
+import { useGuideStore } from '@/store/guide';
 
 const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 const Header = dynamic(() => import('./components/Header'), { ssr: false });
@@ -159,20 +160,16 @@ export default function EditApp({
     return () => subscription.unsubscribe();
   }, [formHook, formOnchangeDebounce]);
 
+  const { createCompleted } = useGuideStore();
   const submitSuccess = async () => {
-    // const quoteCheckRes = checkQuotaAllow({
-    //   cpu: usage.cpu.max,
-    //   memory: usage.memory.max,
-    //   storage: usage.storage.max
-    // });
-    // if (quoteCheckRes) {
-    //   return toast({
-    //     status: 'warning',
-    //     title: t(quoteCheckRes),
-    //     duration: 5000,
-    //     isClosable: true
-    //   });
-    // }
+    if (!createCompleted) {
+      return router.push('/instance?instanceName=fastgpt-mock');
+    }
+    const quoteCheckRes = checkQuotaAllow({
+      cpu: usage.cpu.max,
+      memory: usage.memory.max,
+      storage: usage.storage.max
+    });
 
     setIsLoading(true);
 
