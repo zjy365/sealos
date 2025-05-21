@@ -26,6 +26,7 @@ import { useUserStore } from '@/store/user';
 import { getResourceUsage } from '@/utils/usage';
 import Head from 'next/head';
 import { useMessage } from '@sealos/ui';
+import { useGuideStore } from '@/store/guide';
 
 const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 const Header = dynamic(() => import('./components/Header'), { ssr: false });
@@ -153,7 +154,11 @@ export default function EditApp({
     return () => subscription.unsubscribe();
   }, [formHook, formOnchangeDebounce]);
 
+  const { createCompleted } = useGuideStore();
   const submitSuccess = async () => {
+    if (!createCompleted) {
+      return router.push('/instance?instanceName=fastgpt-mock');
+    }
     const quoteCheckRes = checkQuotaAllow({
       cpu: usage.cpu.max,
       memory: usage.memory.max,
