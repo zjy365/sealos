@@ -24,6 +24,12 @@ request.interceptors.request.use(
 
     _headers['Authorization'] = config.headers.Authorization ? config.headers.Authorization : token;
 
+    const cfAccessClientId = process.env['CF-Access-Client-Id'];
+    const cfAccessClientSecret = process.env['CF-Access-Client-Secret'];
+
+    if (cfAccessClientId) _headers['CF-Access-Client-Id'] = cfAccessClientId;
+    if (cfAccessClientSecret) _headers['CF-Access-Client-Secret'] = cfAccessClientSecret;
+
     if (!config.headers || config.headers['Content-Type'] === '') {
       _headers['Content-Type'] = 'application/json';
     }

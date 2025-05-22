@@ -75,10 +75,28 @@ image-push-%: image-build-%
 	docker push $(imageOwner)sealos-$*:$(imageTag)
 
 cc-image-push-providers/%: image-build-providers/%
-	docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/$*-frontend:$(imageTag)
-	docker push $(CC_REGISTRY)/$*-frontend:$(imageTag)
+	@case "$*" in \
+		accountcenter) \
+			docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/account-center-frontend:$(imageTag) && \
+			docker push $(CC_REGISTRY)/account-center-frontend:$(imageTag) ;; \
+		objectstorage) \
+			docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/object-storage-frontend:$(imageTag) && \
+			docker push $(CC_REGISTRY)/object-storage-frontend:$(imageTag) ;; \
+		*) \
+			docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/$*-frontend:$(imageTag) && \
+			docker push $(CC_REGISTRY)/$*-frontend:$(imageTag) ;; \
+	esac
 
 cc-image-push-%: image-build-%
-	docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/$*-frontend:$(imageTag)
-	docker push $(CC_REGISTRY)/$*-frontend:$(imageTag)
+	@case "$*" in \
+		accountcenter) \
+			docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/account-center-frontend:$(imageTag) && \
+			docker push $(CC_REGISTRY)/account-center-frontend:$(imageTag) ;; \
+		objectstorage) \
+			docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/object-storage-frontend:$(imageTag) && \
+			docker push $(CC_REGISTRY)/object-storage-frontend:$(imageTag) ;; \
+		*) \
+			docker tag $(imageOwner)sealos-$*:$(imageTag) $(CC_REGISTRY)/$*-frontend:$(imageTag) && \
+			docker push $(CC_REGISTRY)/$*-frontend:$(imageTag) ;; \
+	esac
 # Default target to run all builds.
