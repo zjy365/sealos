@@ -324,7 +324,7 @@
   "network_not_ready": "内部网关需要 2~5 分钟准备，请耐心等待",
   "pending_to_allocated": "待分配",
   "driver": {
-    "create_launchpad": "创建启动台",
+    "create_launchpad": "创建应用",
     "define_settings": "定义您的应用设置并开始部署",
     "next": "下一步",
     "access_application": "访问应用",
