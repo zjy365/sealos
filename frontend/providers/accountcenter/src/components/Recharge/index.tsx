@@ -132,13 +132,19 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
   }, []);
   const [bonusCount, setBonusCount] = useState('0');
   useEffect(() => {
+    let cancel = false;
     const timer = setTimeout(async () => {
-      if (!inputValue) return;
+      if (!inputValue || isNaN(Number(inputValue))) return;
       const res = await calcExpansion(Number(inputValue) * 100);
-      setBonusCount(displayMoney(res.amount / 100));
+      if (typeof res.amount === 'number' && !cancel) {
+        setBonusCount(displayMoney(res.amount / 100));
+      }
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancel = true;
+      clearTimeout(timer);
+    };
   }, [inputValue]);
   // const getBonusMetrics = (amount: number) => {
   //   // const index = bonusMetrics.findLastIndex((item) => item.min_range <= amount);
