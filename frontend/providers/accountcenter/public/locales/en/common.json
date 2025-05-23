@@ -415,5 +415,11 @@
   "time": "time",
   "usage": "usage",
   "viewDetails": "view details",
-  "workspace": "Workspace"
+  "workspace": "Workspace",
+  "ALIPAY_CN": "Alipay",
+  "ALIPAY_HK": "Alipay HK",
+  "AddNewPaymentMethod": "Add new method",
+  "UseExistingPaymentMethod": "Use existing method",
+  "PleaseSelectPaymentMethod": "Please select payment method",
+  "ChoosePaymentMethod": "Choose payment method"
 }

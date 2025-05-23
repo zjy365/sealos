@@ -12,15 +12,9 @@ interface PlanAlertProps {
   lastTransaction: TLastTransactionResponse | undefined;
   /** 是否需要显示取消的提醒 */
   includeCancelling?: boolean;
-  onPaySuccess?: () => void;
 }
 
-const PlanAlert: FC<PlanAlertProps> = ({
-  lastTransaction,
-  includeCancelling,
-  plans,
-  onPaySuccess
-}) => {
+const PlanAlert: FC<PlanAlertProps> = ({ lastTransaction, includeCancelling, plans }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation();
   if (!lastTransaction) return null;
@@ -45,7 +39,6 @@ const PlanAlert: FC<PlanAlertProps> = ({
           lastTransaction={lastTransaction}
           isOpen={isOpen}
           onClose={onClose}
-          onPaySuccess={onPaySuccess}
         />
       </>
     );

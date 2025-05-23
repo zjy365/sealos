@@ -14,6 +14,8 @@
     "postinstall": "pnpm gen:global"
   },
   "dependencies": {
+    "rc-select": "^14.16.6",
+    "classnames": "^2.5.1",
     "@alicloud/dysmsapi20170525": "^2.0.24",
     "@alicloud/openapi-client": "^0.4.6",
     "@alicloud/tea-util": "^1.4.7",

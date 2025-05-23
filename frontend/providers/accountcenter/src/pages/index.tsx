@@ -10,7 +10,7 @@ const Index: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   useEffect(() => {
-    const { scene, paymentType, stripeState } = router.query;
+    const { scene, paymentType, stripeState, tradeNo } = router.query;
     let replaceTo: Url = urls.page.setting;
     if (paymentType === 'SUBSCRIPTION') {
       replaceTo = {
@@ -18,7 +18,14 @@ const Index: FC = () => {
         search: '?checkUpgrade'
       };
     } else if (paymentType === 'ACCOUNT_RECHARGE' || stripeState) {
-      replaceTo = urls.page.plan;
+      if (tradeNo) {
+        replaceTo = {
+          pathname: urls.page.plan,
+          search: `?tradeNo=${tradeNo}`
+        };
+      } else {
+        replaceTo = urls.page.plan;
+      }
     }
     // scene 参数，可以跳转到指定页面的部分
     if (typeof scene === 'string') {

@@ -13,24 +13,22 @@ import { FC } from 'react';
 import CheckoutOrder, { CheckoutData } from '../CheckoutOrder';
 import useGetPlanOrderSummary from '../CheckoutOrder/useGetPlanOrderSummary';
 import { getPlans, updatePlan } from '@/api/plan';
-import useToastAPIResult from '@/hooks/useToastAPIResult';
-
+import urls from '@/utils/urls';
+import { useRouter } from 'next/router';
 export interface RetryRenewPayModalProps {
   plans?: TPlanApiResponse[];
   lastTransaction: TLastTransactionResponse;
   isOpen: boolean;
   onClose: () => void;
-  onPaySuccess?: () => void;
 }
 const RetryRenewPayModal: FC<RetryRenewPayModalProps> = ({
   plans: propPlans,
   lastTransaction,
   isOpen,
-  onClose,
-  onPaySuccess
+  onClose
 }) => {
   const { t } = useTranslation();
-  const { toastSuccess } = useToastAPIResult();
+  const router = useRouter();
   const getPlanOrderSummary = useGetPlanOrderSummary();
   const handleCheckout = (data: CheckoutData) => {
     return updatePlan({
@@ -41,9 +39,10 @@ const RetryRenewPayModal: FC<RetryRenewPayModalProps> = ({
     });
   };
   const handlePaySuccess = () => {
-    toastSuccess(t('PaySuccess'));
-    onClose();
-    onPaySuccess?.();
+    router.push({
+      pathname: urls.page.plan,
+      search: '?checkUpgrade'
+    });
   };
   const getSummary = async () => {
     let plans: TPlanApiResponse[];
@@ -77,6 +76,7 @@ const RetryRenewPayModal: FC<RetryRenewPayModalProps> = ({
               onCheckout={handleCheckout}
               autoRedirectToPay={isOpen}
               onPaySuccess={handlePaySuccess}
+              isSubscription
             />
           </Box>
         </ModalBody>

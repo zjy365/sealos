@@ -4,6 +4,7 @@ import { FC, ReactNode } from 'react';
 interface RadioOptionProps extends UseRadioProps {
   children?: ReactNode;
   icons?: ReactNode;
+  p?: string;
 }
 const RadioOption: FC<RadioOptionProps> = (props) => {
   const { getInputProps, getRadioProps } = useRadio(props);
@@ -15,7 +16,7 @@ const RadioOption: FC<RadioOptionProps> = (props) => {
     <Flex
       as="label"
       cursor="pointer"
-      p="12px 16px"
+      p={props.p || '12px 16px'}
       bg="#fff"
       width="100%"
       alignContent="center"

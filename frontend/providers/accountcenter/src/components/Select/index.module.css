@@ -1,0 +1,138 @@
+.bump.container {
+  width: 100%;
+  transition: all 0.2s;
+}
+.bump.container:not(.rc-select-customize-input) :global(.rc-select-selector) {
+  border: none;
+  height: 100%;
+}
+.bump.container :global(.rc-select-selection-search) {
+  height: 100%;
+  display: inline-block;
+}
+.bump.container :global(.rc-select-selection-search-input) {
+  height: 100%;
+  background: transparent !important;
+  padding: 0 12px;
+}
+.bump.container:global(.rc-select-single) :global(.rc-select-selection-item),
+.bump.container:global(.rc-select) :global(.rc-select-selection-placeholder) {
+  position: absolute;
+  top: 50%;
+  padding-left: 7px;
+  transform: translateY(-50%);
+}
+.bump.container:global(.rc-select-single) :global(.rc-select-selection-placeholder) {
+  color: var(--rcc-select-placeholder-color);
+  opacity: 1;
+}
+.bump.dropdown {
+  animation-duration: 0.2s !important;
+}
+.bump.dropdown :global(.rc-select-item-option-active),
+.dropdown :global(.rc-select-item-option-selected) {
+  background: transparent;
+  cursor: pointer;
+}
+.bump.dropdown :global(.rc-select-item-option) {
+  font-size: inherit;
+  padding: 0px;
+}
+.bump.dropdown :global(.rc-select-item-option .rc-select-item-option-state) {
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.bump.container :global(.rc-select-arrow) {
+  top: 50%;
+  right: 10px;
+  margin-top: -8px;
+  transform-origin: center center;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.bump.container:global(.rc-select-open) :global(.rc-select-arrow) {
+  transform: rotate(180deg);
+}
+.bump.variants-outline.invalid.container {
+  background: var(--rcc-select-invalid-bg) !important;
+  box-shadow: var(--rcc-select-invalid-box-shadow);
+  border-color: var(--rcc-select-invalid-border-color) !important;
+}
+.bump.variants-outline.compact-left.container {
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-bottom-color: transparent !important;
+  margin-left: 1px;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.bump.variants-outline.compact-right.container {
+  border-top-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-color: transparent !important;
+  margin-right: 1px;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.bump.variants-outline.container:global(.rc-select-focused) {
+  background: var(--rcc-select-focus-bg) !important;
+  color: var(--rcc-select-focus-color);
+  box-shadow: var(--rcc-select-focus-box-shadow);
+  border-color: var(--rcc-select-focus-border-color) !important;
+}
+.container:global(.rc-select-allow-clear) :global(.rc-select-clear) {
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  font-size: 16px;
+}
+.open:global(.rc-select-allow-clear) :global(.rc-select-clear) {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.open:global(.rc-select-allow-clear) :global(.rc-select-arrow):has(+ :global(.rc-select-clear)) {
+  opacity: 0;
+}
+.container:global(.rc-select-multiple .rc-select-selector .rc-select-selection-item) {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px 0 10px;
+  margin: 2px 4px 2px 0;
+  display: flex;
+  line-height: 24px;
+  border-radius: 9999px;
+  transition: all 0.3s;
+}
+.bump.variants-outline.container:global(
+    .rc-select-focused.rc-select-multiple .rc-select-selector .rc-select-selection-item
+  ) {
+  background: rgb(239, 246, 255);
+}
+.container:global(.rc-select-multiple .rc-select-selection-wrap) {
+  width: 100%;
+  height: 100%;
+}
+.container:global(.rc-select-multiple .rc-select-selector .rc-select-selection-overflow) {
+  max-width: 100%;
+}
+.container:global(.rc-select-show-arrow.rc-select-multiple .rc-select-selector) {
+  padding-left: 3px;
+}
+.bump.container:not(.rc-select-multiple) :global(.rc-select-selector) {
+  height: auto;
+  min-height: 100%;
+}
+.dropdown :global(.rc-select-item-option-content) {
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+.bump.dropdown :global(.rc-select-item-option-active .rc-select-item-option-content),
+.dropdown :global(.rc-select-item-option-selected .rc-select-item-option-content) {
+  background: rgb(244, 244, 245);
+}
+.bump.dropdown {
+  padding: 8px;
+}

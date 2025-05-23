@@ -277,7 +277,6 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
           lastTransaction={lastTransaction}
           isOpen={isUpgradeModalOpen}
           onClose={closeUpgradeModal}
-          onPaySuccess={refresh}
         />
       ) : null}
     </>

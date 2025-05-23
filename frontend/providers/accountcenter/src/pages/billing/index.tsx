@@ -66,7 +66,7 @@ function Billing() {
   return (
     <>
       <Layout loading={!initialized}>
-        <PlanAlert lastTransaction={lastTransaction} onPaySuccess={handlePaySuccess} />
+        <PlanAlert lastTransaction={lastTransaction} />
         <Payment
           handleDelete={handleDelete}
           handleSetDefault={handleSetDefault}

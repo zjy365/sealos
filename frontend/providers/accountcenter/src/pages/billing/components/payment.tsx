@@ -24,6 +24,7 @@ import Empty from '@/components/Empty';
 import { CardSchema } from '@/schema/card';
 import z from 'zod';
 import { serviceSideProps } from '@/utils/i18n';
+import { PayMethod, getExistCardPayMethod } from '@/components/CheckoutOrder';
 
 const Payment = ({
   cardList,
@@ -72,150 +73,158 @@ const Payment = ({
       </Flex>
       <Flex gap={'8px'} direction={'column'}>
         {cardList.length !== 0 ? (
-          cardList.map((item: z.infer<typeof CardSchema>) => (
-            <Flex
-              key={item.id}
-              justify={'space-between'}
-              align={'center'}
-              pl={'12px'}
-              pr={'16px'}
-              py={'12px'}
-              bg={'#F9F9F9'}
-              borderRadius={'xl'}
-            >
-              <Flex align={'center'}>
-                <Center
-                  border={'1.5px solid #E4E4E7'}
-                  borderRadius={'6px'}
-                  w={'52.5px'}
-                  h={'36px'}
-                  mr={'12px'}
-                >
-                  <MyIcon name={item.cardBrand.toLowerCase() as 'mastercard' | 'visa'} />
-                </Center>
-                <Text fontSize={'16px'} fontWeight={600} lineHeight={'24px'} mr={'8px'}>
-                  {item.cardBrand}
-                </Text>
-                <Text fontSize={'16px'} fontWeight={600} lineHeight={'24px'} mr={'12px'}>
-                  {item.cardNo}
-                </Text>
-                {item.default && (
-                  <Tag
-                    variant={'subtle'}
-                    size={'md'}
-                    colorScheme={'gray'}
-                    borderRadius={'full'}
-                    mr={'8px'}
+          cardList.map((item: z.infer<typeof CardSchema>) => {
+            const payMethod = getExistCardPayMethod(item);
+            return (
+              <Flex
+                key={item.id}
+                justify={'space-between'}
+                align={'center'}
+                pl={'12px'}
+                pr={'16px'}
+                py={'12px'}
+                bg={'#F9F9F9'}
+                borderRadius={'xl'}
+              >
+                <Flex align={'center'}>
+                  <Center
+                    border={'1.5px solid #E4E4E7'}
+                    borderRadius={'6px'}
+                    bg="#fff"
+                    w={'52.5px'}
+                    h={'36px'}
+                    mr={'12px'}
                   >
-                    <TagLabel>{t('Default')}</TagLabel>
-                  </Tag>
-                )}
-                {item.lastPaymentStatus.toLowerCase() === 'failed' && (
-                  <Tag
-                    variant={'outline'}
-                    size={'md'}
-                    colorScheme={'red'}
-                    borderRadius={'full'}
-                    bg={'#FEF2F2'}
-                  >
-                    <TagLabel>{t('NotAvailable')}</TagLabel>
-                  </Tag>
-                )}
-              </Flex>
-              <Popover>
-                <PopoverTrigger>
-                  <IconButton aria-label="More" icon={<Ellipsis />} variant={'ghost'} />
-                </PopoverTrigger>
-                <PopoverContent
-                  width={'180px'}
-                  borderRadius={'xl'}
-                  shadow={'0px 4px 12px 0px #00000014'}
-                >
-                  <PopoverBody p={'8px'}>
-                    <Tooltip
-                      hasArrow
-                      label={
-                        item.default
-                          ? t('DefaultToDefault')
-                          : item.lastPaymentStatus.toLowerCase() === 'failed'
-                          ? t('FailedToDefault')
-                          : ''
-                      }
+                    <MyIcon
+                      name={item.cardBrand.toLowerCase() as 'mastercard' | 'visa'}
+                      maxH="36px"
+                      width="36px"
+                    />
+                  </Center>
+                  <Text fontSize={'16px'} fontWeight={600} lineHeight={'24px'} mr={'8px'}>
+                    {payMethod === PayMethod.card ? item.cardBrand : t(payMethod)}
+                  </Text>
+                  <Text fontSize={'16px'} fontWeight={600} lineHeight={'24px'} mr={'12px'}>
+                    {item.cardNo}
+                  </Text>
+                  {item.default && (
+                    <Tag
+                      variant={'subtle'}
+                      size={'md'}
+                      colorScheme={'gray'}
+                      borderRadius={'full'}
+                      mr={'8px'}
                     >
-                      <Button
-                        onClick={() => handleSetDefault(item.id)}
-                        variant={'ghost'}
-                        w={'100%'}
-                        justifyContent={'flex-start'}
-                        isDisabled={
-                          item.default || item.lastPaymentStatus.toLowerCase() === 'failed'
+                      <TagLabel>{t('Default')}</TagLabel>
+                    </Tag>
+                  )}
+                  {item.lastPaymentStatus.toLowerCase() === 'failed' && (
+                    <Tag
+                      variant={'outline'}
+                      size={'md'}
+                      colorScheme={'red'}
+                      borderRadius={'full'}
+                      bg={'#FEF2F2'}
+                    >
+                      <TagLabel>{t('NotAvailable')}</TagLabel>
+                    </Tag>
+                  )}
+                </Flex>
+                <Popover>
+                  <PopoverTrigger>
+                    <IconButton aria-label="More" icon={<Ellipsis />} variant={'ghost'} />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    width={'180px'}
+                    borderRadius={'xl'}
+                    shadow={'0px 4px 12px 0px #00000014'}
+                  >
+                    <PopoverBody p={'8px'}>
+                      <Tooltip
+                        hasArrow
+                        label={
+                          item.default
+                            ? t('DefaultToDefault')
+                            : item.lastPaymentStatus.toLowerCase() === 'failed'
+                            ? t('FailedToDefault')
+                            : ''
                         }
                       >
-                        <Settings size={'16px'} />
-                        <Text fontSize={'14px'} lineHeight={'20px'} ml={'8px'}>
-                          {t('SetDefault')}
-                        </Text>
-                      </Button>
-                    </Tooltip>
-                    <Tooltip
-                      hasArrow
-                      label={
-                        item.default
-                          ? t('DeleteDefault')
-                          : cardList.length === 1
-                          ? t('DeleteOnlyOne')
-                          : ''
-                      }
-                    >
-                      <Button
-                        onClick={() => onOpen(item.id)}
-                        variant={'ghost'}
-                        w={'100%'}
-                        justifyContent={'flex-start'}
-                        isDisabled={item.default || cardList.length === 1}
+                        <Button
+                          onClick={() => handleSetDefault(item.id)}
+                          variant={'ghost'}
+                          w={'100%'}
+                          justifyContent={'flex-start'}
+                          isDisabled={
+                            item.default || item.lastPaymentStatus.toLowerCase() === 'failed'
+                          }
+                        >
+                          <Settings size={'16px'} />
+                          <Text fontSize={'14px'} lineHeight={'20px'} ml={'8px'}>
+                            {t('SetDefault')}
+                          </Text>
+                        </Button>
+                      </Tooltip>
+                      <Tooltip
+                        hasArrow
+                        label={
+                          item.default
+                            ? t('DeleteDefault')
+                            : cardList.length === 1
+                            ? t('DeleteOnlyOne')
+                            : ''
+                        }
                       >
-                        <Trash2 size={'16px'} />
-                        <Text fontSize={'14px'} lineHeight={'20px'} ml={'8px'}>
+                        <Button
+                          onClick={() => onOpen(item.id)}
+                          variant={'ghost'}
+                          w={'100%'}
+                          justifyContent={'flex-start'}
+                          isDisabled={item.default || cardList.length === 1}
+                        >
+                          <Trash2 size={'16px'} />
+                          <Text fontSize={'14px'} lineHeight={'20px'} ml={'8px'}>
+                            {t('Delete')}
+                          </Text>
+                        </Button>
+                      </Tooltip>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+                <AlertDialog
+                  isOpen={isOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onClose}
+                  isCentered
+                >
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        {t('DeleteCard')}
+                      </AlertDialogHeader>
+
+                      <AlertDialogBody>{t('DeleteCardConfirm')}</AlertDialogBody>
+
+                      <AlertDialogFooter>
+                        <Button mt={'16px'} colorScheme="red" onClick={onDelete}>
                           {t('Delete')}
-                        </Text>
-                      </Button>
-                    </Tooltip>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-              <AlertDialog
-                isOpen={isOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onClose}
-                isCentered
-              >
-                <AlertDialogOverlay>
-                  <AlertDialogContent>
-                    <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                      {t('DeleteCard')}
-                    </AlertDialogHeader>
-
-                    <AlertDialogBody>{t('DeleteCardConfirm')}</AlertDialogBody>
-
-                    <AlertDialogFooter>
-                      <Button mt={'16px'} colorScheme="red" onClick={onDelete}>
-                        {t('Delete')}
-                      </Button>
-                      <Button
-                        mt={'16px'}
-                        variant={'outline'}
-                        ml={3}
-                        ref={cancelRef}
-                        onClick={onClose}
-                      >
-                        {t('Cancel')}
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialogOverlay>
-              </AlertDialog>
-            </Flex>
-          ))
+                        </Button>
+                        <Button
+                          mt={'16px'}
+                          variant={'outline'}
+                          ml={3}
+                          ref={cancelRef}
+                          onClick={onClose}
+                        >
+                          {t('Cancel')}
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
+              </Flex>
+            );
+          })
         ) : (
           <Center borderRadius={'xl'} border={'1px dashed #D4D4D4'}>
             <Empty

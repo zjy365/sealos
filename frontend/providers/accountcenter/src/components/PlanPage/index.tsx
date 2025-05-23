@@ -111,7 +111,6 @@ export default function PlanPage() {
             currentPlan={currentPlan}
             freePlan={freePlan}
             lastTransaction={lastTransactionResponse?.transcation}
-            onPaySuccess={refresh}
           />
         ) : null}
         <CreditsAlert
@@ -120,12 +119,10 @@ export default function PlanPage() {
           currentPlan={currentPlan}
           freePlan={freePlan}
           lastTransaction={lastTransactionResponse?.transcation}
-          onPaySuccess={refresh}
         />
         <PlanAlert
           plans={plans}
           lastTransaction={lastTransactionResponse?.transcation}
-          onPaySuccess={refresh}
           includeCancelling
         />
         <CurrentPlan

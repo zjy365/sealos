@@ -71,7 +71,10 @@ export const IconMap = {
   job: require('./icons/job.svg').default,
   objectStorage: require('./icons/objectStorage.svg').default,
   terminal: require('./icons/terminal.svg').default,
-  payPal: require('./icons/payPal.svg').default
+  payPal: require('./icons/payPal.svg').default,
+  alipay_cn: require('./icons/alipay.svg').default,
+  // 支付方式中用不要改名字
+  alipay_hk: require('./icons/alipayHK.svg').default
 };
 
 const MyIcon = ({

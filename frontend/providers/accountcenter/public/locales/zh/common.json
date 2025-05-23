@@ -378,5 +378,11 @@
   "time": "时间",
   "usage": "用量",
   "viewDetails": "查看详情",
-  "workspace": "工作空间"
+  "workspace": "工作空间",
+  "ALIPAY_CN": "支付宝",
+  "ALIPAY_HK": "支付宝香港",
+  "AddNewPaymentMethod": "新增支付方式",
+  "UseExistingPaymentMethod": "使用已有支付方式",
+  "PleaseSelectPaymentMethod": "请选择支付方式",
+  "ChoosePaymentMethod": "选择支付方式"
 }

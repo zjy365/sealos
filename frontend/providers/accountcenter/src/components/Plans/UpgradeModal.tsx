@@ -14,22 +14,17 @@ import PlanSelector, { PlanSelectorProps } from './PlanSelector';
 import CheckoutOrder, { CheckoutData } from '../CheckoutOrder';
 import useGetPlanOrderSummary from '../CheckoutOrder/useGetPlanOrderSummary';
 import { getUpgradePlanAmount, updatePlan } from '@/api/plan';
-import useToastAPIResult from '@/hooks/useToastAPIResult';
+import { useRouter } from 'next/router';
+import urls from '@/utils/urls';
 
 export interface UpgradePlanModalProps extends Omit<PlanSelectorProps, 'minHeight'> {
   isOpen: boolean;
   onClose: () => void;
-  onPaySuccess?: () => void;
 }
-const UpgradePlanModal: FC<UpgradePlanModalProps> = ({
-  isOpen,
-  onClose,
-  onPaySuccess,
-  ...rest
-}) => {
+const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest }) => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
-  const { toastSuccess } = useToastAPIResult();
+  const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<TPlanApiResponse | null>(null);
   const getPlanOrderSummary = useGetPlanOrderSummary();
   const handleCheckout = (data: CheckoutData) => {
@@ -54,9 +49,10 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({
     }
   };
   const handlePaySuccess = () => {
-    toastSuccess(t('PaySuccess'));
-    onClose();
-    onPaySuccess?.();
+    router.push({
+      pathname: urls.page.plan,
+      search: '?checkUpgrade'
+    });
   };
   const renderStep = () => {
     if (step === 1) {
@@ -96,6 +92,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({
             onCheckout={handleCheckout}
             autoRedirectToPay={isOpen}
             onPaySuccess={handlePaySuccess}
+            isSubscription
           />
         </Box>
       );
