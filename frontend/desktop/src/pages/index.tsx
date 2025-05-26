@@ -206,13 +206,6 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
       semData.additionalInfo = { semKeyword: k as string };
     }
     setUserSemData(semData);
-    if (!sealos_cloud_domain?.startsWith('ap-northeast-1')) return;
-    message({
-      title: t('massive_usage_notify'),
-      status: 'info',
-      duration: 30000,
-      isClosable: true
-    });
   }, []);
 
   // handle workspaceInvite
