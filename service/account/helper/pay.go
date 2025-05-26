@@ -68,6 +68,25 @@ func ParseCardOperationReq(c *gin.Context) (*CardOperationReq, error) {
 	return req, nil
 }
 
+type OrderOperationReq struct {
+
+	// @Summary Authentication information
+	// @Description Authentication information
+	AuthBase `json:",inline" bson:",inline"`
+
+	// @Summary TradeNo
+	// @Description TradeNo
+	TradeNo string `json:"tradeNo" bson:"tradeNo"`
+}
+
+func ParseOrderOperationReq(c *gin.Context) (*OrderOperationReq, error) {
+	req := &OrderOperationReq{}
+	if err := c.ShouldBindJSON(req); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
 type SubscriptionOperatorReq struct {
 	// @Summary Authentication information
 	// @Description Authentication information
@@ -101,8 +120,10 @@ const (
 	Downgrade PlanType = "downgrade"
 	Renewal   PlanType = "renewal"
 
-	CARD string = "CARD"
+	CARD            string = "CARD"
 	PAYPAL_CHECKOUT string = "PAYPAL_CHECKOUT"
+	ALIPAY_CN       string = "ALIPAY_CN"
+	ALIPAY_HK       string = "ALIPAY_HK"
 )
 
 func ParseSubscriptionOperatorReq(c *gin.Context) (*SubscriptionOperatorReq, error) {

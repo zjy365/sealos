@@ -218,3 +218,11 @@ func (c *CaptureResponse) Raw() []byte {
 	data, _ := json.Marshal(c)
 	return data
 }
+
+// AuthCode Notification 授权咨询的通知的结构体
+type AuthCodeNotification struct {
+	Result                  Result `json:"result"`
+	AuthCode                string `json:"authCode"`
+	AuthState               string `json:"authState"`
+	AuthorizationNotifyType string `json:"authorizationNotifyType"`
+}

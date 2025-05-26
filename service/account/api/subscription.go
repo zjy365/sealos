@@ -26,6 +26,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	responseAuth "github.com/alipay/global-open-sdk-go/com/alipay/api/response/auth"
 	responsePay "github.com/alipay/global-open-sdk-go/com/alipay/api/response/pay"
 	"github.com/google/uuid"
 	services "github.com/labring/sealos/service/pkg/pay"
@@ -412,7 +413,7 @@ func SetErrorResp(c *gin.Context, code int, h map[string]any) {
 }
 
 func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, subTransaction types.SubscriptionTransaction) {
-	if req.PayMethod != helper.CARD && req.PayMethod != helper.PAYPAL_CHECKOUT {
+	if req.PayMethod != helper.CARD && req.PayMethod != helper.ALIPAY_CN && req.PayMethod != helper.ALIPAY_HK {
 		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "invalid pay method"})
 		return
 	}
@@ -584,6 +585,7 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 
 	subTransaction.PayID = paymentOrderId
 	var paySvcResp *responsePay.AlipayPayResponse
+	var authConsultResp *responseAuth.AlipayAuthConsultResponse
 	var createPayHandler func(tx *gorm.DB) error
 	if req.CardID != nil {
 		createPayHandler = func(tx *gorm.DB) error {
@@ -603,6 +605,17 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 	} else {
 		createPayHandler = func(tx *gorm.DB) error {
 			var hErr error
+			if req.PayMethod == helper.ALIPAY_CN || req.PayMethod == helper.ALIPAY_HK {
+				// 首次 create alipay 授权接口
+				authConsultResp, err = dao.PaymentService.CreateAliPayAuthConsult(paymentReq)
+				if err != nil {
+					return fmt.Errorf("failed to get auth code: %w", err)
+				}
+				if authConsultResp.Result.ResultCode != SuccessStatus || authConsultResp.Result.ResultStatus != "S" {
+					return fmt.Errorf("auth consult result is not success: %#+v", authConsultResp.Result)
+				}
+				return nil
+			}
 			paySvcResp, hErr = dao.PaymentService.CreateNewSubscriptionPay(paymentReq)
 			if err != nil {
 				return fmt.Errorf("failed to create payment: %w", hErr)
@@ -629,28 +642,38 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 		}
 		return nil
 	}, func(tx *gorm.DB) error {
+		paymentRaw := types.PaymentRaw{
+			UserUID:   req.UserUID,
+			Amount:    subTransaction.Amount,
+			Method:    req.PayMethod,
+			RegionUID: dao.DBClient.GetLocalRegion().UID,
+			TradeNO:   paymentReq.RequestID,
+			//CodeURL:      paySvcResp.NormalUrl,
+			Type:         types.PaymentTypeSubscription,
+			ChargeSource: types.ChargeSourceNewCard,
+		}
+		if req.CardID != nil {
+			paymentRaw.CardUID = req.CardID
+		}
 		dErr := cockroach.CreatePaymentOrder(
 			tx, &types.PaymentOrder{
-				ID: paymentOrderId,
-				PaymentRaw: types.PaymentRaw{
-					UserUID:   req.UserUID,
-					Amount:    subTransaction.Amount,
-					Method:    req.PayMethod,
-					RegionUID: dao.DBClient.GetLocalRegion().UID,
-					TradeNO:   paymentReq.RequestID,
-					//CodeURL:      paySvcResp.NormalUrl,
-					Type:         types.PaymentTypeSubscription,
-					ChargeSource: types.ChargeSourceNewCard,
-				},
-				Status: types.PaymentOrderStatusPending,
+				ID:         paymentOrderId,
+				PaymentRaw: paymentRaw,
+				Status:     types.PaymentOrderStatusPending,
 			})
 		if dErr != nil {
 			return fmt.Errorf("failed to create payment order: %w", dErr)
 		}
 		return nil
 	}, createPayHandler, func(tx *gorm.DB) error {
-		if paySvcResp.NormalUrl != "" {
-			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentOrderId).Update("code_url", paySvcResp.NormalUrl).Error
+		var normalUrl string
+		if req.CardID == nil && (req.PayMethod == helper.ALIPAY_CN || req.PayMethod == helper.ALIPAY_HK) {
+			normalUrl = authConsultResp.NormalUrl
+		} else {
+			normalUrl = paySvcResp.NormalUrl
+		}
+		if normalUrl != "" {
+			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentOrderId).Update("code_url", normalUrl).Error
 			if dErr != nil {
 				logrus.Warnf("failed to update payment order code url: %v", dErr)
 			}
@@ -661,7 +684,13 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment order: ", err)})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"redirectUrl": paySvcResp.NormalUrl, "success": true})
+	var normalUrl string
+	if req.CardID == nil && (req.PayMethod == helper.ALIPAY_CN || req.PayMethod == helper.ALIPAY_HK) {
+		normalUrl = authConsultResp.NormalUrl
+	} else {
+		normalUrl = paySvcResp.NormalUrl
+	}
+	c.JSON(http.StatusOK, gin.H{"redirectUrl": normalUrl, "success": true})
 }
 
 func SubscriptionWithOutPay(c *gin.Context, req *helper.SubscriptionOperatorReq, subTransaction types.SubscriptionTransaction) {
@@ -703,6 +732,11 @@ func SubscriptionPayForBindCard(paymentReq services.PaymentRequest, req *helper.
 	}
 	if card.CardToken == "" {
 		return fmt.Errorf("card token is empty, please rebind card")
+	}
+
+	if card.CardBrand == helper.ALIPAY_CN || card.CardBrand == helper.ALIPAY_HK {
+		paymentReq.PaymentMethod = card.CardBrand
+		req.PayMethod = card.CardBrand
 	}
 
 	payment := types.Payment{

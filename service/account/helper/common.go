@@ -47,6 +47,7 @@ const (
 	PaymentGroup                = "/payment/v1alpha1"
 	CreatePay                   = "/pay"
 	Notify                      = "/notify"
+	AuthNotify                  = "/auth-notify"
 	SubscriptionUserInfo        = "/subscription/user-info"
 	SubscriptionPlanList        = "/subscription/plan-list"
 	SubscriptionLastTransaction = "/subscription/last-transaction"
@@ -61,6 +62,7 @@ const (
 	CreditsList                 = "/credits/list"
 	CreditsInfo                 = "/credits/info"
 	CreditsBonusDetails         = "/credits/bonus-details"
+	GetOrderInfo                = "/order"
 )
 
 const PayNotificationPath = PaymentGroup + Notify

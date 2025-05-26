@@ -18,6 +18,7 @@ import (
 
 	"github.com/google/uuid"
 
+	responseAuth "github.com/alipay/global-open-sdk-go/com/alipay/api/response/auth"
 	responsePay "github.com/alipay/global-open-sdk-go/com/alipay/api/response/pay"
 
 	services "github.com/labring/sealos/service/pkg/pay"
@@ -33,6 +34,8 @@ const (
 	SuccessStatus    = "SUCCESS"
 	PaymentInProcess = "PAYMENT_IN_PROCESS"
 )
+
+var supportedPaymentMethods = []string{"CARD", "PAYPAL_CHECKOUT", "ALIPAY_CN", "ALIPAY_HK"}
 
 // CreateCardPay creates a payment
 // @Summary Create a payment
@@ -54,7 +57,14 @@ func CreateCardPay(c *gin.Context) {
 		return
 	}
 
-	if req.Method != "CARD" && req.Method != "PAYPAL_CHECKOUT" {
+	isValidMethod := false
+	for _, method := range supportedPaymentMethods {
+		if req.Method == method {
+			isValidMethod = true
+			break
+		}
+	}
+	if !isValidMethod {
 		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": fmt.Sprint("unsupported payment method: ", req.Method)})
 		return
 	}
@@ -89,7 +99,7 @@ func CreateCardPay(c *gin.Context) {
 		DeviceTokenID:    c.GetHeader("Device-Token-ID"),
 	}
 	var paySvcResp *responsePay.AlipayPayResponse
-
+	var authConsultResp *responseAuth.AlipayAuthConsultResponse
 	var createPayHandler func(tx *gorm.DB) error
 	if req.BindCardInfo != nil {
 		createPayHandler = func(tx *gorm.DB) error {
@@ -108,6 +118,17 @@ func CreateCardPay(c *gin.Context) {
 		}
 	} else {
 		createPayHandler = func(tx *gorm.DB) error {
+			if req.Method == helper.ALIPAY_CN || req.Method == helper.ALIPAY_HK {
+				// 首次 create alipay 授权接口
+				authConsultResp, err = dao.PaymentService.CreateAliPayAuthConsult(paymentReq)
+				if err != nil {
+					return fmt.Errorf("failed to get auth code: %w", err)
+				}
+				if authConsultResp.Result.ResultCode != SuccessStatus || authConsultResp.Result.ResultStatus != "S" {
+					return fmt.Errorf("auth consult result is not success: %#+v", authConsultResp.Result)
+				}
+				return nil
+			}
 			paySvcResp, err = dao.PaymentService.CreateNewPayment(paymentReq)
 			if err != nil {
 				return fmt.Errorf("failed to create payment: %w", err)
@@ -120,24 +141,35 @@ func CreateCardPay(c *gin.Context) {
 	}
 
 	err = dao.DBClient.GlobalTransactionHandler(func(tx *gorm.DB) error {
+		paymentRaw := types.PaymentRaw{
+			UserUID:      req.UserUID,
+			Amount:       req.Amount,
+			Method:       req.Method,
+			RegionUID:    dao.DBClient.GetLocalRegion().UID,
+			TradeNO:      paymentReq.RequestID,
+			CreatedAt:    time.Now().UTC(),
+			Type:         types.PaymentTypeAccountRecharge,
+			ChargeSource: types.ChargeSourceNewCard,
+		}
+		if req.BindCardInfo != nil {
+			paymentRaw.CardUID = &req.BindCardInfo.CardID
+		}
 		return tx.Model(&types.PaymentOrder{}).Create(&types.PaymentOrder{
-			ID: paymentOrderId,
-			PaymentRaw: types.PaymentRaw{
-				UserUID:      req.UserUID,
-				Amount:       req.Amount,
-				Method:       req.Method,
-				RegionUID:    dao.DBClient.GetLocalRegion().UID,
-				TradeNO:      paymentReq.RequestID,
-				CreatedAt:    time.Now().UTC(),
-				Type:         types.PaymentTypeAccountRecharge,
-				ChargeSource: types.ChargeSourceNewCard,
-			},
-			Status: types.PaymentOrderStatusPending,
+			ID:         paymentOrderId,
+			PaymentRaw: paymentRaw,
+			Status:     types.PaymentOrderStatusPending,
 		}).Error
 	}, createPayHandler, func(tx *gorm.DB) error {
-		if paySvcResp.NormalUrl != "" {
+		var normalUrl string
+		// 只有首次才需要auth consult，第二次带有cardInfo，直接就是走普通的支付
+		if req.BindCardInfo == nil && (req.Method == helper.ALIPAY_CN || req.Method == helper.ALIPAY_HK) {
+			normalUrl = authConsultResp.NormalUrl
+		} else {
+			normalUrl = paySvcResp.NormalUrl
+		}
+		if normalUrl != "" {
 			//Set payment order normalurl with paymentID
-			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentOrderId).Update("code_url", paySvcResp.NormalUrl).Error
+			dErr := tx.Model(&types.PaymentOrder{}).Where("id = ?", paymentOrderId).Update("code_url", normalUrl).Error
 			if dErr != nil {
 				logrus.Warnf("failed to update payment order code url: %v", dErr)
 			}
@@ -147,8 +179,15 @@ func CreateCardPay(c *gin.Context) {
 	if err != nil {
 		SetErrorResp(c, http.StatusConflict, gin.H{"error": fmt.Sprint("failed to create payment: ", err)})
 	} else {
+		var normalUrl string
+		if req.BindCardInfo == nil && (req.Method == helper.ALIPAY_CN || req.Method == helper.ALIPAY_HK) {
+			normalUrl = authConsultResp.NormalUrl
+		} else {
+			normalUrl = paySvcResp.NormalUrl
+		}
 		c.JSON(http.StatusOK, gin.H{
-			"redirectUrl": paySvcResp.NormalUrl,
+			"redirectUrl": normalUrl,
+			"tradeNo":     paymentReq.RequestID,
 			"success":     true,
 		})
 	}
@@ -360,7 +399,13 @@ func processPaymentResultWithHandler(c *gin.Context, notifyType string, notifyRe
 		}
 		return err
 	}
-	if notifyType != types.NotifyTypeCaptureResult {
+
+	var order types.PaymentOrder
+	if err := dao.DBClient.GetGlobalDB().Model(&types.PaymentOrder{}).Where(types.PaymentOrder{PaymentRaw: types.PaymentRaw{TradeNO: paymentRequestID}}).Find(&order).Error; err != nil {
+		return fmt.Errorf("failed to get payment order: %v", err)
+	}
+
+	if notifyType != types.NotifyTypeCaptureResult && order.Method != helper.ALIPAY_CN && order.Method != helper.ALIPAY_HK {
 		return nil
 	}
 	resp, err := dao.PaymentService.GetPayment(paymentRequestID, paymentID)
@@ -385,12 +430,19 @@ func processPaymentResultWithHandler(c *gin.Context, notifyType string, notifyRe
 		return fmt.Errorf("payment result is not SUCCESS: %#+v", resp.Result)
 	}
 
-	card := types.CardInfo{
-		ID:                   uuid.New(),
-		CardNo:               resp.PaymentResultInfo.CardNo,
-		CardBrand:            resp.PaymentResultInfo.CardBrand,
-		CardToken:            resp.PaymentResultInfo.CardToken,
-		NetworkTransactionID: resp.PaymentResultInfo.NetworkTransactionId,
+	var card types.CardInfo = types.CardInfo{}
+	if (order.Method == helper.ALIPAY_CN || order.Method == helper.ALIPAY_HK) && order.CardUID != nil {
+		if err := dao.DBClient.GetGlobalDB().Model(&types.CardInfo{}).Where(types.CardInfo{ID: *order.CardUID}).Find(&card).Error; err != nil {
+			return fmt.Errorf("failed to get card info: %v", err)
+		}
+	} else {
+		card = types.CardInfo{
+			ID:                   uuid.New(),
+			CardNo:               resp.PaymentResultInfo.CardNo,
+			CardBrand:            resp.PaymentResultInfo.CardBrand,
+			CardToken:            resp.PaymentResultInfo.CardToken,
+			NetworkTransactionID: resp.PaymentResultInfo.NetworkTransactionId,
+		}
 	}
 
 	if err = paySuccessHandler(paymentRequestID, card); err != nil {

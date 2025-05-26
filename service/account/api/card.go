@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -44,10 +45,18 @@ func ListCard(c *gin.Context) {
 
 	var _cards []cardInfo
 	for i := range cards {
+		cardNo := cards[i].CardNo
+		if cards[i].CardBrand == helper.ALIPAY_CN || cards[i].CardBrand == helper.ALIPAY_HK {
+			if atIndex := strings.Index(cardNo, "@"); atIndex != -1 {
+				prefix := cardNo[:min(4, atIndex)]
+				suffix := cardNo[atIndex:]
+				cardNo = prefix + "********" + suffix
+			}
+		}
 		_cards = append(_cards, cardInfo{
 			ID:                cards[i].ID,
 			UserUID:           cards[i].UserUID,
-			CardNo:            cards[i].CardNo,
+			CardNo:            cardNo,
 			CardBrand:         cards[i].CardBrand,
 			CreatedAt:         cards[i].CreatedAt,
 			Default:           cards[i].Default,

@@ -74,12 +74,14 @@ func RegisterPayRouter() {
 		POST(helper.AdminFlushDebtResourceStatus, api.AdminFlushDebtResourceStatus)
 	paymentGroup := router.Group(helper.PaymentGroup).
 		POST(helper.CreatePay, api.CreateCardPay).
+		POST(helper.AuthNotify, api.AlipayAuthNotify).
 		POST(helper.Notify, api.NewPayNotifyHandler).
 		POST(helper.CardList, api.ListCard).
 		POST(helper.CardDelete, api.DeleteCard).
 		POST(helper.CardSetDefault, api.SetDefaultCard).
 		POST(helper.CreditsInfo, api.GetCreditsInfo).
-		POST(helper.CreditsBonusDetails, api.GetBonusDetails)
+		POST(helper.CreditsBonusDetails, api.GetBonusDetails).
+		POST(helper.GetOrderInfo, api.GetOrderInfo)
 
 	if os.Getenv(helper.EnvSubscriptionEnabled) == "true" {
 		paymentGroup.POST(helper.SubscriptionUserInfo, api.GetSubscriptionUserInfo).

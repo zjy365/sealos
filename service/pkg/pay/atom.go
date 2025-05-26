@@ -2,16 +2,20 @@ package services
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/alipay/global-open-sdk-go/com/alipay/api/tools"
 
 	"github.com/labring/sealos/controllers/pkg/types"
+	"github.com/labring/sealos/service/account/helper"
 
 	defaultAlipayClient "github.com/alipay/global-open-sdk-go/com/alipay/api"
 	"github.com/alipay/global-open-sdk-go/com/alipay/api/model"
+	"github.com/alipay/global-open-sdk-go/com/alipay/api/request/auth"
 	"github.com/alipay/global-open-sdk-go/com/alipay/api/request/pay"
+	responseAuth "github.com/alipay/global-open-sdk-go/com/alipay/api/response/auth"
 	responsePay "github.com/alipay/global-open-sdk-go/com/alipay/api/response/pay"
 	"github.com/google/uuid"
 )
@@ -53,11 +57,11 @@ func (s *AtomPaymentService) GenSign(httpMethod string, path string, reqTime str
 }
 
 func (s *AtomPaymentService) CreateNewPayment(req PaymentRequest) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE", s.PaymentNotifyURL+"/payment/v1alpha1/notify")
+	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE&tradeNo="+req.RequestID, s.PaymentNotifyURL+"/payment/v1alpha1/notify")
 }
 
 func (s *AtomPaymentService) CreatePaymentWithCard(req PaymentRequest, card *types.CardInfo) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createCardPaymentMethod(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE", s.PaymentNotifyURL+"/payment/v1alpha1/notify")
+	return s.createPaymentWithMethod(req, s.createCardPaymentMethod(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE&tradeNo="+req.RequestID, s.PaymentNotifyURL+"/payment/v1alpha1/notify")
 }
 
 func (s *AtomPaymentService) CreateNewSubscriptionPay(req PaymentRequest) (*responsePay.AlipayPayResponse, error) {
@@ -66,6 +70,26 @@ func (s *AtomPaymentService) CreateNewSubscriptionPay(req PaymentRequest) (*resp
 
 func (s *AtomPaymentService) CreateSubscriptionPayWithCard(req PaymentRequest, card *types.CardInfo) (*responsePay.AlipayPayResponse, error) {
 	return s.createPaymentWithMethod(req, s.CreateSubscriptionPay(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
+}
+
+func (s *AtomPaymentService) CreateAliPayAuthConsult(req PaymentRequest) (*responseAuth.AlipayAuthConsultResponse, error) {
+	request, authConsultRequest := auth.NewAlipayAuthConsultRequest()
+	paymentType := "ACCOUNT_RECHARGE"
+	if req.GoodsID == os.Getenv(helper.ENVAtomSubscriptionGoodsID) {
+		paymentType = "SUBSCRIPTION"
+	}
+	authConsultRequest.AuthRedirectUrl = s.PaymentRedirectURL + "/?paymentType=" + paymentType + "&tradeNo=" + req.RequestID
+	authConsultRequest.AuthState = "rcc-" + req.RequestID
+	authConsultRequest.CustomerBelongsTo = model.CustomerBelongsTo(req.PaymentMethod)
+	authConsultRequest.Scopes = []model.ScopeType{model.ScopeTypeAgreementPay}
+	authConsultRequest.TerminalType = model.WEB
+
+	// 执行授权咨询请求
+	execute, err := s.Client.Execute(request)
+	if err != nil {
+		return nil, err
+	}
+	return execute.(*responseAuth.AlipayAuthConsultResponse), nil
 }
 
 func (s *AtomPaymentService) GetPayment(paymentRequestID, paymentID string) (*responsePay.AlipayPayQueryResponse, error) {
@@ -106,14 +130,20 @@ func (s *AtomPaymentService) createPaymentWithMethod(req PaymentRequest, method 
 	// TODO 设置其他必要信息
 	request.PaymentRedirectUrl = redirectPath
 	request.PaymentNotifyUrl = notifyPath
-	request.PaymentFactor = &model.PaymentFactor{
-		IsAuthorization: true,
-		CaptureMode:     "AUTOMATIC",
+	if req.PaymentMethod != helper.ALIPAY_CN && req.PaymentMethod != helper.ALIPAY_HK {
+		request.PaymentFactor = &model.PaymentFactor{
+			IsAuthorization: true,
+			CaptureMode:     "AUTOMATIC",
+		}
+		request.SettlementStrategy = &model.SettlementStrategy{
+			SettlementCurrency: req.Currency,
+		}
 	}
-	request.SettlementStrategy = &model.SettlementStrategy{
-		SettlementCurrency: req.Currency,
+	if req.PaymentMethod == helper.ALIPAY_CN || req.PaymentMethod == helper.ALIPAY_HK {
+		request.ProductCode = model.AGREEMENT_PAYMENT
+	} else {
+		request.ProductCode = model.CASHIER_PAYMENT
 	}
-	request.ProductCode = model.CASHIER_PAYMENT
 
 	// 执行支付请求
 	execute, err := s.Client.Execute(payRequest)
@@ -172,6 +202,12 @@ func (s *AtomPaymentService) createCardPaymentMethod(paymentMethod string, card 
 			PaymentMethodType: paymentMethod,
 		}
 	}
+	if paymentMethod == helper.ALIPAY_CN || paymentMethod == helper.ALIPAY_HK {
+		return &model.PaymentMethod{
+			PaymentMethodType: paymentMethod,
+			PaymentMethodId:   card.CardToken,
+		}
+	}
 	return &model.PaymentMethod{
 		PaymentMethodType: paymentMethod,
 		PaymentMethodMetaData: map[string]any{
@@ -189,6 +225,12 @@ func (s *AtomPaymentService) CreateSubscriptionPay(paymentMethod string, card *t
 	if paymentMethod == "PAYPAL_CHECKOUT" {
 		return &model.PaymentMethod{
 			PaymentMethodType: paymentMethod,
+		}
+	}
+	if paymentMethod == helper.ALIPAY_CN || paymentMethod == helper.ALIPAY_HK {
+		return &model.PaymentMethod{
+			PaymentMethodType: paymentMethod,
+			PaymentMethodId:   card.CardToken,
 		}
 	}
 	return &model.PaymentMethod{
