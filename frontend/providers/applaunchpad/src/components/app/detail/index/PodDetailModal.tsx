@@ -249,41 +249,45 @@ const Logs = ({
                 Events
               </Text>
 
-              <Box flex={'1 0 0'} h={0} overflowY={'auto'}>
-                {events.map((event, i) => (
-                  <Box
-                    key={event.id}
-                    pl={6}
-                    pb={6}
-                    ml={4}
-                    borderLeft={`2px solid ${i === events.length - 1 ? 'transparent' : '#DCE7F1'}`}
-                    position={'relative'}
-                    _before={{
-                      content: '""',
-                      position: 'absolute',
-                      left: '-6.5px',
-                      w: '8px',
-                      h: '8px',
-                      borderRadius: '8px',
-                      backgroundColor: '#fff',
-                      border: '2px solid',
-                      borderColor: event.type === 'Warning' ? '#D92D20' : '#039855'
-                    }}
-                  >
-                    <Flex lineHeight={1} mb={2} alignItems={'center'}>
-                      <Box fontWeight={'bold'}>
-                        {event.reason},&ensp;Last Occur: {event.lastTime}
-                      </Box>
-                      <Box ml={2} color={'blackAlpha.700'}>
-                        First Seen: {event.firstTime}
-                      </Box>
-                      <Box ml={2} color={'blackAlpha.700'}>
-                        count: {event.count}
-                      </Box>
-                    </Flex>
-                    <Box color={'blackAlpha.700'}>{event.message}</Box>
-                  </Box>
-                ))}
+              <Box flex={'1 0 0'} pt={4} overflowY={'auto'}>
+                {events.map((event, i) => {
+                  return (
+                    <Box
+                      key={event.id}
+                      pl={6}
+                      pb={6}
+                      ml={4}
+                      borderLeft={`2px solid ${
+                        i === events.length - 1 ? 'transparent' : '#DCE7F1'
+                      }`}
+                      position={'relative'}
+                      _before={{
+                        content: '""',
+                        position: 'absolute',
+                        left: '-6.5px',
+                        w: '8px',
+                        h: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        border: '2px solid',
+                        borderColor: event.type === 'Warning' ? '#D92D20' : '#039855'
+                      }}
+                    >
+                      <Flex lineHeight={1} mb={2} alignItems={'center'}>
+                        <Box fontWeight={'bold'}>
+                          {event.reason},&ensp;Last Occur: {event.lastTime}
+                        </Box>
+                        <Box ml={2} color={'blackAlpha.700'}>
+                          First Seen: {event.firstTime}
+                        </Box>
+                        <Box ml={2} color={'blackAlpha.700'}>
+                          count: {event.count}
+                        </Box>
+                      </Flex>
+                      <Box color={'blackAlpha.700'}>{event.message}</Box>
+                    </Box>
+                  );
+                })}
                 {events.length === 0 && !isLoading && (
                   <Flex
                     alignItems={'center'}

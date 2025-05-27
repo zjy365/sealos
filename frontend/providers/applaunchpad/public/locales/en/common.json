@@ -343,5 +343,11 @@
   "Network Configuration Tip": "TCP and UDP ports will be allocated after deployment.",
   "nodePortLimit": "Free plan provides only 1 NodePort, please upgrade to Hobby or Pro.",
   "learnMore": "Learn more",
-  "Hobby/Pro": "Hobby/Pro"
+  "Hobby/Pro": "Hobby/Pro",
+  "deploying": "Deploying",
+  "redeploy": "Redeploy",
+  "viewDashboard": "View Dashboard",
+  "deploymentProcess": "Deployment Process",
+  "deployFailed": "Please go back to configuration page to fix the issue",
+  "deploymentInProgress": "Deployment is in progress"
 }

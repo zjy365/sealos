@@ -172,11 +172,12 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
             appName,
             stateFulSetYaml: yamlList.find((item) => item.filename === 'statefulset.yaml')?.value
           });
+          router.replace(`/app/detail?name=${formHook.getValues('appName')}`);
         } else {
           await postDeployApp(parsedNewYamlList);
+          // 创建时跳转到部署进度页面
+          router.replace(`/app/deploying?name=${formHook.getValues('appName')}`);
         }
-
-        router.replace(`/app/detail?name=${formHook.getValues('appName')}`);
 
         toast({
           title: t(applySuccess),
