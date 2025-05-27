@@ -22,7 +22,7 @@ import { CopyIcon, DocsIcon, DownloadIcon, LogoutIcon, NotificationIcon, Track }
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import LangSelectSimple from '../LangSelect/simple';
 import { blurBackgroundStyles } from '../desktop_content';
 import RegionToggle from '../region/RegionToggle';
@@ -116,6 +116,12 @@ export default function Account() {
     refetchOnWindowFocus: false
   });
 
+  const userPlan = useMemo(() => {
+    // DEBUG
+    // return 'Pro';
+    return plan?.data?.subscription?.subscriptionPlan?.name || 'Free';
+  }, [plan]);
+
   return (
     <Box position={'relative'} flex={1}>
       <Flex justifyContent={'space-between'} alignItems={'center'} height={'100%'} zIndex={3}>
@@ -124,7 +130,7 @@ export default function Account() {
             <Image src={'/logo.svg'} alt="Logo" width="32px" height="32px" />
           </Center>
 
-          <RegionToggle />
+          <RegionToggle userPlan={userPlan} />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="8"
@@ -168,7 +174,7 @@ export default function Account() {
               />
             </Flex>
           )} */}
-          {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
+          {
             <Track.Click eventName={Track.events.clickUpgradeInDesktop}>
               <Box
                 cursor={'pointer'}
@@ -198,13 +204,30 @@ export default function Account() {
                   });
                 }}
               >
-                <Sparkles size={16} color="#1C4EF5" />
-                <Text color="#1C4EF5" fontWeight="medium">
-                  {t('cc:upgrade_plan')}
+                <Sparkles
+                  size={16}
+                  color={
+                    userPlan === 'Free' ? '#1C4EF5' : userPlan === 'Pro' ? '#5856F5' : '#2778FD'
+                  }
+                  fill={userPlan === 'Free' ? 'none' : userPlan === 'Pro' ? '#5856F5' : '#2778FD'}
+                />
+                <Text
+                  color={
+                    userPlan === 'Free' ? '#1C4EF5' : userPlan === 'Pro' ? 'transparent' : '#2778FD'
+                  }
+                  bg={
+                    userPlan === 'Pro'
+                      ? 'linear-gradient(270.48deg, #1C4EF5 3.93%, #6F59F5 80.66%)'
+                      : ''
+                  }
+                  bgClip={userPlan === 'Pro' ? 'text' : ''}
+                  fontWeight="medium"
+                >
+                  {userPlan === 'Free' ? t('cc:upgrade_plan') : userPlan}
                 </Text>
               </Box>
             </Track.Click>
-          )}
+          }
           <Center
             className="guide-button"
             cursor={'pointer'}
@@ -294,9 +317,7 @@ export default function Account() {
                   mb="16px"
                   _hover={{ bg: '#1677FF' }}
                 >
-                  {(
-                    plan?.data?.subscription?.subscriptionPlan?.name || 'free'
-                  )?.toLocaleUpperCase()}
+                  {userPlan?.toLocaleUpperCase()}
                 </Button>
                 <Text color={'#18181B'} fontSize="14px" fontWeight="500" mb="8px">
                   {user?.name}

@@ -4,6 +4,7 @@ export type Region = {
   uid: string;
   location: string;
   description: {
+    isFree: boolean;
     prices: {
       name: string;
       unit_price: number;

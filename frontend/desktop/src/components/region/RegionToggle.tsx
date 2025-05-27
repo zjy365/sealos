@@ -12,7 +12,7 @@ import { useMemo } from 'react';
 import { CheckIcon, ChevronDown } from 'lucide-react';
 import { useConfigStore } from '@/stores/config';
 
-export default function RegionToggle() {
+export default function RegionToggle({ userPlan }: { userPlan: string }) {
   const disclosure = useDisclosure();
   const { setWorkSpaceId, session } = useSessionStore();
   const { cloudConfig } = useConfigStore();
@@ -68,7 +68,27 @@ export default function RegionToggle() {
             position={'relative'}
             gap={'8px'}
           >
-            <Text cursor={'pointer'}>{curRegion?.displayName}</Text>
+            <Text cursor={'pointer'}>
+              {curRegion?.displayName}
+              {curRegion?.description?.isFree === false && userPlan !== 'Free' && (
+                <Box
+                  display={'inline-block'}
+                  px={'8px'}
+                  py={'2px'}
+                  borderRadius={'100px'}
+                  color={'#FFF'}
+                  ml={'4px'}
+                  fontWeight={'500'}
+                  bg={
+                    userPlan === 'Pro'
+                      ? 'linear-gradient(270.48deg, #1C4EF5 3.93%, #6F59F5 80.66%)'
+                      : 'linear-gradient(270.48deg, #2778FD 3.93%, #829DFE 80.66%)'
+                  }
+                >
+                  {userPlan}
+                </Box>
+              )}
+            </Text>
             <Center
               bg={disclosure.isOpen ? '#FFF' : ''}
               transform={disclosure.isOpen ? 'rotate(-90deg)' : 'rotate(0deg)'}
