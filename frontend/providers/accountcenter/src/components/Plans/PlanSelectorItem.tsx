@@ -37,9 +37,9 @@ const buttonStyle: ButtonProps = {
   h: '40px'
 };
 // 控制 placeholder 的个数，设为 plan 中 featureTexts 的长度的最大值
-const featureTextsMinLength = 15;
+const featureTextsMinLength = 13;
 // 未展开前最多显示的条数
-const featureDefaultLength = 8;
+const featureDefaultLength = 6;
 const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   plan,
   currentPlan,
@@ -61,43 +61,43 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   });
   const featureTextsPlaceholders: { key: string; text: string }[] = [];
   const renderFeatureText = ({ key, text }: { key: string; text: string }, index: number) => {
-    if (key.startsWith('br-')) {
-      return <Box key={key} h="0px" borderBottom="1px dashed #E4E4E7" />;
-    }
     return (
-      <Flex
-        key={key}
-        gap="8px"
-        bg={hoverIndex === index ? '#F5F5F5' : ''}
-        rounded="2px"
-        visibility={text === '' ? 'hidden' : undefined}
-        alignItems="center"
-        _hover={{
-          bg: 'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
-        }}
-        onMouseEnter={() => setHoverIndex(index)}
-        onMouseLeave={() => setHoverIndex(-1)}
-      >
-        <Box flexShrink={0} mt="2px">
-          <Check width="16px" height="16px" stroke="#1C4EF5" strokeWidth="1.4px" />
-        </Box>
-        <Text lineHeight="20px">{text || 'placeholder'}</Text>
-        {key === 'nodeport-withIcon' && (
-          <Tooltip
-            label="Included Database public connection and Devbox SSH connection"
-            bg="white"
-            color="black"
-            borderRadius="8px"
-            boxShadow="0px 2px 8px rgba(0, 0, 0, 0.15)"
-            fontSize="14px"
-            placement="top"
-            fontWeight="400"
-            p="12px"
-          >
-            <Info width="16px" height="16px" />
-          </Tooltip>
-        )}
-      </Flex>
+      <>
+        <Flex
+          key={key}
+          gap="8px"
+          bg={hoverIndex === index ? '#F5F5F5' : ''}
+          rounded="2px"
+          visibility={text === '' ? 'hidden' : undefined}
+          alignItems="center"
+          _hover={{
+            bg: 'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
+          }}
+          onMouseEnter={() => setHoverIndex(index)}
+          onMouseLeave={() => setHoverIndex(-1)}
+        >
+          <Box flexShrink={0} mt="2px">
+            <Check width="16px" height="16px" stroke="#1C4EF5" strokeWidth="1.4px" />
+          </Box>
+          <Text lineHeight="20px">{text || 'placeholder'}</Text>
+          {key === 'nodeport-withIcon' && (
+            <Tooltip
+              label="Included Database public connection and Devbox SSH connection"
+              bg="white"
+              color="black"
+              borderRadius="8px"
+              boxShadow="0px 2px 8px rgba(0, 0, 0, 0.15)"
+              fontSize="14px"
+              placement="top"
+              fontWeight="400"
+              p="12px"
+            >
+              <Info width="16px" height="16px" />
+            </Tooltip>
+          )}
+        </Flex>
+        {key.endsWith('-withbr') && <Box key={key} h="0px" borderBottom="1px dashed #E4E4E7" />}
+      </>
     );
   };
   for (let i = 0; i < featureTextsMinLength - featureTexts.length; i++) {

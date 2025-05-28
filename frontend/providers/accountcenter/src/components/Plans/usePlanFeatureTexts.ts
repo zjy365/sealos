@@ -39,18 +39,18 @@ export function useGetPlanFeatureTexts() {
     if (isFree && maxResourceObject?.storage) {
       res.push({
         text: `${maxResourceObject.storage} ${t('DiskDesc')}`,
-        key: 'disk'
+        key: 'disk-withbr'
       });
     } else {
       res.push({
         text: `Unlimited ${t('DiskDesc')}`,
-        key: 'disk'
+        key: 'disk-withbr'
       });
     }
-    res.push({
-      text: '',
-      key: 'br-0'
-    });
+    // res.push({
+    //   text: '',
+    //   key: 'br-0'
+    // });
     const getCountText = (
       count: number,
       config: {
@@ -94,12 +94,12 @@ export function useGetPlanFeatureTexts() {
     });
     res.push({
       text: `${!isFree ? t('membersOnly') : t('free')} ${t('AZ')}`,
-      key: 'AZ'
+      key: 'AZ-withbr'
     });
-    res.push({
-      text: '',
-      key: 'br-1'
-    });
+    // res.push({
+    //   text: '',
+    //   key: 'br-1'
+    // });
     res.push({
       text: `${plan?.nodePort || isFree ? 1 : 100} ${t('nodePort')}`,
       key: 'nodeport-withIcon'

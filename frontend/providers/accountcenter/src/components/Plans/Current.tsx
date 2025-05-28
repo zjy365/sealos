@@ -131,9 +131,7 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
     onClose: closeUpgradeModal
   } = useDisclosure();
   useScene('upgrade', () => {
-    if (isUpgradable) {
-      openUpgradeModal();
-    }
+    openUpgradeModal();
   });
   const renderFeature = (text: string, key: string) => {
     return (
