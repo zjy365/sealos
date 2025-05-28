@@ -152,8 +152,9 @@ func Init(ctx context.Context) error {
 			return fmt.Errorf("join pay notification url error: %v", err)
 		}
 		payRedirectURL := "https://" + "account-center." + Cfg.LocalRegionDomain
-		fmt.Printf("init alipay client with payNotificationURL: %s , payRedirectURL: %s\n", payNotificationURL, payRedirectURL)
-		PaymentService = services.NewPaymentService(defaultAlipayClient.NewDefaultAlipayClient(gatewayURL, clientID, privateKey, publicKey), payNotificationURL, payRedirectURL)
+		alipayRedirectURL := "https://" + Cfg.LocalRegionDomain
+		fmt.Printf("init alipay client with payNotificationURL: %s , payRedirectURL: %s, alipayRedirectURL: %s\n", payNotificationURL, payRedirectURL, alipayRedirectURL)
+		PaymentService = services.NewPaymentService(defaultAlipayClient.NewDefaultAlipayClient(gatewayURL, clientID, privateKey, publicKey), payNotificationURL, payRedirectURL, alipayRedirectURL)
 		ClientIP, DeviceTokenID = os.Getenv(helper.EnvClientIP), os.Getenv(helper.EnvDeviceTokenID)
 		if ClientIP == "" {
 			return fmt.Errorf("empty client ip, please check env: %s", helper.EnvClientIP)

@@ -2,8 +2,10 @@ package services
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/alipay/global-open-sdk-go/com/alipay/api/tools"
@@ -24,13 +26,15 @@ type AtomPaymentService struct {
 	Client             *defaultAlipayClient.DefaultAlipayClient
 	PaymentRedirectURL string
 	PaymentNotifyURL   string
+	AlipayRedirectURL  string
 }
 
-func NewPaymentService(client *defaultAlipayClient.DefaultAlipayClient, notifyURL, redirectURL string) *AtomPaymentService {
+func NewPaymentService(client *defaultAlipayClient.DefaultAlipayClient, notifyURL, redirectURL string, alipayRedirectURL string) *AtomPaymentService {
 	return &AtomPaymentService{
 		Client:             client,
 		PaymentNotifyURL:   notifyURL,
 		PaymentRedirectURL: redirectURL,
+		AlipayRedirectURL:  alipayRedirectURL,
 	}
 }
 
@@ -56,20 +60,37 @@ func (s *AtomPaymentService) GenSign(httpMethod string, path string, reqTime str
 	return tools.GenSign(httpMethod, path, s.Client.ClientId, reqTime, reqBody, s.Client.MerchantPrivateKey)
 }
 
+func (s *AtomPaymentService) getPayRedirectURL(paymentMethod string, paymentType string, tradeNo string, isAuthConsult bool) string {
+	redirectURL := s.PaymentRedirectURL
+	redirectPath := "/?paymentType=" + paymentType
+	if isAuthConsult || paymentType == "ACCOUNT_RECHARGE" {
+		redirectPath += "&tradeNo=" + tradeNo
+	}
+	if paymentMethod == helper.ALIPAY_CN || paymentMethod == helper.ALIPAY_HK {
+		redirectURL = s.AlipayRedirectURL
+		app := "system-account-center"
+		redirectPath = url.QueryEscape(redirectPath)
+		redirectPath = strings.Replace(redirectPath, "+", "%20", -1)
+		redirectPath = "/?app=" + app + "&path=" + redirectPath
+	}
+	return redirectURL + redirectPath
+}
+
 func (s *AtomPaymentService) CreateNewPayment(req PaymentRequest) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE&tradeNo="+req.RequestID, s.PaymentNotifyURL+"/payment/v1alpha1/notify")
+
+	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.getPayRedirectURL(req.PaymentMethod, "ACCOUNT_RECHARGE", req.RequestID, false), s.PaymentNotifyURL+"/payment/v1alpha1/notify")
 }
 
 func (s *AtomPaymentService) CreatePaymentWithCard(req PaymentRequest, card *types.CardInfo) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createCardPaymentMethod(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=ACCOUNT_RECHARGE&tradeNo="+req.RequestID, s.PaymentNotifyURL+"/payment/v1alpha1/notify")
+	return s.createPaymentWithMethod(req, s.createCardPaymentMethod(req.PaymentMethod, card), s.getPayRedirectURL(req.PaymentMethod, "ACCOUNT_RECHARGE", req.RequestID, false), s.PaymentNotifyURL+"/payment/v1alpha1/notify")
 }
 
 func (s *AtomPaymentService) CreateNewSubscriptionPay(req PaymentRequest) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
+	return s.createPaymentWithMethod(req, s.createNewCardPaymentMethod(req.PaymentMethod), s.getPayRedirectURL(req.PaymentMethod, "SUBSCRIPTION", req.RequestID, false), s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
 }
 
 func (s *AtomPaymentService) CreateSubscriptionPayWithCard(req PaymentRequest, card *types.CardInfo) (*responsePay.AlipayPayResponse, error) {
-	return s.createPaymentWithMethod(req, s.CreateSubscriptionPay(req.PaymentMethod, card), s.PaymentRedirectURL+"/?paymentType=SUBSCRIPTION", s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
+	return s.createPaymentWithMethod(req, s.CreateSubscriptionPay(req.PaymentMethod, card), s.getPayRedirectURL(req.PaymentMethod, "SUBSCRIPTION", req.RequestID, false), s.PaymentNotifyURL+"/payment/v1alpha1/subscription/notify")
 }
 
 func (s *AtomPaymentService) CreateAliPayAuthConsult(req PaymentRequest) (*responseAuth.AlipayAuthConsultResponse, error) {
@@ -78,7 +99,7 @@ func (s *AtomPaymentService) CreateAliPayAuthConsult(req PaymentRequest) (*respo
 	if req.GoodsID == os.Getenv(helper.ENVAtomSubscriptionGoodsID) {
 		paymentType = "SUBSCRIPTION"
 	}
-	authConsultRequest.AuthRedirectUrl = s.PaymentRedirectURL + "/?paymentType=" + paymentType + "&tradeNo=" + req.RequestID
+	authConsultRequest.AuthRedirectUrl = s.getPayRedirectURL(req.PaymentMethod, paymentType, req.RequestID, true)
 	authConsultRequest.AuthState = "rcc-" + req.RequestID
 	authConsultRequest.CustomerBelongsTo = model.CustomerBelongsTo(req.PaymentMethod)
 	authConsultRequest.Scopes = []model.ScopeType{model.ScopeTypeAgreementPay}
