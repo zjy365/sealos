@@ -8,11 +8,10 @@ import { upperFirst } from 'lodash';
 import { useTranslation } from 'next-i18next';
 import { FC, ReactNode } from 'react';
 import usePlanFeatureTexts from './usePlanFeatureTexts';
-import CircleCheck from '@/components/Icon/icons/circleCheck.svg';
 import { formatMoneyStr } from '@/utils/format';
 import CancelPlanButton from './CancelPlanButton';
 import { Track } from '@sealos/ui';
-import { Info } from 'lucide-react';
+import { Info, Check } from 'lucide-react';
 
 export interface PlanSelectorItemProps {
   plan: TPlanApiResponse;
@@ -21,6 +20,9 @@ export interface PlanSelectorItemProps {
   lastTransaction: TLastTransactionResponse | undefined;
   onSelect?: (plan: TPlanApiResponse) => void;
   onCancelSuccess?: () => void;
+  hoverIndex: number;
+  setHoverIndex: (index: number) => void;
+  expanded: boolean;
 }
 const buttonStyle: ButtonProps = {
   borderRadius: '8px',
@@ -34,14 +36,20 @@ const buttonStyle: ButtonProps = {
   },
   h: '40px'
 };
-const featureTextsMinLength = 7;
+// 控制 placeholder 的个数，设为 plan 中 featureTexts 的长度的最大值
+const featureTextsMinLength = 15;
+// 未展开前最多显示的条数
+const featureDefaultLength = 8;
 const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   plan,
   currentPlan,
   freePlan,
   lastTransaction,
   onSelect,
-  onCancelSuccess
+  onCancelSuccess,
+  hoverIndex,
+  setHoverIndex,
+  expanded = false
 }) => {
   const { t } = useTranslation();
   const period = t(`Per${upperFirst(plan.period)}`, { defaultValue: '' }).toLowerCase();
@@ -51,21 +59,40 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
     inlcudeCredits: true,
     hideFreeMaxResourcesPerRegionText: true
   });
-  const featureTextsPlaceholders: ReactNode[] = [];
-  const renderFeatureText = ({ key, text }: { key: string; text: string }) => {
+  const featureTextsPlaceholders: { key: string; text: string }[] = [];
+  const renderFeatureText = ({ key, text }: { key: string; text: string }, index: number) => {
+    if (key.startsWith('br-')) {
+      return <Box key={key} h="0px" borderBottom="1px dashed #E4E4E7" />;
+    }
     return (
-      <Flex key={key} gap="8px" visibility={text === '' ? 'hidden' : undefined} alignItems="center">
+      <Flex
+        key={key}
+        gap="8px"
+        bg={hoverIndex === index ? '#F5F5F5' : ''}
+        rounded="2px"
+        visibility={text === '' ? 'hidden' : undefined}
+        alignItems="center"
+        _hover={{
+          bg: 'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
+        }}
+        onMouseEnter={() => setHoverIndex(index)}
+        onMouseLeave={() => setHoverIndex(-1)}
+      >
         <Box flexShrink={0} mt="2px">
-          <CircleCheck width="16px" height="16px" stroke="rgb(28, 78, 245)" strokeWidth="1.4px" />
+          <Check width="16px" height="16px" stroke="#1C4EF5" strokeWidth="1.4px" />
         </Box>
         <Text lineHeight="20px">{text || 'placeholder'}</Text>
         {key === 'nodeport-withIcon' && (
           <Tooltip
-            label="Included Database public connection and Devbox SSH connection."
+            label="Included Database public connection and Devbox SSH connection"
             bg="white"
             color="black"
             borderRadius="8px"
             boxShadow="0px 2px 8px rgba(0, 0, 0, 0.15)"
+            fontSize="14px"
+            placement="top"
+            fontWeight="400"
+            p="12px"
           >
             <Info width="16px" height="16px" />
           </Tooltip>
@@ -74,7 +101,7 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
     );
   };
   for (let i = 0; i < featureTextsMinLength - featureTexts.length; i++) {
-    featureTextsPlaceholders.push(renderFeatureText({ key: `placeholder${i}`, text: '' }));
+    featureTextsPlaceholders.push({ key: `placeholder${i}`, text: '' });
   }
   const handlePurchase = () => {
     onSelect?.(plan);
@@ -111,16 +138,14 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   return (
     <Box
       h="100%"
-      border="1px solid rgb(228, 228, 231)"
       borderRadius="16px"
-      p="32px"
       color="rgb(113, 113, 122)"
       fontSize="14px"
       fontWeight="400"
       opacity={isCurrent ? '0.7' : undefined}
     >
       <Flex h="100%" flexDirection="column" justifyContent="space-between">
-        <Box>
+        <Box minH="80px">
           <Flex justifyContent="space-between" alignItems="center" fontWeight="600">
             <Text lineHeight="28px" fontSize="20px" color="rgb(24, 24, 27)">
               {plan.name}
@@ -152,9 +177,13 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
             </Text>
           </Flex>
           {renderButton()}
-          <Flex mt="30px" flexDirection="column" gap="12px">
-            {featureTexts.map(renderFeatureText)}
-            {featureTextsPlaceholders}
+          <Text mt="24px" mb="12px" fontSize="14px" fontWeight="500" color="#18181B">
+            Key Features
+          </Text>
+          <Flex flexDirection="column" gap="12px">
+            {[...featureTexts, ...featureTextsPlaceholders]
+              .slice(0, expanded ? undefined : featureDefaultLength)
+              .map(renderFeatureText)}
           </Flex>
         </Box>
       </Flex>

@@ -30,61 +30,102 @@ export function useGetPlanFeatureTexts() {
       });
     }
     if (maxResourceObject?.cpu && maxResourceObject.memory) {
-      let text = `Up to ${maxResourceObject.cpu} vCPU / ${maxResourceObject.memory} ${t('RAM')}`;
-      if (isFree && maxResourceObject.storage) {
-        text += ` / ${maxResourceObject.storage} ${t('Disk')}`;
-        if (!opts.hideFreeMaxResourcesPerRegionText) {
-          text = t('PerRegion', { text });
-        }
-      }
+      let text = `${maxResourceObject.cpu} vCPU / ${maxResourceObject.memory} ${t('RAM')}`;
       res.push({
         text,
-        key: 'resources'
+        key: 'cpu-memory'
       });
     }
-    if (isFree) {
+    if (isFree && maxResourceObject?.storage) {
       res.push({
-        text: t('FreeTraffic'),
-        key: 'traffic'
+        text: `${maxResourceObject.storage} ${t('DiskDesc')}`,
+        key: 'disk'
+      });
+    } else {
+      res.push({
+        text: `Unlimited ${t('DiskDesc')}`,
+        key: 'disk'
       });
     }
     res.push({
-      text: t('MultipleRegions'),
-      key: 'regions'
+      text: '',
+      key: 'br-0'
     });
-    const getWorkspaceCountText = () => {
-      if (plan.maxWorkspaces === 1) {
-        return t('Single');
+    const getCountText = (
+      count: number,
+      config: {
+        singleText?: string;
+        multipleText?: string;
+        showSingle?: boolean;
+        showMultiple?: boolean;
+      } = {}
+    ) => {
+      const {
+        singleText = t('Single'),
+        multipleText = t('Multiple'),
+        showSingle = false,
+        showMultiple = true
+      } = config;
+      if (count === 1 && showSingle) {
+        return singleText;
       }
-      if (plan.maxWorkspaces === -1) {
-        return t('Multiple');
+      if (count === -1 && showMultiple) {
+        return multipleText;
       }
-      return plan.maxWorkspaces;
-    };
-    const getSeatCountText = () => {
-      if (plan.maxSeats === -1) {
-        return t('Multiple');
-      }
-      return plan.maxSeats;
+      return count;
     };
     res.push({
       text: `${t('PlanWorkspaceCount', {
         count: plan.maxWorkspaces === -1 ? Infinity : plan.maxWorkspaces,
-        countText: getWorkspaceCountText()
-      })} / ${t('Region').toLowerCase()}`,
+        countText: getCountText(plan.maxWorkspaces)
+      })} / ${t('AZ')}`,
       key: 'workspace'
     });
     res.push({
       text: `${t('PlanSeatCount', {
         count: plan.maxSeats === -1 ? Infinity : plan.maxSeats,
-        countText: getSeatCountText()
+        countText: getCountText(plan.maxSeats)
       })} / ${t('workspace').toLowerCase()}`,
       key: 'seats'
     });
-    if (isFree) {
+    res.push({
+      text: `${t('MultipleRegions')}`,
+      key: 'regions'
+    });
+    res.push({
+      text: `${!isFree ? t('membersOnly') : t('free')} ${t('AZ')}`,
+      key: 'AZ'
+    });
+    res.push({
+      text: '',
+      key: 'br-1'
+    });
+    res.push({
+      text: `${plan?.nodePort || isFree ? 1 : 100} ${t('nodePort')}`,
+      key: 'nodeport-withIcon'
+    });
+    res.push({
+      text: `${plan?.podCount || isFree ? 4 : 100} ${t('pod', {
+        count: plan?.podCount || isFree ? 4 : 100
+      })}`,
+      key: 'pod'
+    });
+    res.push({
+      text: `${plan?.logRetention || isFree ? 7 : 30} ${t('dayslog')}`,
+      key: 'log'
+    });
+    res.push({
+      text: `${isFree ? t('community') : t('expert')} ${t('support')}`,
+      key: 'support'
+    });
+    if (!isFree) {
       res.push({
-        text: '1 NodePort (TCP/UDP)',
-        key: 'nodeport-withIcon'
+        text: t('API'),
+        key: 'api'
+      });
+      res.push({
+        text: t('SLO'),
+        key: 'slo'
       });
     }
     return res;

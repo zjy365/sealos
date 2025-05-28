@@ -58,7 +58,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
     if (step === 1) {
       return (
         <>
-          <Text
+          {/* <Text
             color="rgb(113, 113, 122)"
             fontSize="16px"
             fontWeight="400"
@@ -67,8 +67,8 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
             textAlign="center"
           >
             {t('UpgradePlanDesc')}
-          </Text>
-          <PlanSelector {...rest} minHeight="484px" onSelect={handleSelectPlan} />
+          </Text> */}
+          <PlanSelector {...rest} minHeight="416px" onSelect={handleSelectPlan} />
         </>
       );
     }
@@ -104,7 +104,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
       <ModalOverlay />
       <ModalContent maxW="1112px">
         <ModalCloseButton />
-        <ModalBody borderRadius="16px" py="32px">
+        <ModalBody borderRadius="16px" py="32px" px="40px">
           <Text fontSize="24px" fontWeight="600" textAlign="center">
             {t('UpgradePlan')}
           </Text>
