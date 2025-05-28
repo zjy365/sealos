@@ -161,6 +161,19 @@ export default function Desktop(props: any) {
     return cleanup;
   }, [bindGithub]);
   useEffect(() => {
+    const cleanup = masterApp?.addEventListen('open', (data) => {
+      if (typeof data?.url !== 'string') {
+        return;
+      }
+      if (data.target === '_blank') {
+        window.open(data.url);
+      } else {
+        location.href = data.url;
+      }
+    });
+    return cleanup;
+  }, []);
+  useEffect(() => {
     if (infoData.isSuccess && commonConfig?.realNameAuthEnabled) {
       if (!infoData?.data?.realName && !infoData?.data?.enterpriseRealName) {
         realNameAuthNotificationIdRef.current = realNameAuthNotification({
@@ -202,7 +215,23 @@ export default function Desktop(props: any) {
     };
     globalNotification();
   }, []);
-
+  useEffect(() => {
+    if (!Array.isArray(apps) || !apps.length) return;
+    const { query } = router;
+    const getFirstQuery = (data: string | string[] | undefined) =>
+      Array.isArray(data) ? data[0] : data;
+    const appKey = getFirstQuery(query.app);
+    const path = getFirstQuery(query.path);
+    if (!appKey) {
+      return;
+    }
+    openDesktopApp({
+      appKey,
+      pathname: path || '/',
+      query: {}
+    });
+    router.replace('/');
+  }, [apps]);
   return (
     <Box id="desktop" className={styles.desktop} bg={'#E0E9FF'} position={'relative'}>
       <ChakraIndicator />

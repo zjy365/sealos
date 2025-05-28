@@ -27,6 +27,7 @@ import polling, { cancelPollingsByKey } from '@/utils/polling';
 import { checkOrderStatus } from '@/api/order';
 import RadioOption from '../RadioOption';
 import Select from '../Select';
+import { sealosApp } from 'sealos-desktop-sdk/app';
 
 interface SummaryItems {
   amount: string;
@@ -50,7 +51,7 @@ export enum PayMethod {
 }
 export interface CheckoutData {
   cardID?: string;
-  payMethod: string;
+  payMethod: PayMethod;
 }
 interface CheckoutOrderProps {
   summary: Summary | (() => Promise<Summary>);
@@ -81,6 +82,7 @@ enum RadioValue {
   new = 'new',
   existing = 'existing'
 }
+const shouldOpenInDesktopPayMethods = new Set([PayMethod.alipay, PayMethod.alipayHK]);
 // type FormData = { billingnAddress: string; cardID: string; };
 const newCardValue = checkoutDataToString({ payMethod: PayMethod.card });
 const newCardOptionActiveStyle = {
@@ -212,6 +214,10 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
         return data;
       }
       if (autoRedirectToPay) {
+        if (shouldOpenInDesktopPayMethods.has(checkoutData.payMethod)) {
+          sealosApp.runEvents('open', { url: data.redirectUrl });
+          return;
+        }
         location.href = data.redirectUrl;
         return data;
       }
