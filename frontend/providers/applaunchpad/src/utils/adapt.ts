@@ -205,7 +205,12 @@ export const adaptEvents = (events: CoreV1EventList): PodEvent[] => {
       count: item.count || 0,
       type: item.type || 'Warning',
       firstTime: formatPodTime(item.firstTimestamp || item.metadata?.creationTimestamp),
-      lastTime: formatPodTime(item.lastTimestamp || item?.eventTime)
+      lastTime: formatPodTime(item.lastTimestamp || item?.eventTime),
+      involvedObject: {
+        kind: item.involvedObject.kind,
+        name: item.involvedObject.name,
+        namespace: item.involvedObject.namespace
+      }
     }));
 };
 

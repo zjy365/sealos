@@ -8,12 +8,12 @@ import { getPodEvents } from '@/api/app';
 import { PodDetailType, PodEvent } from '@/types/app';
 import { useAppStore } from '@/store/app';
 import { useRouter } from 'next/router';
-import { ChevronRight, CircleCheck, CircleX, CircleAlert, ArrowRight } from 'lucide-react';
+import { ChevronRight, CircleCheck, CircleX, CircleAlert, ArrowRight, Loader } from 'lucide-react';
 import { AppStatusEnum } from '@/constants/app';
 import { useTranslation } from 'next-i18next';
 
 const AppDetail = ({ appName }: { appName: string }) => {
-  const [events, setEvents] = useState<PodEvent[]>([]);
+  const [events, setEvents] = useState<{ [podName: string]: PodEvent[] }>({});
   // const { Loading } = useLoading();
   const [currentPod, setCurrentPod] = useState<number>(0);
   const { appDetail, appDetailPods, intervalLoadPods, setAppDetail } = useAppStore();
@@ -26,7 +26,7 @@ const AppDetail = ({ appName }: { appName: string }) => {
     refetchInterval: 5000
   });
 
-  useQuery(['appDetail', appName], () => setAppDetail(appName), {
+  useQuery(['appDetail', appName], () => setAppDetail(appName, false), {
     refetchInterval: 5000,
     enabled: !!appName
   });
@@ -39,7 +39,7 @@ const AppDetail = ({ appName }: { appName: string }) => {
       enabled: !!appDetailPods[currentPod]?.podName,
       refetchInterval: 3000,
       onSuccess(res) {
-        setEvents(res);
+        setEvents({ ...events, [appDetailPods[currentPod]?.podName]: res });
       }
     }
   );
@@ -137,11 +137,19 @@ const AppDetail = ({ appName }: { appName: string }) => {
                         alignItems={'center'}
                         gap={2}
                       >
-                        {pod.status.value === 'running' && (
-                          <CircleCheck size={20} fill={'#1C4EF5'} color={'white'} />
-                        )}
-                        {pod.status.value !== 'running' && (
+                        {events[pod.podName]?.some(
+                          (event) =>
+                            event.reason.includes('Failed') ||
+                            event.reason.includes('Error') ||
+                            event.reason.includes('BackOff')
+                        ) ? (
                           <CircleAlert size={20} fill={'#FACC15'} color={'white'} />
+                        ) : pod.status.value === 'running' ? (
+                          <CircleCheck size={20} fill={'#1C4EF5'} color={'white'} />
+                        ) : pod.status.value === 'terminated' ? (
+                          <CircleAlert size={20} fill={'#FACC15'} color={'white'} />
+                        ) : (
+                          <Loader size={'16px'} />
                         )}
                         <Text
                           fontSize={'14px'}
@@ -159,7 +167,7 @@ const AppDetail = ({ appName }: { appName: string }) => {
             </Box>
 
             <Box flex={'1 0 0'} pt={4} overflowY={'auto'}>
-              {events.map((event, i) => {
+              {events[appDetailPods[currentPod]?.podName]?.map((event, i) => {
                 return (
                   <Box
                     key={event.id}
@@ -229,7 +237,7 @@ const AppDetail = ({ appName }: { appName: string }) => {
                   </Box>
                 );
               })}
-              {events.length === 0 && !isLoading && (
+              {events[appDetailPods[currentPod]?.podName]?.length === 0 && !isLoading && (
                 <Flex
                   alignItems={'center'}
                   justifyContent={'center'}

@@ -11,7 +11,7 @@ type State = {
   setAppList: (init?: boolean) => Promise<AppListItemType[]>;
   appDetail?: AppDetailType;
   appDetailPods: PodDetailType[];
-  setAppDetail: (appName: string) => Promise<AppDetailType>;
+  setAppDetail: (appName: string, updateDetailPods?: boolean) => Promise<AppDetailType>;
   intervalLoadPods: (appName: string, updateDetail: boolean) => Promise<any>;
   loadAvgMonitorData: (appName: string) => Promise<any>;
   loadDetailMonitorData: (appName: string) => Promise<any>;
@@ -30,13 +30,13 @@ export const useAppStore = create<State>()(
         });
         return res;
       },
-      setAppDetail: async (appName: string) => {
+      setAppDetail: async (appName: string, updateDetailPods = true) => {
         set((state) => {
           state.appDetail = {
             ...MOCK_APP_DETAIL,
             appName
           };
-          state.appDetailPods = [];
+          if (updateDetailPods) state.appDetailPods = [];
         });
         const res = await getAppByName(appName);
         set((state) => {

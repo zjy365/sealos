@@ -190,6 +190,11 @@ export interface PodEvent {
   type: string | 'Normal' | 'Warning';
   firstTime: string;
   lastTime: string;
+  involvedObject?: {
+    kind?: string;
+    name?: string;
+    namespace?: string;
+  };
 }
 
 export type AppPatchPropsType = (
