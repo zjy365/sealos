@@ -30,6 +30,13 @@ export const getGlobalTokenSvc = createMiddleware<AuthContext, unknown>(
       bdVid: ctx.bdVid
     });
 
+    if (data?.isRestricted) {
+      return jsonRes(res, {
+        code: 401,
+        message: 'Account banned'
+      });
+    }
+
     if (!data)
       return jsonRes(res, {
         code: 401,
