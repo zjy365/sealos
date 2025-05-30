@@ -106,13 +106,16 @@ export default function Desktop(props: any) {
     <T extends OauthAction>({ url, provider }: { url: string; provider: OauthProvider }) =>
       (action: T) => {
         if (!conf) return;
-        const state = generateState(action);
+        const state = generateState(action, {
+          provider,
+          domain: cloudConfig!.domain
+        });
         setProvider(provider);
         const target = new URL(url);
         target.searchParams.append('state', state);
         router.replace(target);
       },
-    [conf?.callbackURL]
+    [conf?.callbackURL, cloudConfig?.domain]
   );
 
   const bindGithub = useCallback(() => {
