@@ -1,24 +1,56 @@
 import { verifyAccessToken } from '@/services/backend/auth';
-import { getUserKubeconfigNotPatch } from '@/services/backend/kubernetes/admin';
+import { prisma } from '@/services/backend/db/init';
+import { getUserKubeconfigNotPatch, K8sApiDefault } from '@/services/backend/kubernetes/admin';
 import { K8sApi } from '@/services/backend/kubernetes/user';
 import { jsonRes } from '@/services/backend/response';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
 import * as k8s from '@kubernetes/client-node';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { JoinStatus } from 'prisma/region/generated/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const payload = await verifyAccessToken(req.headers);
     if (!payload) return jsonRes(res, { code: 401, message: 'failed to get info' });
     const namespace = payload.workspaceId;
-    const _kc = await getUserKubeconfigNotPatch(payload.userCrName);
-    if (!_kc) return jsonRes(res, { code: 404, message: 'user is not found' });
-    const realKc = switchKubeconfigNamespace(_kc, namespace);
-    const kc = K8sApi(realKc);
-    if (!kc) return jsonRes(res, { code: 404, message: 'The kubeconfig is not found' });
+    // const _kc = await getUserKubeconfigNotPatch(payload.userCrName);
+    // if (!_kc) return jsonRes(res, { code: 404, message: 'user is not found' });
+    // const realKc = switchKubeconfigNamespace(_kc, namespace);
+    // const kc = K8sApi(realKc);
+    // if (!kc) return jsonRes(res, { code: 404, message: 'The kubeconfig is not found' });
 
-    const result = await kc.makeApiClient(k8s.CoreV1Api).listNamespacedPod(namespace);
-
+    // const result = await kc.makeApiClient(k8s.CoreV1Api).listNamespacedPod(namespace);
+    const client = K8sApiDefault().makeApiClient(k8s.CoreV1Api);
+    const regionResource = await prisma.userCr.findUnique({
+      where: {
+        userUid: payload.userUid
+      },
+      select: {
+        userWorkspace: {
+          select: {
+            workspace: {
+              select: {
+                id: true
+              }
+            },
+            status: true,
+            isPrivate: true,
+            role: true
+          }
+        }
+      }
+    });
+    const relationList = (regionResource?.userWorkspace || []).filter(
+      (n) => n.role === 'OWNER' && n.status === 'IN_WORKSPACE'
+    );
+    const podList = (
+      await Promise.all(
+        relationList.map(async (relation) => {
+          const namespace = relation.workspace.id;
+          return (await client.listNamespacedPod(namespace)).body.items;
+        })
+      )
+    ).flatMap((podList) => podList);
     let totalCpuLimits = 0;
     let totalMemoryLimits = 0;
     let totalStorageRequests = 0;
@@ -26,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let totalGpuCount = 0;
     let totalPodCount = 0;
 
-    for (const pod of result.body.items) {
+    for (const pod of podList) {
       if (pod.status?.phase === 'Succeeded') continue;
       if (!pod?.spec) continue;
 

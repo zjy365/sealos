@@ -93,6 +93,9 @@ export default function UserTable({
                   <Text fontWeight={'600'}>{user.nickname}</Text>
                 </Flex>
               </Td>
+              <Td color={'#5A646E'} py="5px">
+                {user.joinTime ? formatTime(user.joinTime) : '-'}
+              </Td>
               <Td color={'#24282C'} fontWeight={'600'} py="5px">
                 <ModifyRole
                   ns_uid={ns_uid}
@@ -106,9 +109,6 @@ export default function UserTable({
                     UserRole.Owner !== userSelf.role
                   }
                 />
-              </Td>
-              <Td color={'#5A646E'} py="5px">
-                {user.joinTime ? formatTime(user.joinTime) : '-'}
               </Td>
               {/* <Td color={user.status === InvitedStatus.Inviting ? '#8172D8' : '#00A9A6'} py="5px">
                 {status[user.status]}

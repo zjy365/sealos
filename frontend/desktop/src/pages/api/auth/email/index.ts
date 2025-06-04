@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { jsonRes } from '@/services/backend/response';
-import { strongPassword } from '@/utils/crypto';
 import { enableEmailSms, enablePassword } from '@/services/enable';
-import { getPasswordStrength } from '@/utils/tools';
 import { HttpStatusCode } from 'axios';
 import { ErrorHandler } from '@/services/backend/middleware/error';
 import { generateAuthenticationToken } from '@/services/backend/auth';

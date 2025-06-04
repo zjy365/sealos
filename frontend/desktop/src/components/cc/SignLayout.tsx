@@ -5,10 +5,28 @@ import { useEffect } from 'react';
 import Script from 'next/script';
 import useScriptStore from '@/stores/script';
 import bgimage from 'public/cc/signin.png';
+import { useQuery } from '@tanstack/react-query';
+import { regionList } from '@/api/auth';
 
 export default function SignLayout({ children }: { children: React.ReactNode }) {
-  const { layoutConfig, authConfig } = useConfigStore();
+  const { layoutConfig, authConfig, cloudConfig } = useConfigStore();
   const { setCaptchaIsLoad } = useScriptStore();
+  const { data } = useQuery(['regionlist'], regionList, {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+  useEffect(() => {
+    if (cloudConfig?.regionUID && data?.data?.regionList) {
+      const regionUid = cloudConfig?.regionUID;
+      const regionList = data?.data?.regionList;
+      const region = regionList.find((r) => r.uid === regionUid);
+      if (region && region.description.paid) {
+        const url = 'console.run.claw.cloud';
+        window.location.replace(url);
+      }
+    }
+  }, [data, cloudConfig?.regionUID]);
   useEffect(() => {
     const url = sessionStorage.getItem('accessTemplatesNoLogin');
     if (!!url) {

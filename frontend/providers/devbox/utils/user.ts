@@ -75,3 +75,15 @@ export const makeOrganizationName = () => {
   const gen = customAlphabet('23456789abcdefghijkmnpqrstuvwxyz', 7);
   return gen();
 };
+
+export const getUserSession = () => {
+  try {
+    const store = localStorage.getItem('session');
+    if (store) {
+      return JSON.parse(store) as SessionV1;
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};

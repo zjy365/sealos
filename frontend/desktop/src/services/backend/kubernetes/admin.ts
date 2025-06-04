@@ -4,13 +4,12 @@ import * as k8s from '@kubernetes/client-node';
 import { KubeConfig } from '@kubernetes/client-node';
 import { HttpStatusCode } from 'axios';
 import path from 'node:path';
-
+import fs from 'node:fs';
 export function K8sApiDefault(): k8s.KubeConfig {
   const kc = new k8s.KubeConfig();
   const CONFIG_PATH = path.join(process.cwd(), 'data', 'desktop-admin.local.yaml');
-  process.env.NODE_ENV === 'development' && CONFIG_PATH
-    ? kc.loadFromFile(CONFIG_PATH)
-    : kc.loadFromDefault();
+  // 先判断有无config_path
+  fs.existsSync(CONFIG_PATH) ? kc.loadFromFile(CONFIG_PATH) : kc.loadFromDefault();
   return kc;
 }
 
