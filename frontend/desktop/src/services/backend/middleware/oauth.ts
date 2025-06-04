@@ -252,6 +252,9 @@ export const githubOAuthGuard =
       }
     } else {
       console.log('github email not FOUND');
+      if (process.env.NODE_ENV === 'development') {
+        email = 'dev@dev.com';
+      }
       // return jsonRes(res, {
       //   code: 401,
       //   message: 'Unauthorized'

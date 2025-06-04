@@ -173,7 +173,18 @@ export default function Desktop(props: any) {
   }, [conf?.callbackURL, conf?.idp.google, actionCbGen]);
   const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
   // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
-
+  const openUpgradePlan = () => {
+    openDesktopApp({
+      appKey: 'system-account-center',
+      query: {
+        scene: 'upgrade'
+      },
+      messageData: {
+        scene: 'upgrade'
+      },
+      pathname: '/'
+    });
+  };
   useEffect(() => {
     const cleanup = createMasterAPP();
     return cleanup;
@@ -191,6 +202,11 @@ export default function Desktop(props: any) {
     const cleanup = masterApp?.addEventListen('bindGithub', bindGithub);
     return cleanup;
   }, [bindGithub]);
+  useEffect(() => {
+    const cleanup = masterApp?.addEventListen('openUpgradePlan', openUpgradePlan);
+    return cleanup;
+  }, [bindGithub]);
+
   useEffect(() => {
     if (infoData.isSuccess && commonConfig?.realNameAuthEnabled) {
       if (!infoData?.data?.realName && !infoData?.data?.enterpriseRealName) {

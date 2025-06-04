@@ -4,6 +4,7 @@ export type Region = {
   uid: string;
   location: string;
   description: {
+    color?: string;
     prices: {
       name: string;
       unit_price: number;
@@ -15,5 +16,6 @@ export type Region = {
       zh: string;
       en: string;
     };
+    paid?: boolean;
   };
 };

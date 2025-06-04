@@ -16,7 +16,7 @@ import {
 import { ClawCloudIcon } from '../icons';
 import { useState } from 'react';
 import { Region } from '@/types';
-import { Mutation, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { regionList as getRegionList, initRegionToken } from '@/api/auth';
 import { sessionConfig } from '@/utils/sessionConfig';
 import { useRouter } from 'next/router';

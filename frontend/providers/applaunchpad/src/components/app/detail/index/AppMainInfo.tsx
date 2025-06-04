@@ -8,7 +8,7 @@ import { DOMAIN_PORT } from '@/store/static';
 import type { AppDetailType } from '@/types/app';
 import { useCopyData } from '@/utils/tools';
 import { getUserNamespace } from '@/utils/user';
-import { Box, Button, Center, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Center, Circle, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useEffect, useMemo } from 'react';
@@ -187,6 +187,42 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                     </th>
                     <th>
                       <Flex alignItems={'center'} justifyContent={'space-between'}>
+                        {!network.public && (
+                          <MyTooltip
+                            label={'Upgrade your plan for faster deployment'}
+                            textAlign={'center'}
+                            placement={'bottom'}
+                          >
+                            <Flex
+                              fontSize={'12px'}
+                              p="10px 9px"
+                              gap="8px"
+                              background="#F4F4F5"
+                              borderRadius="100px"
+                            >
+                              <Box boxSize="6px" borderRadius={'full'} bgColor={'#71717A'}></Box>
+                              pending
+                            </Flex>
+                          </MyTooltip>
+                        )}
+                        <MyTooltip
+                          label={network.public ? t('Open Link') : ''}
+                          placement={'bottom-start'}
+                        >
+                          <Box
+                            fontSize={'12px'}
+                            className={'textEllipsis'}
+                            {...(network.public
+                              ? {
+                                  cursor: 'pointer',
+                                  _hover: { textDecoration: 'underline' },
+                                  onClick: () => window.open(network.public, '_blank')
+                                }
+                              : {})}
+                          >
+                            {network.public || '-'}
+                          </Box>
+                        </MyTooltip>
                         <MyTooltip
                           label={network.public ? t('Open Link') : ''}
                           placement={'bottom-start'}

@@ -51,12 +51,18 @@ class MasterSDK {
     if (!sessionStr) return '';
     const _session = JSON.parse(sessionStr);
     const session = _session?.state?.session as Session;
-
+    const subscription = session.user.subscription;
     return {
       user: {
         id: session.user.userId,
         k8sUsername: session.user.k8s_username,
         name: session.user.name,
+        subscription: {
+          status: subscription?.status || 'NORMAL',
+          subscriptionPlan: {
+            name: subscription?.subscriptionPlan.name || 'Free'
+          }
+        },
         avatar: session.user.avatar,
         nsid: session.user.nsid
       },

@@ -112,6 +112,12 @@ export class AmqpClient {
   }
 
   async publishToExchange(exchange: string, routingKey: string, message: any) {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      !process.env.RABBITMQ_URL &&
+      process.env.SKIP_RABBITMQ
+    )
+      return false;
     if (!this.isConnected()) {
       if (!(await this.connect(process.env.RABBITMQ_URL))) {
         return false;

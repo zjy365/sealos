@@ -115,7 +115,10 @@ export const getUserPlan = () => {
       subscription: {
         subscriptionPlan: {
           name: string;
+          max_seats: bigint;
+          max_workspaces: bigint;
         };
+        status: string;
       };
     }>
   >('/api/account/getPlan');

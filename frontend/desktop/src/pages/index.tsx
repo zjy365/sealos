@@ -13,7 +13,6 @@ import { parseOpenappQuery } from '@/utils/format';
 import { crmReferral, referral } from '@/utils/referral';
 import { sessionConfig, setBaiduId, setInviterId, setUserSemData } from '@/utils/sessionConfig';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
-import { compareFirstLanguages } from '@/utils/tools';
 import { Box, useColorMode } from '@chakra-ui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';

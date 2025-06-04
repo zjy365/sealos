@@ -18,6 +18,8 @@ import { trackSignUp } from './tracking';
 import { loginFailureCounter, TloginFailureMessage } from './promtheus/loginFailureCounter';
 import { HttpStatusCode } from 'axios';
 import { sendUserSigninEvent, sendUserSignupEvent } from './event';
+import _ from 'lodash';
+import dayjs from 'dayjs';
 
 type TransactionClient = Omit<
   PrismaClient,
@@ -597,7 +599,6 @@ export const getGlobalToken = async ({
     needInit: !isInited
   };
 };
-
 // 要绑定邮箱
 export const getGlobalTokenByOauth = async ({
   provider,
@@ -635,11 +636,30 @@ export const getGlobalTokenByOauth = async ({
       }
     },
     select: {
-      userUid: true
+      userUid: true,
+      user: {
+        select: {
+          status: true,
+          updatedAt: true
+        }
+      }
     }
   });
+  let reSignUp = false;
+  // upbindding for lock_user
+  if (_user && _user.user && _user.user.status === 'LOCK_USER') {
+    // 超过30天解绑
+    if (dayjs().diff(_user.user.updatedAt, 'day') > 30) {
+      await globalPrisma.oauthProvider.deleteMany({
+        where: {
+          userUid: _user.userUid
+        }
+      });
+      reSignUp = true;
+    }
+  }
   // console.log('global ', user, email, ProviderType, providerId);
-  if (!_user) {
+  if (!_user || reSignUp) {
     // 注册
     if (!enableSignUp()) throw new Error('Failed to signUp user');
     if (!email) {
