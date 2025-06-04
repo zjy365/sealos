@@ -19,8 +19,19 @@ export type TloginFailureMessage =
   | 'failed to get email from GitHub'
   | 'failed to get user from Google'
   | 'failed to connect to Google';
-export const loginFailureCounter = new Counter({
-  name: 'login_failure_total',
-  help: 'Total number of login failures',
-  labelNames: ['login_method', 'message', 'status_code']
-});
+class LoginFailureCounter {
+  private constructor() {}
+
+  public static getInstance(): Counter {
+    const globalObj = globalThis as any;
+    if (!globalObj.__loginFailureCounter) {
+      globalObj.__loginFailureCounter = new Counter({
+        name: 'login_failure_total',
+        help: 'Total number of login failures',
+        labelNames: ['login_method', 'message', 'status_code']
+      });
+    }
+    return globalObj.__loginFailureCounter;
+  }
+}
+export const loginFailureCounter = LoginFailureCounter.getInstance();

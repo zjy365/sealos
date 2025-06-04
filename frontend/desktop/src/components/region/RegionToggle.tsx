@@ -1,4 +1,4 @@
-import { regionList as getRegionList } from '@/api/auth';
+import { regionList as getRegionList, UserInfo } from '@/api/auth';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { ApiResp, Region } from '@/types';
@@ -11,12 +11,14 @@ import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { CheckIcon, ChevronDown } from 'lucide-react';
 import { useConfigStore } from '@/stores/config';
+import { getUserPlan } from '@/api/platform';
+import { MyTooltip } from '@sealos/ui';
 
 export default function RegionToggle({ userPlan }: { userPlan: string }) {
   const disclosure = useDisclosure();
   const { setWorkSpaceId, session } = useSessionStore();
   const { cloudConfig } = useConfigStore();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const { data } = useQuery(['regionlist'], getRegionList, {
     cacheTime: 5 * 60 * 1000,
@@ -33,7 +35,11 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
     }
   }, [token]);
   const curRegion = regionList.find((r) => r.uid === curRegionUid);
-
+  const { data: plan, isSuccess } = useQuery(['getUserPlan'], () => getUserPlan(), {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
   const handleCick = async (region: Region) => {
     setWorkSpaceId(session?.user?.ns_uid || '');
     const target = new URL(
@@ -123,35 +129,69 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                 color={'#18181B'}
                 width={'240px'}
               >
-                <Text px={'12px'} py={'6px'} color={'#71717A'} fontSize={'12px'} fontWeight={'500'}>
-                  {t('common:region')}
+                <Text px={'8px'} py={'6px'} color={'#71717A'} fontSize={'12px'} fontWeight={'500'}>
+                  Availability Zone
                 </Text>
                 <VStack alignItems={'stretch'} px={'8px'}>
                   {regionList.map((region) => {
                     const cpuPrice = region?.description?.prices?.find((p) => p.name === 'CPU');
+                    const subscription = plan?.data?.subscription;
+                    const notFree = subscription && subscription.subscriptionPlan.name !== 'Free';
+                    const canUse = !!(
+                      !region.description.paid ||
+                      (notFree && subscription.status === 'NORMAL')
+                    );
                     return (
-                      <Flex
-                        fontSize={'14px'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}
-                        whiteSpace={'nowrap'}
-                        borderRadius={'8px'}
-                        py={'10px'}
-                        px={'8px'}
+                      <MyTooltip
                         key={region.uid}
-                        onClick={() => {
-                          handleCick(region);
-                        }}
-                        cursor={'pointer'}
-                        _hover={{
-                          bgColor: '#F4F4F5'
-                        }}
+                        label={'Upgrade your plan to unlock members-only availability zone'}
+                        isDisabled={canUse}
+                        placement="right"
                       >
-                        <Text>{region?.displayName}</Text>
-                        {region.uid === curRegionUid && <CheckIcon size={16} color={'#1C4EF5'} />}
+                        <Flex
+                          fontSize={'14px'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}
+                          whiteSpace={'nowrap'}
+                          borderRadius={'8px'}
+                          py={'10px'}
+                          px={'8px'}
+                          onClick={() => {
+                            canUse && handleCick(region);
+                          }}
+                          bgColor={!canUse ? '#F4F4F5' : ''}
+                          cursor={'pointer'}
+                          _hover={{
+                            bgColor: '#F4F4F5'
+                          }}
+                        >
+                          <Flex>
+                            <Box
+                              bgColor={region.description.color || '#DC2626'}
+                              boxSize={'6px'}
+                              mr={'7px'}
+                              borderRadius={'full'}
+                            ></Box>
+                            <Text color={canUse ? '#18181B' : '#71717A'}>
+                              {region?.displayName}
+                            </Text>
+                            {notFree && (
+                              <Flex
+                                ml={'8px'}
+                                px={'8px'}
+                                py={'2px'}
+                                color={'#FFFFFF'}
+                                fontSize={'12px'}
+                                bg={'linear-gradient(270.48deg, #2778FD 3.93%, #829DFE 80.66%)'}
+                              >
+                                Hobby & Pro
+                              </Flex>
+                            )}
+                          </Flex>
+                          {region.uid === curRegionUid && <CheckIcon size={16} color={'#1C4EF5'} />}
 
-                        {/* <Divider bg={'rgba(255, 255, 255, 0.10)'} my={'12px'} /> */}
-                        {/* <Box px={'16px'} fontSize={'11px'} fontWeight={'500'}>
+                          {/* <Divider bg={'rgba(255, 255, 255, 0.10)'} my={'12px'} /> */}
+                          {/* <Box px={'16px'} fontSize={'11px'} fontWeight={'500'}>
                           <HStack color={'rgba(255, 255, 255, 0.80)'} gap={'4px'} mb={'2px'}>
                             <ProviderIcon boxSize={'12px'} />
                             <Text>{t('cloudProviders:provider')}</Text>
@@ -169,7 +209,8 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                             {region?.description?.description?.[i18n.language as 'zh' | 'en']}
                           </Text>
                         </Box> */}
-                      </Flex>
+                        </Flex>
+                      </MyTooltip>
                     );
                   })}
                 </VStack>

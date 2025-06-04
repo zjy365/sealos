@@ -24,6 +24,7 @@ export const sessionConfig = async ({
       realName: infoData.data?.info.realName || undefined,
       enterpriseRealName: infoData.data?.info.enterpriseRealName || undefined,
       k8s_username: payload.userCrName,
+      subscription: infoData.data?.info.subscription,
       name: infoData.data?.info.nickname || '',
       avatar: infoData.data?.info.avatarUri || '',
       nsid: payload.workspaceId,

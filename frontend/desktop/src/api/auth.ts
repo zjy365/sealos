@@ -71,6 +71,12 @@ export const _UserInfo = (request: AxiosInstance) => () =>
         nickname: string;
         id: string;
         name: string;
+        subscription: {
+          status: string | null;
+          subscriptionPlan: {
+            name: string;
+          };
+        } | null;
         oauthProvider: { providerId: string; providerType: Exclude<ProviderType, 'WECHAT_OPEN'> }[];
       };
     }>

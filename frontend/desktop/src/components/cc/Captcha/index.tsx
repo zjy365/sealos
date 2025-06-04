@@ -86,8 +86,8 @@ const HiddenCaptchaComponent = forwardRef(function HiddenCaptchaComponent(props,
     };
 
     // @ts-ignore
-    window.initAliyunCaptcha(initAliyunCaptchaOptions);
-
+    const result = window.initAliyunCaptcha(initAliyunCaptchaOptions);
+    console.log(result);
     return () => {
       captchaInstanceRef.current = null;
     };

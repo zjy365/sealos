@@ -7,8 +7,8 @@ import { MOCK_APP_DETAIL } from '@/mock/apps';
 import { DOMAIN_PORT } from '@/store/static';
 import type { AppDetailType } from '@/types/app';
 import { useCopyData } from '@/utils/tools';
-import { getUserNamespace } from '@/utils/user';
-import { Box, Button, Center, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
+import { getUserNamespace, getUserSession } from '@/utils/user';
+import { Box, Button, Center, Circle, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useEffect, useMemo, useRef } from 'react';
@@ -129,7 +129,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
       };
     }
   }, [detailCompleted]);
-
+  const planName = getUserSession()?.user.subscription.subscriptionPlan || 'Free';
   return (
     <Box position={'relative'}>
       <Box
@@ -270,7 +270,14 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                 {t('Accessible')}
                               </Center>
                             ) : (
-                              <MyTooltip label={t('ReadyTip')} placement={'bottom'}>
+                              <MyTooltip
+                                label={
+                                  planName !== 'Pro'
+                                    ? 'Upgrade your plan for faster deployment'
+                                    : t('ReadyTip')
+                                }
+                                placement={'bottom'}
+                              >
                                 <Center
                                   fontSize={'12px'}
                                   fontWeight={400}

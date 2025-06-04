@@ -5,6 +5,7 @@ export type Region = {
   location: string;
   description: {
     isFree: boolean;
+    color?: string;
     prices: {
       name: string;
       unit_price: number;
@@ -16,5 +17,6 @@ export type Region = {
       zh: string;
       en: string;
     };
+    paid?: boolean;
   };
 };

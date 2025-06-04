@@ -42,7 +42,7 @@ import { customAlphabet } from 'nanoid';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import type { ConfigMapType } from './ConfigmapModal';
 import type { CustomAccessModalParams } from './CustomAccessModal';
@@ -51,7 +51,10 @@ import QuotaBox from './QuotaBox';
 import type { StoreType } from './StoreModal';
 import styles from './index.module.scss';
 import Tabs from '@/components/Tabs';
-import { ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, LockIcon, Plus } from 'lucide-react';
+import { sealosApp } from 'sealos-desktop-sdk/app';
+import { getUserSession } from '@/utils/user';
+
 const CustomAccessModal = dynamic(() => import('./CustomAccessModal'));
 const ConfigmapModal = dynamic(() => import('./ConfigmapModal'));
 const StoreModal = dynamic(() => import('./StoreModal'));
@@ -391,6 +394,18 @@ const Form = ({
       );
   }, [getValues, refresh]);
 
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
+  const cpuVal = watch('cpu');
+  const memoryVal = watch('memory');
+  const exceedLimit = useMemo(() => {
+    if (planName === 'Pro') {
+      return cpuVal >= 128000 || memoryVal >= 256 * 1024;
+    } else if (planName === 'Hobby') {
+      return cpuVal >= 16000 || memoryVal >= 32 * 1024;
+    } else {
+      return cpuVal >= 4000 || memoryVal >= 8 * 1024;
+    }
+  }, [planName, watch]);
   return (
     <>
       <Grid
@@ -663,6 +678,13 @@ const Form = ({
             >
               <Box>
                 <Label>{t('Deployment Mode')}</Label>
+                <Text color={'#71717A'} py={'8px'}>
+                  {planName === 'Free'
+                    ? 'Max for Free tier: 4 vCPU, 8 GB RAM'
+                    : planName === 'Hobby'
+                    ? 'Max for Hobby tier: 16 vCPU, 32 GB RAM'
+                    : 'Max for Pro tier: 128 vCPU, 256 GB RAM'}
+                </Text>
                 <Flex gap={4} mt={'20px'} mb={'32px'}>
                   <Flex
                     alignItems="center"
@@ -915,6 +937,35 @@ const Form = ({
                   step={1}
                 />
               </Flex>
+              {exceedLimit && (
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="center"
+                  padding="12px"
+                  gap="12px"
+                  width="full"
+                  bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
+                  borderRadius="8px"
+                >
+                  <Flex gap={'8px'}>
+                    <LockIcon
+                      size={'16px'}
+                      color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
+                    ></LockIcon>
+                    <Text>Upgrade your plan to unlock higher usage capacity</Text>
+                  </Flex>
+                  <Button
+                    variant={'unstyled'}
+                    onClick={() => {
+                      sealosApp.runEvents('openUpgradePlan');
+                    }}
+                    bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+                    bgClip="text"
+                  >
+                    Upgrade Now
+                  </Button>
+                </Flex>
+              )}
             </Box>
           </Flex>
 

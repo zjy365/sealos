@@ -17,6 +17,15 @@ export type UserInfo = {
   readonly userUid: string;
   readonly userId: string;
   readonly userCrUid: string;
+  readonly subscription:
+    | {
+        status: string | null;
+        subscriptionPlan: {
+          name: string;
+        };
+      }
+    | null
+    | undefined;
   // readonly globalUserId: string;
 };
 

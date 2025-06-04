@@ -19,10 +19,11 @@ import { useTranslation } from 'next-i18next';
 import { ChangeEventHandler, useMemo, useState } from 'react';
 import { DateRange, DayPicker, SelectRangeEventHandler } from 'react-day-picker';
 
-import { MySelect } from '@sealos/ui';
+import { MySelect, MyTooltip } from '@sealos/ui';
 import MyIcon from '@/components/Icon';
 import useDateTimeStore from '@/store/date';
 import { formatTimeRange, parseTimeRange } from '@/utils/timeRange';
+import { getUserSession } from '@/utils/user';
 
 interface DatePickerProps extends FlexProps {
   isDisabled?: boolean;
@@ -46,7 +47,7 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
     from: startDateTime,
     to: endDateTime
   };
-
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
   const recentDateList = useMemo(
     () => [
       {
@@ -54,11 +55,11 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
         value: getDateRange('5m'),
         compareValue: '5m'
       },
-      {
-        label: `${t('recently')} 15 ${t('minute')}`,
-        value: getDateRange('15m'),
-        compareValue: '15m'
-      },
+      // {
+      //   label: `${t('recently')} 15 ${t('minute')}`,
+      //   value: getDateRange('15m'),
+      //   compareValue: '15m'
+      // },
       {
         label: `${t('recently')} 30 ${t('minute')}`,
         value: getDateRange('30m'),
@@ -98,6 +99,12 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
         label: `${t('recently')} 7 ${t('day')}`,
         value: getDateRange('7d'),
         compareValue: '7d'
+      },
+
+      {
+        label: `${t('recently')} 30 ${t('day')}`,
+        value: getDateRange('30d'),
+        compareValue: '30d'
       }
     ],
     [t]
@@ -387,25 +394,35 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
             <Flex flex={1}>
               <Flex flexDir={'column'} gap={'4px'} p={'12px 8px'} w={'100%'}>
                 {recentDateList.map((item) => (
-                  <Button
-                    height={'32px'}
+                  <MyTooltip
+                    isDisabled={
+                      item.compareValue !== '30d' && (planName === 'Hobby' || planName === 'Pro')
+                    }
+                    label="Upgrade your plan for longer period"
                     key={JSON.stringify(item.value)}
-                    variant={'ghost'}
-                    color={'grayModern.900'}
-                    fontSize={'12px'}
-                    fontWeight={'400'}
-                    justifyContent={'flex-start'}
-                    {...(recentDate.compareValue === item.compareValue && {
-                      bg: 'brightBlue.50',
-                      color: 'brightBlue.600'
-                    })}
-                    _hover={{
-                      bg: 'rgba(17, 24, 36, 0.05)'
-                    }}
-                    onClick={() => handleRecentDateClick(item)}
                   >
-                    {item.label}
-                  </Button>
+                    <Button
+                      height={'32px'}
+                      variant={'ghost'}
+                      color={'grayModern.900'}
+                      fontSize={'12px'}
+                      fontWeight={'400'}
+                      isDisabled={
+                        item.compareValue !== '30d' && (planName === 'Hobby' || planName === 'Pro')
+                      }
+                      justifyContent={'flex-start'}
+                      {...(recentDate.compareValue === item.compareValue && {
+                        bg: 'brightBlue.50',
+                        color: 'brightBlue.600'
+                      })}
+                      _hover={{
+                        bg: 'rgba(17, 24, 36, 0.05)'
+                      }}
+                      onClick={() => handleRecentDateClick(item)}
+                    >
+                      {item.label}
+                    </Button>
+                  </MyTooltip>
                 ))}
               </Flex>
             </Flex>

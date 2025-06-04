@@ -15,7 +15,9 @@ import {
   NumberInputField,
   NumberInputStepper,
   NumberIncrementStepper,
-  NumberDecrementStepper
+  NumberDecrementStepper,
+  Text,
+  Flex
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import MyFormControl from '@/components/FormControl';
@@ -23,6 +25,10 @@ import { useTranslation } from 'next-i18next';
 import { pathToNameFormat } from '@/utils/tools';
 import { MyTooltip } from '@sealos/ui';
 import { PVC_STORAGE_MAX } from '@/store/static';
+import { getUserSession } from '@/utils/user';
+import { sealosApp } from 'sealos-desktop-sdk/app';
+import { PLAN_LIMIT } from '@/constants/account';
+import { LockIcon } from 'lucide-react';
 
 export type StoreType = {
   id?: string;
@@ -58,6 +64,7 @@ const StoreModal = ({
     register,
     setValue,
     handleSubmit,
+    watch,
     formState: { errors }
   } = useForm({
     defaultValues: defaultValue
@@ -70,7 +77,8 @@ const StoreModal = ({
       title: `${t('Add')} ${t('Storage')}`
     }
   };
-
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
+  const exceedLimit = planName == 'Free' && watch('value') < PLAN_LIMIT['Free'].storage;
   return (
     <>
       <Modal isOpen onClose={closeCb} lockFocusAcrossFrames={false}>
@@ -97,7 +105,13 @@ const StoreModal = ({
                 <Box mb={'8px'} fontSize={'14px'} fontWeight={500} color={'grayModern.900'}>
                   {t('capacity')}
                 </Box>
-                <MyTooltip label={`${t('Storage Range')}: ${minVal}~${PVC_STORAGE_MAX} Gi`}>
+                <MyTooltip
+                  isDisabled={planName !== 'Free'}
+                  label={
+                    'Free plan includes up to 10GB. Upgrade your plan to enjoy unlimited capacity.'
+                    // `${t('Storage Range')}: ${minVal}~${PVC_STORAGE_MAX} Gi`
+                  }
+                >
                   <NumberInput max={PVC_STORAGE_MAX} min={minVal} step={1} position={'relative'}>
                     <Box
                       position={'absolute'}
@@ -141,6 +155,35 @@ const StoreModal = ({
                   </NumberInput>
                 </MyTooltip>
               </FormControl>
+              {exceedLimit && (
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="center"
+                  padding="12px"
+                  gap="12px"
+                  width="full"
+                  bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
+                  borderRadius="8px"
+                >
+                  <Flex gap={'8px'}>
+                    <LockIcon
+                      size={'16px'}
+                      color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
+                    ></LockIcon>
+                    <Text>Upgrade your plan to unlock higher usage capacity</Text>
+                  </Flex>
+                  <Button
+                    variant={'unstyled'}
+                    onClick={() => {
+                      sealosApp.runEvents('openUpgradePlan');
+                    }}
+                    bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+                    bgClip="text"
+                  >
+                    Upgrade Now
+                  </Button>
+                </Flex>
+              )}
               <MyFormControl showError errorText={errors.path?.message} pb={2}>
                 <Box mb={'8px'} fontSize={'14px'} fontWeight={500} color={'grayModern.900'}>
                   {t('mount path')}

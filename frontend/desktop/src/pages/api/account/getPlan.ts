@@ -21,9 +21,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           select: {
             subscriptionPlan: {
               select: {
-                name: true
+                name: true,
+                max_seats: true,
+                max_workspaces: true
               }
-            }
+            },
+            status: true
           }
         }
       }

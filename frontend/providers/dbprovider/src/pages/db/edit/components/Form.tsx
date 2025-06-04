@@ -18,6 +18,7 @@ import type { QueryType } from '@/types';
 import { AutoBackupType } from '@/types/backup';
 import type { DBEditType } from '@/types/db';
 import { I18nCommonKey } from '@/types/i18next';
+import { getUserSession } from '@/utils/user';
 import { InfoOutlineIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -42,6 +43,7 @@ import {
 } from '@chakra-ui/react';
 import { MySelect, MySlider, MyTooltip, RangeInput, Tabs } from '@sealos/ui';
 import { throttle } from 'lodash';
+import { LockIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
@@ -67,6 +69,7 @@ const Form = ({
     register,
     setValue,
     getValues,
+    watch,
     formState: { errors }
   } = formHook;
 
@@ -150,7 +153,18 @@ const Form = ({
     alignItems: 'center',
     backgroundColor: 'grayModern.50'
   };
-
+  const cpuVal = watch('cpu');
+  const memoryVal = watch('memory');
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
+  const exceedLimit = useMemo(() => {
+    if (planName === 'Pro') {
+      return cpuVal >= 128000 || memoryVal >= 256 * 1024;
+    } else if (planName === 'Hobby') {
+      return cpuVal >= 16000 || memoryVal >= 32 * 1024;
+    } else {
+      return cpuVal >= 4000 || memoryVal >= 8 * 1024;
+    }
+  }, [planName, watch]);
   return (
     <>
       <Grid
@@ -519,6 +533,35 @@ const Form = ({
                   </MyTooltip>
                 </Flex>
               </FormControl>
+              {exceedLimit && (
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="center"
+                  padding="12px"
+                  gap="12px"
+                  width="full"
+                  bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
+                  borderRadius="8px"
+                >
+                  <Flex gap={'8px'}>
+                    <LockIcon
+                      size={'16px'}
+                      color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
+                    ></LockIcon>
+                    <Text>Upgrade your plan to unlock higher usage capacity</Text>
+                  </Flex>
+                  <Button
+                    variant={'unstyled'}
+                    onClick={() => {
+                      sealosApp.runEvents('openUpgradePlan');
+                    }}
+                    bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+                    bgClip="text"
+                  >
+                    Upgrade Now
+                  </Button>
+                </Flex>
+              )}
             </Box>
           </Box>
           {BackupSupportedDBTypeList.includes(getValues('dbType')) && (

@@ -49,6 +49,7 @@ import UpgradePlanModal from './UpgradePlanModal';
 import GuideModal from './GuideModal';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
 import { getUserPlan } from '@/api/platform';
+import Cost from '../cc/Cost';
 
 const baseItemStyle = {
   minW: '40px',
@@ -288,6 +289,7 @@ export default function Account() {
             </Center>
             <Notification key={'notification'} disclosure={showDisclosure} onAmount={onAmount} />
           </Box>
+          <Cost />
           <Menu>
             <MenuButton height={'40px'} width={'40px'}>
               <Center width={'40px'} height={'40px'} bg={'#9FC0FF'} borderRadius="full" mr={'8px'}>

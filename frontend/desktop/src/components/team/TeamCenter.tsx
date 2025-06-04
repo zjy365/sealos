@@ -349,6 +349,7 @@ export default function TeamCenter({
                           <InviteMember
                             ownRole={curTeamUser?.role ?? UserRole.Developer}
                             ns_uid={ns_uid}
+                            seat={users.length}
                             workspaceName={
                               isPrivate ? t('common:default_team') : namespace.teamName
                             }

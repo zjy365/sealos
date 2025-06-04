@@ -20,7 +20,18 @@ import {
 } from '@/utils/deployYaml2Json';
 import { serviceSideProps } from '@/utils/i18n';
 import { getErrText, patchYamlList } from '@/utils/tools';
-import { Box, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  ButtonGroup,
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Text,
+  useDisclosure
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
@@ -32,6 +43,7 @@ import Header from './components/Header';
 import Yaml from './components/Yaml';
 import { useMessage } from '@sealos/ui';
 import { customAlphabet } from 'nanoid';
+import { sealosApp } from 'sealos-desktop-sdk/app';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 12);
 
@@ -276,7 +288,9 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
       }
     }
   );
-
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    defaultIsOpen: false
+  });
   useEffect(() => {
     if (tabType === 'yaml') {
       try {
@@ -361,12 +375,14 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
               const quoteCheckRes = checkQuotaAllow(data, oldAppEditData.current);
 
               if (quoteCheckRes) {
-                return toast({
-                  status: 'warning',
-                  title: t(quoteCheckRes),
-                  duration: 5000,
-                  isClosable: true
-                });
+                onOpen();
+                return;
+                // return toast({
+                //   status: 'warning',
+                //   title: t(quoteCheckRes),
+                //   duration: 5000,
+                //   isClosable: true
+                // });
               }
               // check network port
               if (!checkNetworkPorts(data.networks)) {
@@ -422,6 +438,59 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
       {!!errorMessage && (
         <ErrorModal title={applyError} content={errorMessage} onClose={() => setErrorMessage('')} />
       )}
+
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent
+          maxW="450px"
+          p="4px"
+          bgColor={'rgb(241, 241, 241)'}
+          borderRadius="18px"
+          boxShadow="0px 4px 6px -2px #0000000D;0px 10px 15px -3px #0000001A;"
+          outline={'transparent solid 2px'}
+        >
+          <ModalBody
+            bgColor={'white'}
+            borderRadius="16px"
+            border="1px solid var(--base-border, #E4E4E7)"
+            p="24px"
+            boxShadow="0px 4px 6px -2px #0000000D;0px 10px 15px -3px #0000001A;"
+          >
+            <Text fontSize="24px" fontWeight="600" mb={'16px'}>
+              Resource Limit Exceeded
+            </Text>
+            <Text py={'16px'}>
+              Your current Free plan includes up to {formHook.watch('cpu') / 1000} vCPU,
+              {formHook.watch('memory') / 1024}GB RAM, and{' '}
+              {formHook.watch('storeList').reduce((p, c) => p + c.value, 0)}GB storage. To deploy by
+              your configuration, please upgrade your plan.
+            </Text>
+            <Flex gap="12px" mt={'16px'}>
+              <Button
+                w={'120px'}
+                h="40px"
+                variant={'solid'}
+                onClick={() => {
+                  sealosApp.runEvents('openUpgradePlan');
+                  onClose();
+                }}
+              >
+                Upgrade
+              </Button>
+              <Button
+                w={'120px'}
+                h="40px"
+                variant={'outline'}
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

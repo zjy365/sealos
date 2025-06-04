@@ -96,7 +96,7 @@
   "face_recognition_success": "Personal real-name success",
   "failed_to_generate_invitation_link": "Failed to generate invitation link",
   "failed_to_get_qr_code": "Failed to obtain real name QR code",
-  "flow": " Network",
+  "flow": "Network",
   "force_delete_keywords": "No resources can be recovered after account deletion.",
   "force_delete_tips": "There are still active resources in your account. Once deleted, these resources will be unrecoverable. Please ensure you have have a backup of any important data.",
   "from": "From",

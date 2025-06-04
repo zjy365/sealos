@@ -3,14 +3,14 @@ import { useGlobalStore } from '@/store/global';
 import { useGuideStore } from '@/store/guide';
 import type { YamlItemType } from '@/types/index';
 import { downLoadBold } from '@/utils/tools';
-import { Box, Button, Flex, Text, Center } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, Center, useDisclosure } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
 import { startDriver } from '@/hooks/driver';
 import { quitGuideDriverObj } from '@/hooks/driver';
-
+import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/react';
 const Header = ({
   appName,
   title,

@@ -12,6 +12,15 @@ export type UserInfo = {
   readonly nsid: string;
   readonly ns_uid: string;
   readonly userId: string;
+  readonly subscription:
+    | {
+        status: string | null;
+        subscriptionPlan: {
+          name: string;
+        };
+      }
+    | null
+    | undefined;
 };
 
 export type KubeConfig = string;
@@ -34,6 +43,12 @@ export type UserInfoV1 = Readonly<{
   avatar: string;
   k8sUsername: string;
   nsid: string;
+  subscription: {
+    status: string;
+    subscriptionPlan: {
+      name: string;
+    };
+  };
 }>;
 
 export type SessionV1 = {

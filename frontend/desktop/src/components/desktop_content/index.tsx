@@ -142,6 +142,20 @@ export default function Desktop(props: any) {
     router.replace(`https://${cloudConfig?.domain || 'console.run.claw.cloud'}/login`);
   }, [cloudConfig?.domain]);
 
+  const { taskComponentState, setTaskComponentState } = useDesktopConfigStore();
+  // const { UserGuide, tasks, desktopGuide, handleCloseTaskModal } = useDriver();
+  const openUpgradePlan = () => {
+    openDesktopApp({
+      appKey: 'system-account-center',
+      query: {
+        scene: 'upgrade'
+      },
+      messageData: {
+        scene: 'upgrade'
+      },
+      pathname: '/'
+    });
+  };
   useEffect(() => {
     const cleanup = createMasterAPP();
     return cleanup;
@@ -176,6 +190,11 @@ export default function Desktop(props: any) {
     });
     return cleanup;
   }, []);
+  useEffect(() => {
+    const cleanup = masterApp?.addEventListen('openUpgradePlan', openUpgradePlan);
+    return cleanup;
+  }, []);
+
   useEffect(() => {
     if (infoData.isSuccess && commonConfig?.realNameAuthEnabled) {
       if (!infoData?.data?.realName && !infoData?.data?.enterpriseRealName) {

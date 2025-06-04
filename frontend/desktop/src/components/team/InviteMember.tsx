@@ -17,28 +17,32 @@ import {
   Spinner,
   ButtonProps,
   HStack,
-  useToast
+  useToast,
+  Tooltip
 } from '@chakra-ui/react';
 import { MouseEventHandler, useState } from 'react';
 import { ROLE_LIST, UserRole } from '@/types/team';
 import useSessionStore from '@/stores/session';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getInviteCodeRequest, inviteMemberRequest } from '@/api/namespace';
-import { vaildManage } from '@/utils/tools';
+import { isWithinLimit, vaildManage } from '@/utils/tools';
 import { ApiResp } from '@/types';
 import { useTranslation } from 'next-i18next';
-import { GroupAddIcon } from '@sealos/ui';
+import { GroupAddIcon, MyTooltip } from '@sealos/ui';
 import { useCopyData } from '@/hooks/useCopyData';
 import { Plus } from 'lucide-react';
+import { getUserPlan } from '@/api/platform';
 
 export default function InviteMember({
   ns_uid,
   workspaceName,
+  seat,
   ownRole,
   ...props
 }: ButtonProps & {
   ns_uid: string;
   workspaceName: string;
+  seat: number;
   ownRole: UserRole;
 }) {
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -48,6 +52,11 @@ export default function InviteMember({
   const [role, setRole] = useState(UserRole.Developer);
   const toast = useToast();
   const queryClient = useQueryClient();
+  const { data: plan, isSuccess } = useQuery(['getUserPlan'], () => getUserPlan(), {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
   const mutation = useMutation({
     mutationFn: inviteMemberRequest,
     onSuccess() {
@@ -92,20 +101,34 @@ export default function InviteMember({
     const link = generateLink(code);
     await copyData(link);
   };
+  const canInvite = isWithinLimit(
+    seat,
+    Number(plan?.data?.subscription.subscriptionPlan.max_seats) || 1
+  );
   return (
     <>
       {[UserRole.Manager, UserRole.Owner].includes(ownRole) ? (
-        <Button
-          height={'36px'}
-          variant={'solid'}
-          borderRadius={'8px'}
-          {...props}
-          color={'#FAFAFA'}
-          leftIcon={<Plus size={16} color="#FAFAFA" />}
-          onClick={onOpen}
+        <MyTooltip
+          label={'Seat limit reached. Upgrade your plan to lift the limit.'}
+          isDisabled={canInvite}
+          placement="bottom"
         >
-          {t('common:invite_member')}
-        </Button>
+          <Button
+            height={'36px'}
+            variant={'solid'}
+            borderRadius={'8px'}
+            {...props}
+            disabled={!canInvite}
+            _disabled={{
+              opacity: '0.5'
+            }}
+            color={'#FAFAFA'}
+            leftIcon={<Plus size={16} color="#FAFAFA" />}
+            onClick={onOpen}
+          >
+            {t('common:invite_member')}
+          </Button>
+        </MyTooltip>
       ) : (
         <></>
       )}

@@ -13,7 +13,6 @@ import { parseOpenappQuery } from '@/utils/format';
 import { agencyReferral, referral } from '@/utils/referral';
 import { sessionConfig, setBaiduId, setInviterId, setUserSemData } from '@/utils/sessionConfig';
 import { switchKubeconfigNamespace } from '@/utils/switchKubeconfigNamespace';
-import { compareFirstLanguages } from '@/utils/tools';
 import { Box, useColorMode } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
