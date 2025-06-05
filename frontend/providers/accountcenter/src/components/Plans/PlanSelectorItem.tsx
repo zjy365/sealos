@@ -20,9 +20,9 @@ export interface PlanSelectorItemProps {
   lastTransaction: TLastTransactionResponse | undefined;
   onSelect?: (plan: TPlanApiResponse) => void;
   onCancelSuccess?: () => void;
-  hoverIndex: number;
-  setHoverIndex: (index: number) => void;
-  expanded: boolean;
+  hoverIndex?: number;
+  setHoverIndex?: (index: number) => void;
+  expanded?: boolean;
 }
 const buttonStyle: ButtonProps = {
   borderRadius: '8px',
@@ -47,8 +47,8 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   lastTransaction,
   onSelect,
   onCancelSuccess,
-  hoverIndex,
-  setHoverIndex,
+  hoverIndex = -1,
+  setHoverIndex = () => {},
   expanded = false
 }) => {
   const { t } = useTranslation();

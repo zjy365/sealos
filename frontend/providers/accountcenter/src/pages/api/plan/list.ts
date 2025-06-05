@@ -5,6 +5,27 @@ import { getRegionByUid, makeAPIClient } from '@/service/backend/region';
 import { jsonRes } from '@/service/backend/response';
 import { AxiosError, HttpStatusCode } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { TPlanApiResponse } from '@/schema/plan';
+import { it } from 'node:test';
+
+const tempAddNodePort = (item: any) => {
+  let nodePort = 1;
+  let podCount = 4;
+  let logRetention = 7;
+  switch (item.Name) {
+    case 'Pro':
+    case 'Hobby':
+      nodePort = 100;
+      podCount = 100;
+      logRetention = 30;
+      break;
+  }
+  if (item.NodePort == undefined) item.NodePort = nodePort;
+  if (item.PodCount == undefined) item.PodCount = podCount;
+  if (item.LogRetention == undefined) item.LogRetention = logRetention;
+  return item;
+};
 export default async function handler(req: NextApiRequest, resp: NextApiResponse) {
   try {
     let payload: AccessTokenPayload;
@@ -17,10 +38,10 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     const region = await getRegionByUid(req.body.regionUid);
     const client = makeAPIClient(region, payload);
     const res = await client.post('/payment/v1alpha1/subscription/plan-list');
-    const appMap = res.data.plans;
+    const appMap = res.data.plans.map(tempAddNodePort);
     const validation = await PlanListSchema.safeParseAsync(appMap);
     if (!validation.success) {
-      console.log(validation.error.message);
+      console.log('validate failed: ', validation.error.message);
       return jsonRes(resp, {
         code: 500,
         message: 'Invalid response format'
@@ -41,7 +62,10 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       maxResources: plan.MaxResources,
       createdAt: plan.CreatedAt,
       updatedAt: plan.UpdatedAt,
-      mostPopular: plan.MostPopular
+      mostPopular: plan.MostPopular,
+      nodePort: plan.NodePort,
+      podCount: plan.PodCount,
+      logRetention: plan.LogRetention
     }));
     return jsonRes(resp, {
       code: 200,

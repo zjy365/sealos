@@ -101,17 +101,17 @@ export function useGetPlanFeatureTexts() {
     //   key: 'br-1'
     // });
     res.push({
-      text: `${plan?.nodePort || isFree ? 1 : 100} ${t('nodePort')}`,
+      text: `${plan?.nodePort || (isFree ? 1 : 100)} ${t('nodePort')}`,
       key: 'nodeport-withIcon'
     });
     res.push({
-      text: `${plan?.podCount || isFree ? 4 : 100} ${t('pod', {
-        count: plan?.podCount || isFree ? 4 : 100
+      text: `${plan?.podCount || (isFree ? 4 : 100)} ${t('pod', {
+        count: plan?.podCount || (isFree ? 4 : 100)
       })}`,
       key: 'pod'
     });
     res.push({
-      text: `${plan?.logRetention || isFree ? 7 : 30} ${t('dayslog')}`,
+      text: `${plan?.logRetention || (isFree ? 7 : 30)} ${t('dayslog')}`,
       key: 'log'
     });
     res.push({
