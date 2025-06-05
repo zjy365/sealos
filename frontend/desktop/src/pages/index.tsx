@@ -214,6 +214,7 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
       return;
     }
   }, [workspaceInviteCode]);
+
   useEffect(() => {
     (async (state) => {
       try {
@@ -239,6 +240,7 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
       }
     })();
   }, [commonConfig, firstUse]);
+
   return (
     <Box position={'relative'} overflow={'hidden'} w="100vw" h="100vh">
       <Head>

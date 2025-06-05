@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { LockIcon } from 'lucide-react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { getUserSession } from '@/utils/user';
+import { PLAN_LIMIT } from '@/constants/account';
 
 export default function Usage({
   countGpuInventory
@@ -21,14 +22,9 @@ export default function Usage({
   const memoryVal = watch('memory');
   const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
   const exceedLimit = useMemo(() => {
-    if (planName === 'Pro') {
-      return cpuVal >= 128000 || memoryVal >= 256 * 1024;
-    } else if (planName === 'Hobby') {
-      return cpuVal >= 16000 || memoryVal >= 32 * 1024;
-    } else {
-      return cpuVal >= 4000 || memoryVal >= 8 * 1024;
-    }
-  }, [planName, watch]);
+    const limit = PLAN_LIMIT[planName as 'Free'];
+    return cpuVal >= limit.cpu * 1000 || memoryVal >= limit.memory * 1024;
+  }, [planName, cpuVal, memoryVal]);
   return (
     <>
       <Box h={'40px'} mb={'15px'}>
@@ -42,6 +38,7 @@ export default function Usage({
           justifyContent="space-between"
           alignItems="center"
           padding="12px"
+          mt={'64px'}
           gap="12px"
           width="full"
           bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
@@ -57,7 +54,13 @@ export default function Usage({
           <Button
             variant={'unstyled'}
             onClick={() => {
-              sealosApp.runEvents('openUpgradePlan');
+              sealosApp.runEvents('openDesktopApp', {
+                appKey: 'system-account-center',
+                pathname: '/',
+                query: {
+                  scene: 'upgrade'
+                }
+              });
             }}
             bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
             bgClip="text"

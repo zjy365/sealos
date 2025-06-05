@@ -271,6 +271,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                               </Center>
                             ) : (
                               <MyTooltip
+                                isDisabled={planName !== 'Pro'}
                                 label={
                                   planName !== 'Pro'
                                     ? 'Upgrade your plan for faster deployment'
@@ -288,7 +289,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                   gap={'2px'}
                                   minW={'63px'}
                                 >
-                                  <MyIcon
+                                  {/* <MyIcon
                                     name={'loading'}
                                     w={'12px'}
                                     h={'12px'}
@@ -303,7 +304,14 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                         }
                                       }
                                     }}
-                                  />
+                                  /> */}
+                                  <Center
+                                    w={'6px'}
+                                    h={'6px'}
+                                    borderRadius={'full'}
+                                    bg={'#71717A'}
+                                    flexShrink={0}
+                                  ></Center>
                                   {t('Ready')}
                                 </Center>
                               </MyTooltip>

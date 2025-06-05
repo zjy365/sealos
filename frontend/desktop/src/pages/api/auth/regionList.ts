@@ -19,7 +19,12 @@ export default ErrorHandler(async function handler(req: NextApiRequest, res: Nex
     data: {
       regionList: regionList.map((region) => ({
         ...region,
-        description: region.description ? JSON.parse(region.description) : null
+        description: region.description
+          ? {
+              isFree: true,
+              ...JSON.parse(region.description)
+            }
+          : null
       }))
     }
   });
