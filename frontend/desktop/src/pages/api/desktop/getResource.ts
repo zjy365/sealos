@@ -13,8 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const payload = await verifyAccessToken(req.headers);
     if (!payload) return jsonRes(res, { code: 401, message: 'failed to get info' });
     const namespace = payload.workspaceId;
-    // const _kc = await getUserKubeconfigNotPatch(payload.userCrName);
-    // if (!_kc) return jsonRes(res, { code: 404, message: 'user is not found' });
+    const userKc = await getUserKubeconfigNotPatch(payload.userCrName);
+    if (!userKc) return jsonRes(res, { code: 404, message: 'user is not found' });
     // const realKc = switchKubeconfigNamespace(_kc, namespace);
     // const kc = K8sApi(realKc);
     // if (!kc) return jsonRes(res, { code: 404, message: 'The kubeconfig is not found' });
@@ -85,6 +85,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       for (const volume of pod.spec.volumes) {
         if (!volume.persistentVolumeClaim?.claimName) continue;
         const pvcName = volume.persistentVolumeClaim.claimName;
+        const realKc = switchKubeconfigNamespace(userKc, namespace);
+        const kc = K8sApi(realKc);
         try {
           const pvc = await kc
             .makeApiClient(k8s.CoreV1Api)

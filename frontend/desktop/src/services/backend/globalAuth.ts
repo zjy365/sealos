@@ -17,7 +17,7 @@ import { enableSignUp, enableTracking, getRegionUid } from '../enable';
 import { trackSignUp } from './tracking';
 import { loginFailureCounter, TloginFailureMessage } from './promtheus/loginFailureCounter';
 import { HttpStatusCode } from 'axios';
-import { sendUserSigninEvent, sendUserSignupEvent } from './event';
+import { sendUserSigninEvent, sendUserSignupEvent } from './amqp';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 
