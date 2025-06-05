@@ -48,6 +48,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { sealosApp } from 'sealos-desktop-sdk/app';
 
 const Form = ({
   formHook,
