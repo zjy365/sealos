@@ -21,8 +21,11 @@ export default function SignLayout({ children }: { children: React.ReactNode }) 
       const regionUid = cloudConfig?.regionUID;
       const regionList = data?.data?.regionList;
       const region = regionList.find((r) => r.uid === regionUid);
-      if (region && region.description.paid) {
-        const url = 'console.run.claw.cloud';
+      if (region && !region.description.isFree) {
+        const freeRegion = regionList.filter((r) => r.description.isFree);
+        const url =
+          'https://' + (freeRegion.length > 0 ? freeRegion[0].domain : 'console.run.claw.cloud');
+
         window.location.replace(url);
       }
     }

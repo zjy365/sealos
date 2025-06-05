@@ -17,6 +17,6 @@ export type Region = {
       zh: string;
       en: string;
     };
-    paid?: boolean;
+    // paid?: boolean;
   };
 };

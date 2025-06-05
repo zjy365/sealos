@@ -395,9 +395,8 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
               <Flex flexDir={'column'} gap={'4px'} p={'12px 8px'} w={'100%'}>
                 {recentDateList.map((item) => (
                   <MyTooltip
-                    isDisabled={
-                      item.compareValue !== '30d' && (planName === 'Hobby' || planName === 'Pro')
-                    }
+                    isDisabled={item.compareValue !== '30d'}
+                    offset={[0, 0]}
                     label="Upgrade your plan for longer period"
                     key={JSON.stringify(item.value)}
                   >

@@ -4,7 +4,6 @@ import LangSelectSimple from '@/components/LangSelect/simple';
 import { useConfigStore } from '@/stores/config';
 import { setCookie } from '@/utils/cookieUtils';
 import { agencyReferral, referral } from '@/utils/referral';
-import { compareFirstLanguages } from '@/utils/tools';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';

@@ -3,7 +3,7 @@ import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { ApiResp, Region } from '@/types';
 import { AccessTokenPayload } from '@/types/token';
-import { Box, Center, Flex, HStack, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, HStack, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
@@ -76,7 +76,7 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
           >
             <Text cursor={'pointer'}>
               {curRegion?.displayName}
-              {curRegion?.description?.isFree === false && userPlan !== 'Free' && (
+              {/* {curRegion?.description?.isFree === false && userPlan !== 'Free' && (
                 <Box
                   display={'inline-block'}
                   px={'8px'}
@@ -93,7 +93,7 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                 >
                   {userPlan}
                 </Box>
-              )}
+              )} */}
             </Text>
             <Center
               bg={disclosure.isOpen ? '#FFF' : ''}
@@ -129,26 +129,29 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                 color={'#18181B'}
                 width={'240px'}
               >
-                <Text px={'8px'} py={'6px'} color={'#71717A'} fontSize={'12px'} fontWeight={'500'}>
+                <Text px={'12px'} py={'6px'} color={'#71717A'} fontSize={'12px'} fontWeight={'500'}>
                   Availability Zone
                 </Text>
                 <VStack alignItems={'stretch'} px={'8px'}>
                   {regionList.map((region) => {
-                    const cpuPrice = region?.description?.prices?.find((p) => p.name === 'CPU');
                     const subscription = plan?.data?.subscription;
                     const notFree = subscription && subscription.subscriptionPlan.name !== 'Free';
                     const canUse = !!(
-                      !region.description.paid ||
+                      region.description.isFree ||
                       (notFree && subscription.status === 'NORMAL')
                     );
                     return (
                       <MyTooltip
                         key={region.uid}
+                        offset={[0, 0]}
+                        width={'220px'}
                         label={'Upgrade your plan to unlock members-only availability zone'}
                         isDisabled={canUse}
                         placement="right"
                       >
-                        <Flex
+                        <Button
+                          variant={'unstyled'}
+                          display={'flex'}
                           fontSize={'14px'}
                           justifyContent={'space-between'}
                           alignItems={'center'}
@@ -156,6 +159,7 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                           borderRadius={'8px'}
                           py={'10px'}
                           px={'8px'}
+                          isDisabled={!canUse}
                           onClick={() => {
                             canUse && handleCick(region);
                           }}
@@ -165,7 +169,7 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                             bgColor: '#F4F4F5'
                           }}
                         >
-                          <Flex>
+                          <Flex alignItems={'center'}>
                             <Box
                               bgColor={region.description.color || '#DC2626'}
                               boxSize={'6px'}
@@ -175,10 +179,11 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                             <Text color={canUse ? '#18181B' : '#71717A'}>
                               {region?.displayName}
                             </Text>
-                            {notFree && (
+                            {!region.description.isFree && (
                               <Flex
                                 ml={'8px'}
                                 px={'8px'}
+                                borderRadius={'full'}
                                 py={'2px'}
                                 color={'#FFFFFF'}
                                 fontSize={'12px'}
@@ -189,27 +194,7 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                             )}
                           </Flex>
                           {region.uid === curRegionUid && <CheckIcon size={16} color={'#1C4EF5'} />}
-
-                          {/* <Divider bg={'rgba(255, 255, 255, 0.10)'} my={'12px'} /> */}
-                          {/* <Box px={'16px'} fontSize={'11px'} fontWeight={'500'}>
-                          <HStack color={'rgba(255, 255, 255, 0.80)'} gap={'4px'} mb={'2px'}>
-                            <ProviderIcon boxSize={'12px'} />
-                            <Text>{t('cloudProviders:provider')}</Text>
-                          </HStack>
-                          <Text color={'white'} mb={'8px'}>
-                            {t(region?.description?.provider as I18nCloudProvidersKey, {
-                              ns: 'cloudProviders'
-                            })}
-                          </Text>
-                          <HStack color={'rgba(255, 255, 255, 0.80)'} gap={'4px'} mb={'2px'}>
-                            <InfoIcon boxSize={'12px'} />
-                            <Text>{t('common:description')}</Text>
-                          </HStack>
-                          <Text whiteSpace={'pre-wrap'} color={'white'} lineHeight={'20px'}>
-                            {region?.description?.description?.[i18n.language as 'zh' | 'en']}
-                          </Text>
-                        </Box> */}
-                        </Flex>
+                        </Button>
                       </MyTooltip>
                     );
                   })}

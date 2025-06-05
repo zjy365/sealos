@@ -7,8 +7,10 @@ import {
   enableGoogle,
   enablePassword,
   enablePhoneSms,
-  enableWechat
+  enableWechat,
+  getRegionUid
 } from '@/services/enable';
+import { Region } from '@/types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ProviderType } from 'prisma/global/generated/client';
 
@@ -20,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         code: 401,
         message: 'invalid token'
       });
-    const [regionData, globalData, realNameInfo, enterpriseRealNameInfo, restrictedUser] =
+    const [regionData, globalData, realNameInfo, enterpriseRealNameInfo, restrictedUser, region] =
       await Promise.all([
         prisma.userCr.findUnique({
           where: {
@@ -36,6 +38,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               select: {
                 providerType: true,
                 providerId: true
+              }
+            },
+            subscription: {
+              select: {
+                subscriptionPlan: {
+                  select: {
+                    name: true
+                  }
+                }
               }
             }
           }
@@ -54,15 +65,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           where: {
             userUid: regionUser.userUid
           }
+        }),
+        globalPrisma.region.findUnique({
+          where: {
+            uid: getRegionUid()
+          }
         })
       ]);
-
-    if (!regionData || !globalData)
+    if (!regionData || !globalData || !region)
       return jsonRes(res, {
-        code: 404,
+        code: 401,
         message: 'Not found'
       });
-
+    const regionDescription: any = region.description ? JSON.parse(region.description) : null;
+    if (
+      globalData.subscription?.subscriptionPlan.name === 'Free' &&
+      regionDescription?.isFree === false
+    ) {
+      return jsonRes(res, {
+        code: 401,
+        message: 'logout'
+      });
+    }
     const info: {
       oauthProvider: { providerType: ProviderType; providerId: string }[];
       uid: string;
