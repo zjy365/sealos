@@ -129,7 +129,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
       };
     }
   }, [detailCompleted]);
-  const planName = getUserSession()?.user.subscription.subscriptionPlan || 'Free';
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
   return (
     <Box position={'relative'}>
       <Box
