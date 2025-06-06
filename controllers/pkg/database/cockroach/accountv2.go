@@ -1219,6 +1219,12 @@ func (c *Cockroach) GetAllCardInfo(ops *types.UserQueryOpts) ([]types.CardInfo, 
 
 func (c *Cockroach) GetSubscriptionPlanList() ([]types.SubscriptionPlan, error) {
 	var plans []types.SubscriptionPlan
+	if err := c.Localdb.Model(&types.SubscriptionPlan{}).Find(&plans).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("failed to get subscription plan: %v", err)
+	}
+	if len(plans) != 0 {
+		return plans, nil
+	}
 	if err := c.DB.Model(types.SubscriptionPlan{}).Find(&plans).Error; err != nil {
 		return nil, fmt.Errorf("failed to get subscription plan: %v", err)
 	}
@@ -1628,8 +1634,13 @@ func (c *Cockroach) GetSubscriptionPlan(planName string) (*types.SubscriptionPla
 		return planLoad.(*types.SubscriptionPlan), nil
 	}
 	var plan types.SubscriptionPlan
-	if err := c.DB.Where(types.SubscriptionPlan{Name: planName}).Find(&plan).Error; err != nil {
+	if err := c.Localdb.Where(types.SubscriptionPlan{Name: planName}).Find(&plan).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("failed to get subscription plan: %v", err)
+	}
+	if plan.ID == uuid.Nil {
+		if err := c.DB.Where(types.SubscriptionPlan{Name: planName}).Find(&plan).Error; err != nil {
+			return nil, fmt.Errorf("failed to get subscription plan: %v", err)
+		}
 	}
 	c.subscriptionPlans.Store(planName, &plan)
 	return &plan, nil
@@ -1723,6 +1734,10 @@ func (c *Cockroach) InitTables() error {
 		types.UserTimeRangeTraffic{})
 	if err != nil {
 		return fmt.Errorf("failed to create table: %v", err)
+	}
+	err = CreateTableIfNotExist(c.Localdb, types.SubscriptionPlan{})
+	if err != nil {
+		return fmt.Errorf("failed to create local table: %v", err)
 	}
 
 	// TODO: remove this after migration
