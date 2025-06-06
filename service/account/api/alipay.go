@@ -62,6 +62,12 @@ func AlipayAuthNotify(c *gin.Context) {
 		return
 	}
 
+	if notification.AuthorizationNotifyType == "TOKEN_CANCELED" {
+		logrus.Infof("get token cancelled: %v", notification)
+		sendSuccessResponse(c)
+		return
+	}
+
 	if notification.AuthorizationNotifyType != "AUTHCODE_CREATED" {
 		logrus.Errorf("get auth notification type is not AUTHCODE_CREATED: %v", notification)
 		sendError(c, http.StatusInternalServerError, "failed to auth", fmt.Errorf("get error auth notification type: %v", notification.AuthorizationNotifyType))
@@ -74,6 +80,12 @@ func AlipayAuthNotify(c *gin.Context) {
 	if err := dao.DBClient.GetGlobalDB().Model(&types.PaymentOrder{}).Where(types.PaymentOrder{PaymentRaw: types.PaymentRaw{TradeNO: tradeNo}}).Find(&order).Error; err != nil {
 		logrus.Errorf("failed to get payment order when auth notify: %v", err)
 		sendError(c, http.StatusInternalServerError, "failed to get payment order", err)
+		return
+	}
+
+	if order.Status == "SUCCESS" {
+		logrus.Infof("order already success: %v", notification)
+		sendSuccessResponse(c)
 		return
 	}
 	request, authApplyTokenRequest := auth.NewAlipayAuthApplyTokenRequest()
