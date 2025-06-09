@@ -125,7 +125,8 @@ func (sp *SubscriptionProcessor) processPendingTransactions(ctx context.Context)
 func (sp *SubscriptionProcessor) processReferSubscription(ctx context.Context) error {
 	var subscriptions []types.Subscription
 	err := sp.db.WithContext(ctx).Model(&types.Subscription{}).
-		Where("expire_at > ? AND next_cycle_date < ?", time.Now(), time.Now()).Find(&subscriptions).Error
+		Where("expire_at > ? AND next_cycle_date < ? AND plan_name != ?",
+			time.Now(), time.Now(), types.FreeSubscriptionPlanName).Find(&subscriptions).Error
 	if err != nil {
 		return fmt.Errorf("failed to query subscriptions: %w", err)
 	}
@@ -134,6 +135,9 @@ func (sp *SubscriptionProcessor) processReferSubscription(ctx context.Context) e
 	}
 	sp.Logger.Info("Processing subscriptions for refer credits", "count", len(subscriptions))
 	for _, sub := range subscriptions {
+		if sub.PlanName == types.FreeSubscriptionPlanName {
+			continue
+		}
 		acc := &types.Account{}
 		dErr := sp.db.Model(&types.Account{}).Where(&types.Account{UserUID: sub.UserUID}).Find(acc).Error
 		if dErr != nil && !errors.Is(dErr, gorm.ErrRecordNotFound) {
