@@ -1634,7 +1634,7 @@ func (c *Cockroach) GetSubscriptionPlan(planName string) (*types.SubscriptionPla
 		return planLoad.(*types.SubscriptionPlan), nil
 	}
 	var plan types.SubscriptionPlan
-	if err := c.Localdb.Where(types.SubscriptionPlan{Name: planName}).Find(&plan).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := c.Localdb.Where(types.SubscriptionPlan{Name: planName}).Find(&plan).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) && c.Localdb.Migrator().HasTable(&types.SubscriptionPlan{}) {
 		return nil, fmt.Errorf("failed to get subscription plan: %v", err)
 	}
 	if plan.ID == uuid.Nil {

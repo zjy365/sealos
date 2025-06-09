@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -59,6 +60,23 @@ func (sp *SubscriptionProcessor) Start(ctx context.Context) error {
 			}
 		}
 	}()
+	go func() {
+		defer sp.wg.Done()
+		ticker := time.NewTicker(sp.pollInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-sp.stopChan:
+				return
+			case <-ticker.C:
+				if err := sp.processReferSubscription(ctx); err != nil {
+					log.Printf("Failed to process refer subscriptions: %v", err)
+				}
+			}
+		}
+	}()
 	return nil
 }
 
@@ -99,6 +117,63 @@ func (sp *SubscriptionProcessor) processPendingTransactions(ctx context.Context)
 		sp.AccountReconciler.Logger.Info("Processing transaction", "id", transactions[i].SubscriptionID, "operator", transactions[i].Operator, "status", transactions[i].Status, "plan", transactions[i].NewPlanName)
 		if err := sp.processTransaction(ctx, &transactions[i]); err != nil {
 			sp.Logger.Error(fmt.Errorf("failed to process transaction: %w", err), "", "id", transactions[i].ID)
+		}
+	}
+	return nil
+}
+
+func (sp *SubscriptionProcessor) processReferSubscription(ctx context.Context) error {
+	var subscriptions []types.Subscription
+	err := sp.db.WithContext(ctx).Model(&types.Subscription{}).
+		Where("expire_at > ? AND next_cycle_date < ?", time.Now(), time.Now()).Find(&subscriptions).Error
+	if err != nil {
+		return fmt.Errorf("failed to query subscriptions: %w", err)
+	}
+	if len(subscriptions) == 0 {
+		sp.Logger.Info("No subscriptions to process for refer credits")
+		return nil
+	}
+	sp.Logger.Info("Processing subscriptions for refer credits", "count", len(subscriptions))
+	for _, sub := range subscriptions {
+		acc := &types.Account{}
+		dErr := sp.db.Model(&types.Account{}).Where(&types.Account{UserUID: sub.UserUID}).Find(acc).Error
+		if dErr != nil && !errors.Is(dErr, gorm.ErrRecordNotFound) {
+			sp.Logger.Error(fmt.Errorf("failed to fetch account: %w", dErr), "", "user_uid", sub.UserUID)
+			continue
+		}
+		if acc.CreateRegionID != sp.AccountV2.GetLocalRegion().UID.String() {
+			continue
+		}
+		plan, err := sp.AccountV2.GetSubscriptionPlan(sub.PlanName)
+		if err != nil {
+			sp.Logger.Error(fmt.Errorf("failed to get subscription plan: %w", err), "", "plan_name", sub.PlanName)
+			continue
+		}
+		now := time.Now().UTC()
+		if plan.GiftAmount > 0 {
+			err = sp.db.Transaction(func(tx *gorm.DB) error {
+				if dErr := cockroach.CreateCredits(tx, &types.Credits{
+					UserUID:   sub.UserUID,
+					Amount:    plan.GiftAmount,
+					FromID:    sub.PlanID.String(),
+					FromType:  types.CreditsFromTypeSubscription,
+					ExpireAt:  sub.NextCycleDate.AddDate(0, 1, 0),
+					CreatedAt: now,
+					StartAt:   sub.NextCycleDate,
+					Status:    types.CreditsStatusActive,
+				}); dErr != nil {
+					return fmt.Errorf("failed to create credits: %w", dErr)
+				}
+				sub.NextCycleDate = sub.NextCycleDate.AddDate(0, 1, 0)
+				if dErr := tx.Model(&sub).Where(&types.Subscription{ID: sub.ID}).Update("next_cycle_date", sub.NextCycleDate.AddDate(0, 1, 0)).Error; dErr != nil {
+					return fmt.Errorf("failed to update subscription next cycle date: %w", dErr)
+				}
+				return nil
+			})
+			if err != nil {
+				sp.Logger.Error(fmt.Errorf("failed to create refer credits: %w", err), "", "user_uid", sub.UserUID)
+				continue
+			}
 		}
 	}
 	return nil

@@ -468,7 +468,7 @@ func (m *UserTrafficMonitor) processUsersBatch(users []ProcessingUser) int {
 		}
 
 		// Check if user is on a Free plan using SubscriptionCache
-		if entry, exists := m.subscriptionCache.GetEntry(user.UserUID); !exists || entry.PlanName != "Free" {
+		if entry, exists := m.subscriptionCache.GetEntry(user.UserUID); !exists || entry.PlanName != types.FreeSubscriptionPlanName {
 			m.processingUsers.Delete(user.UserUID)
 			continue
 		}
