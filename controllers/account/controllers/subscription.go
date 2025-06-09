@@ -130,7 +130,6 @@ func (sp *SubscriptionProcessor) processReferSubscription(ctx context.Context) e
 		return fmt.Errorf("failed to query subscriptions: %w", err)
 	}
 	if len(subscriptions) == 0 {
-		sp.Logger.Info("No subscriptions to process for refer credits")
 		return nil
 	}
 	sp.Logger.Info("Processing subscriptions for refer credits", "count", len(subscriptions))
@@ -169,7 +168,8 @@ func (sp *SubscriptionProcessor) processReferSubscription(ctx context.Context) e
 					return fmt.Errorf("failed to create credits: %w", dErr)
 				}
 				sub.NextCycleDate = expireAt
-				if dErr := tx.Model(&sub).Where(&types.Subscription{ID: sub.ID}).Update("next_cycle_date", sub.NextCycleDate).Error; dErr != nil {
+				if dErr := tx.Model(&sub).Where(&types.Subscription{ID: sub.ID}).Update("next_cycle_date", sub.NextCycleDate).Update(
+					"update_at", now).Error; dErr != nil {
 					return fmt.Errorf("failed to update subscription next cycle date: %w", dErr)
 				}
 				return nil
