@@ -62,7 +62,7 @@ func (sp *SubscriptionProcessor) Start(ctx context.Context) error {
 	}()
 	go func() {
 		defer sp.wg.Done()
-		ticker := time.NewTicker(sp.pollInterval)
+		ticker := time.NewTicker(time.Minute)
 		defer ticker.Stop()
 		for {
 			select {
