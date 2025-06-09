@@ -151,21 +151,25 @@ func (sp *SubscriptionProcessor) processReferSubscription(ctx context.Context) e
 		}
 		now := time.Now().UTC()
 		if plan.GiftAmount > 0 {
+			expireAt := sub.NextCycleDate.AddDate(0, 1, 0)
+			if expireAt.After(sub.ExpireAt) {
+				expireAt = sub.ExpireAt
+			}
 			err = sp.db.Transaction(func(tx *gorm.DB) error {
 				if dErr := cockroach.CreateCredits(tx, &types.Credits{
 					UserUID:   sub.UserUID,
 					Amount:    plan.GiftAmount,
 					FromID:    sub.PlanID.String(),
 					FromType:  types.CreditsFromTypeSubscription,
-					ExpireAt:  sub.NextCycleDate.AddDate(0, 1, 0),
+					ExpireAt:  expireAt,
 					CreatedAt: now,
 					StartAt:   sub.NextCycleDate,
 					Status:    types.CreditsStatusActive,
 				}); dErr != nil {
 					return fmt.Errorf("failed to create credits: %w", dErr)
 				}
-				sub.NextCycleDate = sub.NextCycleDate.AddDate(0, 1, 0)
-				if dErr := tx.Model(&sub).Where(&types.Subscription{ID: sub.ID}).Update("next_cycle_date", sub.NextCycleDate.AddDate(0, 1, 0)).Error; dErr != nil {
+				sub.NextCycleDate = expireAt
+				if dErr := tx.Model(&sub).Where(&types.Subscription{ID: sub.ID}).Update("next_cycle_date", sub.NextCycleDate).Error; dErr != nil {
 					return fmt.Errorf("failed to update subscription next cycle date: %w", dErr)
 				}
 				return nil
