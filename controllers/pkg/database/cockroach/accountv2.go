@@ -1219,7 +1219,7 @@ func (c *Cockroach) GetAllCardInfo(ops *types.UserQueryOpts) ([]types.CardInfo, 
 
 func (c *Cockroach) GetSubscriptionPlanList() ([]types.SubscriptionPlan, error) {
 	var plans []types.SubscriptionPlan
-	if err := c.Localdb.Model(&types.SubscriptionPlan{}).Find(&plans).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := c.Localdb.Model(&types.SubscriptionPlan{}).Find(&plans).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) && c.Localdb.Migrator().HasTable(&types.SubscriptionPlan{}) {
 		return nil, fmt.Errorf("failed to get subscription plan: %v", err)
 	}
 	if len(plans) != 0 {
