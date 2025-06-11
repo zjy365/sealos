@@ -1,7 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import Layout from '@/components/Layout';
-import { getLastTransaction, getPlanCreditsUsage, getPlans, getPlanSubscription } from '@/api/plan';
+import {
+  getLastTransaction,
+  getPlanCreditsUsage,
+  getPlans,
+  getPlanSubscription,
+  getUserKycInfo
+} from '@/api/plan';
 import CurrentPlan from '@/components/Plans/Current';
 import { TPlanApiResponse } from '@/schema/plan';
 import PlanCredits from '@/components/Plans/Credits';
@@ -18,7 +24,8 @@ export default function PlanPage() {
     plans: false,
     usage: false,
     subscription: false,
-    lastTransaction: false
+    lastTransaction: false,
+    kycInfo: false
   });
   const getAPIErrorMessage = useAPIErrorMessage();
   const {
@@ -57,15 +64,25 @@ export default function PlanPage() {
       }
     }
   );
+  const {
+    data: userKycInfoResponse,
+    refetch: refetchUserKycInfo,
+    error: userKycInfoError
+  } = useQuery(['kycInfo'], getUserKycInfo, {
+    onSettled() {
+      setInitialized((prev) => ({ ...prev, kycInfo: true }));
+    }
+  });
   const { data: userInfo, isLoading: isLoadingUserInfo } = useQuery(['userInfo'], getUserInfo, {
     refetchOnWindowFocus: true
   });
-  const firstError = plansError || creditsError || subscriptionError;
+  const firstError = plansError || creditsError || subscriptionError || userKycInfoError;
   const refresh = () => {
     refetchPlans();
     refetchCreditsUsage();
     refetchSubscription();
     refetchLastTransaction();
+    refetchUserKycInfo();
   };
   const plans = plansResponse?.planList;
   const subscription = subscriptionResponse?.subscription;
@@ -133,6 +150,7 @@ export default function PlanPage() {
           isMaxAmountPlan={currentPlan?.amount === planMaxAmount}
           freePlan={freePlan}
           refresh={refresh}
+          kycInfo={userKycInfoResponse}
         />
         {creditsUsage ? (
           <PlanCredits

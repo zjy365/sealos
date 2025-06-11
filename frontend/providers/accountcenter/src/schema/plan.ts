@@ -174,3 +174,14 @@ export const UpgradeAmountRequestSchema = z.object({
 
 export type TUpgradeAmountRequest = z.infer<typeof UpgradeAmountRequestSchema>;
 // export type TUpgradeAmountResponse = z.infer<typeof UpgradeAmountResponseSchema>;
+
+export const UserKycApiResponse = z.object({
+  kycInfo: z.object({
+    UserUID: z.string(),
+    Status: z.string(),
+    CreatedAt: z.string(),
+    UpdatedAt: z.string(),
+    NextAt: z.string()
+  })
+});
+export type TUserKycApiResponse = z.infer<typeof UserKycApiResponse>;

@@ -6,7 +6,8 @@ import {
   TPlanApiResponse,
   TSubscriptionApiResponse,
   TUpdatePlanRequest,
-  TUpdatePlanResponse
+  TUpdatePlanResponse,
+  TUserKycApiResponse
 } from '@/schema/plan';
 import { ExpansionRule } from '@/service/crmApi/expansionRule';
 import { GET, POST } from '@/service/request';
@@ -16,6 +17,10 @@ export function getPlans() {
 }
 export function getPlanSubscription() {
   return GET<TSubscriptionApiResponse>('/plan/subscription');
+}
+
+export function getUserKycInfo() {
+  return GET<TUserKycApiResponse>('/plan/kycInfo');
 }
 export function getPlanCreditsUsage() {
   return GET<TCreditsUsageResponse>('/plan/creditsUsage');

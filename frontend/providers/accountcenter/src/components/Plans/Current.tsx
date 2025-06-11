@@ -1,7 +1,8 @@
 import {
   TLastTransactionResponse,
   TPlanApiResponse,
-  TSubscriptionApiResponse
+  TSubscriptionApiResponse,
+  TUserKycApiResponse
 } from '@/schema/plan';
 import {
   Box,
@@ -38,6 +39,7 @@ interface CurrentPlanProps {
   lastTransaction: TLastTransactionResponse | undefined;
   subscriptionResponse: TSubscriptionApiResponse | undefined;
   refresh: () => void;
+  kycInfo: TUserKycApiResponse | undefined;
 }
 const planStyleConfig = {
   free: {
