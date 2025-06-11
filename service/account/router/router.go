@@ -87,6 +87,7 @@ func RegisterPayRouter() {
 
 	if os.Getenv(helper.EnvSubscriptionEnabled) == "true" {
 		paymentGroup.POST(helper.SubscriptionUserInfo, api.GetSubscriptionUserInfo).
+			POST(helper.SubscriptionKycInfo, api.GetSubscriptionKYCInfo).
 			POST(helper.SubscriptionPlanList, api.GetSubscriptionPlanList).
 			POST(helper.SubscriptionLastTransaction, api.GetLastSubscriptionTransaction).
 			POST(helper.SubscriptionUpgradeAmount, api.GetSubscriptionUpgradeAmount).

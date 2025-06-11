@@ -51,6 +51,7 @@ const (
 	Notify                      = "/notify"
 	AuthNotify                  = "/auth-notify"
 	SubscriptionUserInfo        = "/subscription/user-info"
+	SubscriptionKycInfo         = "/subscription/kyc-info"
 	SubscriptionPlanList        = "/subscription/plan-list"
 	SubscriptionLastTransaction = "/subscription/last-transaction"
 	SubscriptionUpgradeAmount   = "/subscription/upgrade-amount"

@@ -82,6 +82,31 @@ func GetSubscriptionPlanList(c *gin.Context) {
 	})
 }
 
+// GetSubscriptionKYCInfo
+// @Summary Get user KYC info
+// @Description Get user KYC info
+// @Tags Subscription
+// @Accept json
+// @Produce json
+// @Param req body SubscriptionKYCInfoReq true "SubscriptionKYCInfoReq"
+// @Success 200 {object} SubscriptionKYCInfoResp
+// @Router /payment/v1alpha1/subscription/kyc-info [post]
+func GetSubscriptionKYCInfo(c *gin.Context) {
+	req := &helper.AuthBase{}
+	if err := authenticateRequest(c, req); err != nil {
+		c.JSON(http.StatusUnauthorized, helper.ErrorMessage{Error: fmt.Sprintf("authenticate error : %v", err)})
+		return
+	}
+	kycInfo, err := dao.DBClient.GetKYCInfo(&types.UserQueryOpts{UID: req.UserUID})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get subscription info: %v", err)})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"kycInfo": kycInfo,
+	})
+}
+
 // GetSubscriptionLastTransaction
 // @Summary Get user last subscription transaction
 // @Description Get user last subscription transaction

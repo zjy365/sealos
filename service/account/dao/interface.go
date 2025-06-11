@@ -84,6 +84,7 @@ type Interface interface {
 	NewCardSubscriptionPaymentFailureHandler(paymentRequestID string) (uuid.UUID, error)
 	NewCardPaymentFailureHandler(paymentRequestID string) (uuid.UUID, error)
 	GetSubscription(ops *types.UserQueryOpts) (*types.Subscription, error)
+	GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error)
 	GetAvailableCredits(ops *types.UserQueryOpts) ([]types.Credits, error)
 	GetSubscriptionPlanList() ([]types.SubscriptionPlan, error)
 	GetLastSubscriptionTransaction(userUID uuid.UUID) (*types.SubscriptionTransaction, error)
@@ -229,6 +230,10 @@ func (g *Cockroach) GetSubscriptionPlanList() ([]types.SubscriptionPlan, error) 
 		g.subscriptionPlanList, err = g.ck.GetSubscriptionPlanList()
 	}
 	return g.subscriptionPlanList, err
+}
+
+func (g *Cockroach) GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error) {
+	return g.ck.GetKYCInfo(ops)
 }
 
 func (g *Cockroach) GetLastSubscriptionTransaction(userUID uuid.UUID) (*types.SubscriptionTransaction, error) {

@@ -134,6 +134,7 @@ type AccountV2 interface {
 	GetCardInfo(cardID, userUID uuid.UUID) (*types.CardInfo, error)
 	GetAllCardInfo(ops *types.UserQueryOpts) ([]types.CardInfo, error)
 	GetSubscription(ops *types.UserQueryOpts) (*types.Subscription, error)
+	GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error)
 	GetSubscriptionPlanList() ([]types.SubscriptionPlan, error)
 	SetSubscriptionPlanList(plans []types.SubscriptionPlan) error
 	GetCardList(ops *types.UserQueryOpts) ([]types.CardInfo, error)

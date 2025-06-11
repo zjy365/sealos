@@ -1292,6 +1292,18 @@ func (c *Cockroach) GetSubscription(ops *types.UserQueryOpts) (*types.Subscripti
 	return &subscription, nil
 }
 
+func (c *Cockroach) GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error) {
+	userUID, err := c.GetUserUID(ops)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user uid: %v", err)
+	}
+	var kycInfo types.UserKYC
+	if err := c.DB.Where(types.UserKYC{UserUID: userUID}).First(&kycInfo).Error; err != nil {
+		return nil, fmt.Errorf("failed to get KYC info: %v", err)
+	}
+	return &kycInfo, nil
+}
+
 func (c *Cockroach) CreateSubscription(subscription *types.Subscription) error {
 	if subscription.PlanID == uuid.Nil || subscription.PlanName == "" || subscription.UserUID == uuid.Nil || subscription.Status == "" {
 		return fmt.Errorf("empty subscription info")
