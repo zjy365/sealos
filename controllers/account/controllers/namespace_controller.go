@@ -224,8 +224,12 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 			},
 			newDebt: func() string {
 				switch debtStatus {
-				case v1.NormalDebtNamespaceAnnoStatus, v1.SuspendDebtNamespaceAnnoStatus, v1.TerminateSuspendDebtNamespaceAnnoStatus:
-					return debtStatus
+				case v1.NormalDebtNamespaceAnnoStatus:
+					return v1.NormalDebtNamespaceAnnoStatus
+				case v1.SuspendDebtNamespaceAnnoStatus:
+					return v1.SuspendCompletedDebtNamespaceAnnoStatus
+				case v1.TerminateSuspendDebtNamespaceAnnoStatus:
+					return v1.TerminateSuspendCompletedDebtNamespaceAnnoStatus
 				case v1.ResumeDebtNamespaceAnnoStatus:
 					return v1.ResumeCompletedDebtNamespaceAnnoStatus
 				case v1.FinalDeletionDebtNamespaceAnnoStatus:
@@ -302,7 +306,7 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 				}
 			}
 			if t.newDebt != "" || t.newNetwork != "" {
-				logger.Info("update namespace anno : debt status '%s', network status '%s'", t.newDebt, t.newNetwork)
+				logger.Info("update namespace anno ", "debt status", t.newDebt, "network status", t.newNetwork)
 				return updateAnnotations(t.newDebt, t.newNetwork)
 			}
 			return ctrl.Result{}, nil
