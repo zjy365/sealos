@@ -67,6 +67,12 @@ const (
 	ResumeCompletedDebtNamespaceAnnoStatus           = "ResumeCompleted"
 	TerminateSuspendDebtNamespaceAnnoStatus          = "TerminateSuspend"
 	TerminateSuspendCompletedDebtNamespaceAnnoStatus = "TerminateSuspendCompleted"
+
+	NetworkStatusAnnoKey    = "network.sealos.io/status"
+	NetworkSuspend          = "Suspend"
+	NetworkSuspendCompleted = "SuspendCompleted"
+	NetworkResume           = "Resume"
+	NetworkResumeCompleted  = "ResumeCompleted"
 )
 
 // DebtSpec defines the desired state of Debt

@@ -119,10 +119,6 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	if err = (&controllers.NetworkReconciler{}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Network")
-		os.Exit(1)
-	}
 
 	go func() {
 		if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
