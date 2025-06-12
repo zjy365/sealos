@@ -29,7 +29,8 @@ import CancelPlanButton from './CancelPlanButton';
 import UpgradePlanModal from './UpgradeModal';
 import { isPlanCancelling } from './planStatus';
 import useScene from '@/hooks/useScene';
-import { Track } from '@sealos/ui';
+import { Track, MyTooltip } from '@sealos/ui';
+import { InfoOutlineIcon } from '@chakra-ui/icons';
 
 interface CurrentPlanProps {
   plans: TPlanApiResponse[];
@@ -115,7 +116,8 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
   lastTransaction,
   freePlan,
   refresh,
-  plans
+  plans,
+  kycInfo
 }) => {
   const { t } = useTranslation();
   const featurTexts = usePlanFeatureTexts(plan);
@@ -184,6 +186,31 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
       </GridItem>
     );
   };
+  const getMonthlyGiftAmount = (kycInfo: TUserKycApiResponse | undefined): string => {
+    const status = kycInfo?.kycInfo?.Status;
+    switch (status) {
+      case 'pending':
+      case 'completed':
+        return '$5';
+      case 'failed':
+        return '$0';
+      default:
+        return '';
+    }
+  };
+  const getPlanIncludedAmount = (plan: TPlanApiResponse): string => {
+    const planName = plan?.name;
+    switch (planName) {
+      case 'Free':
+        return '$0';
+      case 'Hobby':
+        return '$5';
+      case 'Pro':
+        return '$20';
+      default:
+        return '';
+    }
+  };
   return (
     <>
       <Card variant="outline">
@@ -223,35 +250,55 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
                 </Flex>
               </Flex>
               <Divider m="18px 0" borderColor="#F4F4F5" />
-              <Grid templateColumns="auto auto auto" rowGap="8px" columnGap="48px">
+              {/* <Grid templateColumns="auto auto auto" rowGap="8px" columnGap="48px"> */}
+              <Grid templateColumns="1fr 1fr 1fr" gap="16px" p="20px 0">
                 {featurTexts.map(({ text, key }) => renderFeature(text, key))}
               </Grid>
             </Box>
           </Box>
           <Grid p="20px 24px" templateColumns="1fr 1fr 1fr" gap="16px">
             <GridItem>
-              <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
-                {t('PeriodPrice', {
-                  period: t(`Per${upperFirst(plan.period)}`, { defaultValue: '' })
-                })}
-              </Text>
-              <Text color="#09090B" fontSize="16px" fontWeight="600">
+              <Flex align="center" gap={2} mb="8px">
+                <Text fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
+                  {t('MonthlyGift', {
+                    period: t(`Per${upperFirst(plan.period)}`, { defaultValue: '' })
+                  })}
+                </Text>
+                <MyTooltip
+                  label={t('MonthlyGiftDescription')}
+                  placement="top"
+                  height="84px"
+                  maxW="200px"
+                  padding="3"
+                  fontSize="12px"
+                  wordBreak="break-all"
+                >
+                  <InfoOutlineIcon color={'#71717A'} w={'16px'} h={'16px'} />
+                </MyTooltip>
+              </Flex>
+              {/* <Text color="#09090B" fontSize="16px" fontWeight="600">
                 {typeof plan.amount === 'number' && plan.amount >= 0
                   ? `\$${formatMoney(plan.amount)}`
                   : ''}
+              </Text> */}
+              <Text color="#09090B" fontSize="16px" fontWeight="600">
+                {getMonthlyGiftAmount(kycInfo)}
               </Text>
             </GridItem>
             <GridItem>
               <Text mb="8px" fontSize="14px" lineHeight="20px" fontWeight="400" color="#71717A">
-                {t('MonthlyGiftCredits')}
+                {t('PlanIncludedCreditsLabel')}
               </Text>
               <Flex gap="8px">
-                <Text color="#09090B" fontSize="16px" fontWeight="600">
+                {/* <Text color="#09090B" fontSize="16px" fontWeight="600">
                   {typeof plan.giftAmount === 'number' && plan.giftAmount > 0
                     ? `\$${formatMoney(plan.giftAmount)}`
                     : ''}
+                </Text> */}
+                <Text color="#09090B" fontSize="16px" fontWeight="600">
+                  {getPlanIncludedAmount(plan)}
                 </Text>
-                <Text
+                {/* <Text
                   p="6px 8px"
                   border="1px solid rgb(52, 211, 153)"
                   fontSize="12px"
@@ -262,7 +309,7 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
                   bg="rgb(220, 252, 231)"
                 >
                   {t('Sent')}
-                </Text>
+                </Text> */}
               </Flex>
             </GridItem>
             {renderDate()}

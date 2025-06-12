@@ -126,6 +126,8 @@
   "Memory": "Memory",
   "Memory Amount": "Memory Amount",
   "Month": "Monthly",
+  "MonthlyGift": "Monthly Gift",
+  "MonthlyGiftDescription": "Distributions begin on registration day and recur monthly on that date.",
   "MonthlyGiftCredits": "Monthly Gift Credits",
   "MostPopular": "Most popular",
   "Multiple": "Multiple",
