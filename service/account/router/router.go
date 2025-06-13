@@ -66,6 +66,7 @@ func RegisterPayRouter() {
 		POST(helper.UseGiftCode, api.UseGiftCode).
 		POST(helper.UserUsage, api.UserUsage).
 		POST(helper.GetRechargeDiscount, api.GetRechargeDiscount).
+		POST(helper.GetUserTrafficUsed, api.GetUserTrafficUsed).
 		POST(helper.GetUserRealNameInfo, api.GetUserRealNameInfo)
 	adminGroup := router.Group(helper.AdminGroup).
 		GET(helper.AdminGetAccountWithWorkspace, api.AdminGetAccountWithWorkspaceID).

@@ -135,6 +135,7 @@ type AccountV2 interface {
 	GetAllCardInfo(ops *types.UserQueryOpts) ([]types.CardInfo, error)
 	GetSubscription(ops *types.UserQueryOpts) (*types.Subscription, error)
 	GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error)
+	GetUserTrafficUsed(ops *types.UserQueryOpts) (*types.UserTimeRangeTraffic, error)
 	GetSubscriptionPlanList() ([]types.SubscriptionPlan, error)
 	SetSubscriptionPlanList(plans []types.SubscriptionPlan) error
 	GetCardList(ops *types.UserQueryOpts) ([]types.CardInfo, error)

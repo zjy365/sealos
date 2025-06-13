@@ -31,6 +31,7 @@ const (
 	UserUsage                     = "/user-usage"
 	GetRechargeDiscount           = "/recharge-discount"
 	GetUserRealNameInfo           = "/real-name-info"
+	GetUserTrafficUsed            = "/user-traffic-used"
 )
 
 const (

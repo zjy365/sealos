@@ -83,12 +83,12 @@ func GetSubscriptionPlanList(c *gin.Context) {
 }
 
 // GetSubscriptionKYCInfo
-// @Summary Get user KYC info
+// @Summary Get Subscription KYC info
 // @Description Get user KYC info
 // @Tags Subscription
 // @Accept json
 // @Produce json
-// @Param req body SubscriptionKYCInfoReq true "SubscriptionKYCInfoReq"
+// @Param req body helper.AuthBase true "AuthBase"
 // @Success 200 {object} SubscriptionKYCInfoResp
 // @Router /payment/v1alpha1/subscription/kyc-info [post]
 func GetSubscriptionKYCInfo(c *gin.Context) {
@@ -107,7 +107,38 @@ func GetSubscriptionKYCInfo(c *gin.Context) {
 	})
 }
 
-// GetSubscriptionLastTransaction
+// GetUserTrafficUsed
+// @Summary Get user traffic used
+// @Description Get user traffic used
+// @Tags Subscription
+// @Accept json
+// @Produce json
+// @Param req body SubscriptionUserTrafficUsedReq true "SubscriptionUserTrafficUsedReq"
+// @Success 200 {object} SubscriptionUserTrafficUsedResp
+// @Router /account/v1alpha1/subscription/user-traffic-used [post]
+func GetUserTrafficUsed(c *gin.Context) {
+	req := &helper.AuthBase{}
+	if err := authenticateRequest(c, req); err != nil {
+		c.JSON(http.StatusUnauthorized, helper.ErrorMessage{Error: fmt.Sprintf("authenticate error : %v", err)})
+		return
+	}
+	trafficUsed, err := dao.DBClient.GetUserTrafficUsed(&types.UserQueryOpts{UID: req.UserUID})
+	if err != nil && err != gorm.ErrRecordNotFound {
+		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get user traffic used: %v", err)})
+		return
+	}
+	if trafficUsed == nil {
+		trafficUsed = &types.UserTimeRangeTraffic{
+			UserUID:   req.UserUID,
+			SentBytes: 0,
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"trafficUsed": trafficUsed,
+	})
+}
+
+// GetLastSubscriptionTransaction
 // @Summary Get user last subscription transaction
 // @Description Get user last subscription transaction
 // @Tags Subscription

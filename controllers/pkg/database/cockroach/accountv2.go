@@ -1304,6 +1304,18 @@ func (c *Cockroach) GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error)
 	return &kycInfo, nil
 }
 
+func (c *Cockroach) GetUserTrafficUsed(ops *types.UserQueryOpts) (*types.UserTimeRangeTraffic, error) {
+	userUID, err := c.GetUserUID(ops)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user uid: %v", err)
+	}
+	var traffic types.UserTimeRangeTraffic
+	if err := c.DB.Where(types.UserTimeRangeTraffic{UserUID: userUID}).First(&traffic).Error; err != nil {
+		return nil, err
+	}
+	return &traffic, nil
+}
+
 func (c *Cockroach) CreateSubscription(subscription *types.Subscription) error {
 	if subscription.PlanID == uuid.Nil || subscription.PlanName == "" || subscription.UserUID == uuid.Nil || subscription.Status == "" {
 		return fmt.Errorf("empty subscription info")

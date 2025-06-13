@@ -85,6 +85,7 @@ type Interface interface {
 	NewCardPaymentFailureHandler(paymentRequestID string) (uuid.UUID, error)
 	GetSubscription(ops *types.UserQueryOpts) (*types.Subscription, error)
 	GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error)
+	GetUserTrafficUsed(ops *types.UserQueryOpts) (*types.UserTimeRangeTraffic, error)
 	GetAvailableCredits(ops *types.UserQueryOpts) ([]types.Credits, error)
 	GetSubscriptionPlanList() ([]types.SubscriptionPlan, error)
 	GetLastSubscriptionTransaction(userUID uuid.UUID) (*types.SubscriptionTransaction, error)
@@ -238,6 +239,14 @@ func (g *Cockroach) GetKYCInfo(ops *types.UserQueryOpts) (*types.UserKYC, error)
 
 func (g *Cockroach) GetLastSubscriptionTransaction(userUID uuid.UUID) (*types.SubscriptionTransaction, error) {
 	return GetLastSubscriptionTransaction(g.ck.GetGlobalDB(), userUID)
+}
+
+func (g *Cockroach) GetUserTrafficUsed(ops *types.UserQueryOpts) (*types.UserTimeRangeTraffic, error) {
+	traffic, err := g.ck.GetUserTrafficUsed(ops)
+	if err != nil {
+		return nil, err
+	}
+	return traffic, nil
 }
 
 func GetLastSubscriptionTransaction(db *gorm.DB, userUID uuid.UUID) (*types.SubscriptionTransaction, error) {
