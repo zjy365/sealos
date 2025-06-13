@@ -10,7 +10,11 @@ interface Options {
 }
 function parseMaxResourcesObject(plan: TPlanApiResponse) {
   try {
-    return JSON.parse(plan.maxResources) as TPlanMaxResourcesObject;
+    const parsed = JSON.parse(plan.maxResources) as TPlanMaxResourcesObject;
+    if (parsed.memory && typeof parsed.memory === 'string') {
+      parsed.memory = parsed.memory.replace('GiB', 'GB');
+    }
+    return parsed;
   } catch {
     return null;
   }
