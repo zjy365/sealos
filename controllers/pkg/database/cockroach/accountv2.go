@@ -1531,12 +1531,9 @@ func (c *Cockroach) NewAccount(ops *types.UserQueryOpts) (*types.Account, error)
 
 // NewAccountWithFreeSubscriptionPlan create a new account with free plan
 func (c *Cockroach) NewAccountWithFreeSubscriptionPlan(ops *types.UserQueryOpts) (*types.Account, error) {
-	if ops.UID == uuid.Nil {
-		userUID, err := c.GetUserUID(ops)
-		if err != nil {
-			return nil, err
-		}
-		ops.UID = userUID
+	user, err := c.GetUser(ops)
+	if err != nil {
+		return nil, err
 	}
 	now := time.Now().UTC()
 	account := &types.Account{
@@ -1551,7 +1548,7 @@ func (c *Cockroach) NewAccountWithFreeSubscriptionPlan(ops *types.UserQueryOpts)
 	// 1. create credits
 	// 2. create account
 	// 3. create subscription
-	err := c.DB.Transaction(func(tx *gorm.DB) error {
+	err = c.DB.Transaction(func(tx *gorm.DB) error {
 		result := tx.Where(&types.Account{UserUID: ops.UID}).FirstOrCreate(account)
 		if err := result.Error; err != nil {
 			return fmt.Errorf("failed to create account: %w", err)
@@ -1588,9 +1585,9 @@ func (c *Cockroach) NewAccountWithFreeSubscriptionPlan(ops *types.UserQueryOpts)
 				UsedAmount: 0,
 				FromID:     freePlan.ID.String(),
 				FromType:   types.CreditsFromTypeSubscription,
-				ExpireAt:   now.AddDate(0, 1, 0),
+				ExpireAt:   user.CreatedAt.AddDate(0, 1, 0),
 				CreatedAt:  now,
-				StartAt:    now,
+				StartAt:    user.CreatedAt,
 				Status:     types.CreditsStatusActive,
 			}
 			creditsCount := int64(0)
@@ -1609,9 +1606,9 @@ func (c *Cockroach) NewAccountWithFreeSubscriptionPlan(ops *types.UserQueryOpts)
 			PlanID:        freePlan.ID,
 			PlanName:      freePlan.Name,
 			Status:        types.SubscriptionStatusNormal,
-			StartAt:       now,
-			ExpireAt:      now.AddDate(0, 1, 0),
-			NextCycleDate: now.AddDate(0, 1, 0),
+			StartAt:       user.CreatedAt,
+			ExpireAt:      user.CreatedAt.AddDate(0, 1, 0),
+			NextCycleDate: user.CreatedAt.AddDate(0, 1, 0),
 		}
 		subCount := int64(0)
 		if err := c.DB.Model(&types.Subscription{}).Where(&types.Subscription{UserUID: ops.UID}).Count(&subCount).Error; err != nil {
@@ -1627,7 +1624,7 @@ func (c *Cockroach) NewAccountWithFreeSubscriptionPlan(ops *types.UserQueryOpts)
 			Status:    types.UserKYCStatusPending,
 			CreatedAt: now,
 			UpdatedAt: now,
-			NextAt:    now.AddDate(0, 1, 0),
+			NextAt:    user.CreatedAt.AddDate(0, 1, 0),
 		}
 		if !githubDetection {
 			userKYC.Status = types.UserKYCStatusFailed
