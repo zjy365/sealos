@@ -23,6 +23,7 @@ export function useGetPlanFeatureTexts() {
   const { t } = useTranslation();
   return function (plan: TPlanApiResponse, opts: Options = {}) {
     const isFree = plan.amount === 0;
+    const isHobby = plan.name === 'Hobby';
     const maxResourceObject = opts.maxResourceObject || parseMaxResourcesObject(plan);
     const res: Array<{ key: string; text: string }> = [];
     if (opts.inlcudeCredits) {
@@ -34,7 +35,7 @@ export function useGetPlanFeatureTexts() {
       });
     }
     if (maxResourceObject?.cpu && maxResourceObject.memory) {
-      let text = `${maxResourceObject.cpu} vCPU / ${maxResourceObject.memory} ${t('RAM')}`;
+      let text = `Up to ${maxResourceObject.cpu} vCPU / ${maxResourceObject.memory} ${t('RAM')}`;
       res.push({
         text,
         key: 'cpu-memory'
@@ -42,12 +43,14 @@ export function useGetPlanFeatureTexts() {
     }
     if (isFree && maxResourceObject?.storage) {
       res.push({
-        text: `${maxResourceObject.storage} ${t('DiskDesc')}`,
+        text: `${maxResourceObject.storage} ${t('DiskDesc', {
+          desc: isFree ? 'limited' : 'with plan'
+        })}`,
         key: 'disk-withbr'
       });
     } else {
       res.push({
-        text: `Unlimited ${t('DiskDesc')}`,
+        text: `Unlimited ${t('DiskDesc', { desc: isFree ? 'limited' : 'with plan' })}`,
         key: 'disk-withbr'
       });
     }
@@ -119,7 +122,9 @@ export function useGetPlanFeatureTexts() {
       key: 'log'
     });
     res.push({
-      text: `${isFree ? t('community') : t('expert')} ${t('support')}`,
+      text: `${
+        isFree || isHobby ? t('community') + ' ' + t('support') : t('ticket_support', { day: 5 })
+      }`,
       key: 'support'
     });
     if (!isFree) {
