@@ -12,6 +12,7 @@ import request from '@/services/request';
 import { BIND_STATUS } from '@/types/response/bind';
 import { MERGE_USER_READY } from '@/types/response/utils';
 import { AxiosError, HttpStatusCode } from 'axios';
+import { gtmLoginSuccess } from '@/utils/gtm';
 
 export default function Callback() {
   const router = useRouter();
@@ -72,10 +73,21 @@ export default function Callback() {
               const token = data.data?.token;
               setToken(token);
               const needInit = data.data.needInit;
+              const method =
+                provider === 'GITHUB' ? 'github' : provider === 'GOOGLE' ? 'gmail' : 'unknown';
+
               if (needInit) {
+                gtmLoginSuccess({
+                  user_type: 'new',
+                  method
+                });
                 await router.push('/workspace');
                 return;
               }
+              gtmLoginSuccess({
+                user_type: 'returning',
+                method
+              });
               const regionTokenRes = await getRegionToken();
               if (regionTokenRes?.data) {
                 await sessionConfig(regionTokenRes.data);
