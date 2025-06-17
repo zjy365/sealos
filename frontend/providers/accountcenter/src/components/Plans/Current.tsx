@@ -265,9 +265,11 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
                   })}
                 </Text>
                 <MyTooltip
-                  label={t('MonthlyGiftDescription')}
+                  label={t('MonthlyGiftDescription', {
+                    date: formatDate(kycInfo?.kycInfo?.NextAt)
+                  })}
                   placement="top"
-                  height="84px"
+                  height="60px"
                   maxW="200px"
                   padding="3"
                   fontSize="12px"

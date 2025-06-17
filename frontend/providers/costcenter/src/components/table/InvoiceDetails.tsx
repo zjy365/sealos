@@ -1,4 +1,4 @@
-import useInvoiceStore from '@/stores/invoce';
+import useInvoiceStore from '@/stores/invoice';
 import { InvoicePayload } from '@/types';
 import { Button, ButtonProps, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';

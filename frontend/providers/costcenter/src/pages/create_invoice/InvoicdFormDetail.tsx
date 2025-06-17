@@ -2,7 +2,7 @@ import artical_icon from '@/assert/article.svg';
 import arrow_icon from '@/assert/left2.svg';
 import email_icon from '@/assert/mdi_email-receive-outline.svg';
 import { InvoiceStatus } from '@/components/invoice/Status';
-import useInvoiceStore from '@/stores/invoce';
+import useInvoiceStore from '@/stores/invoice';
 import { InvoicesCollection } from '@/types';
 import { formatMoney } from '@/utils/format';
 import {

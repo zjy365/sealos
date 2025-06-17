@@ -115,7 +115,7 @@
   "Memory Amount": "内存金额",
   "Month": "月",
   "MonthlyGift": "每月赠送",
-  "MonthlyGiftDescription": "从注册日开始发放，并在每月该日期重复发放。",
+  "MonthlyGiftDescription": "下次刷新日期：\n{{date}}",
   "MonthlyGiftCredits": "每月赠送额度",
   "MostPopular": "最受欢迎",
   "Multiple": "多个",
