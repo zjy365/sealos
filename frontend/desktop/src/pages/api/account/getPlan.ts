@@ -32,10 +32,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
 
+    // fix json parse bigint error
+    const userObj = {
+      subscription: {
+        subscriptionPlan: {
+          name: userInfo.subscription?.subscriptionPlan?.name,
+          max_seats: Number(userInfo.subscription?.subscriptionPlan?.max_seats) || 1,
+          max_workspaces: Number(userInfo.subscription?.subscriptionPlan?.max_workspaces) || 1
+        },
+        status: userInfo.subscription?.status
+      }
+    };
+
     return jsonRes(res, {
       code: 200,
       message: 'Successfully',
-      data: userInfo
+      data: userObj
     });
   } catch (err) {
     console.log(err);

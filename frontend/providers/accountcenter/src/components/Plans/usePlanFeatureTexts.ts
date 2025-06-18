@@ -44,13 +44,13 @@ export function useGetPlanFeatureTexts() {
     if (isFree && maxResourceObject?.storage) {
       res.push({
         text: `${maxResourceObject.storage} ${t('DiskDesc', {
-          desc: isFree ? 'limited' : 'with plan'
+          desc: isFree ? 'limited' : 'within plan'
         })}`,
         key: 'disk-withbr'
       });
     } else {
       res.push({
-        text: `Unlimited ${t('DiskDesc', { desc: isFree ? 'limited' : 'with plan' })}`,
+        text: `Unlimited ${t('DiskDesc', { desc: isFree ? 'limited' : 'within plan' })}`,
         key: 'disk-withbr'
       });
     }

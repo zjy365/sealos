@@ -318,16 +318,14 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
           </Grid>
         </CardBody>
       </Card>
-      {isUpgradable ? (
-        <UpgradePlanModal
-          plans={plans}
-          currentPlan={plan}
-          freePlan={freePlan}
-          lastTransaction={lastTransaction}
-          isOpen={isUpgradeModalOpen}
-          onClose={closeUpgradeModal}
-        />
-      ) : null}
+      <UpgradePlanModal
+        plans={plans}
+        currentPlan={plan}
+        freePlan={freePlan}
+        lastTransaction={lastTransaction}
+        isOpen={isUpgradeModalOpen}
+        onClose={closeUpgradeModal}
+      />
     </>
   );
 };

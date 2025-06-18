@@ -55,6 +55,7 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   const period = t(`Per${upperFirst(plan.period)}`, { defaultValue: '' }).toLowerCase();
   const isCurrent = currentPlan.id === plan.id;
   const isFree = plan.amount === 0;
+  const isCurrentPro = currentPlan.name === 'Pro';
   const featureTexts = usePlanFeatureTexts(plan, {
     inlcudeCredits: true,
     hideFreeMaxResourcesPerRegionText: true
@@ -129,7 +130,7 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
     }
     return (
       <Track.Click eventName={Track.events.purchase(plan.name)}>
-        <Button {...buttonStyle} onClick={handlePurchase}>
+        <Button {...buttonStyle} onClick={handlePurchase} isDisabled={isCurrentPro}>
           {t('PurchasePlan')}
         </Button>
       </Track.Click>

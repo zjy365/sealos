@@ -8,7 +8,7 @@ import { checkOrderStatus } from '@/api/order';
 import urls from '@/utils/urls';
 import Layout from '@/components/Layout';
 
-function PlanPageWithChceckTransaction() {
+function PlanPageWithCheckTransaction() {
   const router = useRouter();
   const { checkUpgrade, tradeNo: tradeNoQuery } = router.query;
   const tradeNo = Array.isArray(tradeNoQuery) ? tradeNoQuery[0] : tradeNoQuery;
@@ -42,4 +42,4 @@ export async function getServerSideProps(content: any) {
   };
 }
 
-export default PlanPageWithChceckTransaction;
+export default PlanPageWithCheckTransaction;
