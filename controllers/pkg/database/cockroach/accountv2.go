@@ -1774,6 +1774,15 @@ func (c *Cockroach) InitTables() error {
 			return fmt.Errorf("failed to add column updated_at: %v", err)
 		}
 	}
+	//StatusUpdatedAt
+	if !c.DB.Migrator().HasColumn(&types.UserTimeRangeTraffic{}, "status_updated_at") {
+		fmt.Println("add table `UserTimeRangeTraffic` column status_updated_at")
+		tableName := types.UserTimeRangeTraffic{}.TableName()
+		err := c.DB.Exec(`ALTER TABLE "?" ADD COLUMN "status_updated_at" TIMESTAMP(3) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;`, gorm.Expr(tableName)).Error
+		if err != nil {
+			return fmt.Errorf("failed to add UserTimeRangeTraffic column status_updated_at: %v", err)
+		}
+	}
 	if !c.DB.Migrator().HasColumn(&types.AccountTransaction{}, "credit_id_list") {
 		sqls := []string{
 			`ALTER TABLE "AccountTransaction" ADD COLUMN IF NOT EXISTS "region" uuid;`,

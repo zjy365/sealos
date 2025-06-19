@@ -368,6 +368,9 @@ func (m *UserTrafficMonitor) Start() {
 	go m.periodicChecker()
 
 	m.wg.Add(1)
+	go m.periodicLimitChecker()
+
+	m.wg.Add(1)
 	go m.ResumeUsers()
 }
 
@@ -454,6 +457,84 @@ func (m *UserTrafficMonitor) getProcessingUsers(offset, limit int, since time.Ti
 		return nil, fmt.Errorf("failed to query processing users: %w", err)
 	}
 
+	return results, nil
+}
+
+// periodicChecker runs periodic checks for users exceeding traffic limits
+func (m *UserTrafficMonitor) periodicLimitChecker() {
+	defer m.wg.Done()
+	ticker := time.NewTicker(time.Hour)
+	defer ticker.Stop()
+
+	start := time.Now()
+	processed := m.checkAndProcessLimitOldUsers()
+	duration := time.Since(start)
+	log.Printf("checkAndProcessLimitOldUsers: Processed %d users in %v", processed, duration)
+
+	for {
+		select {
+		case <-m.ctx.Done():
+			return
+		case <-ticker.C:
+			start = time.Now()
+			processed = m.checkAndProcessLimitOldUsers()
+			duration = time.Since(start)
+			log.Printf("checkAndProcessLimitOldUsers Processed %d users in %v", processed, duration)
+		}
+	}
+}
+
+func (m *UserTrafficMonitor) checkAndProcessLimitOldUsers() int {
+	processed := 0
+	lastUpdateTime := time.Now().Add(-time.Hour)
+
+	// Process in batches to avoid memory issues
+	offset := 0
+
+	for {
+		users, err := m.getLimitOldUsers(offset, ProcessingBatchSize, lastUpdateTime)
+		if err != nil {
+			log.Printf("Failed to get processing users: %v", err)
+			break
+		}
+		if len(users) == 0 {
+			break
+		}
+		log.Printf("Processing users len: %d", len(users))
+		// Process this batch of users
+		processedBatch := m.processUsersBatch(users)
+		processed += processedBatch
+
+		offset += ProcessingBatchSize
+
+		// Stop if fewer than batch size, indicating no more data
+		if len(users) < ProcessingBatchSize {
+			break
+		}
+	}
+	return processed
+}
+
+// getProcessingUsers fetches users with traffic exceeding the limit
+func (m *UserTrafficMonitor) getLimitOldUsers(offset, limit int, since time.Time) ([]ProcessingUser, error) {
+	var results []ProcessingUser
+	query := `
+	SELECT DISTINCT 
+		user_uid,
+		sent_bytes,
+		updated_at
+	FROM "UserTimeRangeTraffic"
+	WHERE status = ?
+	AND updated_at > ?
+	AND sent_bytes > ?
+	AND updated_at > status_updated_at + interval '2 hours'
+	ORDER BY updated_at DESC
+	LIMIT ? OFFSET ?
+`
+	err := m.db.Raw(query, types.UserTimeRangeTrafficStatusUsedUp, since, FreeTrafficLimit, limit, offset).Scan(&results).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to query processing users: %w", err)
+	}
 	return results, nil
 }
 

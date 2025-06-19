@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	types2 "k8s.io/apimachinery/pkg/types"
 	"os"
 	"strconv"
 	"strings"
@@ -317,6 +318,52 @@ func (r *AccountReconciler) syncResourceQuotaAndLimitRangeBySubscription(ctx con
 		})
 		if err != nil {
 			return fmt.Errorf("sync resource %T failed: %v", objs[i], err)
+		}
+	}
+	// 获取用户的UserTimeRangeTraffic.status ，如果存在且状态为UserTimeRangeTrafficStatusUsedUp 则添加namespace的annotation的状态为流量用尽
+	trafficStatus := pkgtypes.UserTimeRangeTrafficStatusProcessing
+
+	// Query to check if a record exists with the given user_uid and status
+	var result pkgtypes.UserTimeRangeTraffic
+	err = r.AccountV2.GetGlobalDB().
+		Model(&pkgtypes.UserTimeRangeTraffic{}).
+		Where("user_uid = ?", userUID).
+		Select("status").
+		First(&result).Error
+
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("get user traffic status failed: %v", err)
+		}
+	} else {
+		trafficStatus = result.Status
+	}
+
+	if trafficStatus == pkgtypes.UserTimeRangeTrafficStatusUsedUp {
+		err = updateNamespaceStatus(ctx, r.Client, accountv1.NetworkStatusAnnoKey, accountv1.NetworkSuspend, []string{nsName})
+		if err != nil {
+			return fmt.Errorf("update namespace status failed: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func updateNamespaceStatus(ctx context.Context, clt client.Client, annoKey, status string, namespaces []string) error {
+	for i := range namespaces {
+		ns := &corev1.Namespace{}
+		if err := clt.Get(ctx, types2.NamespacedName{Name: namespaces[i]}, ns); err != nil {
+			return err
+		}
+		if ns.Annotations[annoKey] == status {
+			continue
+		}
+
+		original := ns.DeepCopy()
+		ns.Annotations[annoKey] = status
+
+		if err := clt.Patch(ctx, ns, client.MergeFrom(original)); err != nil {
+			return fmt.Errorf("patch namespace annotation failed: %w", err)
 		}
 	}
 	return nil

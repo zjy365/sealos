@@ -139,14 +139,14 @@ func (r *DebtReconciler) start() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		r.processWithTimeRange(&types.Credits{}, "updated_at", 1*time.Minute, 24*time.Hour, func(db *gorm.DB, start, end time.Time) error {
+		r.processWithTimeRange(&types.Credits{}, "updated_at", 1*time.Minute, 31*24*time.Hour, func(db *gorm.DB, start, end time.Time) error {
 			users, err := getUniqueUsers(db, &types.Credits{}, "updated_at", start, end)
 			if err != nil {
 				return fmt.Errorf("failed to get unique users: %w", err)
 			}
 			if len(users) > 0 {
 				r.processUsersInParallel(users)
-				r.Logger.Info("processed credits refresh", "count", len(users), "users", users, "start", start, "end", end)
+				r.Logger.Info("processed credits refresh", "count", len(users), "start", start, "end", end)
 			}
 			return nil
 		})
@@ -536,7 +536,7 @@ func (r *DebtReconciler) retryFailedUsers() {
 func (r *DebtReconciler) processUsersInParallel(users []uuid.UUID) {
 	var (
 		wg        sync.WaitGroup
-		semaphore = make(chan struct{}, 50)
+		semaphore = make(chan struct{}, 1000)
 	)
 
 	for _, user := range users {
