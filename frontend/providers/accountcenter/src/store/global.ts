@@ -6,6 +6,8 @@ type State = {
   screenWidth: number;
   setScreenWidth: (e: number) => void;
   loading: boolean;
+  setUpgradeSuccess: (success: boolean) => void;
+  upgradeSuccess: boolean;
   setLoading: (val: boolean) => void;
   lastRoute: string;
   setLastRoute: (val: string) => void;
@@ -15,6 +17,12 @@ export const useGlobalStore = create<State>()(
   devtools(
     immer((set, get) => ({
       screenWidth: 1440,
+      upgradeSuccess: false,
+      setUpgradeSuccess(upgradeSuccess) {
+        set({
+          upgradeSuccess
+        });
+      },
       setScreenWidth(e: number) {
         set((state) => {
           state.screenWidth = e;

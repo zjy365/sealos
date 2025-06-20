@@ -1,18 +1,20 @@
 import { regionList as getRegionList, UserInfo } from '@/api/auth';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
-import { ApiResp, Region } from '@/types';
+import { ApiResp, Region, WindowSize } from '@/types';
 import { AccessTokenPayload } from '@/types/token';
 import { Box, Button, Center, Flex, HStack, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { CheckIcon, ChevronDown } from 'lucide-react';
 import { useConfigStore } from '@/stores/config';
 import { getUserPlan } from '@/api/platform';
 import { MyTooltip } from '@sealos/ui';
+import useAppStore from '@/stores/app';
+import { masterApp } from 'sealos-desktop-sdk/master';
 
 export default function RegionToggle({ userPlan }: { userPlan: string }) {
   const disclosure = useDisclosure();
@@ -55,7 +57,40 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
     target.searchParams.append('regionDomain', region.domain);
     await router.replace(target);
   };
-
+  const { installedApps: apps, runningInfo, setToHighestLayerById, openApp } = useAppStore();
+  const openDesktopApp = ({
+    appKey,
+    query = {},
+    messageData = {},
+    pathname = '/',
+    appSize = 'maximize'
+  }: {
+    appKey: string;
+    query?: Record<string, string>;
+    messageData?: Record<string, any>;
+    pathname: string;
+    appSize?: WindowSize;
+  }) => {
+    const app = apps.find((item) => item.key === appKey);
+    const runningApp = runningInfo.find((item) => item.key === appKey);
+    if (!app) return;
+    openApp(app, { query, pathname, appSize });
+    if (runningApp) {
+      setToHighestLayerById(runningApp.pid);
+    }
+    // post message
+    const iframe = document.getElementById(`app-window-${appKey}`) as HTMLIFrameElement;
+    if (!iframe) return;
+    iframe.contentWindow?.postMessage(messageData, app.data.url);
+  };
+  useEffect(() => {
+    const cleanup = masterApp?.addEventListen('switchRegion', (regionUid: string) => {
+      const region = regionList.find((r) => r.uid === regionUid);
+      if (!region) return;
+      handleCick(region);
+    });
+    return cleanup;
+  }, []);
   return (
     <Box>
       {regionList?.length > 1 && (
@@ -145,6 +180,10 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                         key={region.uid}
                         offset={[0, 0]}
                         width={'220px'}
+                        fontWeight="400"
+                        fontSize="14px"
+                        lineHeight="20px"
+                        color="#09090B"
                         label={'Upgrade your plan to unlock members-only availability zone'}
                         isDisabled={canUse}
                         placement="right"
@@ -159,9 +198,19 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                           borderRadius={'8px'}
                           py={'10px'}
                           px={'8px'}
-                          isDisabled={!canUse}
                           onClick={() => {
-                            canUse && handleCick(region);
+                            canUse
+                              ? handleCick(region)
+                              : openDesktopApp({
+                                  appKey: 'system-account-center',
+                                  query: {
+                                    scene: 'upgrade'
+                                  },
+                                  messageData: {
+                                    scene: 'upgrade'
+                                  },
+                                  pathname: '/'
+                                });
                           }}
                           bgColor={!canUse ? '#F4F4F5' : ''}
                           cursor={'pointer'}

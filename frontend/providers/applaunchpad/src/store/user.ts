@@ -57,6 +57,7 @@ export const useUserStore = create<State>()(
           cpu: (cpu / 1000) * requestReplicas,
           memory: (memory / 1024) * requestReplicas,
           gpu: (gpu?.type ? gpu.amount : 0) * requestReplicas,
+          pods: requestReplicas,
           storage: storeList.reduce((sum, item) => sum + item.value, 0) * requestReplicas,
           nodeports: nodeportsAmount
         };
@@ -78,11 +79,12 @@ export const useUserStore = create<State>()(
           memory: 'app.The applied memory exceeds the quota',
           gpu: 'app.The applied GPU exceeds the quota',
           storage: 'app.The applied storage exceeds the quota',
-          nodeports: 'app.The applied nodeports exceeds the quota'
+          nodeports: 'app.The applied nodeports exceeds the quota',
+          pods: 'app.The applied pods exceeds the quota'
         };
 
         const exceedQuota = quote.find((item) => {
-          if (item.used + request[item.type] > item.limit) {
+          if (item.limit >= 0 && item.used + request[item.type] > item.limit) {
             return true;
           }
         });

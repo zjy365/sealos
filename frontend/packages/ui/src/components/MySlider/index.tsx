@@ -45,7 +45,7 @@ export const MySlider = ({
             ? { color: 'myGray.900', fontWeight: 'bold' }
             : { color: 'grayModern.900' })}
         >
-          <Box px={3} cursor={'pointer'}>
+          <Box px={0} cursor={'pointer'}>
             {item.label}
           </Box>
         </SliderMark>

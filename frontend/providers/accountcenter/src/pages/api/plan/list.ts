@@ -18,16 +18,16 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     const client = makeAPIClient(region, payload);
     const res = await client.post('/payment/v1alpha1/subscription/plan-list');
     const appMap = res.data.plans;
-    const validation = await PlanListSchema.safeParseAsync(appMap);
-    if (!validation.success) {
-      console.log(validation.error.message);
-      return jsonRes(resp, {
-        code: 500,
-        message: 'Invalid response format'
-      });
-    }
-
-    const planList = validation.data.map((plan) => ({
+    // const validation = await PlanListSchema.safeParseAsync(appMap);
+    // if (!validation.success) {
+    //   console.log(validation.error.message);
+    //   return jsonRes(resp, {
+    //     code: 500,
+    //     message: 'Invalid response format'
+    //   });
+    // }
+    //@ts-ignore
+    const planList = appMap.map((plan) => ({
       id: plan.ID,
       name: plan.Name,
       description: plan.Description,

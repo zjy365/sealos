@@ -1,17 +1,38 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import Layout from '@/components/Layout';
+import img from 'public/images/switchRegionBg.png';
 import { getLastTransaction, getPlanCreditsUsage, getPlans, getPlanSubscription } from '@/api/plan';
 import CurrentPlan from '@/components/Plans/Current';
 import { TPlanApiResponse } from '@/schema/plan';
 import PlanCredits from '@/components/Plans/Credits';
-import { Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Text,
+  Divider,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure
+} from '@chakra-ui/react';
 import Alert from '@/components/Alert';
 import { useAPIErrorMessage } from '@/hooks/useToastAPIResult';
 import PlanAlert from '@/components/Alert/PlanAlert';
 import CreditsAlert from '@/components/Alert/CreditsAlert';
 import FreeConnectGithubAlert from '@/components/Alert/FreeConnectGithubAlert';
 import { getUserInfo } from '@/api/user';
+import { sealosApp } from 'sealos-desktop-sdk/app';
+import { jwtDecode } from 'jwt-decode';
+import { getRawRegionList } from '@/api/usage';
+import { RawRegion } from '@/types/region';
+import { getUserSession } from '@/utils/user';
+import { ArrowRightIcon } from 'lucide-react';
+import RegionToggle from './RegionToggle';
+import { useGlobalStore } from '@/store/global';
 
 export default function PlanPage() {
   const [initialized, setInitialized] = useState({
@@ -20,6 +41,7 @@ export default function PlanPage() {
     subscription: false,
     lastTransaction: false
   });
+  const { upgradeSuccess, setUpgradeSuccess } = useGlobalStore();
   const getAPIErrorMessage = useAPIErrorMessage();
   const {
     data: plansResponse,
@@ -48,6 +70,27 @@ export default function PlanPage() {
       setInitialized((prev) => ({ ...prev, subscription: true }));
     }
   });
+  const { data: regionListData } = useQuery(['rawRegionlist'], getRawRegionList, {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+  const regionList: RawRegion[] = useMemo(
+    () => regionListData?.data?.regionList || [],
+    [regionListData]
+  );
+  const token = getUserSession()?.token;
+  const curRegionUid = useMemo(() => {
+    try {
+      return jwtDecode<{ regionUid: string }>(token!).regionUid;
+    } catch {
+      return '';
+    }
+  }, [token]);
+  const [selectedRegionUid, setSelectedRegion] = useState(curRegionUid);
+  const switchRegion = (regionUid: string) => {
+    sealosApp.runEvents('switchRegion', regionUid);
+  };
   const { data: lastTransactionResponse, refetch: refetchLastTransaction } = useQuery(
     ['lastTransaction'],
     getLastTransaction,
@@ -94,6 +137,9 @@ export default function PlanPage() {
     });
     return res;
   }, [plans, subscription]);
+  const { isOpen, onClose } = useDisclosure({
+    defaultIsOpen: upgradeSuccess
+  });
   const renderMain = () => {
     if (!isLoadingEnd) return null;
     if (firstError) {
@@ -146,5 +192,62 @@ export default function PlanPage() {
       </Flex>
     );
   };
-  return <Layout loading={!isLoadingEnd}>{renderMain()}</Layout>;
+  return (
+    <>
+      <Layout loading={!isLoadingEnd}>{renderMain()}</Layout>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          setUpgradeSuccess(false);
+        }}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent
+          maxW="384px"
+          borderRadius="16px"
+          bgColor={'#FFFFFF'}
+          p={0}
+          sx={{
+            _before: 'unset'
+          }}
+          overflow={'hidden'}
+          border="1px solid #2778FD"
+          boxShadow="0px 12px 24px rgba(0, 0, 0, 0.12)"
+        >
+          <ModalHeader p={0}>
+            <Box h="180px" bg={`url(${img.src})`} bgSize="cover"></Box>
+          </ModalHeader>
+          <ModalBody p={6}>
+            <Text fontSize="24px" fontWeight="semibold" mb={3}>
+              UpgradeSuccess
+            </Text>
+            <Text fontSize="14px" color="gray.700" mb="16px">
+              For ensured stability and better experiences, switch to members-only AZ now.
+            </Text>
+            <RegionToggle
+              regionList={regionList}
+              setCurrentRegion={setSelectedRegion}
+              currentRegionUid={selectedRegionUid}
+            />
+            <Button
+              w="full"
+              variant="solid"
+              rightIcon={<ArrowRightIcon></ArrowRightIcon>}
+              mb={'16px'}
+              onClick={() => switchRegion(selectedRegionUid)}
+            >
+              Switch Now
+            </Button>
+            <Divider borderColor="#E4E4E7" borderStyle="dashed" mb={'22px'} />
+
+            <Button w="full" variant="ghost" color={'#18181B'} onClick={onClose}>
+              Continue with current availability zone
+            </Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }

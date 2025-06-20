@@ -44,6 +44,8 @@ import Yaml from './components/Yaml';
 import { useMessage } from '@sealos/ui';
 import { customAlphabet } from 'nanoid';
 import { sealosApp } from 'sealos-desktop-sdk/app';
+import { getUserSession } from '@/utils/user';
+import { PLAN_LIMIT } from '@/constants/account';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 12);
 
@@ -128,7 +130,9 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
     content: applyMessage
   });
   const { userQuota, loadUserQuota } = useUserStore();
-  useQuery(['getUserQuota'], loadUserQuota);
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+
+  useQuery(['getUserQuota', planName], loadUserQuota);
 
   const pxVal = useMemo(() => {
     const val = Math.floor((screenWidth - 1050) / 2);
@@ -460,10 +464,19 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
               Resource Limit Exceeded
             </Text>
             <Text py={'16px'}>
-              Your current Free plan includes up to {formHook.watch('cpu') / 1000} vCPU,
-              {formHook.watch('memory') / 1024}GB RAM, and{' '}
-              {formHook.watch('storeList').reduce((p, c) => p + c.value, 0)}GB storage. To deploy by
-              your configuration, please upgrade your plan.
+              Your current {planName} plan includes up to{' '}
+              {userQuota.find((q) => q.type === 'cpu')?.limit || 0} vCPU,{' '}
+              {userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM,
+              {userQuota.find((q) => q.type === 'storage')?.limit &&
+              userQuota.find((q) => q.type === 'storage')!.limit >= 0
+                ? ` ${userQuota.find((q) => q.type === 'storage')!.limit}  GB storage,`
+                : ''}
+              {userQuota.find((q) => q.type === 'pods')?.limit &&
+              userQuota.find((q) => q.type === 'pods')!.limit >= 0
+                ? ` ${userQuota.find((q) => q.type === 'pods')!.limit}  pod,`
+                : ''}{' '}
+              and {userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM. To deploy by your
+              configuration, please upgrade your plan.
             </Text>
             <Flex gap="12px" mt={'16px'}>
               <Button
@@ -471,7 +484,13 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
                 h="40px"
                 variant={'solid'}
                 onClick={() => {
-                  sealosApp.runEvents('openUpgradePlan');
+                  sealosApp.runEvents('openDesktopApp', {
+                    appKey: 'system-account-center',
+                    pathname: '/',
+                    query: {
+                      scene: 'upgrade'
+                    }
+                  });
                   onClose();
                 }}
               >
