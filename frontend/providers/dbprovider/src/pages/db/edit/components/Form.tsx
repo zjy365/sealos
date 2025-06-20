@@ -15,6 +15,7 @@ import {
 import { CpuSlideMarkList, MemorySlideMarkList } from '@/constants/editApp';
 import useEnvStore from '@/store/env';
 import { DBVersionMap, INSTALL_ACCOUNT } from '@/store/static';
+import { useUserStore } from '@/store/user';
 import type { QueryType } from '@/types';
 import { AutoBackupType } from '@/types/backup';
 import type { DBEditType } from '@/types/db';
@@ -44,7 +45,7 @@ import {
 } from '@chakra-ui/react';
 import { MySelect, MySlider, MyTooltip, RangeInput, Tabs } from '@sealos/ui';
 import { throttle } from 'lodash';
-import { LockIcon } from 'lucide-react';
+import { LockIcon, LockKeyholeIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
@@ -155,14 +156,15 @@ const Form = ({
     alignItems: 'center',
     backgroundColor: 'grayModern.50'
   };
+  const { checkQuotaAllow } = useUserStore();
   const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
   const cpuVal = watch('cpu');
   const memoryVal = watch('memory');
-  console.log(cpuVal, memoryVal);
+  const pods = watch('replicas');
   const exceedLimit = useMemo(() => {
-    const limit = PLAN_LIMIT[planName as 'Free'];
-    return cpuVal >= limit.cpu * 1000 || memoryVal >= limit.memory * 1024;
-  }, [planName, cpuVal, memoryVal]);
+    const result = checkQuotaAllow(getValues());
+    return !!result;
+  }, [cpuVal, memoryVal, pods]);
   return (
     <>
       <Grid
@@ -542,12 +544,14 @@ const Form = ({
                   bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
                   borderRadius="8px"
                 >
-                  <Flex gap={'8px'}>
-                    <LockIcon
-                      size={'16px'}
-                      color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
-                    ></LockIcon>
-                    <Text>Upgrade your plan to unlock higher usage capacity</Text>
+                  <Flex gap={'8px'} align={'center'}>
+                    <LockKeyholeIcon size={'16px'} color="#3E6FF4"></LockKeyholeIcon>
+                    <Text
+                      bgClip={'text'}
+                      bgGradient={'linear-gradient(180deg, #3E6FF4 0%, #0E4BF1 100%)'}
+                    >
+                      Upgrade your plan to unlock higher usage capacity
+                    </Text>
                   </Flex>
                   <Button
                     variant={'unstyled'}

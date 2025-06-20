@@ -36,16 +36,18 @@ export default function Workspace() {
     useInitWorkspaceStore();
   // const [workspaceName, setWorkspaceName] = useState('');
   // const [selectedRegion, setSelectedRegion] = useState<string>('');
-  const [regionList, setRegionList] = useState<Region[]>([]);
+  // const [regionList, setRegionList] = useState<Region[]>([]);
   const { cloudConfig } = useConfigStore();
   const { token } = useSessionStore();
-  useQuery({
+  const { data } = useQuery({
     queryKey: ['regionList'],
-    queryFn: getRegionList,
-    onSuccess: (data) => {
-      setRegionList(data?.data?.regionList || []);
-    }
+    queryFn: getRegionList
+    // onSuccess: (data) => {
+    //   // setRegionList(data?.data?.regionList || []);
+    //   data.data
+    // }
   });
+  const regionList = (data?.data?.regionList || []).filter((r) => r.description.isFree);
   const mutation = useMutation({
     mutationFn(data: { regionUid: string; workspaceName: string }) {
       return initRegionToken(data);

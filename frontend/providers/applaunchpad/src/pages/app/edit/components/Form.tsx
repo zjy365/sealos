@@ -51,7 +51,7 @@ import QuotaBox from './QuotaBox';
 import type { StoreType } from './StoreModal';
 import styles from './index.module.scss';
 import Tabs from '@/components/Tabs';
-import { ArrowRight, LockIcon, Plus } from 'lucide-react';
+import { ArrowRight, LockIcon, LockKeyholeIcon, Plus } from 'lucide-react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { getUserSession } from '@/utils/user';
 import { PLAN_LIMIT } from '@/constants/account';
@@ -85,7 +85,7 @@ const Form = ({
   if (!formHook) return null;
   const { t } = useTranslation();
   const { formSliderListConfig } = useGlobalStore();
-  const { userSourcePrice, userQuota } = useUserStore();
+  const { userSourcePrice, userQuota, checkQuotaAllow } = useUserStore();
   const router = useRouter();
   const { toast } = useToast();
   const { name } = router.query as QueryType;
@@ -397,12 +397,12 @@ const Form = ({
 
   const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
   const cpuVal = watch('cpu');
+  const pods = watch('replicas');
   const memoryVal = watch('memory');
-  console.log(cpuVal, memoryVal);
   const exceedLimit = useMemo(() => {
-    const limit = PLAN_LIMIT[planName as 'Free'];
-    return cpuVal >= limit.cpu * 1000 || memoryVal >= limit.memory * 1024;
-  }, [planName, cpuVal, memoryVal]);
+    const result = checkQuotaAllow(getValues());
+    return !!result;
+  }, [cpuVal, memoryVal, pods]);
   return (
     <>
       <Grid
@@ -676,9 +676,10 @@ const Form = ({
               <Box>
                 <Label>{t('Deployment Mode')}</Label>
                 <Text color={'#71717A'} py={'8px'}>
-                  {`Max for ${planName} tier: ${PLAN_LIMIT[planName as 'Free'].cpu} vCPU, ${
-                    PLAN_LIMIT[planName as 'Free'].memory
-                  } GB RAM`}
+                  {/* {`Max for ${planName} tier: ${
+                    userQuota.find((q) => q.type === 'cpu')?.limit || 0
+                  } vCPU, ${userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM`} */}
+                  {`Max Available Resources for ${planName} plan:`}
                 </Text>
                 <Flex gap={4} mt={'20px'} mb={'32px'}>
                   <Flex
@@ -913,9 +914,6 @@ const Form = ({
                   min={0}
                   step={1}
                 />
-                <Box ml={5} transform={'translateY(10px)'} color={'grayModern.900'}>
-                  (Core)
-                </Box>
               </Flex>
               <Flex mt={'24px'} alignItems={'center'} gap={'16px'} minH={'30px'}>
                 <Text flexShrink={0} fontSize={'14px'} fontWeight={500} w={'100px'}>
@@ -943,12 +941,14 @@ const Form = ({
                   bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
                   borderRadius="8px"
                 >
-                  <Flex gap={'8px'}>
-                    <LockIcon
-                      size={'16px'}
-                      color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
-                    ></LockIcon>
-                    <Text>Upgrade your plan to unlock higher usage capacity</Text>
+                  <Flex gap={'8px'} align={'center'}>
+                    <LockKeyholeIcon size={'16px'} color="#3E6FF4"></LockKeyholeIcon>
+                    <Text
+                      bgClip={'text'}
+                      bgGradient={'linear-gradient(180deg, #3E6FF4 0%, #0E4BF1 100%)'}
+                    >
+                      Upgrade your plan to unlock higher usage capacity
+                    </Text>
                   </Flex>
                   <Button
                     variant={'unstyled'}

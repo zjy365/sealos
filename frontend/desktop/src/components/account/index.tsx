@@ -65,7 +65,7 @@ export default function Account() {
   const router = useRouter();
   const { copyData } = useCopyData();
   const { t } = useTranslation();
-  const { delSession, session, setToken } = useSessionStore();
+  const { delSession, session, setToken, updateSubscription } = useSessionStore();
   const user = session?.user;
   const queryclient = useQueryClient();
   const kubeconfig = session?.kubeconfig || '';
@@ -111,18 +111,18 @@ export default function Account() {
     }
   }, [guideDisclosure, initGuide]);
 
-  const { data: plan, isSuccess } = useQuery(['getUserPlan'], () => getUserPlan(), {
-    cacheTime: 5 * 60 * 1000,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false
+  const { data: plan } = useQuery(['getUserPlan'], () => getUserPlan(), {
+    refetchOnWindowFocus: false,
+    refetchInterval: 60 * 1000
   });
-
   const userPlan = useMemo(() => {
     // DEBUG
     // return 'Pro';
     return plan?.data?.subscription?.subscriptionPlan?.name || 'Free';
   }, [plan]);
-
+  useEffect(() => {
+    if (plan?.data?.subscription) updateSubscription(plan?.data?.subscription);
+  }, [plan?.data?.subscription.subscriptionPlan.name]);
   return (
     <Box position={'relative'} flex={1}>
       <Flex justifyContent={'space-between'} alignItems={'center'} height={'100%'} zIndex={3}>

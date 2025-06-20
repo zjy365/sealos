@@ -37,7 +37,6 @@ export const useUserStore = create<State>()(
 
         if (usedData) {
           const { cpu = 0, memory = 0, nodeports = 0, gpu } = usedData;
-
           request.cpu -= cpu / 1000;
           request.memory -= memory / 1024;
           request.nodeports -= nodeports;
@@ -48,11 +47,12 @@ export const useUserStore = create<State>()(
           cpu: 'cpu_exceeds_quota',
           memory: 'memory_exceeds_quota',
           nodeports: 'nodeports_exceeds_quota',
-          gpu: 'gpu_exceeds_quota'
+          gpu: 'gpu_exceeds_quota',
+          pods: 'pods_exceeds_quota'
         };
 
         const exceedQuota = quote.find((item) => {
-          if (item.used + request[item.type] > item.limit) {
+          if (item.limit >= 0 && item.used + request[item.type] > item.limit) {
             return true;
           }
         });

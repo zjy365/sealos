@@ -3,7 +3,10 @@ import { useDisclosure } from '@chakra-ui/react';
 import { Track } from '@sealos/ui';
 
 export default function useUpgradeModalInTranslation(
-  restProps: Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'>
+  restProps: Omit<
+    UpgradePlanModalProps,
+    'isOpen' | 'onClose' | 'hoverIndex' | 'setHoverIndex' | 'expanded'
+  >
 ) {
   const {
     isOpen: isUpgradeModalOpen,

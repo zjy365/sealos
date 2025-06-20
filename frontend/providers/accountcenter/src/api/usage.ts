@@ -1,8 +1,11 @@
 import { GET, POST } from '@/service/request';
+import { ApiResp } from '@/types';
+import { RawRegion, Region } from '@/types/region';
 
 export const getUsageList = (data: any) => POST('/billing/appOverview', data);
 
-export const getRegionList = () => GET('/getRegions');
+export const getRegionList = () => GET<ApiResp<Region[]>>('/getRegions');
+export const getRawRegionList = () => GET<ApiResp<{ regionList: RawRegion[] }>>('/getRegionsRaw');
 
 export const getNamespaceList = (data: any) => POST('/billing/getNamespaceList', data);
 

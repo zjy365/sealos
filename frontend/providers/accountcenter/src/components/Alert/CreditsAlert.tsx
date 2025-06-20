@@ -7,7 +7,11 @@ import { UpgradePlanModalProps } from '../Plans/UpgradeModal';
 import useUpgradeModalInTranslation from '@/hooks/useUpgradeModalInTranslation';
 import { Track } from '@sealos/ui';
 
-interface CreditsAlertProps extends Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'> {
+interface CreditsAlertProps
+  extends Omit<
+    UpgradePlanModalProps,
+    'isOpen' | 'onClose' | 'hoverIndex' | 'setHoverIndex' | 'expanded'
+  > {
   creditsUsage: TCreditsUsageResponse | undefined;
 }
 function nanToZero(n: any) {

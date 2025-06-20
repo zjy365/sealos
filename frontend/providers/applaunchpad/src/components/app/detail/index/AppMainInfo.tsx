@@ -271,7 +271,14 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                               </Center>
                             ) : (
                               <MyTooltip
-                                isDisabled={planName !== 'Pro'}
+                                isDisabled={planName === 'Pro'}
+                                fontWeight="400"
+                                fontSize="14px"
+                                lineHeight="20px"
+                                textAlign="center"
+                                width={'220px'}
+                                offset={[0, 0]}
+                                color="#09090B"
                                 label={
                                   planName !== 'Pro'
                                     ? 'Upgrade your plan for faster deployment'
@@ -285,8 +292,8 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                   bg={'rgba(17, 24, 36, 0.05)'}
                                   color={'#485264'}
                                   borderRadius={'full'}
-                                  p={'2px 4px'}
-                                  gap={'2px'}
+                                  p={'6px 9px'}
+                                  gap={'8px'}
                                   minW={'63px'}
                                 >
                                   {/* <MyIcon
@@ -338,7 +345,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                             </Flex>
                           </Box>
                         </MyTooltip>
-
+                        {/* copy address */}
                         {!!network.public && (
                           <Center
                             flexShrink={0}
