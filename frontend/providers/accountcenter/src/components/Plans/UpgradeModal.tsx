@@ -17,7 +17,8 @@ import { getUpgradePlanAmount, updatePlan } from '@/api/plan';
 import { useRouter } from 'next/router';
 import urls from '@/utils/urls';
 
-export interface UpgradePlanModalProps extends Omit<PlanSelectorProps, 'minHeight'> {
+export interface UpgradePlanModalProps
+  extends Omit<PlanSelectorProps, 'minHeight' | 'hoverIndex' | 'setHoverIndex' | 'expanded'> {
   isOpen: boolean;
   onClose: () => void;
 }

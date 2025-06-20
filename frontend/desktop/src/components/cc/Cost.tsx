@@ -1,4 +1,4 @@
-import { getAmount } from '@/api/auth';
+import { getAmount, UserInfo } from '@/api/auth';
 import { getUserBilling, getResource } from '@/api/platform';
 import useAppStore from '@/stores/app';
 import { useConfigStore } from '@/stores/config';
@@ -18,7 +18,7 @@ import { CurrencySymbol } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Decimal } from 'decimal.js';
 import { useTranslation } from 'next-i18next';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { CpuIcon, FlowIcon, MemoryIcon, StorageIcon } from '../icons';
 import { WindowSize } from '@/types';
 import { PLAN_LIMIT } from '@/constants/account';
@@ -28,8 +28,10 @@ export default function Cost() {
   const rechargeEnabled = useConfigStore().commonConfig?.rechargeEnabled;
   const openApp = useAppStore((s) => s.openApp);
   const installApp = useAppStore((s) => s.installedApps);
-  const { session } = useSessionStore();
+  const { session, updateSubscription } = useSessionStore();
   const user = session?.user;
+  const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
+  const { installedApps: apps, runningInfo, setToHighestLayerById } = useAppStore();
   const currencySymbol = useConfigStore(
     (state) => state.layoutConfig?.currencySymbol || 'shellCoin'
   );
@@ -46,11 +48,10 @@ export default function Cost() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
-
   const { data: resourceData } = useQuery(['getResource'], getResource, {
-    staleTime: 60 * 1000
+    staleTime: 60 * 1000,
+    refetchInterval: 5 * 1000
   });
-
   const balance = useMemo(() => {
     let realBalance = new Decimal(data?.data?.balance || 0);
     if (data?.data?.deductionBalance) {
@@ -59,26 +60,26 @@ export default function Cost() {
     return realBalance.toNumber();
   }, [data]);
 
-  const calculations = useMemo(() => {
-    const prevDayAmount = new Decimal(billing?.data?.prevDayTime || 0);
-    const estimatedNextMonthAmount = prevDayAmount.times(30).toNumber();
-    const _balance = new Decimal(balance || 0);
+  // const calculations = useMemo(() => {
+  //   const prevDayAmount = new Decimal(billing?.data?.prevDayTime || 0);
+  //   const estimatedNextMonthAmount = prevDayAmount.times(30).toNumber();
+  //   const _balance = new Decimal(balance || 0);
 
-    let estimatedDaysUsable;
-    if (_balance.isNegative()) {
-      estimatedDaysUsable = 0;
-    } else if (prevDayAmount.isZero()) {
-      estimatedDaysUsable = Number.POSITIVE_INFINITY;
-    } else {
-      estimatedDaysUsable = _balance.div(prevDayAmount).ceil().toNumber();
-    }
+  //   let estimatedDaysUsable;
+  //   if (_balance.isNegative()) {
+  //     estimatedDaysUsable = 0;
+  //   } else if (prevDayAmount.isZero()) {
+  //     estimatedDaysUsable = Number.POSITIVE_INFINITY;
+  //   } else {
+  //     estimatedDaysUsable = _balance.div(prevDayAmount).ceil().toNumber();
+  //   }
 
-    return {
-      prevMonthAmount: new Decimal(billing?.data?.prevMonthTime || 0).toNumber(),
-      estimatedNextMonthAmount,
-      estimatedDaysUsable
-    };
-  }, [billing?.data?.prevDayTime, billing?.data?.prevMonthTime, balance]);
+  //   return {
+  //     prevMonthAmount: new Decimal(billing?.data?.prevMonthTime || 0).toNumber(),
+  //     estimatedNextMonthAmount,
+  //     estimatedDaysUsable
+  //   };
+  // }, [billing?.data?.prevDayTime, billing?.data?.prevMonthTime, balance]);
 
   // Resource data from monitor component
   const resourceInfo = useMemo(
@@ -121,8 +122,7 @@ export default function Cost() {
       unhealthPod
     };
   }, [resourceData?.data]);
-  const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
-  const { installedApps: apps, runningInfo, setToHighestLayerById } = useAppStore();
+
   const openDesktopApp = ({
     appKey,
     query = {},
@@ -294,7 +294,7 @@ export default function Cost() {
                   color={'#000000'}
                   textAlign={'center'}
                 >
-                  {resourceData?.data?.totalPodCount || 0}
+                  {healthPod}
                 </Text>
               </Box>
 
@@ -333,7 +333,7 @@ export default function Cost() {
                   color={'#000000'}
                   textAlign={'center'}
                 >
-                  {resourceData?.data?.runningPodCount || 0}
+                  {unhealthPod}
                 </Text>
               </Box>
             </Flex>

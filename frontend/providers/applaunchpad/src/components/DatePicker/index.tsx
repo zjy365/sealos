@@ -47,7 +47,7 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
     from: startDateTime,
     to: endDateTime
   };
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
   const recentDateList = useMemo(
     () => [
       {
@@ -395,7 +395,13 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
               <Flex flexDir={'column'} gap={'4px'} p={'12px 8px'} w={'100%'}>
                 {recentDateList.map((item) => (
                   <MyTooltip
-                    isDisabled={item.compareValue !== '30d'}
+                    width={'220px'}
+                    fontWeight="400"
+                    fontSize="14px"
+                    lineHeight="20px"
+                    textAlign="center"
+                    color="#09090B"
+                    isDisabled={item.compareValue !== '30d' || planName !== 'Free'}
                     offset={[0, 0]}
                     label="Upgrade your plan for longer period"
                     key={JSON.stringify(item.value)}
@@ -406,9 +412,7 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
                       color={'grayModern.900'}
                       fontSize={'12px'}
                       fontWeight={'400'}
-                      isDisabled={
-                        item.compareValue !== '30d' && (planName === 'Hobby' || planName === 'Pro')
-                      }
+                      isDisabled={item.compareValue === '30d' && planName === 'Free'}
                       justifyContent={'flex-start'}
                       {...(recentDate.compareValue === item.compareValue && {
                         bg: 'brightBlue.50',

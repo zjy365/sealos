@@ -28,7 +28,9 @@ import { PVC_STORAGE_MAX } from '@/store/static';
 import { getUserSession } from '@/utils/user';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { PLAN_LIMIT } from '@/constants/account';
-import { LockIcon } from 'lucide-react';
+import { LockKeyholeIcon } from 'lucide-react';
+import { useAppStore } from '@/store/app';
+import { useUserStore } from '@/store/user';
 
 export type StoreType = {
   id?: string;
@@ -55,6 +57,7 @@ const StoreModal = ({
   closeCb: () => void;
 }) => {
   const { t } = useTranslation();
+  const { userQuota, loadUserQuota } = useUserStore();
   const type = useMemo(() => (!!defaultValue.id ? 'create' : 'edit'), [defaultValue]);
   const minVal = useMemo(
     () => (isEditStore ? defaultValue.value : 1),
@@ -77,8 +80,13 @@ const StoreModal = ({
       title: `${t('Add')} ${t('Storage')}`
     }
   };
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
-  const exceedLimit = planName == 'Free' && watch('value') < PLAN_LIMIT['Free'].storage;
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const limit = PLAN_LIMIT[planName as 'Free'];
+  const storageQuota = userQuota.find((q) => q.type === 'storage');
+  const exceedLimit =
+    storageQuota &&
+    storageQuota.limit >= 0 &&
+    storageQuota.limit < watch('value') + storageQuota.used;
   return (
     <>
       <Modal isOpen onClose={closeCb} lockFocusAcrossFrames={false}>
@@ -87,6 +95,7 @@ const StoreModal = ({
           p={'2px'}
           boxShadow={'0px 1px 2px 0px rgba(0, 0, 0, 0.05)'}
           borderRadius={'16px'}
+          maxW={'456px'}
         >
           <Box border={'1px solid #E4E4E7'} borderRadius={'16px'}>
             <ModalHeader
@@ -166,16 +175,24 @@ const StoreModal = ({
                   borderRadius="8px"
                 >
                   <Flex gap={'8px'}>
-                    <LockIcon
-                      size={'16px'}
-                      color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
-                    ></LockIcon>
-                    <Text>Upgrade your plan to unlock higher usage capacity</Text>
+                    <LockKeyholeIcon size={'16px'} color="#3E6FF4"></LockKeyholeIcon>
+                    <Text
+                      bgClip={'text'}
+                      bgGradient={'linear-gradient(180deg, #3E6FF4 0%, #0E4BF1 100%)'}
+                    >
+                      {planName} plan includes up to {storageQuota.limit} GB
+                    </Text>
                   </Flex>
                   <Button
                     variant={'unstyled'}
                     onClick={() => {
-                      sealosApp.runEvents('openUpgradePlan');
+                      sealosApp.runEvents('openDesktopApp', {
+                        appKey: 'system-account-center',
+                        pathname: '/',
+                        query: {
+                          scene: 'upgrade'
+                        }
+                      });
                     }}
                     bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
                     bgClip="text"

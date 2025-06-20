@@ -14,6 +14,7 @@ type SessionState = {
   oauth_state: string;
   firstUse: Date | null;
   setSession: (ss: Session) => void;
+  updateSubscription: (subscription: Session['user']['subscription']) => void;
   setSessionProp: <T extends keyof Session>(key: T, value: Session[T]) => void;
   delSession: () => void;
   setFirstUse: (d: Date | null) => void;
@@ -52,6 +53,13 @@ const useSessionStore = create<SessionState>()(
         });
       },
       setSession: (ss: Session) => set({ session: ss }),
+      updateSubscription(subscription: Session['user']['subscription']) {
+        set((s) => {
+          if (s.session?.user.subscription) {
+            s.session.user.subscription = subscription;
+          }
+        });
+      },
       setSessionProp: (key: keyof Session, value: any) => {
         set((state) => {
           if (state.session) {

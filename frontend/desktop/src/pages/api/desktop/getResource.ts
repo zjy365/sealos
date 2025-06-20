@@ -15,42 +15,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const namespace = payload.workspaceId;
     const userKc = await getUserKubeconfigNotPatch(payload.userCrName);
     if (!userKc) return jsonRes(res, { code: 404, message: 'user is not found' });
+    // const curKcClient = K8sApi(userKc);
     // const realKc = switchKubeconfigNamespace(_kc, namespace);
     // const kc = K8sApi(realKc);
     // if (!kc) return jsonRes(res, { code: 404, message: 'The kubeconfig is not found' });
 
     // const result = await kc.makeApiClient(k8s.CoreV1Api).listNamespacedPod(namespace);
-    const client = K8sApiDefault().makeApiClient(k8s.CoreV1Api);
-    const regionResource = await prisma.userCr.findUnique({
-      where: {
-        userUid: payload.userUid
-      },
-      select: {
-        userWorkspace: {
-          select: {
-            workspace: {
-              select: {
-                id: true
-              }
-            },
-            status: true,
-            isPrivate: true,
-            role: true
-          }
-        }
-      }
-    });
-    const relationList = (regionResource?.userWorkspace || []).filter(
-      (n) => n.role === 'OWNER' && n.status === 'IN_WORKSPACE'
-    );
-    const podList = (
-      await Promise.all(
-        relationList.map(async (relation) => {
-          const namespace = relation.workspace.id;
-          return (await client.listNamespacedPod(namespace)).body.items;
-        })
-      )
-    ).flatMap((podList) => podList);
+    const client = K8sApi(userKc).makeApiClient(k8s.CoreV1Api);
+    // const regionResource = await prisma.userCr.findUnique({
+    //   where: {
+    //     userUid: payload.userUid
+    //   },
+    //   select: {
+    //     userWorkspace: {
+    //       select: {
+    //         workspace: {
+    //           select: {
+    //             id: true
+    //           }
+    //         },
+    //         status: true,
+    //         isPrivate: true,
+    //         role: true
+    //       }
+    //     }
+    //   }
+    // });
+    // const relationList = (regionResource?.userWorkspace || []).filter(
+    //   (n) => n.role === 'OWNER' && n.status === 'IN_WORKSPACE'
+    // );
+    const podList = (await client.listNamespacedPod(namespace)).body.items;
+    // (
+    // await Promise.all(
+    //   relationList.map(async (relation) => {
+    //     const namespace = relation.workspace.id;
+    //       return (await client.listNamespacedPod(namespace)).body.items;
+    //     })
+    //   )
+    // ).flatMap((podList) => podList);
     let totalCpuLimits = 0;
     let totalMemoryLimits = 0;
     let totalStorageRequests = 0;
@@ -85,19 +87,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       for (const volume of pod.spec.volumes) {
         if (!volume.persistentVolumeClaim?.claimName) continue;
         const pvcName = volume.persistentVolumeClaim.claimName;
-        const realKc = switchKubeconfigNamespace(userKc, namespace);
-        const kc = K8sApi(realKc);
+        // const realKc = switchKubeconfigNamespace(userKc, namespace);
+        // const kc = K8sApi(realKc);
         try {
-          const pvc = await kc
-            .makeApiClient(k8s.CoreV1Api)
-            .readNamespacedPersistentVolumeClaim(pvcName, namespace);
+          const pvc = await client.readNamespacedPersistentVolumeClaim(pvcName, namespace);
           const storage = pvc?.body?.spec?.resources?.requests?.storage || '0';
           totalStorageRequests += parseResourceValue(storage);
-        } catch (error) {}
+        } catch (error) {
+          console.error('Failed to read PVC:', pvcName, error);
+        }
       }
     }
 
-    jsonRes(res, {
+    return jsonRes(res, {
       data: {
         totalCpu: totalCpuLimits.toFixed(2),
         totalMemory: totalMemoryLimits.toFixed(2),

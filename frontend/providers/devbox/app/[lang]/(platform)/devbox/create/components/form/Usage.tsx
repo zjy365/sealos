@@ -6,10 +6,11 @@ import Label from './Label';
 import { useTranslations } from 'next-intl';
 import { useForm, useFormContext } from 'react-hook-form';
 import { useMemo } from 'react';
-import { LockIcon } from 'lucide-react';
+import { LockIcon, LockKeyholeIcon } from 'lucide-react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { getUserSession } from '@/utils/user';
-import { PLAN_LIMIT } from '@/constants/account';
+import { useUserStore } from '@/stores/user';
+import { DevboxEditTypeV2 } from '@/types/devbox';
 
 export default function Usage({
   countGpuInventory
@@ -17,14 +18,20 @@ export default function Usage({
   countGpuInventory: (type: string) => number;
 }) {
   const t = useTranslations();
-  const { watch } = useFormContext();
+  const { watch, getValues } = useFormContext<DevboxEditTypeV2>();
+  const { checkQuotaAllow } = useUserStore();
   const cpuVal = watch('cpu');
   const memoryVal = watch('memory');
   const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
+  const portInfos = watch('networks');
   const exceedLimit = useMemo(() => {
-    const limit = PLAN_LIMIT[planName as 'Free'];
-    return cpuVal >= limit.cpu * 1000 || memoryVal >= limit.memory * 1024;
-  }, [planName, cpuVal, memoryVal]);
+    const nodeports = portInfos.filter((info) => !!info.port).length + 1;
+    const result = checkQuotaAllow({
+      ...getValues(),
+      nodeports
+    });
+    return !!result;
+  }, [cpuVal, memoryVal, pods, portInfos]);
   return (
     <>
       <Box h={'40px'} mb={'15px'}>
@@ -44,12 +51,11 @@ export default function Usage({
           bgGradient="linear(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)"
           borderRadius="8px"
         >
-          <Flex gap={'8px'}>
-            <LockIcon
-              size={'16px'}
-              color="linear-gradient(270.48deg, #2778FD 3.93%, #2778FD 18.25%, #829DFE 80.66%);"
-            ></LockIcon>
-            <Text>Upgrade your plan to unlock higher usage capacity</Text>
+          <Flex gap={'8px'} align={'center'}>
+            <LockKeyholeIcon size={'16px'} color="#3E6FF4"></LockKeyholeIcon>
+            <Text bgClip={'text'} bgGradient={'linear-gradient(180deg, #3E6FF4 0%, #0E4BF1 100%)'}>
+              Upgrade your plan to unlock higher usage capacity
+            </Text>
           </Flex>
           <Button
             variant={'unstyled'}

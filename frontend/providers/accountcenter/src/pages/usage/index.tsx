@@ -94,7 +94,7 @@ function Home() {
 
   useEffect(() => {
     getRegionList().then((res) => {
-      setRegionList(res);
+      setRegionList(res as any);
     });
     getAppList().then((res) => {
       setAppType(res?.appMap || {});

@@ -8,7 +8,11 @@ import { FC } from 'react';
 import Alert from '.';
 import { UpgradePlanModalProps } from '../Plans/UpgradeModal';
 
-interface FreeConnectGithubAlertProps extends Omit<UpgradePlanModalProps, 'isOpen' | 'onClose'> {
+interface FreeConnectGithubAlertProps
+  extends Omit<
+    UpgradePlanModalProps,
+    'isOpen' | 'onClose' | 'hoverIndex' | 'setHoverIndex' | 'expanded'
+  > {
   userInfo: TUserInfoResponse | undefined;
   subscriptionResponse: TSubscriptionApiResponse | undefined;
 }

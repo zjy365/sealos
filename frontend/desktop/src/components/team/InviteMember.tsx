@@ -25,7 +25,7 @@ import { ROLE_LIST, UserRole } from '@/types/team';
 import useSessionStore from '@/stores/session';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getInviteCodeRequest, inviteMemberRequest } from '@/api/namespace';
-import { isWithinLimit, vaildManage } from '@/utils/tools';
+import { isWithinLimit, isWithinLimitAndNotEqual, vaildManage } from '@/utils/tools';
 import { ApiResp } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { GroupAddIcon, MyTooltip } from '@sealos/ui';
@@ -101,7 +101,7 @@ export default function InviteMember({
     const link = generateLink(code);
     await copyData(link);
   };
-  const canInvite = isWithinLimit(
+  const canInvite = isWithinLimitAndNotEqual(
     seat,
     Number(plan?.data?.subscription.subscriptionPlan.max_seats) || 1
   );
@@ -110,15 +110,21 @@ export default function InviteMember({
       {[UserRole.Manager, UserRole.Owner].includes(ownRole) ? (
         <MyTooltip
           label={'Seat limit reached. Upgrade your plan to lift the limit.'}
+          width={'220px'}
+          fontWeight="400"
+          fontSize="14px"
+          lineHeight="20px"
+          textAlign="center"
+          color="#09090B"
+          offset={[0, 0]}
           isDisabled={canInvite}
-          placement="bottom"
         >
           <Button
             height={'36px'}
             variant={'solid'}
             borderRadius={'8px'}
             {...props}
-            disabled={!canInvite}
+            isDisabled={!canInvite}
             _disabled={{
               opacity: '0.5'
             }}

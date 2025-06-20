@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { MyTooltip } from '@sealos/ui';
 
 import { useUserStore } from '@/store/user';
+import { getUserInfo } from '@/utils/user';
 
 const sourceMap = {
   cpu: {
@@ -33,19 +34,24 @@ const QuotaBox = () => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { userQuota, loadUserQuota } = useUserStore();
-  useQuery(['getUserQuota'], loadUserQuota);
+  const planName = getUserInfo()?.subscription.subscriptionPlan.name || 'Free';
+  useQuery(['getUserQuota', planName], loadUserQuota);
 
   const quotaList = useMemo(() => {
     if (!userQuota) return [];
     return userQuota
-      .map((item) => ({
-        ...item,
-        tip: `${t('Total')}: ${`${item.limit} ${sourceMap[item.type]?.unit}`}
-${t('common.Used')}: ${`${item.used} ${sourceMap[item.type]?.unit}`}
-${t('common.Surplus')}: ${`${item.limit - item.used} ${sourceMap[item.type]?.unit}`}
+      .filter((i) => i.type !== 'pods')
+      .map((item) => {
+        const source = sourceMap[item.type as 'cpu'];
+        return {
+          ...item,
+          tip: `${t('Total')}: ${`${item?.limit} ${source?.unit}`}
+${t('common.Used')}: ${`${item.used} ${source?.unit}`}
+${t('common.Surplus')}: ${`${item.limit - item.used} ${source?.unit}`}
 `,
-        color: sourceMap[item.type]?.color
-      }))
+          color: source?.color
+        };
+      })
       .filter((item) => item.limit > 0);
   }, [userQuota, t]);
 

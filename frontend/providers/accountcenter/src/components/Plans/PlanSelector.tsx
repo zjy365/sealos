@@ -5,7 +5,8 @@ import PlanSelectorItem, { PlanSelectorItemProps } from './PlanSelectorItem';
 import { useTranslation } from 'react-i18next';
 import { ArrowDown } from 'lucide-react';
 
-export interface PlanSelectorProps extends Omit<PlanSelectorItemProps, 'plan'> {
+export interface PlanSelectorProps
+  extends Omit<PlanSelectorItemProps, 'plan' | 'hoverIndex' | 'setHoverIndex' | 'expanded'> {
   plans: TPlanApiResponse[];
   minHeight?: string;
 }
