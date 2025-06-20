@@ -1535,6 +1535,7 @@ func (c *Cockroach) NewAccountWithFreeSubscriptionPlan(ops *types.UserQueryOpts)
 	if err != nil {
 		return nil, err
 	}
+	ops.UID = user.UID
 	now := time.Now().UTC()
 	account := &types.Account{
 		UserUID:                 ops.UID,
