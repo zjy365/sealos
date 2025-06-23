@@ -134,6 +134,28 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
 
   useQuery(['getUserQuota', planName], loadUserQuota);
 
+  const quotaText = useMemo(() => {
+    const getQuotaLimit = (type: string) => userQuota.find((q) => q.type === type)?.limit;
+
+    const quotaItems = [
+      { value: getQuotaLimit('cpu') || 0, unit: 'vCPU' },
+      { value: getQuotaLimit('memory') || 0, unit: 'GB RAM' },
+      ...(getQuotaLimit('storage') !== undefined && getQuotaLimit('storage')! >= 0
+        ? [{ value: getQuotaLimit('storage')!, unit: 'GB storage' }]
+        : []),
+      ...(getQuotaLimit('nodeports') !== undefined && getQuotaLimit('nodeports')! >= 0
+        ? [{ value: getQuotaLimit('nodeports')!, unit: 'nodeports' }]
+        : []),
+      ...(getQuotaLimit('pods') !== undefined && getQuotaLimit('pods')! >= 0
+        ? [{ value: getQuotaLimit('pods')!, unit: 'pods' }]
+        : [])
+    ];
+
+    const quotaString = quotaItems.map((item) => `${item.value} ${item.unit}`).join(', ');
+
+    return `Your current ${planName} plan includes up to ${quotaString}. To deploy by your configuration, please upgrade your plan.`;
+  }, [userQuota, planName]);
+
   const pxVal = useMemo(() => {
     const val = Math.floor((screenWidth - 1050) / 2);
     if (val < 20) {
@@ -463,21 +485,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
             <Text fontSize="24px" fontWeight="600" mb={'16px'}>
               Resource Limit Exceeded
             </Text>
-            <Text py={'16px'}>
-              Your current {planName} plan includes up to{' '}
-              {userQuota.find((q) => q.type === 'cpu')?.limit || 0} vCPU,{' '}
-              {userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM,
-              {userQuota.find((q) => q.type === 'storage')?.limit &&
-              userQuota.find((q) => q.type === 'storage')!.limit >= 0
-                ? ` ${userQuota.find((q) => q.type === 'storage')!.limit}  GB storage,`
-                : ''}
-              {userQuota.find((q) => q.type === 'pods')?.limit &&
-              userQuota.find((q) => q.type === 'pods')!.limit >= 0
-                ? ` ${userQuota.find((q) => q.type === 'pods')!.limit}  pod,`
-                : ''}{' '}
-              and {userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM. To deploy by your
-              configuration, please upgrade your plan.
-            </Text>
+            <Text py={'16px'}>{quotaText}</Text>
             <Flex gap="12px" mt={'16px'}>
               <Button
                 w={'120px'}

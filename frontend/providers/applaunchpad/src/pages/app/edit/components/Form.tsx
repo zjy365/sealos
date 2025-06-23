@@ -395,7 +395,7 @@ const Form = ({
       );
   }, [getValues, refresh]);
 
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const planName = getUserSession()?.user.subscription?.subscriptionPlan?.name || 'Free';
   const cpuVal = watch('cpu');
   const pods = watch('replicas');
   const memoryVal = watch('memory');
@@ -403,6 +403,7 @@ const Form = ({
     const result = checkQuotaAllow(getValues());
     return !!result;
   }, [cpuVal, memoryVal, pods]);
+
   return (
     <>
       <Grid
@@ -676,10 +677,9 @@ const Form = ({
               <Box>
                 <Label>{t('Deployment Mode')}</Label>
                 <Text color={'#71717A'} py={'8px'}>
-                  {/* {`Max for ${planName} tier: ${
+                  {`Max Available Resources for ${planName} plan: ${
                     userQuota.find((q) => q.type === 'cpu')?.limit || 0
-                  } vCPU, ${userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM`} */}
-                  {`Max Available Resources for ${planName} plan:`}
+                  } vCPU, ${userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM`}
                 </Text>
                 <Flex gap={4} mt={'20px'} mb={'32px'}>
                   <Flex

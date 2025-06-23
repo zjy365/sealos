@@ -129,7 +129,8 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
       };
     }
   }, [detailCompleted]);
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const planName = getUserSession()?.user.subscription?.subscriptionPlan?.name || 'Free';
+
   return (
     <Box position={'relative'}>
       <Box
@@ -280,7 +281,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                 offset={[0, 0]}
                                 color="#09090B"
                                 label={
-                                  planName !== 'Pro'
+                                  planName === 'Free'
                                     ? 'Upgrade your plan for faster deployment'
                                     : t('ReadyTip')
                                 }
