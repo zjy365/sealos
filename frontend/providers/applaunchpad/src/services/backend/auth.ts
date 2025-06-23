@@ -14,6 +14,7 @@ export const authSession = async (header: IncomingHttpHeaders) => {
   try {
     const { kubeconfig, token } = JSON.parse(decodeURIComponent(authorization)) as Authorization;
     const payload = await verifyInternalToken(token);
+
     if (!payload) {
       return Promise.reject('unAuthorization');
     }
