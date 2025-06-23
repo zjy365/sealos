@@ -36,7 +36,8 @@ export const useUserStore = create<State>()(
           cpu: (cpu / 1000) * replicas,
           memory: (memory / 1024) * replicas,
           storage: storage * replicas,
-          nodeports: nodeports
+          nodeports: nodeports,
+          pods: replicas
         };
 
         if (usedData) {
@@ -50,7 +51,8 @@ export const useUserStore = create<State>()(
           cpu: 'app.cpu_exceeds_quota',
           memory: 'app.memory_exceeds_quota',
           storage: 'app.storage_exceeds_quota',
-          nodeports: 'app.nodeports_exceeds_quota'
+          nodeports: 'app.nodeports_exceeds_quota',
+          pods: 'app.pods_exceeds_quota'
         };
 
         const exceedQuota = quote.find((item) => {

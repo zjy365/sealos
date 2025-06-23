@@ -242,6 +242,11 @@ export async function getUserQuota(
       type: 'nodeports',
       limit: Number(status?.hard?.['services.nodeports']) || 0,
       used: Number(status?.used?.['services.nodeports']) || 0
+    },
+    {
+      type: 'pods',
+      limit: Number(status?.hard?.['pods'] || -1) || 0,
+      used: Number(status?.used?.['pods'] || -1) || 0
     }
     // {
     //   type: 'gpu',

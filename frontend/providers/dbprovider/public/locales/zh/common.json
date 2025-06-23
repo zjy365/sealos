@@ -64,7 +64,8 @@
     "memory_exceeds_quota": "申请的 '内存' 超出限制，请联系管理员",
     "resource_quota": "资源配额",
     "storage_exceeds_quota": "申请的 '存储' 超出限制，请联系管理员",
-    "nodeports_exceeds_quota": "申请的 'nodeports' 超出限制，请联系管理员"
+    "nodeports_exceeds_quota": "申请的 'nodeports' 超出限制，请联系管理员",
+    "pods_exceeds_quota": "申请的 'pods' 超出限制，请联系管理员"
   },
   "app_store": "应用商店",
   "application_source": "来源",

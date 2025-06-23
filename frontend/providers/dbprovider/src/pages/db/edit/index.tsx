@@ -1,5 +1,5 @@
 import { adapterMongoHaConfig, applyYamlList, createDB } from '@/api/db';
-import { BackupSupportedDBTypeList, defaultDBEditValue } from '@/constants/db';
+import { defaultDBEditValue } from '@/constants/db';
 import { editModeMap } from '@/constants/editApp';
 import { useConfirm } from '@/hooks/useConfirm';
 import { useLoading } from '@/hooks/useLoading';
@@ -9,22 +9,24 @@ import { DBVersionMap } from '@/store/static';
 import { useUserStore } from '@/store/user';
 import type { YamlItemType } from '@/types';
 import type { DBEditType } from '@/types/db';
-import { adaptDBForm, convertBackupFormToSpec } from '@/utils/adapt';
+import { adaptDBForm } from '@/utils/adapt';
 import { serviceSideProps } from '@/utils/i18n';
 import { json2Account, json2CreateCluster, limitRangeYaml } from '@/utils/json2Yaml';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, useDisclosure } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import debounce from 'lodash/debounce';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import Form from './components/Form';
 import Header from './components/Header';
 import Yaml from './components/Yaml';
-import { updateBackupPolicy } from '@/api/backup';
+import { Modal, ModalOverlay, ModalContent, ModalBody, Text, Button } from '@chakra-ui/react';
+import { getUserSession } from '@/utils/user';
+import { sealosApp } from 'sealos-desktop-sdk/app';
 
 const ErrorModal = dynamic(() => import('@/components/ErrorModal'));
 
@@ -45,6 +47,10 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
   const { loadDBDetail, dbDetail } = useDBStore();
   const oldDBEditData = useRef<DBEditType>();
   const { checkQuotaAllow } = useUserStore();
+
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    defaultIsOpen: false
+  });
 
   const { title, applyBtnText, applyMessage, applySuccess, applyError } = editModeMap(!!dbName);
   const { openConfirm, ConfirmChild } = useConfirm({
@@ -113,14 +119,12 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
     try {
       // quote check
       const quoteCheckRes = checkQuotaAllow(formData, oldDBEditData.current);
+      console.log('quoteCheckRes', quoteCheckRes);
+
       if (quoteCheckRes) {
+        onOpen();
         setIsLoading(false);
-        return toast({
-          status: 'warning',
-          title: t(quoteCheckRes),
-          duration: 5000,
-          isClosable: true
-        });
+        return;
       }
       await createDB({ dbForm: formData, isEdit });
       toast({
@@ -191,6 +195,32 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
     }
   );
 
+  const { userQuota, loadUserQuota } = useUserStore();
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  useQuery(['getUserQuota', planName], loadUserQuota);
+
+  const quotaText = useMemo(() => {
+    const getQuotaLimit = (type: string) => userQuota.find((q) => q.type === type)?.limit;
+
+    const quotaItems = [
+      { value: getQuotaLimit('cpu') || 0, unit: 'vCPU' },
+      { value: getQuotaLimit('memory') || 0, unit: 'GB RAM' },
+      ...(getQuotaLimit('storage') !== undefined && getQuotaLimit('storage')! >= 0
+        ? [{ value: getQuotaLimit('storage')!, unit: 'GB storage' }]
+        : []),
+      ...(getQuotaLimit('nodeports') !== undefined && getQuotaLimit('nodeports')! >= 0
+        ? [{ value: getQuotaLimit('nodeports')!, unit: 'nodeports' }]
+        : []),
+      ...(getQuotaLimit('pods') !== undefined && getQuotaLimit('pods')! >= 0
+        ? [{ value: getQuotaLimit('pods')!, unit: 'pods' }]
+        : [])
+    ];
+
+    const quotaString = quotaItems.map((item) => `${item.value} ${item.unit}`).join(', ');
+
+    return `Your current ${planName} plan includes up to ${quotaString}. To deploy by your configuration, please upgrade your plan.`;
+  }, [userQuota, planName]);
+
   return (
     <>
       <Flex
@@ -226,6 +256,60 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
       {!!errorMessage && (
         <ErrorModal title={applyError} content={errorMessage} onClose={() => setErrorMessage('')} />
       )}
+
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent
+          maxW="450px"
+          p="4px"
+          bgColor={'rgb(241, 241, 241)'}
+          borderRadius="18px"
+          boxShadow="0px 4px 6px -2px #0000000D;0px 10px 15px -3px #0000001A;"
+          outline={'transparent solid 2px'}
+        >
+          <ModalBody
+            bgColor={'white'}
+            borderRadius="16px"
+            border="1px solid var(--base-border, #E4E4E7)"
+            p="24px"
+            boxShadow="0px 4px 6px -2px #0000000D;0px 10px 15px -3px #0000001A;"
+          >
+            <Text fontSize="24px" fontWeight="600" mb={'16px'}>
+              Resource Limit Exceeded
+            </Text>
+            <Text py={'16px'}>{quotaText}</Text>
+            <Flex gap="12px" mt={'16px'}>
+              <Button
+                w={'120px'}
+                h="40px"
+                variant={'solid'}
+                onClick={() => {
+                  sealosApp.runEvents('openDesktopApp', {
+                    appKey: 'system-account-center',
+                    pathname: '/',
+                    query: {
+                      scene: 'upgrade'
+                    }
+                  });
+                  onClose();
+                }}
+              >
+                Upgrade
+              </Button>
+              <Button
+                w={'120px'}
+                h="40px"
+                variant={'outline'}
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
