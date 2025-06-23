@@ -26,6 +26,10 @@ const sourceMap = {
   nodeports: {
     color: '#FFA500',
     unit: ''
+  },
+  pods: {
+    color: '#33BABB',
+    unit: 'Pods'
   }
 };
 

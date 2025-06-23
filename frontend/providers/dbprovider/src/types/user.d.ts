@@ -30,7 +30,7 @@ export type userPriceType = {
 };
 
 export type UserQuotaItemType = {
-  type: 'cpu' | 'memory' | 'storage' | 'nodeports';
+  type: 'cpu' | 'memory' | 'storage' | 'nodeports' | 'pods';
   used: number;
   limit: number;
 };
