@@ -5,7 +5,8 @@ import { RawRegion, Region } from '@/types/region';
 export const getUsageList = (data: any) => POST('/billing/appOverview', data);
 
 export const getRegionList = () => GET<ApiResp<Region[]>>('/getRegions');
-export const getRawRegionList = () => GET<ApiResp<{ regionList: RawRegion[] }>>('/getRegionsRaw');
+
+export const getRawRegionList = () => GET<{ regionList: RawRegion[] }>('/getRegionsRaw');
 
 export const getNamespaceList = (data: any) => POST('/billing/getNamespaceList', data);
 

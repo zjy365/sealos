@@ -76,9 +76,10 @@ request.interceptors.request.use(
     const session = getDesktopSessionFromSessionStorage();
     const devboxToken = getSessionFromSessionStorage();
     const kc = getUserKubeConfig();
-    console.log(kc, 'kc');
+
+    // console.log(kc, 'kc');
     // console.log(session, 1);
-    console.log(devboxToken, 2);
+    // console.log(devboxToken, 2);
 
     _headers['Authorization'] = encodeURIComponent(kc || session?.kubeconfig || '');
     _headers['Authorization-Bearer'] = encodeURIComponent(devboxToken || session?.token || '');

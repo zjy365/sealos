@@ -4,24 +4,16 @@ import {
   Button,
   Center,
   Flex,
-  HStack,
   Popover,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Text,
-  useDisclosure,
-  VStack
+  useDisclosure
 } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { jwtDecode } from 'jwt-decode';
-import { useMemo } from 'react';
 import { CheckIcon, ChevronDown } from 'lucide-react';
-import { getRawRegionList } from '@/api/usage';
-import { getUserSession } from '@/utils/user';
-import { sealosApp } from 'sealos-desktop-sdk/app';
 import { RawRegion } from '@/types/region';
+
 export default function RegionToggle({
   regionList,
   currentRegionUid,
@@ -90,6 +82,7 @@ export default function RegionToggle({
                   px={'8px'}
                   onClick={() => {
                     setCurrentRegion(region.uid);
+                    onClose();
                   }}
                   bgColor={!canUse ? '#F4F4F5' : ''}
                   cursor={'pointer'}

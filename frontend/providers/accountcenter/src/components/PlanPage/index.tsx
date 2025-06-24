@@ -76,10 +76,8 @@ export default function PlanPage() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
-  const regionList: RawRegion[] = useMemo(
-    () => regionListData?.data?.regionList || [],
-    [regionListData]
-  );
+
+  const regionList: RawRegion[] = useMemo(() => regionListData?.regionList || [], [regionListData]);
   const token = getUserSession()?.token;
   const curRegionUid = useMemo(() => {
     try {
