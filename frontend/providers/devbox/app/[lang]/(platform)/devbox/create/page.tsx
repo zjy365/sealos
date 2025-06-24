@@ -1,7 +1,17 @@
 'use client';
 
 import { useRouter } from '@/i18n';
-import { Box, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Text,
+  Button,
+  useDisclosure
+} from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
@@ -35,6 +45,8 @@ import { generateYamlList } from '@/utils/json2Yaml';
 import { patchYamlList, getScheduleTime } from '@/utils/tools';
 import { debounce } from 'lodash';
 import { useGuideStore } from '@/stores/guide';
+import { sealosApp } from 'sealos-desktop-sdk/app';
+import { getUserSession } from '@/utils/user';
 
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'));
 const DevboxCreatePage = () => {
@@ -210,12 +222,8 @@ const DevboxCreatePage = () => {
       );
       if (quoteCheckRes) {
         setIsLoading(false);
-        return toast({
-          status: 'warning',
-          title: t(quoteCheckRes),
-          duration: 5000,
-          isClosable: true
-        });
+        onOpen();
+        return;
       }
       // update
       if (isEdit) {
@@ -305,6 +313,34 @@ const DevboxCreatePage = () => {
     });
   }, [formHook.formState.errors, toast, t]);
 
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    defaultIsOpen: false
+  });
+
+  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+
+  const quotaText = useMemo(() => {
+    const getQuotaLimit = (type: string) => userQuota.find((q) => q.type === type)?.limit;
+
+    const quotaItems = [
+      { value: getQuotaLimit('cpu') || 0, unit: 'vCPU' },
+      { value: getQuotaLimit('memory') || 0, unit: 'GB RAM' },
+      ...(getQuotaLimit('storage') !== undefined && getQuotaLimit('storage')! >= 0
+        ? [{ value: getQuotaLimit('storage')!, unit: 'GB storage' }]
+        : []),
+      ...(getQuotaLimit('nodeports') !== undefined && getQuotaLimit('nodeports')! >= 0
+        ? [{ value: getQuotaLimit('nodeports')!, unit: 'nodeports' }]
+        : []),
+      ...(getQuotaLimit('pods') !== undefined && getQuotaLimit('pods')! >= 0
+        ? [{ value: getQuotaLimit('pods')!, unit: 'pods' }]
+        : [])
+    ];
+
+    const quotaString = quotaItems.map((item) => `${item.value} ${item.unit}`).join(', ');
+
+    return `Your current ${planName} plan includes up to ${quotaString}. To deploy by your configuration, please upgrade your plan.`;
+  }, [userQuota, planName]);
+
   return (
     <>
       <FormProvider {...formHook}>
@@ -348,6 +384,60 @@ const DevboxCreatePage = () => {
       {!!errorMessage && (
         <ErrorModal title={applyError} content={errorMessage} onClose={() => setErrorMessage('')} />
       )}
+
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent
+          maxW="450px"
+          p="4px"
+          bgColor={'rgb(241, 241, 241)'}
+          borderRadius="18px"
+          boxShadow="0px 4px 6px -2px #0000000D;0px 10px 15px -3px #0000001A;"
+          outline={'transparent solid 2px'}
+        >
+          <ModalBody
+            bgColor={'white'}
+            borderRadius="16px"
+            border="1px solid var(--base-border, #E4E4E7)"
+            p="24px"
+            boxShadow="0px 4px 6px -2px #0000000D;0px 10px 15px -3px #0000001A;"
+          >
+            <Text fontSize="24px" fontWeight="600" mb={'16px'}>
+              Resource Limit Exceeded
+            </Text>
+            <Text py={'16px'}>{quotaText}</Text>
+            <Flex gap="12px" mt={'16px'}>
+              <Button
+                w={'120px'}
+                h="40px"
+                variant={'solid'}
+                onClick={() => {
+                  sealosApp.runEvents('openDesktopApp', {
+                    appKey: 'system-account-center',
+                    pathname: '/',
+                    query: {
+                      scene: 'upgrade'
+                    }
+                  });
+                  onClose();
+                }}
+              >
+                Upgrade
+              </Button>
+              <Button
+                w={'120px'}
+                h="40px"
+                variant={'outline'}
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

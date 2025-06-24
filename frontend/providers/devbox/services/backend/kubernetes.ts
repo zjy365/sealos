@@ -233,6 +233,11 @@ export async function getUserQuota(
       type: 'gpu',
       limit: Number(status?.hard?.['requests.nvidia.com/gpu'] || 0),
       used: Number(status?.used?.['requests.nvidia.com/gpu'] || 0)
+    },
+    {
+      type: 'pods',
+      limit: Number(status?.hard?.['pods'] || -1) || 0,
+      used: Number(status?.used?.['pods'] || -1) || 0
     }
   ];
 }
