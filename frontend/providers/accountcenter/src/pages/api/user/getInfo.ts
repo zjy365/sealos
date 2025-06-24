@@ -18,6 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    // console.log('payload', payload, req.headers);
     // get user agency mark
     let agencyMark = false;
     const referral_type = await getReferralType(payload.userUid);

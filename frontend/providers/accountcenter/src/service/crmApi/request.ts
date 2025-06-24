@@ -30,6 +30,10 @@ request.interceptors.request.use(
     if (cfAccessClientId) _headers['CF-Access-Client-Id'] = cfAccessClientId;
     if (cfAccessClientSecret) _headers['CF-Access-Client-Secret'] = cfAccessClientSecret;
 
+    // console.log('crm token', config.headers.Authorization ? config.headers.Authorization : token);
+    // console.log('cfAccessClientId', cfAccessClientId);
+    // console.log('cfAccessClientSecret', cfAccessClientSecret);
+
     if (!config.headers || config.headers['Content-Type'] === '') {
       _headers['Content-Type'] = 'application/json';
     }

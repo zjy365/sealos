@@ -54,7 +54,7 @@ const showStatus = (status: number) => {
 };
 
 const request = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? '/api/test' : '/api',
+  baseURL: '/api',
   withCredentials: true,
   timeout: 60000
 });
@@ -68,6 +68,9 @@ request.interceptors.request.use(
     }
     let _headers: AxiosHeaders = config.headers;
     const token = getUserSession()?.token || '';
+
+    // console.log('api token', token);
+
     //获取token，并将其添加至请求头中
     _headers['Authorization'] = config.headers.Authorization
       ? config.headers.Authorization
