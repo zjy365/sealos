@@ -59,7 +59,10 @@ export const useDevboxStore = create<State>()(
       devboxList: [],
       requestCache: new Map(),
       setDevboxList: async () => {
-        const res = await getMyDevboxList();
+        let res: DevboxListItemTypeV2[] = [];
+        try {
+          res = await getMyDevboxList();
+        } catch (error) {}
         set((state) => {
           state.devboxList = res;
         });

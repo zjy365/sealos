@@ -51,10 +51,9 @@ export async function GET(req: NextRequest) {
 
     return jsonRes({ data: resp });
   } catch (err: any) {
-    console.log(err, 'err');
     return jsonRes({
       code: 500,
-      error: err
+      data: []
     });
   }
 }
