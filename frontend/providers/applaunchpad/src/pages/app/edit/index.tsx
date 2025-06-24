@@ -401,6 +401,7 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
               const quoteCheckRes = checkQuotaAllow(data, oldAppEditData.current);
 
               if (quoteCheckRes) {
+                setIsLoading(false);
                 onOpen();
                 return;
                 // return toast({

@@ -40,8 +40,8 @@ const QuotaBox = ({ showBorder = true }: { showBorder?: boolean }) => {
       .filter((item) => item.limit > 0)
       .map((item) => {
         const { limit, used, type } = item;
-        const unit = sourceMap[type]?.unit;
-        const color = sourceMap[type]?.color;
+        const unit = sourceMap[type as keyof typeof sourceMap]?.unit || '';
+        const color = sourceMap[type as keyof typeof sourceMap]?.color || '#666';
         const tip = `${t('total')}: ${limit} ${unit}
 ${t('used')}: ${used.toFixed(2)} ${unit}
 ${t('remaining')}: ${(limit - used).toFixed(2)} ${unit}`;

@@ -32,7 +32,8 @@ export const useUserStore = create<State>()(
           cpu: cpu / 1000,
           memory: memory / 1024,
           nodeports: nodeports,
-          gpu: gpu?.type ? gpu.amount : 0
+          gpu: gpu?.type ? gpu.amount : 0,
+          pods: 1
         };
 
         if (usedData) {

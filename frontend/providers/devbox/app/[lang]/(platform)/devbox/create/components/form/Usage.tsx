@@ -19,7 +19,8 @@ export default function Usage({
 }) {
   const t = useTranslations();
   const { watch, getValues } = useFormContext<DevboxEditTypeV2>();
-  const { checkQuotaAllow } = useUserStore();
+  const { userQuota, checkQuotaAllow } = useUserStore();
+
   const cpuVal = watch('cpu');
   const memoryVal = watch('memory');
   const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
@@ -35,8 +36,13 @@ export default function Usage({
 
   return (
     <>
-      <Box h={'40px'} mb={'15px'}>
+      <Box mb={'15px'}>
         <Label w={100}>{t('usage')}</Label>
+        <Text color={'#71717A'} py={'8px'}>
+          {`Max Available Resources for ${planName} plan: ${
+            userQuota.find((q) => q.type === 'cpu')?.limit || 0
+          } vCPU, ${userQuota.find((q) => q.type === 'memory')?.limit || 0} GB RAM`}
+        </Text>
       </Box>
       <GpuSelector countGpuInventory={countGpuInventory} />
       <CpuSelector />
