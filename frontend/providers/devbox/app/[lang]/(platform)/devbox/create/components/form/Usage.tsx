@@ -31,7 +31,8 @@ export default function Usage({
       nodeports
     });
     return !!result;
-  }, [cpuVal, memoryVal, pods, portInfos]);
+  }, [cpuVal, memoryVal, portInfos]);
+
   return (
     <>
       <Box h={'40px'} mb={'15px'}>

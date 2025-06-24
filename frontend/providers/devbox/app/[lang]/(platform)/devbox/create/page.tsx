@@ -79,7 +79,9 @@ const DevboxCreatePage = () => {
 
   const { title, applyBtnText, applyMessage, applySuccess, applyError } = editModeMap(isEdit);
 
-  const { openConfirm: openScheduleConfirm, ConfirmModal: ScheduleModal } = useScheduleModal({title: 'createDevbox'});
+  const { openConfirm: openScheduleConfirm, ConfirmModal: ScheduleModal } = useScheduleModal({
+    title: 'createDevbox'
+  });
   const { openConfirm: openUpdateConfirm, ConfirmChild: UpdateConfirmChild } = useConfirm({
     content: applyMessage
   });
@@ -145,6 +147,8 @@ const DevboxCreatePage = () => {
   // get user quota
   const { userQuota, loadUserQuota } = useUserStore();
   useQuery(['getUserQuota'], loadUserQuota);
+
+  console.log(userQuota, 'userQuota');
 
   useQuery(
     ['initDevboxCreateData'],
@@ -246,9 +250,15 @@ const DevboxCreatePage = () => {
         });
       } else {
         if (pauseTime && pauseTime > 0) {
-          await createDevbox({ devboxForm: formData, schedulePause: { time: getScheduleTime(pauseTime), type: 'Stopped' } });
+          await createDevbox({
+            devboxForm: formData,
+            schedulePause: { time: getScheduleTime(pauseTime), type: 'Stopped' }
+          });
         } else {
-          await createDevbox({ devboxForm: formData, schedulePause: { time: '', type: 'Stopped' } });
+          await createDevbox({
+            devboxForm: formData,
+            schedulePause: { time: '', type: 'Stopped' }
+          });
         }
       }
       addDevboxIDE('vscode', formData.name);
@@ -314,12 +324,12 @@ const DevboxCreatePage = () => {
                 formHook.handleSubmit(
                   (data) => openConfirm(() => submitSuccess(data))(),
                   submitError
-                )()
+                )();
               } else {
                 formHook.handleSubmit(
                   (data) => openConfirm((pauseTime: number) => submitSuccess(data, pauseTime))(),
                   submitError
-                )()
+                )();
               }
             }}
           />
