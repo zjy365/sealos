@@ -15,3 +15,4 @@
 **/.gitignore
 **/providers/template/templates/
 **/providers/template/templates.json
+**/*.local.yaml
