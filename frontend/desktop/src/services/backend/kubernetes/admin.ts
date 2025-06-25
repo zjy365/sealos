@@ -8,6 +8,7 @@ import fs from 'node:fs';
 export function K8sApiDefault(): k8s.KubeConfig {
   const kc = new k8s.KubeConfig();
   const CONFIG_PATH = path.join(process.cwd(), 'data', 'desktop-admin.local.yaml');
+  // console.log(CONFIG_PATH);
   // 先判断有无config_path
   fs.existsSync(CONFIG_PATH) ? kc.loadFromFile(CONFIG_PATH) : kc.loadFromDefault();
   return kc;
@@ -109,10 +110,41 @@ async function setUserKubeconfig(kc: k8s.KubeConfig, uid: string, k8s_username: 
   const plural = 'users';
   const updateTime = k8sFormatTime(new Date());
   const client = kc.makeApiClient(k8s.CustomObjectsApi);
+
+  console.log('[K8s] setUserKubeconfig called with:', {
+    uid,
+    k8s_username,
+    apiServer: kc.getCurrentCluster()?.server,
+    currentUser: kc.getCurrentUser()?.name,
+    currentContext: kc.getCurrentContext(),
+    timestamp: new Date().toISOString()
+  });
+
   const body = await client
     .getClusterCustomObject(group, version, plural, k8s_username)
-    .then((res) => res.body as UserCR)
+    .then((res) => {
+      return res.body as UserCR;
+    })
     .catch((res) => {
+      console.log('[K8s] Failed to get User CR:', {
+        k8s_username,
+        uid,
+        statusCode: res.statusCode,
+        reason: res.body?.reason,
+        message: res.body?.message,
+        code: res.body?.code,
+        apiServer: kc.getCurrentCluster()?.server,
+        requestUrl: res.request?.href,
+        authorizationError: res.response?.socket?.authorizationError,
+        authorized: res.response?.socket?.authorized,
+        errorKind: res.body?.kind,
+        fullError: {
+          statusCode: res.statusCode,
+          body: res.body,
+          message: res.message
+        }
+      });
+
       const body = res.body as StatusCR;
       if (
         body &&
@@ -120,9 +152,10 @@ async function setUserKubeconfig(kc: k8s.KubeConfig, uid: string, k8s_username: 
         res.body.reason === 'NotFound' &&
         res.body.code === 404
       ) {
+        console.log('[K8s] User CR not found (404), will create new one');
         return Promise.resolve(body);
       } else {
-        console.error(res);
+        console.log('[K8s] Unexpected error when getting User CR, rejecting');
         return Promise.reject(res);
       }
     });

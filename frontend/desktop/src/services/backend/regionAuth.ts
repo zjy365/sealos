@@ -55,6 +55,7 @@ export async function getRegionToken({
       .inc();
     throw Error('The REGION_UID is undefined');
   }
+
   const result = await retrySerially(async () => {
     const userResult = await globalPrisma.user.findUnique({
       where: {
@@ -83,18 +84,72 @@ export async function getRegionToken({
         .inc();
       return null;
     }
+
     let workspaceUid = v4();
     let curRegionWorkspaceUsage = userResult.WorkspaceUsage.filter(
       (u) => u.regionUid == region.uid
     );
     let needCreating = curRegionWorkspaceUsage.length === 0;
+
     // 先处理全局状态
     if (!needCreating) {
       // 找最早的工作空间 = privaite
       curRegionWorkspaceUsage.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
       // 当前可用区初始化中，用幂等逻辑
-      workspaceUid = curRegionWorkspaceUsage[0].workspaceUid;
+      const globalWorkspaceUid = curRegionWorkspaceUsage[0].workspaceUid;
+
+      // 数据一致性验证：检查区域数据库中是否真的存在这个workspaceUid
+      try {
+        const actualPrivateWorkspace = await prisma.userWorkspace.findFirst({
+          where: {
+            userCr: { userUid },
+            isPrivate: true,
+            status: 'IN_WORKSPACE'
+          },
+          include: {
+            workspace: true,
+            userCr: true
+          }
+        });
+
+        if (actualPrivateWorkspace) {
+          if (actualPrivateWorkspace.workspaceUid !== globalWorkspaceUid) {
+            // 自动修复全局数据库记录
+            await globalPrisma.workspaceUsage.update({
+              where: {
+                regionUid_userUid_workspaceUid: {
+                  regionUid: region.uid,
+                  userUid,
+                  workspaceUid: globalWorkspaceUid
+                }
+              },
+              data: {
+                workspaceUid: actualPrivateWorkspace.workspaceUid
+              }
+            });
+
+            console.log('[RegionAuth] WorkspaceUid auto-fixed successfully', {
+              userUid,
+              oldWorkspaceUid: globalWorkspaceUid,
+              newWorkspaceUid: actualPrivateWorkspace.workspaceUid
+            });
+
+            // 使用正确的workspaceUid
+            workspaceUid = actualPrivateWorkspace.workspaceUid;
+          } else {
+            // 数据一致，使用全局记录的workspaceUid
+            workspaceUid = globalWorkspaceUid;
+          }
+        } else {
+          console.error('[RegionAuth] No private workspace found in region database');
+          workspaceUid = globalWorkspaceUid;
+        }
+      } catch (regionDbError) {
+        console.error('[RegionAuth] Failed to verify workspace consistency:', regionDbError);
+        workspaceUid = globalWorkspaceUid;
+      }
     } else {
+      // 需要创建新的WorkspaceUsage记录
       await globalPrisma.workspaceUsage.create({
         data: {
           workspaceUid,
@@ -118,15 +173,18 @@ export async function getRegionToken({
           }
         }
       });
+
       if (userCrResult) {
         // get a exist user
         const relations = userCrResult.userWorkspace!;
         const privateRelation = relations.find((r) => r.isPrivate);
+
         if (privateRelation?.workspaceUid !== workspaceUid) {
           // 不匹配的未知错误
           console.error('workspaceUid not match, workspaceUid:', workspaceUid);
           return null;
         }
+
         return {
           userUid: userCrResult.userUid,
           userCrUid: userCrResult.uid,
@@ -138,6 +196,7 @@ export async function getRegionToken({
           workspaceUid: privateRelation!.workspace.uid
         };
       } else {
+        // 创建新用户资源
         const crName = nanoid();
         const regionResult = await tx.userCr.findUnique({
           where: {
@@ -145,6 +204,7 @@ export async function getRegionToken({
           }
         });
         if (regionResult) throw Error('the user is already exist');
+
         const workspaceId = GetUserDefaultNameSpace(crName);
         const result = await tx.userWorkspace.create({
           data: {
@@ -182,6 +242,7 @@ export async function getRegionToken({
             }
           }
         });
+
         return {
           userCrName: result.userCr.crName,
           userCrUid: result.userCr.uid,
@@ -194,6 +255,7 @@ export async function getRegionToken({
         };
       }
     });
+
     if (!payload) {
       const failureMessage: TloginFailureMessage = 'failed to get user from db';
       loginFailureCounter
@@ -201,6 +263,7 @@ export async function getRegionToken({
         .inc();
       throw new Error('Failed to get user from db');
     }
+
     const kubeconfig = await getUserKubeconfig(payload.userCrUid, payload.userCrName);
     if (!kubeconfig) {
       const failureMessage: TloginFailureMessage = 'failed to get user from k8s';
@@ -209,11 +272,13 @@ export async function getRegionToken({
         .inc();
       throw new Error('Failed to get user from k8s');
     }
+
     return {
       kubeconfig,
       payload
     };
   }, 3);
+
   if (!result) return null;
   const { kubeconfig, payload } = result;
   return {
