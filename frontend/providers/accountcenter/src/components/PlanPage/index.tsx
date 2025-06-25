@@ -2,7 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import Layout from '@/components/Layout';
 import img from 'public/images/switchRegionBg.png';
-import { getLastTransaction, getPlanCreditsUsage, getPlans, getPlanSubscription } from '@/api/plan';
+import {
+  getLastTransaction,
+  getPlanCreditsUsage,
+  getPlans,
+  getPlanSubscription,
+  getUserKycInfo
+} from '@/api/plan';
 import CurrentPlan from '@/components/Plans/Current';
 import { TPlanApiResponse } from '@/schema/plan';
 import PlanCredits from '@/components/Plans/Credits';
