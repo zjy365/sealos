@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { CheckIcon, ChevronDown } from 'lucide-react';
 import { useConfigStore } from '@/stores/config';
 import { getUserPlan } from '@/api/platform';
@@ -28,7 +28,9 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
     refetchOnWindowFocus: false
   });
   const regionList = useMemo(() => data?.data?.regionList || [], [data]);
+
   const token = useSessionStore((s) => s.token);
+
   const curRegionUid = useMemo(() => {
     try {
       return jwtDecode<AccessTokenPayload>(token).regionUid;
@@ -36,28 +38,38 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
       return undefined;
     }
   }, [token]);
+
   const curRegion = regionList.find((r) => r.uid === curRegionUid);
-  const { data: plan, isSuccess } = useQuery(['getUserPlan'], () => getUserPlan(), {
+
+  const { data: plan } = useQuery(['getUserPlan'], () => getUserPlan(), {
     cacheTime: 5 * 60 * 1000,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
-  const handleCick = async (region: Region) => {
-    setWorkSpaceId(session?.user?.ns_uid || '');
-    const target = new URL(
-      cloudConfig?.proxyDomain
-        ? `https://${cloudConfig?.proxyDomain}/switchRegion`
-        : `https://${region.domain}/switchRegion`
-    );
-    const res = await request.get<any, ApiResp<{ token: string }>>('/api/auth/globalToken');
-    const token = res?.data?.token;
-    if (!token) return;
-    target.searchParams.append('token', token);
-    target.searchParams.append('regionId', region.uid);
-    target.searchParams.append('regionDomain', region.domain);
-    await router.replace(target);
-  };
+
+  const handleCick = useCallback(
+    async (region: Region) => {
+      setWorkSpaceId(session?.user?.ns_uid || '');
+      const target = new URL(
+        cloudConfig?.proxyDomain
+          ? `https://${cloudConfig?.proxyDomain}/switchRegion`
+          : `https://${region.domain}/switchRegion`
+      );
+      const res = await request.get<any, ApiResp<{ token: string }>>('/api/auth/globalToken');
+      const token = res?.data?.token;
+
+      if (!token) return;
+      target.searchParams.append('token', token);
+      target.searchParams.append('regionId', region.uid);
+      target.searchParams.append('regionDomain', region.domain);
+
+      await router.replace(target);
+    },
+    [setWorkSpaceId, session, cloudConfig, router]
+  );
+
   const { installedApps: apps, runningInfo, setToHighestLayerById, openApp } = useAppStore();
+
   const openDesktopApp = ({
     appKey,
     query = {},
@@ -83,14 +95,17 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
     if (!iframe) return;
     iframe.contentWindow?.postMessage(messageData, app.data.url);
   };
+
   useEffect(() => {
     const cleanup = masterApp?.addEventListen('switchRegion', (regionUid: string) => {
+      console.log('switchRegion', regionUid, regionList);
       const region = regionList.find((r) => r.uid === regionUid);
       if (!region) return;
       handleCick(region);
     });
     return cleanup;
-  }, []);
+  }, [regionList, handleCick]);
+
   return (
     <Box>
       {regionList?.length > 1 && (
