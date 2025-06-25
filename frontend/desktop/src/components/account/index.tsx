@@ -122,7 +122,7 @@ export default function Account() {
   }, [plan]);
   useEffect(() => {
     if (plan?.data?.subscription) updateSubscription(plan?.data?.subscription);
-  }, [plan?.data?.subscription.subscriptionPlan.name]);
+  }, [plan?.data?.subscription?.subscriptionPlan?.name]);
 
   return (
     <Box position={'relative'} flex={1}>

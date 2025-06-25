@@ -148,7 +148,7 @@ export default function Cost() {
     if (!iframe) return;
     iframe.contentWindow?.postMessage(messageData, app.data.url);
   };
-  const planName = session?.user.subscription?.subscriptionPlan.name || 'Free';
+  const planName = session?.user?.subscription?.subscriptionPlan.name || 'Free';
   return (
     <>
       <Popover onOpen={onOpen} onClose={onClose} placement="bottom-start">

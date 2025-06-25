@@ -103,7 +103,7 @@ export default function InviteMember({
   };
   const canInvite = isWithinLimitAndNotEqual(
     seat,
-    Number(plan?.data?.subscription.subscriptionPlan.max_seats) || 1
+    Number(plan?.data?.subscription?.subscriptionPlan?.max_seats) || 1
   );
   return (
     <>
