@@ -46,6 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           : undefined
       }));
+
     // console.log(userInfo);
 
     return jsonRes(res, {
