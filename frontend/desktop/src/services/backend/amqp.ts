@@ -123,9 +123,13 @@ type UserSignupEvent = {
 };
 
 export async function sendUserSignupEvent(event: UserSignupEvent) {
-  await amqpClient.publishToExchange('userSignup', {
-    ...event
-  });
+  try {
+    await amqpClient.publishToExchange('userSignup', {
+      ...event
+    });
+  } catch (error) {
+    console.error('Send user signup event error', error);
+  }
 }
 
 export async function sendUserSigninEvent(uid: string) {
