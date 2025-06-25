@@ -7,6 +7,7 @@ import useScriptStore from '@/stores/script';
 import bgimage from 'public/cc/signin.png';
 import { useQuery } from '@tanstack/react-query';
 import { regionList } from '@/api/auth';
+import useSessionStore from '@/stores/session';
 
 export default function SignLayout({ children }: { children: React.ReactNode }) {
   const { layoutConfig, authConfig, cloudConfig } = useConfigStore();
@@ -16,7 +17,13 @@ export default function SignLayout({ children }: { children: React.ReactNode }) 
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
+  const { firstUse, setFirstUse, isUserLogin } = useSessionStore();
+  const is_login = isUserLogin();
+
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      return;
+    }
     if (cloudConfig?.regionUID && data?.data?.regionList) {
       const regionUid = cloudConfig?.regionUID;
       const regionList = data?.data?.regionList;
@@ -30,6 +37,7 @@ export default function SignLayout({ children }: { children: React.ReactNode }) 
       }
     }
   }, [data, cloudConfig?.regionUID]);
+
   useEffect(() => {
     const url = sessionStorage.getItem('accessTemplatesNoLogin');
     if (!!url) {

@@ -123,6 +123,7 @@ export default function Account() {
   useEffect(() => {
     if (plan?.data?.subscription) updateSubscription(plan?.data?.subscription);
   }, [plan?.data?.subscription.subscriptionPlan.name]);
+
   return (
     <Box position={'relative'} flex={1}>
       <Flex justifyContent={'space-between'} alignItems={'center'} height={'100%'} zIndex={3}>
@@ -331,7 +332,43 @@ export default function Account() {
                   NS:{user?.nsid}
                 </Text>
               </Box>
-              <Divider borderColor={'#F4F4F5'} />
+              {userPlan === 'Free' && <Divider borderColor={'#E4E4E7'} />}
+              {userPlan !== 'Free' && (
+                <Box borderTop={'1px solid #E4E4E7'} borderBottom={'1px solid #E4E4E7'}>
+                  <Box py="6px" px="16px">
+                    <Flex alignItems="center" gap="8px" justifyContent="space-between" width="100%">
+                      <Text fontSize="14px" fontWeight="500">
+                        Kubeconfig
+                      </Text>
+                      <Flex alignItems="center" gap="8px">
+                        <Center
+                          cursor={'pointer'}
+                          w="32px"
+                          h="32px"
+                          border={'1px solid #E4E4E7'}
+                          borderRadius={'8px'}
+                          onClick={() => kubeconfig && download('kubeconfig.yaml', kubeconfig)}
+                        >
+                          <Download size={16} color="#737373" />
+                        </Center>
+                        <Center
+                          cursor={'pointer'}
+                          w="32px"
+                          h="32px"
+                          border={'1px solid #E4E4E7'}
+                          borderRadius={'8px'}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            kubeconfig && copyData(kubeconfig);
+                          }}
+                        >
+                          <Copy size="16px" color="#737373" />
+                        </Center>
+                      </Flex>
+                    </Flex>
+                  </Box>
+                </Box>
+              )}
               <Box p={'8px'}>
                 {layoutConfig?.common.accountSettingEnabled && (
                   <MenuItem
@@ -430,34 +467,6 @@ export default function Account() {
                     </Text>
                   </Flex>
                 </MenuItem>
-                {/* <MenuItem
-                  py="6px"
-                  px="8px"
-                  borderRadius="8px"
-                  _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
-                  onClick={() => kubeconfig && download('kubeconfig.yaml', kubeconfig)}
-                >
-                  <Flex alignItems="center" gap="8px" justifyContent="space-between" width="100%">
-                    <Flex alignItems="center" gap="8px">
-                      <Center w="20px" h="20px">
-                        <Download size={16} color="#737373" />
-                      </Center>
-                      <Text fontSize="14px" fontWeight="500">
-                        Kubeconfig
-                      </Text>
-                    </Flex>
-                    <IconButton
-                      size="16px"
-                      variant="ghost"
-                      icon={<Copy size="16px" color="#737373" />}
-                      aria-label="Copy Kubeconfig"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        kubeconfig && copyData(kubeconfig);
-                      }}
-                    />
-                  </Flex>
-                </MenuItem> */}
               </Box>
               <Divider bg={'#E4E4E7'} />
               <Box p="8px">
