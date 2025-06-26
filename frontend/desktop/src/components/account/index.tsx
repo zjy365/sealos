@@ -43,7 +43,9 @@ import {
   Bell,
   Sparkles,
   ReceiptText,
-  Gift
+  Gift,
+  Ticket,
+  FileCheck
 } from 'lucide-react';
 import UpgradePlanModal from './UpgradePlanModal';
 import GuideModal from './GuideModal';
@@ -428,7 +430,6 @@ export default function Account() {
                     </Text>
                   </Flex>
                 </MenuItem>
-
                 <MenuItem
                   mt="0px"
                   py="6px"
@@ -467,6 +468,25 @@ export default function Account() {
                     </Text>
                   </Flex>
                 </MenuItem>
+                {userPlan === 'Pro' && (
+                  <MenuItem
+                    mt="0px"
+                    py="6px"
+                    px="8px"
+                    borderRadius="8px"
+                    _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
+                    onClick={openWorkOrderApp}
+                  >
+                    <Flex alignItems="center" gap="8px">
+                      <Center w="20px" h="20px">
+                        <FileCheck size={16} color="#737373" />
+                      </Center>
+                      <Text fontSize="14px" fontWeight="500">
+                        Support Ticket
+                      </Text>
+                    </Flex>
+                  </MenuItem>
+                )}
               </Box>
               <Divider bg={'#E4E4E7'} />
               <Box p="8px">
