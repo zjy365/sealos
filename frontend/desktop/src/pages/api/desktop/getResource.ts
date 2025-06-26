@@ -1,4 +1,4 @@
-import { verifyAccessToken } from '@/services/backend/auth';
+import { generateBillingToken, verifyAccessToken } from '@/services/backend/auth';
 import { prisma } from '@/services/backend/db/init';
 import { getUserKubeconfigNotPatch, K8sApiDefault } from '@/services/backend/kubernetes/admin';
 import { K8sApi } from '@/services/backend/kubernetes/user';
@@ -15,6 +15,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const namespace = payload.workspaceId;
     const userKc = await getUserKubeconfigNotPatch(payload.userCrName);
     if (!userKc) return jsonRes(res, { code: 404, message: 'user is not found' });
+
+    // const base = global.AppConfig.desktop.auth.billingUrl as string;
+    // const trafficUrl = base + '/account/v1alpha1/user-traffic-used';
+    // console.log(trafficUrl, 'trafficUrl');
+    // const billingToken = generateBillingToken({
+    //   userUid: payload.userUid,
+    //   userId: payload.userId
+    // });
+    // const headers = {
+    //   Authorization: `Bearer ${billingToken}`,
+    //   'Content-Type': 'application/json'
+    // };
+    // try {
+    //   const result = await fetch(trafficUrl, {
+    //     method: 'POST',
+    //     headers
+    //   });
+    //   const data = await result.json();
+    //   console.log(data);
+    // } catch (error) {}
+
     // const curKcClient = K8sApi(userKc);
     // const realKc = switchKubeconfigNamespace(_kc, namespace);
     // const kc = K8sApi(realKc);

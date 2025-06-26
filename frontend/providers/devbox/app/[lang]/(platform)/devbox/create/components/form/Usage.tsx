@@ -23,7 +23,8 @@ export default function Usage({
 
   const cpuVal = watch('cpu');
   const memoryVal = watch('memory');
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name;
+  const planName = getUserSession()?.user?.subscription?.subscriptionPlan?.name || 'Free';
+
   const portInfos = watch('networks');
   const exceedLimit = useMemo(() => {
     const nodeports = portInfos.filter((info) => !!info.port).length + 1;

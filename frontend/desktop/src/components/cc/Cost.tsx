@@ -48,10 +48,12 @@ export default function Cost() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
+
   const { data: resourceData } = useQuery(['getResource'], getResource, {
     staleTime: 60 * 1000,
-    refetchInterval: 5 * 1000
+    refetchInterval: 1 * 60 * 1000
   });
+
   const balance = useMemo(() => {
     let realBalance = new Decimal(data?.data?.balance || 0);
     if (data?.data?.deductionBalance) {

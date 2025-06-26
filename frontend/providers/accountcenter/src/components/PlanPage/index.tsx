@@ -237,7 +237,7 @@ export default function PlanPage() {
           </ModalHeader>
           <ModalBody p={6}>
             <Text fontSize="24px" fontWeight="semibold" mb={3}>
-              UpgradeSuccess
+              Upgrade Successfully
             </Text>
             <Text fontSize="14px" color="gray.700" mb="16px">
               For ensured stability and better experiences, switch to members-only AZ now.

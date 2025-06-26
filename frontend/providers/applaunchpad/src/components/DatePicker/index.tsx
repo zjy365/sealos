@@ -47,7 +47,8 @@ const DatePicker = ({ isDisabled = false, ...props }: DatePickerProps) => {
     from: startDateTime,
     to: endDateTime
   };
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const planName = getUserSession()?.user?.subscription?.subscriptionPlan?.name || 'Free';
+
   const recentDateList = useMemo(
     () => [
       {

@@ -10,20 +10,21 @@ export function K8sApi(config: string): k8s.KubeConfig {
   const cluster = kc.getCurrentCluster();
 
   // 本地开发，当远程环境不可用时，使用本地k8s api
-  // if (cluster?.server) {
-  //   const server = {
-  //     name: cluster.name,
-  //     caData: cluster.caData,
-  //     caFile: cluster.caFile,
-  //     server: 'https://127.0.0.1:6443',
-  //     skipTLSVerify: cluster.skipTLSVerify
-  //   };
-  //   kc.clusters.forEach((item, i) => {
-  //     if (item.name === cluster.name) {
-  //       kc.clusters[i] = server;
-  //     }
-  //   });
-  // }
+  // 通过环境变量 USE_LOCAL_K8S_FALLBACK 控制是否启用本地回退
+  if (cluster?.server && process.env.USE_LOCAL_K8S_FALLBACK === 'true') {
+    const server = {
+      name: cluster.name,
+      caData: cluster.caData,
+      caFile: cluster.caFile,
+      server: 'https://127.0.0.1:6443',
+      skipTLSVerify: cluster.skipTLSVerify
+    };
+    kc.clusters.forEach((item, i) => {
+      if (item.name === cluster.name) {
+        kc.clusters[i] = server;
+      }
+    });
+  }
 
   if (cluster && process.env.NODE_ENV !== 'development') {
     const [inCluster, hosts] = CheckIsInCluster();

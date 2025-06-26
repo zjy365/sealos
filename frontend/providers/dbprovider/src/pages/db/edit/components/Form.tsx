@@ -157,7 +157,8 @@ const Form = ({
     backgroundColor: 'grayModern.50'
   };
   const { checkQuotaAllow } = useUserStore();
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const planName = getUserSession()?.user?.subscription?.subscriptionPlan?.name || 'Free';
+
   const cpuVal = watch('cpu');
   const memoryVal = watch('memory');
   const pods = watch('replicas');

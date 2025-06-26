@@ -395,7 +395,8 @@ const Form = ({
       );
   }, [getValues, refresh]);
 
-  const planName = getUserSession()?.user.subscription?.subscriptionPlan?.name || 'Free';
+  const planName = getUserSession()?.user?.subscription?.subscriptionPlan?.name || 'Free';
+
   const cpuVal = watch('cpu');
   const pods = watch('replicas');
   const memoryVal = watch('memory');

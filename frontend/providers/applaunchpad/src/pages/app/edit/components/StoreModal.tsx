@@ -80,7 +80,8 @@ const StoreModal = ({
       title: `${t('Add')} ${t('Storage')}`
     }
   };
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const planName = getUserSession()?.user?.subscription?.subscriptionPlan?.name || 'Free';
+
   const limit = PLAN_LIMIT[planName as 'Free'];
   const storageQuota = userQuota.find((q) => q.type === 'storage');
   const exceedLimit =

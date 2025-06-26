@@ -196,7 +196,8 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
   );
 
   const { userQuota, loadUserQuota } = useUserStore();
-  const planName = getUserSession()?.user.subscription.subscriptionPlan.name || 'Free';
+  const planName = getUserSession()?.user?.subscription?.subscriptionPlan?.name || 'Free';
+
   useQuery(['getUserQuota', planName], loadUserQuota);
 
   const quotaText = useMemo(() => {
@@ -209,7 +210,7 @@ const EditApp = ({ dbName, tabType }: { dbName?: string; tabType?: 'form' | 'yam
         ? [{ value: getQuotaLimit('storage')!, unit: 'GB storage' }]
         : []),
       ...(getQuotaLimit('nodeports') !== undefined && getQuotaLimit('nodeports')! >= 0
-        ? [{ value: getQuotaLimit('nodeports')!, unit: 'nodeports' }]
+        ? [{ value: getQuotaLimit('nodeports')!, unit: 'nodeport' }]
         : []),
       ...(getQuotaLimit('pods') !== undefined && getQuotaLimit('pods')! >= 0
         ? [{ value: getQuotaLimit('pods')!, unit: 'pods' }]

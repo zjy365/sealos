@@ -110,16 +110,16 @@ export default function TeamCenter({
     }
   }, [_namespaces, ns_uid]);
 
-  const openAccountCenterApp = (page?: string) => {
+  const openAccountCenterApp = () => {
     openDesktopApp({
       appKey: 'system-account-center',
       query: {
-        page: page || 'plan'
+        scene: 'upgrade'
       },
       messageData: {
-        page: page || 'plan'
+        scene: 'upgrade'
       },
-      pathname: '/redirect'
+      pathname: '/'
     });
   };
 
@@ -265,7 +265,7 @@ export default function TeamCenter({
                         onClick={() => {
                           closeWorkspaceToggle();
                           onClose();
-                          openAccountCenterApp('plan');
+                          openAccountCenterApp();
                         }}
                       >
                         {t('cc:upgrade')}
@@ -375,7 +375,7 @@ export default function TeamCenter({
                             onClick={() => {
                               onClose();
                               closeWorkspaceToggle();
-                              openAccountCenterApp('plan');
+                              openAccountCenterApp();
                             }}
                           >
                             Upgrade
