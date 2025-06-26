@@ -27,7 +27,11 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
-  const regionList = useMemo(() => data?.data?.regionList || [], [data]);
+
+  const regionList = useMemo(
+    () => (data?.data?.regionList || []).filter((item) => item?.description?.isFree),
+    [data]
+  );
 
   const token = useSessionStore((s) => s.token);
 
