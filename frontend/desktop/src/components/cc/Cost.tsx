@@ -103,13 +103,13 @@ export default function Cost() {
         value: resourceData?.data?.totalStorage,
         icon: <StorageIcon />,
         unit: 'GB'
-      },
-      {
-        label: t('common:flow'),
-        value: `~`,
-        icon: <FlowIcon />,
-        unit: 'GB'
       }
+      // {
+      //   label: t('common:flow'),
+      //   value: `~`,
+      //   icon: <FlowIcon />,
+      //   unit: 'GB'
+      // }
     ],
     [resourceData?.data, t]
   );
@@ -356,7 +356,15 @@ export default function Cost() {
             </Flex>
 
             {/* Usage Items */}
-            <Flex flexDirection={'column'} width={'248px'}>
+            <Flex
+              flexDirection={'column'}
+              width={'248px'}
+              css={{
+                '& > div:not(:last-child)': {
+                  borderBottom: '1px solid #E4E4E7'
+                }
+              }}
+            >
               {resourceInfo.map((item) => (
                 <Flex
                   key={item.label}
@@ -366,7 +374,6 @@ export default function Cost() {
                   gap={'8px'}
                   width={'248px'}
                   height={'47px'}
-                  borderBottom={item.label !== 'Network' ? '1px solid #E4E4E7' : 'none'}
                 >
                   <Flex alignItems={'center'} gap={'8px'}>
                     <Text

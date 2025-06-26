@@ -1,4 +1,4 @@
-import { getUserSession } from '@/utils/user';
+import { getToken } from '@/utils/user';
 import axios, {
   AxiosHeaders,
   AxiosRequestConfig,
@@ -67,7 +67,7 @@ request.interceptors.request.use(
       config.url = '' + config.url;
     }
     let _headers: AxiosHeaders = config.headers;
-    const token = getUserSession()?.token || '';
+    const token = getToken() || '';
 
     // console.log('api token', token);
 

@@ -152,8 +152,7 @@ export const cpuFormatToM = (cpu: string) => {
  * memory format
  */
 export const memoryFormatToMi = (memory: string) => {
-  if (!memory) return -1;
-  if (memory === '0') {
+  if (!memory || memory === '0') {
     return 0;
   }
 

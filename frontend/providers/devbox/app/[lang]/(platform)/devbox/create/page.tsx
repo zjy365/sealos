@@ -325,13 +325,13 @@ const DevboxCreatePage = () => {
     const quotaItems = [
       { value: getQuotaLimit('cpu') || 0, unit: 'vCPU' },
       { value: getQuotaLimit('memory') || 0, unit: 'GB RAM' },
-      ...(getQuotaLimit('storage') !== undefined && getQuotaLimit('storage')! >= 0
+      ...(getQuotaLimit('storage') !== undefined && getQuotaLimit('storage')! > 0
         ? [{ value: getQuotaLimit('storage')!, unit: 'GB storage' }]
         : []),
-      ...(getQuotaLimit('nodeports') !== undefined && getQuotaLimit('nodeports')! >= 0
+      ...(getQuotaLimit('nodeports') !== undefined && getQuotaLimit('nodeports')! > 0
         ? [{ value: getQuotaLimit('nodeports')!, unit: 'nodeport' }]
         : []),
-      ...(getQuotaLimit('pods') !== undefined && getQuotaLimit('pods')! >= 0
+      ...(getQuotaLimit('pods') !== undefined && getQuotaLimit('pods')! > 0
         ? [{ value: getQuotaLimit('pods')!, unit: 'pods' }]
         : [])
     ];

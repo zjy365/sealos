@@ -41,6 +41,10 @@ export const getUserSession = () => {
 
 export const getToken = () => {
   try {
+    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_USER_TOKEN) {
+      return process.env.NEXT_PUBLIC_MOCK_USER_TOKEN;
+    }
+
     const store = localStorage.getItem('session');
     if (store) {
       const session = JSON.parse(store) as SessionV1;

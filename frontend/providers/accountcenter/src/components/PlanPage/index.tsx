@@ -35,7 +35,7 @@ import { sealosApp } from 'sealos-desktop-sdk/app';
 import { jwtDecode } from 'jwt-decode';
 import { getRawRegionList } from '@/api/usage';
 import { RawRegion } from '@/types/region';
-import { getUserSession } from '@/utils/user';
+import { getToken, getUserSession } from '@/utils/user';
 import { ArrowRightIcon } from 'lucide-react';
 import RegionToggle from './RegionToggle';
 import { useGlobalStore } from '@/store/global';
@@ -83,8 +83,11 @@ export default function PlanPage() {
     refetchOnWindowFocus: false
   });
 
-  const regionList: RawRegion[] = useMemo(() => regionListData?.regionList || [], [regionListData]);
-  const token = getUserSession()?.token;
+  const regionList: RawRegion[] = useMemo(() => {
+    return (regionListData?.regionList || []).filter((item) => !item?.description.isFree);
+  }, [regionListData]);
+
+  const token = getToken();
   const curRegionUid = useMemo(() => {
     try {
       return jwtDecode<{ regionUid: string }>(token!).regionUid;

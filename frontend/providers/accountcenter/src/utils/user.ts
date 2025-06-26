@@ -27,11 +27,33 @@ export const getUserNamespace = () => {
   }
 };
 
+/**
+ * @deprecated use getToken instead
+ * get user session
+ * @returns user session
+ */
 export const getUserSession = () => {
   try {
     const store = localStorage.getItem('session');
     if (store) {
       return JSON.parse(store) as SessionV1;
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getToken = () => {
+  try {
+    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_USER_TOKEN) {
+      return process.env.NEXT_PUBLIC_MOCK_USER_TOKEN;
+    }
+
+    const store = localStorage.getItem('session');
+    if (store) {
+      const session = JSON.parse(store) as SessionV1;
+      return session.token;
     }
     return null;
   } catch (err) {
