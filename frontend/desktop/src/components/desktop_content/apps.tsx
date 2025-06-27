@@ -65,7 +65,7 @@ export default function Apps() {
   const paginatedApps = useMemo(
     () =>
       renderApps
-        .filter((app) => app.key !== 'system-account-center')
+        .filter((app) => app.key !== 'system-account-center' && app.key !== 'system-workorder')
         .slice((page - 1) * pageSize, page * pageSize),
     [renderApps, page, pageSize]
   );

@@ -29,7 +29,12 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
   });
 
   const regionList = useMemo(
-    () => (data?.data?.regionList || []).filter((item) => item?.description?.isFree),
+    () =>
+      (data?.data?.regionList || []).sort((a, b) => {
+        if (a.description?.isFree && !b.description?.isFree) return -1;
+        if (!a.description?.isFree && b.description?.isFree) return 1;
+        return 0;
+      }),
     [data]
   );
 

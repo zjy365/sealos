@@ -56,10 +56,9 @@ export const useUserStore = create<State>()(
         };
 
         const exceedQuota = quote.find((item) => {
-          if (item.used + request[item.type] > item.limit) {
+          if (item.limit >= 0 && item.used + request[item.type] > item.limit) {
             return true;
           }
-          return false;
         });
 
         return exceedQuota?.type ? overLimitTip[exceedQuota.type] : undefined;
