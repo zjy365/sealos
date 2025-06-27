@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form';
 import MyFormControl from '@/components/FormControl';
 import { useTranslation } from 'next-i18next';
 import { pathToNameFormat } from '@/utils/tools';
-import { MyTooltip } from '@sealos/ui';
+import { MyTooltip, Track } from '@sealos/ui';
 import { PVC_STORAGE_MAX } from '@/store/static';
 import { getUserSession } from '@/utils/user';
 import { sealosApp } from 'sealos-desktop-sdk/app';
@@ -184,22 +184,24 @@ const StoreModal = ({
                       {planName} plan includes up to {storageQuota.limit} GB
                     </Text>
                   </Flex>
-                  <Button
-                    variant={'unstyled'}
-                    onClick={() => {
-                      sealosApp.runEvents('openDesktopApp', {
-                        appKey: 'system-account-center',
-                        pathname: '/',
-                        query: {
-                          scene: 'upgrade'
-                        }
-                      });
-                    }}
-                    bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
-                    bgClip="text"
-                  >
-                    Upgrade Now
-                  </Button>
+                  <Track.Click eventName={Track.events.applaunchpadStorageUpgrade}>
+                    <Button
+                      variant={'unstyled'}
+                      onClick={() => {
+                        sealosApp.runEvents('openDesktopApp', {
+                          appKey: 'system-account-center',
+                          pathname: '/',
+                          query: {
+                            scene: 'upgrade'
+                          }
+                        });
+                      }}
+                      bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+                      bgClip="text"
+                    >
+                      Upgrade Now
+                    </Button>
+                  </Track.Click>
                 </Flex>
               )}
               <MyFormControl showError errorText={errors.path?.message} pb={2}>

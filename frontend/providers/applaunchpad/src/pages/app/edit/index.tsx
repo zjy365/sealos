@@ -41,7 +41,7 @@ import { useForm } from 'react-hook-form';
 import Form from './components/Form';
 import Header from './components/Header';
 import Yaml from './components/Yaml';
-import { useMessage } from '@sealos/ui';
+import { useMessage, Track } from '@sealos/ui';
 import { customAlphabet } from 'nanoid';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import { getUserSession } from '@/utils/user';
@@ -488,23 +488,25 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
             </Text>
             <Text py={'16px'}>{quotaText}</Text>
             <Flex gap="12px" mt={'16px'}>
-              <Button
-                w={'120px'}
-                h="40px"
-                variant={'solid'}
-                onClick={() => {
-                  sealosApp.runEvents('openDesktopApp', {
-                    appKey: 'system-account-center',
-                    pathname: '/',
-                    query: {
-                      scene: 'upgrade'
-                    }
-                  });
-                  onClose();
-                }}
-              >
-                Upgrade
-              </Button>
+              <Track.Click eventName={Track.events.applaunchpadDeployUpgrade}>
+                <Button
+                  w={'120px'}
+                  h="40px"
+                  variant={'solid'}
+                  onClick={() => {
+                    sealosApp.runEvents('openDesktopApp', {
+                      appKey: 'system-account-center',
+                      pathname: '/',
+                      query: {
+                        scene: 'upgrade'
+                      }
+                    });
+                    onClose();
+                  }}
+                >
+                  Upgrade
+                </Button>
+              </Track.Click>
               <Button
                 w={'120px'}
                 h="40px"

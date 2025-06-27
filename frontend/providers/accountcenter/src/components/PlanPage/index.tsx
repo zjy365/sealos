@@ -39,6 +39,7 @@ import { getToken, getUserSession } from '@/utils/user';
 import { ArrowRightIcon } from 'lucide-react';
 import RegionToggle from './RegionToggle';
 import { useGlobalStore } from '@/store/global';
+import { Track } from '@sealos/ui';
 
 export default function PlanPage() {
   const [initialized, setInitialized] = useState({
@@ -250,20 +251,32 @@ export default function PlanPage() {
               setCurrentRegion={setSelectedRegion}
               currentRegionUid={selectedRegionUid}
             />
-            <Button
-              w="full"
-              variant="solid"
-              rightIcon={<ArrowRightIcon></ArrowRightIcon>}
-              mb={'16px'}
-              onClick={() => switchRegion(selectedRegionUid)}
-            >
-              Switch Now
-            </Button>
+            <Track.Click eventName={Track.events.upgradeSwitch}>
+              <Button
+                w="full"
+                variant="solid"
+                rightIcon={<ArrowRightIcon></ArrowRightIcon>}
+                mb={'16px'}
+                onClick={() => switchRegion(selectedRegionUid)}
+              >
+                Switch Now
+              </Button>
+            </Track.Click>
             <Divider borderColor="#E4E4E7" borderStyle="dashed" mb={'22px'} />
 
-            <Button w="full" variant="ghost" color={'#18181B'} onClick={onClose}>
-              Continue with current availability zone
-            </Button>
+            {/* <Button w="full" variant="ghost" color={'#18181B'} onClick={onClose}> */}
+            <Track.Click eventName={Track.events.upgradeContinue}>
+              <Button
+                w="full"
+                variant="ghost"
+                color={'#18181B'}
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                Continue with current availability zone
+              </Button>
+            </Track.Click>
           </ModalBody>
         </ModalContent>
       </Modal>

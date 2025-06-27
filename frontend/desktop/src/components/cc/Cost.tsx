@@ -14,7 +14,7 @@ import {
   Text,
   useDisclosure
 } from '@chakra-ui/react';
-import { CurrencySymbol } from '@sealos/ui';
+import { CurrencySymbol, Track } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Decimal } from 'decimal.js';
 import { useTranslation } from 'next-i18next';
@@ -216,33 +216,35 @@ export default function Cost() {
               >
                 Pod limit reached. Upgrade your plan to scale further.
               </Text>
-              <Text
-                as="button"
-                w="91px"
-                h="20px"
-                fontFamily="Geist"
-                fontWeight={600}
-                fontSize="14px"
-                lineHeight="20px"
-                display="flex"
-                alignItems="center"
-                color="#EA580C"
-                onClick={() => {
-                  // Add upgrade plan logic here
-                  openDesktopApp({
-                    appKey: 'system-account-center',
-                    query: {
-                      scene: 'upgrade'
-                    },
-                    messageData: {
-                      scene: 'upgrade'
-                    },
-                    pathname: '/'
-                  });
-                }}
-              >
-                Upgrade Now
-              </Text>
+              <Track.Click eventName={Track.events.podUpgrade}>
+                <Text
+                  as="button"
+                  w="91px"
+                  h="20px"
+                  fontFamily="Geist"
+                  fontWeight={600}
+                  fontSize="14px"
+                  lineHeight="20px"
+                  display="flex"
+                  alignItems="center"
+                  color="#EA580C"
+                  onClick={() => {
+                    // Add upgrade plan logic here
+                    openDesktopApp({
+                      appKey: 'system-account-center',
+                      query: {
+                        scene: 'upgrade'
+                      },
+                      messageData: {
+                        scene: 'upgrade'
+                      },
+                      pathname: '/'
+                    });
+                  }}
+                >
+                  Upgrade Now
+                </Text>
+              </Track.Click>
             </Flex>
           )}
 

@@ -1,6 +1,6 @@
 import { obj2Query } from '@/api/tools';
 import MyIcon from '@/components/Icon';
-import { MyRangeSlider, MySelect, MySlider, MyTooltip, RangeInput, Tip } from '@sealos/ui';
+import { MyRangeSlider, MySelect, MySlider, MyTooltip, RangeInput, Tip, Track } from '@sealos/ui';
 import { APPLICATION_PROTOCOLS, defaultSliderKey, ProtocolList } from '@/constants/app';
 import { GpuAmountMarkList } from '@/constants/editApp';
 import { useToast } from '@/hooks/useToast';
@@ -951,22 +951,24 @@ const Form = ({
                       Upgrade your plan to unlock higher usage capacity
                     </Text>
                   </Flex>
-                  <Button
-                    variant={'unstyled'}
-                    onClick={() => {
-                      sealosApp.runEvents('openDesktopApp', {
-                        appKey: 'system-account-center',
-                        pathname: '/',
-                        query: {
-                          scene: 'upgrade'
-                        }
-                      });
-                    }}
-                    bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
-                    bgClip="text"
-                  >
-                    Upgrade Now
-                  </Button>
+                  <Track.Click eventName={Track.events.applaunchpadUsageUpgrade}>
+                    <Button
+                      variant={'unstyled'}
+                      onClick={() => {
+                        sealosApp.runEvents('openDesktopApp', {
+                          appKey: 'system-account-center',
+                          pathname: '/',
+                          query: {
+                            scene: 'upgrade'
+                          }
+                        });
+                      }}
+                      bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+                      bgClip="text"
+                    >
+                      Upgrade Now
+                    </Button>
+                  </Track.Click>
                 </Flex>
               )}
             </Box>

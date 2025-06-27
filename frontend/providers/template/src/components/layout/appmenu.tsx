@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 import SideBar from './sidebar';
 import { ApplicationType } from '@/types/app';
 import MyIcon from '../Icon';
+import { Track } from '@sealos/ui';
 
 export default function AppMenu() {
   const { t, i18n } = useTranslation();
@@ -99,22 +100,24 @@ export default function AppMenu() {
                   </Center>
                 ) : null}
                 {router.route === '/' ? (
-                  <Center
-                    cursor={'pointer'}
-                    h="40px"
-                    px={'19px'}
-                    borderRadius={'8px'}
-                    color={'#1C4EF5'}
-                    bottom={'28px'}
-                    onClick={() => {
-                      window.open('https://github.com/ClawCloud/Run-Template', '_blank');
-                    }}
-                  >
-                    <MyIcon name="fileText" fill={'transparent'} />
-                    <Text ml="8px" fontWeight={500} fontSize={'14px'}>
-                      {t('develop.Submit Template')}
-                    </Text>
-                  </Center>
+                  <Track.Click eventName={Track.events.appstoreSubmit}>
+                    <Center
+                      cursor={'pointer'}
+                      h="40px"
+                      px={'19px'}
+                      borderRadius={'8px'}
+                      color={'#1C4EF5'}
+                      bottom={'28px'}
+                      onClick={() => {
+                        window.open('https://github.com/ClawCloud/Run-Template', '_blank');
+                      }}
+                    >
+                      <MyIcon name="fileText" fill={'transparent'} />
+                      <Text ml="8px" fontWeight={500} fontSize={'14px'}>
+                        {t('develop.Submit Template')}
+                      </Text>
+                    </Center>
+                  </Track.Click>
                 ) : null}
               </Flex>
             ) : null

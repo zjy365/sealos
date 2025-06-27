@@ -43,7 +43,7 @@ import {
   useDisclosure,
   useTheme
 } from '@chakra-ui/react';
-import { MySelect, MySlider, MyTooltip, RangeInput, Tabs } from '@sealos/ui';
+import { MySelect, MySlider, MyTooltip, RangeInput, Tabs, Track } from '@sealos/ui';
 import { throttle } from 'lodash';
 import { LockIcon, LockKeyholeIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
@@ -555,22 +555,24 @@ const Form = ({
                       Upgrade your plan to unlock higher usage capacity
                     </Text>
                   </Flex>
-                  <Button
-                    variant={'unstyled'}
-                    onClick={() => {
-                      sealosApp.runEvents('openDesktopApp', {
-                        appKey: 'system-account-center',
-                        pathname: '/',
-                        query: {
-                          scene: 'upgrade'
-                        }
-                      });
-                    }}
-                    bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
-                    bgClip="text"
-                  >
-                    Upgrade Now
-                  </Button>
+                  <Track.Click eventName={Track.events.databaseUsageUpgrade}>
+                    <Button
+                      variant={'unstyled'}
+                      onClick={() => {
+                        sealosApp.runEvents('openDesktopApp', {
+                          appKey: 'system-account-center',
+                          pathname: '/',
+                          query: {
+                            scene: 'upgrade'
+                          }
+                        });
+                      }}
+                      bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+                      bgClip="text"
+                    >
+                      Upgrade Now
+                    </Button>
+                  </Track.Click>
                 </Flex>
               )}
             </Box>

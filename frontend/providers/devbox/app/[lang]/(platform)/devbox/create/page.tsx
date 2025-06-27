@@ -12,7 +12,7 @@ import {
   Button,
   useDisclosure
 } from '@chakra-ui/react';
-import { useMessage } from '@sealos/ui';
+import { useMessage, Track } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
@@ -407,23 +407,25 @@ const DevboxCreatePage = () => {
             </Text>
             <Text py={'16px'}>{quotaText}</Text>
             <Flex gap="12px" mt={'16px'}>
-              <Button
-                w={'120px'}
-                h="40px"
-                variant={'solid'}
-                onClick={() => {
-                  sealosApp.runEvents('openDesktopApp', {
-                    appKey: 'system-account-center',
-                    pathname: '/',
-                    query: {
-                      scene: 'upgrade'
-                    }
-                  });
-                  onClose();
-                }}
-              >
-                Upgrade
-              </Button>
+              <Track.Click eventName={Track.events.devboxDeployUpgrade}>
+                <Button
+                  w={'120px'}
+                  h="40px"
+                  variant={'solid'}
+                  onClick={() => {
+                    sealosApp.runEvents('openDesktopApp', {
+                      appKey: 'system-account-center',
+                      pathname: '/',
+                      query: {
+                        scene: 'upgrade'
+                      }
+                    });
+                    onClose();
+                  }}
+                >
+                  Upgrade
+                </Button>
+              </Track.Click>
               <Button
                 w={'120px'}
                 h="40px"

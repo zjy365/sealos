@@ -11,6 +11,7 @@ import { sealosApp } from 'sealos-desktop-sdk/app';
 import { getUserSession } from '@/utils/user';
 import { useUserStore } from '@/stores/user';
 import { DevboxEditTypeV2 } from '@/types/devbox';
+import { Track } from '@sealos/ui';
 
 export default function Usage({
   countGpuInventory
@@ -65,22 +66,24 @@ export default function Usage({
               Upgrade your plan to unlock higher usage capacity
             </Text>
           </Flex>
-          <Button
-            variant={'unstyled'}
-            onClick={() => {
-              sealosApp.runEvents('openDesktopApp', {
-                appKey: 'system-account-center',
-                pathname: '/',
-                query: {
-                  scene: 'upgrade'
-                }
-              });
-            }}
-            bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
-            bgClip="text"
-          >
-            Upgrade Now
-          </Button>
+          <Track.Click eventName={Track.events.devboxUsageUpgrade}>
+            <Button
+              variant={'unstyled'}
+              onClick={() => {
+                sealosApp.runEvents('openDesktopApp', {
+                  appKey: 'system-account-center',
+                  pathname: '/',
+                  query: {
+                    scene: 'upgrade'
+                  }
+                });
+              }}
+              bgGradient="linear(to-b, #3E6FF4 0%, #0E4BF1 100%)"
+              bgClip="text"
+            >
+              Upgrade Now
+            </Button>
+          </Track.Click>
         </Flex>
       )}
     </>

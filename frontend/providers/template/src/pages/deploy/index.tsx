@@ -40,7 +40,7 @@ import ReadMe from './components/ReadMe';
 import { getTemplateInputDefaultValues, getTemplateValues } from '@/utils/template';
 import { getResourceUsage } from '@/utils/usage';
 import Head from 'next/head';
-import { useMessage } from '@sealos/ui';
+import { useMessage, Track } from '@sealos/ui';
 import Carousel from './components/Carousel';
 import MyIcon from '@/components/Icon';
 import { formatNum } from '@/utils/tools';
@@ -635,14 +635,16 @@ export default function EditApp({
               <Text fontSize={'14px'} w={'560px'} lineHeight={'20px'} mt={'12px'} mb={'24px'}>
                 {t('submitTemplateDesc')}
               </Text>
-              <Button
-                w={'fit-content'}
-                onClick={() => {
-                  window.open('https://github.com/ClawCloud/Run-Template', '_blank');
-                }}
-              >
-                {t('develop.Submit Template')}
-              </Button>
+              <Track.Click eventName={Track.events.appstoreAppsSubmit}>
+                <Button
+                  w={'fit-content'}
+                  onClick={() => {
+                    window.open('https://github.com/ClawCloud/Run-Template', '_blank');
+                  }}
+                >
+                  {t('develop.Submit Template')}
+                </Button>
+              </Track.Click>
             </Flex>
           </Flex>
         </Flex>

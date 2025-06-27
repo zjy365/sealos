@@ -14,5 +14,18 @@ export const trackEvents = {
   noCreditAlert: (planName: string) => `${planName?.toLowerCase()}_no_upgrade`,
   noCreditAlertClick: (planName: string) => `${planName?.toLowerCase()}_no_upgrade_click`,
   accountCenterUpgrade: (planName: string) => `${planName?.toLowerCase()}_plan_upgrade`,
-  accountCenterUpgradeClick: (planName: string) => `${planName?.toLowerCase()}_plan_upgrade_click`
+  accountCenterUpgradeClick: (planName: string) => `${planName?.toLowerCase()}_plan_upgrade_click`,
+  membersClick: (regionName: string) => `members_${regionName.toLowerCase()}`,
+  podUpgrade: 'pod_upgrade',
+  upgradeSwitch: 'upgrade_switch',
+  upgradeContinue: 'upgrade_continue',
+  applaunchpadUsageUpgrade: 'applaunchpad_usage_upgrade',
+  devboxUsageUpgrade: 'devbox_usage_upgrade',
+  databaseUsageUpgrade: 'database_usage_upgrade',
+  applaunchpadDeployUpgrade: 'applaunchpad_deploy_upgrade',
+  devboxDeployUpgrade: 'devbox_deploy_upgrade',
+  databaseDeployUpgrade: 'database_deploy_upgrade',
+  applaunchpadStorageUpgrade: 'applaunchpad_storage_upgrade',
+  appstoreSubmit: 'appstore_submit',
+  appstoreAppsSubmit: 'appstore_apps_submit'
 };
