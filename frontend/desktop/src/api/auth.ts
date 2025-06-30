@@ -19,9 +19,14 @@ import { type AxiosInstance } from 'axios';
 import { ProviderType } from 'prisma/global/generated/client';
 
 export const _getRegionToken = (request: AxiosInstance) => () =>
-  request.post<any, ApiResp<{ token: string; kubeconfig: string; appToken: string }>>(
-    '/api/auth/regionToken'
-  );
+  request.post<
+    any,
+    ApiResp<{
+      appToken: string;
+      kubeconfig: string;
+      token: string;
+    }>
+  >('/api/auth/regionToken');
 
 export const getRegionToken = _getRegionToken(request);
 export const _passwordExistRequest = (request: AxiosInstance) => (data: { user: string }) =>

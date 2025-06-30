@@ -15,26 +15,42 @@ export const sessionConfig = async ({
 }) => {
   const store = useSessionStore.getState();
   store.setToken(token);
-  const infoData = await UserInfo();
-  const payload = jwtDecode<AccessTokenPayload>(token);
-  store.setSession({
-    token: appToken,
-    user: {
-      userRestrictedLevel: infoData.data?.info.userRestrictedLevel || undefined,
-      realName: infoData.data?.info.realName || undefined,
-      enterpriseRealName: infoData.data?.info.enterpriseRealName || undefined,
-      k8s_username: payload.userCrName,
-      subscription: infoData.data?.info.subscription,
-      name: infoData.data?.info.nickname || '',
-      avatar: infoData.data?.info.avatarUri || '',
-      nsid: payload.workspaceId,
-      ns_uid: payload.workspaceUid,
-      userCrUid: payload.userCrUid,
-      userId: payload.userId,
-      userUid: payload.userUid
-    },
-    kubeconfig
-  });
+
+  try {
+    const infoData = await UserInfo();
+
+    // 如果 infoData 是 undefined，抛出错误进入 catch 处理
+    if (!infoData) {
+      throw new Error('UserInfo 返回 undefined');
+    }
+
+    const payload = jwtDecode<AccessTokenPayload>(token);
+    store.setSession({
+      token: appToken,
+      user: {
+        userRestrictedLevel: infoData.data?.info.userRestrictedLevel || undefined,
+        realName: infoData.data?.info.realName || undefined,
+        enterpriseRealName: infoData.data?.info.enterpriseRealName || undefined,
+        k8s_username: payload.userCrName,
+        subscription: infoData.data?.info.subscription,
+        name: infoData.data?.info.nickname || '',
+        avatar: infoData.data?.info.avatarUri || '',
+        nsid: payload.workspaceId,
+        ns_uid: payload.workspaceUid,
+        userCrUid: payload.userCrUid,
+        userId: payload.userId,
+        userUid: payload.userUid
+      },
+      kubeconfig
+    });
+
+    return {
+      userInfo: infoData.data?.info,
+      subscription: infoData.data?.info.subscription
+    };
+  } catch (error: any) {
+    throw error;
+  }
 };
 
 export const getInviterId = () => localStorage.getItem('inviterId');
