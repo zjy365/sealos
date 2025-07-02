@@ -6,10 +6,11 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
-  Box
+  Box,
+  Flex
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import PlanSelector, { PlanSelectorProps } from './PlanSelector';
 import CheckoutOrder, { CheckoutData } from '../CheckoutOrder';
 import useGetPlanOrderSummary from '../CheckoutOrder/useGetPlanOrderSummary';
@@ -28,6 +29,14 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<TPlanApiResponse | null>(null);
   const getPlanOrderSummary = useGetPlanOrderSummary();
+  const [periodType, setPeriodType] = useState<'annual' | 'monthly'>('annual');
+  const yearlyRef = useRef<HTMLDivElement>(null);
+  const monthlyRef = useRef<HTMLDivElement>(null);
+  const [sliderStyle, setSliderStyle] = useState({
+    left: '4px',
+    width: '150px'
+  });
+
   const handleCheckout = (data: CheckoutData) => {
     if (!selectedPlan) return;
     return updatePlan({
@@ -37,24 +46,54 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
       ...data
     });
   };
+
   useEffect(() => {
     if (isOpen) {
       setStep(1);
       setSelectedPlan(null);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    const updateSliderPosition = () => {
+      if (yearlyRef.current && monthlyRef.current) {
+        const yearlyWidth = yearlyRef.current.offsetWidth;
+        const monthlyWidth = monthlyRef.current.offsetWidth;
+        console.log(yearlyWidth, monthlyWidth, 'yearlyWidth, monthlyWidth');
+
+        if (periodType === 'annual') {
+          setSliderStyle({
+            left: '4px',
+            width: `${yearlyWidth}px`
+          });
+        } else {
+          setSliderStyle({
+            left: `${yearlyWidth + 4}px`,
+            width: `${monthlyWidth}px`
+          });
+        }
+      }
+    };
+
+    updateSliderPosition();
+    window.addEventListener('resize', updateSliderPosition);
+    return () => window.removeEventListener('resize', updateSliderPosition);
+  }, [periodType]);
+
   const handleSelectPlan = (plan: TPlanApiResponse) => {
     if (plan) {
       setSelectedPlan(plan);
       setStep(2);
     }
   };
+
   const handlePaySuccess = () => {
     router.push({
       pathname: urls.page.plan,
       search: '?checkUpgrade'
     });
   };
+
   const renderStep = () => {
     if (step === 1) {
       return (
@@ -69,7 +108,12 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
           >
             {t('UpgradePlanDesc')}
           </Text> */}
-          <PlanSelector {...rest} minHeight="416px" onSelect={handleSelectPlan} />
+          <PlanSelector
+            {...rest}
+            minHeight="416px"
+            onSelect={handleSelectPlan}
+            periodType={periodType}
+          />
         </>
       );
     }
@@ -100,15 +144,88 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
     }
     return null;
   };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent maxW="1112px">
         <ModalCloseButton />
         <ModalBody borderRadius="16px" py="32px" px="40px">
-          <Text fontSize="24px" fontWeight="600" textAlign="center">
-            {t('UpgradePlan')}
-          </Text>
+          <Flex alignItems={'center'} justifyContent={'space-between'}>
+            <Text fontSize="24px" fontWeight="600" textAlign="center">
+              {t('UpgradePlan')}
+            </Text>
+            <Flex
+              borderRadius="8px"
+              border="1px solid #E4E4E7"
+              alignItems="center"
+              width="auto"
+              height="40px"
+              p={'4px'}
+              bg={'#0000000D'}
+              position="relative"
+            >
+              <Box
+                position="absolute"
+                left={sliderStyle.left}
+                width={sliderStyle.width}
+                height="32px"
+                bg="#fff"
+                borderRadius="6px"
+                transition="left 0.3s ease, width 0.3s ease"
+                zIndex={1}
+              />
+              <Flex
+                ref={yearlyRef}
+                position="relative"
+                zIndex={2}
+                p="6px 12px"
+                justifyContent="center"
+                alignItems="center"
+                gap="8px"
+                cursor={'pointer'}
+                onClick={() => setPeriodType('annual')}
+              >
+                <Text
+                  color={periodType === 'annual' ? '#18181B' : '#71717A'}
+                  fontWeight={periodType === 'annual' ? '500' : '400'}
+                  transition="color 0.3s ease"
+                >
+                  Yearly
+                </Text>
+                <Text
+                  fontWeight="600"
+                  background="linear-gradient(266deg, #2778FD 48.08%, #829DFE 92.43%)"
+                  backgroundClip="text"
+                  sx={{
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}
+                >
+                  Save~50%
+                </Text>
+              </Flex>
+              <Flex
+                ref={monthlyRef}
+                position="relative"
+                zIndex={2}
+                p="6px 12px"
+                justifyContent="center"
+                alignItems="center"
+                gap="8px"
+                cursor={'pointer'}
+                onClick={() => setPeriodType('monthly')}
+              >
+                <Text
+                  color={periodType === 'monthly' ? '#18181B' : '#71717A'}
+                  fontWeight={periodType === 'monthly' ? '500' : '400'}
+                  transition="color 0.3s ease"
+                >
+                  Monthly
+                </Text>
+              </Flex>
+            </Flex>
+          </Flex>
           {renderStep()}
         </ModalBody>
       </ModalContent>

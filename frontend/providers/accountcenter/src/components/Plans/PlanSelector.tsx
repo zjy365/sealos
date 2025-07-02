@@ -21,6 +21,7 @@ const PlanSelector: FC<PlanSelectorProps> = ({ plans, minHeight, ...rest }) => {
   if (!Array.isArray(plans) || !plans.length) return null;
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [expanded, setExpanded] = useState(false);
+
   return (
     <Box overflowY="scroll" h="584px">
       <Grid

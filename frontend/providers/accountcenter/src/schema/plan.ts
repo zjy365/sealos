@@ -24,7 +24,8 @@ export const PlanSchema = z.object({
   MostPopular: z.boolean().optional(),
   NodePort: z.number(),
   PodCount: z.number(),
-  LogRetention: z.number()
+  LogRetention: z.number(),
+  AnnualAmount: z.number()
 });
 export const PlanListSchema = z.array(PlanSchema);
 export type TPlanApiResponse = KeysToLowerFirst<Omit<z.infer<typeof PlanSchema>, 'ID'>> & {
