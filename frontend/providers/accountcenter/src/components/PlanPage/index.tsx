@@ -60,6 +60,8 @@ export default function PlanPage() {
       setInitialized((prev) => ({ ...prev, plans: true }));
     }
   });
+  console.log(plansResponse, 'plansResponse');
+
   const {
     data: creditsUsage,
     refetch: refetchCreditsUsage,
