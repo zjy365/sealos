@@ -9,6 +9,8 @@ import './globals.css';
 import '@sealos/driver/src/driver.css';
 import 'react-day-picker/dist/style.css';
 
+import { Track } from '@sealos/ui';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -36,6 +38,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang={lang}>
+      <head>
+        <Track.Scripts />
+      </head>
       <body className={inter.className}>
         <IntlProvider>
           <QueryProvider>{children}</QueryProvider>

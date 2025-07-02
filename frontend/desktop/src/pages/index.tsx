@@ -219,6 +219,7 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
             href="https://question.run.claw.cloud/questions/10010000000001421"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ textDecoration: 'underline' }}
           >
             {t('details')}
           </a>

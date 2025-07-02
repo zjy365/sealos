@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
+import { Track } from '@sealos/ui';
 
 export default function Document() {
   return (
@@ -12,6 +13,7 @@ export default function Document() {
         <meta name="description" content="ClawCloud cloud" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="icon" href="/logo.svg" />
+        <Track.Scripts />
       </Head>
       <body>
         <Main />
