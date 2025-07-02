@@ -605,8 +605,7 @@ const Form = ({
       enabled: !!getValues(`containers.${containerIndex}.imageRepo`)
     }
   );
-  console.log('containerIndex', containerIndex, getValues(`containers.${containerIndex}.imageRepo`));
-
+  
   return (
     <>
       <Grid

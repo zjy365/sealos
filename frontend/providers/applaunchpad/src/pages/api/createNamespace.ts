@@ -10,8 +10,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       kubeconfig: await authSession(req.headers)
     });
 
-    const { ns } = req.body as {
+    const { ns,roleId } = req.body as {
       ns: string;
+      roleId:number;
     };
 
     const namespace = {
@@ -24,23 +25,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const namespaceResult = await k8sCore.createNamespace(namespace);
 
-    const resourceQuota = {
+    const resourceQuota:any = {
       apiVersion: 'v1',
       kind: 'ResourceQuota',
       metadata: {
         name: 'quota',
         namespace: ns,
         annotations: {
-          'sealos/username': ns // Assuming the namespace name is used as the username
+          'sealos/username': ns, // Assuming the namespace name is used as the username
+          'sealos/roleId': roleId
         }
       },
       spec: {
         hard: {
-          'services': '5',
-          'requests.storage': '10Gi',
-          'persistentvolumeclaims': '5',
-          'limits.cpu': '4',
-          'limits.memory': '8Gi'
+          'services': '5000',
+          'requests.storage': '1000Gi',
+          'persistentvolumeclaims': '5000',
+          'limits.cpu': '4000',
+          'limits.memory': '8000Gi'
         }
       }
     };
