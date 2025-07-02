@@ -1,6 +1,7 @@
 {
   "cpu": "CPU",
   "memory": "内存",
+  "network": "网络",
   "storage": "存储卷",
   "gpu": "GPU",
   "Port": "端口",
@@ -15,6 +16,7 @@
   "Creation Time": "创建时间",
   "CPU": "CPU",
   "Memory": "内存",
+  "Network": "网络",
   "Replicas": "实例数",
   "Pod": "实例",
   "Operation": "操作",

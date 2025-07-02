@@ -860,7 +860,7 @@ const Form = ({
                             ? t('%')
                             : getValues('hpa.target') === 'memory'
                             ? t('%')
-                            : t('Mbps')}
+                            : t('Kbps')}
                         </Box>
                         <Tip
                           ml={4}
