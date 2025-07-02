@@ -245,8 +245,8 @@ const App = ({ Component, pageProps }: AppProps) => {
                     {
                       showMenu ?
                         <Box w="200px" bg="#001529" color="white" p={4} borderRight="1px" borderColor="gray.300">
-                          {menuList?.map((menu)=>{
-                            return <Text fontSize="lg" p={4} className="menu" style={{ color: currentRoute === menu.path ? '#02A7F0' : '#FFFFFF' }} onClick={() => router.push(`${menu.path}${showMenu ? '?showMenu=true' : ''}`)}>{menu.name}</Text>
+                          {menuList?.map((menu,index)=>{
+                            return <Text key={index} fontSize="lg" p={4} className="menu" style={{ color: currentRoute === menu.path ? '#02A7F0' : '#FFFFFF' }} onClick={() => router.push(`${menu.path}${showMenu ? '?showMenu=true' : ''}`)}>{menu.name}</Text>
                           })}
                           {/* <Text fontSize="lg" p={4} className="menu" style={{ color: currentRoute === '/apps' ? '#02A7F0' : '#FFFFFF' }} onClick={() => router.push(`/apps${showMenu ? '?showMenu=true' : ''}`)}>应用管理</Text> */}
                           {/* <Text fontSize="lg" p={4} className="menu" style={{color: currentRoute === '/tenantManage' ? '#02A7F0' : '#FFFFFF'}} onClick={()=>router.push('/tenantManage')}>租户管理</Text> */}

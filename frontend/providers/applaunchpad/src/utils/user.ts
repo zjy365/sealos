@@ -53,7 +53,7 @@ export const setMenuList = (menuList: any) => {
 
 export const getMenuList = () => {
   try {
-    return JSON.parse(localStorage.getItem('user-menu'));
+    return JSON.parse(localStorage.getItem('user-menu') || '{}');
   } catch (err) {
     return null;
   }
