@@ -1,4 +1,4 @@
-import { buildDockerImage, deleteImageHub, uploadImageFiles, uploadImageHub, setImagesPurpose, getImagesPurpose } from '@/api/app';
+import { buildDockerImage, deleteImageHub, uploadImageFiles, uploadImageHub, setImagesPurpose, getImagesPurpose, getImageTags, getImageHubs } from '@/api/app';
 import FileSelect from '@/components/FileSelect';
 import MyIcon from '@/components/Icon';
 import { ImageHubItem } from '@/pages/api/imagehub/get';
@@ -23,12 +23,14 @@ import {
   Select,
   Textarea
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import type { ThemeType } from '@sealos/ui';
 import { useMessage } from '@sealos/ui';
 import dayjs from 'dayjs';
 import { debounce } from 'lodash';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
+import { getImages } from '@/api/app'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 const AppList = ({
@@ -53,7 +55,17 @@ const AppList = ({
   const [image, setImage] = useState<ImageHubItem>();
   const [purpose, setPurpose] = useState('');
   const [purposeMap, setPurposeMap] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(1000);
+  const [searchTerm, setSearchTerm] = useState('');
 
+  const { data } = useQuery(
+    ['getImageHubs', page, pageSize, searchTerm],
+    () => getImageHubs({ page, pageSize, search: searchTerm }),
+    {
+      retry: 3
+    }
+  );
   const [files, setFiles] = useState<File[]>([]);
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure();
   const { isOpen: isConstructUploadOpen, onOpen: onConstructUploadOpen, onClose: onConstructUploadClose } = useDisclosure();
@@ -68,6 +80,7 @@ const AppList = ({
   const [constructDockerfile, setConstructDockerfile] = useState('');
   const [constructFiles, setConstructFiles] = useState<File[]>([]);
   const [constructImageName, setConstructImageName] = useState('');
+  const [selectVersion, setSelectVersion] = useState('')
   const [constructError, setConstructError] = useState({
     constructImage: '',
     constructImageName: '',
@@ -100,21 +113,21 @@ const AppList = ({
   }, [constructFiles])
 
   useEffect(() => {
-    if (constructImage && uploadFirstItems.length > 0) {
-      const imageString = `from ${constructImage}\n`
+    if (constructImage && uploadFirstItems.length > 0 && selectVersion) {
+      const imageString = `FROM sealos.hub:5000/${constructImage}:${selectVersion}\n`
       const filesString = uploadFirstItems.map((item: any) => {
         return `add ${item.name}`
       }).join('\n')
       setConstructDockerfile(imageString + filesString)
     }
-  }, [constructImage, uploadFirstItems])
+  }, [constructImage, uploadFirstItems, selectVersion])
 
   const uploadImageHandle = async (data: any) => {
     const resp = await uploadImageFiles({
       image: data,
     })
     if (resp && resp.extracted_path) {
-      setUploadExPath(resp.data);
+      setUploadExPath(resp.extracted_path);
       setUploadFirstItems(resp.first_level_items || [])
     }
   }
@@ -127,6 +140,11 @@ const AppList = ({
     []
   );
 
+  const [images, setImages] = useState<string[]>([])
+  const getImageList = async (repository: string) => {
+    const res: any = await getImageTags({ repository })
+    setImages(res.tags)
+  }
   const purposeName = useCallback((item: any) => {
     console.log('purposeMap', purposeMap, item)
     if (purposeMap) {
@@ -519,7 +537,7 @@ const AppList = ({
           <ModalCloseButton />
           <ModalBody>
             <Flex alignItems={'center'} gap={'12px'}>
-              <Flex alignItems={'center'} w={'80px'}>
+              <Flex alignItems={'center'} w={'100px'}>
                 基础镜像: <span style={{ color: 'red' }}>✳</span>
               </Flex>
               <Select
@@ -532,21 +550,46 @@ const AppList = ({
                 onChange={
                   (e) => {
                     setConstructImage(e.target.value);
+                    getImageList(e.target.value)
                     setError((prev) => ({ ...prev, constructImage: '' }));
                   }
                 }
               >
                 <option value="">请选择</option>
-                {apps.map((item: any) => (
+                {(data?.items || []).map((item: any) => (
                   <option key={item.created} value={item.image}>
                     {item.image}
                   </option>
                 ))}
               </Select>
             </Flex>
+            <Flex alignItems={'center'} mt={'12px'} gap={'12px'}>
+              <Flex alignItems={'center'} w={'100px'}>
+                基础镜像版本: <span style={{ color: 'red' }}>✳</span>
+              </Flex>
+              <Select
+                w={'300px'}
+                errorBorderColor="red.300"
+                borderColor={'#02A7F0'}
+                _hover={{ borderColor: '#02A7F0' }}
+                value={selectVersion}
+                onChange={
+                  (e) => {
+                    setSelectVersion(e.target.value);
+                  }
+                }
+              >
+                <option value="">请选择</option>
+                {images.map((item: any) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </Select>
+            </Flex>
 
             <Flex alignItems={'center'} gap={'12px'} mt={'12px'}>
-              <Flex alignItems={'center'} w={'80px'}>
+              <Flex alignItems={'center'} w={'100px'}>
                 镜像名称: <span style={{ color: 'red' }}>✳</span>
               </Flex>
               <Input
@@ -561,7 +604,7 @@ const AppList = ({
             </Flex>
 
             <Flex alignItems={'center'} gap={'12px'} mt={'12px'}>
-              <Flex alignItems={'center'} w={'80px'}>
+              <Flex alignItems={'center'} w={'100px'}>
                 镜像TAG: <span style={{ color: 'red' }}>✳</span>
               </Flex>
               <Input
@@ -576,7 +619,7 @@ const AppList = ({
             </Flex>
 
             <Flex alignItems={'center'} gap={'12px'} mt={'12px'}>
-              <Flex alignItems={'center'} w={'80px'}>
+              <Flex alignItems={'center'} w={'100px'}>
                 命名空间: <span style={{ color: 'red' }}>✳</span>
               </Flex>
               <Input
@@ -591,7 +634,7 @@ const AppList = ({
             </Flex>
             <FileSelect fileExtension="*" multiple={false} files={constructFiles} setFiles={setConstructFiles} />
             <Flex alignItems={'center'} gap={'12px'} mt={'12px'}>
-              <Flex alignItems={'center'} w={'80px'}>
+              <Flex alignItems={'center'} w={'100px'}>
                 Dockerfile: <span style={{ color: 'red' }}>✳</span>
               </Flex>
               <Textarea
@@ -599,6 +642,7 @@ const AppList = ({
                 isInvalid={constructError.constructDockerfile !== ''}
                 value={constructDockerfile}
                 backgroundColor={'#fff'}
+                disabled={constructFiles.length === 0}
                 borderColor={'#02A7F0'}
                 _hover={{ borderColor: '#02A7F0' }}
                 onChange={(e) => {
@@ -651,10 +695,11 @@ const AppList = ({
                     title: '上传成功'
                   });
                   onConstructUploadClose();
-                } catch (error) {
+                } catch (error: any) {
+                  console.log(error)
                   toast({
                     status: 'error',
-                    title: 'error'
+                    title: error.message
                   });
                 } finally {
                   setIsUploading(false);

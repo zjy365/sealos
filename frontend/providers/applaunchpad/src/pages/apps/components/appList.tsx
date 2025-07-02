@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/useToast';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { AppListItemType } from '@/types/app';
-import { getErrText } from '@/utils/tools';
+import { getErrText, getParamValue } from '@/utils/tools';
 import { syncConfigMap } from '@/api/configMap'
 import {
   Box,
@@ -281,11 +281,18 @@ const AppList = ({
               //   color: 'brightBlue.600'
               // }}
               leftIcon={<MyIcon name={'detail'} w={'16px'} h="16px" />}
-              onClick={() =>
-                router.push(
+              onClick={() =>{
+                const showMenu = getParamValue('showMenu')
+                if(showMenu){
+                  router.push(
+                  `/app/detail?namespace=${currentNamespaceRef.current}&&name=${item.name}&showMenu=true`
+                )
+                }else{
+                  router.push(
                   `/app/detail?namespace=${currentNamespaceRef.current}&&name=${item.name}`
                 )
-              }
+                }
+              }}
             >
               {t('Details')}
             </Button>
@@ -332,10 +339,18 @@ const AppList = ({
                             </Box>
                           </>
                         ),
-                        onClick: () =>
-                          router.push(
-                            `/app/edit?namespace=${currentNamespaceRef.current}&&name=${item.name}`
+                        onClick: () => {
+                          const showMenu = getParamValue('showMenu')
+                          if(showMenu){
+                            router.push(
+                            `/app/edit?namespace=${currentNamespaceRef.current}&name=${item.name}&showMenu=true`
                           )
+                          }else{
+                            router.push(
+                            `/app/edit?namespace=${currentNamespaceRef.current}&name=${item.name}`
+                          )
+                          }
+                        }
                       },
                       {
                         child: (
@@ -466,7 +481,14 @@ const AppList = ({
           w={'156px'}
           flex={'0 0 auto'}
           leftIcon={<MyIcon name={'plus'} w={'20px'} fill={'#FFF'} />}
-          onClick={() => router.push(`/app/edit?namespace=${currentNamespaceRef.current}`)}
+          onClick={() => {
+             const showMenu = getParamValue('showMenu')
+             if(showMenu){
+               router.push(`/app/edit?namespace=${currentNamespaceRef.current}&showMenu=true`)
+             }else{
+               router.push(`/app/edit?namespace=${currentNamespaceRef.current}`)
+             }
+          }}
         >
           {t('Create Application')}
         </Button>

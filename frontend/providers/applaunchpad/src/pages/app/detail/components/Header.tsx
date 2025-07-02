@@ -8,6 +8,7 @@ import { MOCK_APP_DETAIL } from '@/mock/apps';
 import { useAppStore } from '@/store/app';
 import type { AppStatusMapType } from '@/types/app';
 import { json2Service } from '@/utils/deployYaml2Json';
+import { getParamValue } from '@/utils/tools';
 import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
@@ -257,7 +258,12 @@ const Header = ({
           leftIcon={<MyIcon name={'change'} w={'20px'} fill={'#485264'} />}
           isLoading={loading}
           onClick={() => {
-            router.push(`/app/edit?namespace=${namespace}&&name=${appName}`);
+            const showMenu = getParamValue('showMenu')
+            if(showMenu){
+              router.push(`/app/edit?namespace=${namespace}&&name=${appName}&showMenu=true`);
+            }else{
+              router.push(`/app/edit?namespace=${namespace}&&name=${appName}`);
+            }
           }}
         >
           {t('Update')}
@@ -298,7 +304,14 @@ const Header = ({
           namespace={namespace}
           appName={appName}
           onClose={onCloseDelModal}
-          onSuccess={() => router.replace(`/apps?namespace=${namespace}`)}
+          onSuccess={() => {
+            const showMenu = getParamValue('showMenu')
+            if(showMenu){
+              router.replace(`/apps?namespace=${namespace}&showMenu=true`)
+            }else{
+              router.replace(`/apps?namespace=${namespace}`)
+            }
+          }}
         />
       )}
     </Flex>

@@ -24,7 +24,6 @@ export default function LoginForm() {
   const toast = useToast();
   const router = useRouter();
   useEffect(() => {
-    const showMenu = getParamValue('showMenu')
     if (!username && !password) {
       setUsername('admin');
       setPassword('Sealos@2024');
@@ -32,9 +31,10 @@ export default function LoginForm() {
   }, []);
 
   useEffect(() => {
-    const showMenu = getParamValue('showMenu')
+    const showMenu = getParamValue('showMenuWithLogin')
+    console.log(showMenu)
     if (username && password && !showMenu) {
-      handleLogin();
+      // handleLogin();
     }
   }, [username, password]);
 
@@ -46,7 +46,7 @@ export default function LoginForm() {
   }
 
   const handleLogin = async () => {
-    const showMenu = getParamValue('showMenu')
+    const showMenu = getParamValue('showMenuWithLogin')
     try {
       const session = await login({ username, password });
       console.log(session)

@@ -66,9 +66,14 @@ const App = ({ Component, pageProps }: AppProps) => {
     setLoginStatus(isLogin)
     if (!isLogin) {
       if(showMenu){
-        router.push('/login?showMenu=true');
+        router.push('/login?showMenuWithLogin=true');
       }else{
-        router.push('/login');
+        const showMenuWithLogin = getParamValue('showMenuWithLogin')
+        if(showMenuWithLogin){
+           router.push('/login?showMenuWithLogin=true');
+        }else{
+           router.push('/login');
+        }
       }
     }
     const response = createSealosApp();
@@ -226,7 +231,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                       onClick={() => {
                         setUserIsLogin(false, '');
                         if(showMenu){
-                           router.replace('/login?showMenu=true');
+                           router.replace('/login?showMenuWithLogin=true');
                         }else{
                            router.replace('/login');
                         }
@@ -260,7 +265,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                         </Box> : null
                     }
 
-                    <Box flex={1}>
+                    <Box flex={1} w={showMenu ? 'calc(100% - 200px)' : undefined}>
 
                       <Component {...pageProps} />
 

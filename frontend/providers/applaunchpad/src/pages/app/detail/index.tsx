@@ -8,16 +8,18 @@ import { serviceSideProps } from '@/utils/i18n';
 import { Box, Flex, useTheme } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AppBaseInfo from './components/AppBaseInfo';
 import Header from './components/Header';
 import Pods from './components/Pods';
 import { getCurrentNamespace, getUserNamespace } from '@/utils/user';
+import { getParamValue } from '@/utils/tools';
 
 const AppMainInfo = dynamic(() => import('./components/AppMainInfo'), { ssr: false });
 
 const AppDetail = ({ appName, namespace }: { appName: string; namespace: string }) => {
   const { startGuide } = useDetailDriver();
+  const [showMenu,setShowMenu] = useState('')
   const theme = useTheme();
   const { toast } = useToast();
   const { Loading } = useLoading();
@@ -30,7 +32,9 @@ const AppDetail = ({ appName, namespace }: { appName: string; namespace: string 
     intervalLoadPods,
     loadDetailMonitorData
   } = useAppStore();
-
+  useEffect(()=>{
+    setShowMenu(getParamValue('showMenu'))
+  },[])
   const [podsLoaded, setPodsLoaded] = useState(false);
   const [showSlider, setShowSlider] = useState(false);
 
@@ -79,7 +83,7 @@ const AppDetail = ({ appName, namespace }: { appName: string; namespace: string 
   return (
     <Flex
       flexDirection={'column'}
-      height={'100vh'}
+      height={showMenu ? 'calc(100vh - 65px)' : '100vh'}
       backgroundColor={'grayModern.100'}
       px={'32px'}
       pb={4}
