@@ -90,6 +90,7 @@ export const noGpuSliderKey = 'NoGpu';
 export const pauseKey = 'deploy.cloud.sealos.io/pause';
 export const stopKey = 'deploy.cloud.sealos.io/stop';
 
+export const networkHpa = 'deploy.cloud.sealos.io/network-hpa';
 export const maxReplicasKey = 'deploy.cloud.sealos.io/maxReplicas';
 export const minReplicasKey = 'deploy.cloud.sealos.io/minReplicas';
 export const deployPVCResizeKey = 'deploy.cloud.sealos.io/resize';

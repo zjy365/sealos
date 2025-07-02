@@ -828,7 +828,8 @@ const Form = ({
                           value={getValues('hpa.target')}
                           list={[
                             { value: 'cpu', label: t('CPU') },
-                            { value: 'memory', label: t('Memory') }
+                            { value: 'memory', label: t('Memory') },
+                            { value: 'network', label: t('网络') }
                           ]}
                           onchange={(val: any) => setValue('hpa.target', val)}
                         />
@@ -854,7 +855,13 @@ const Form = ({
                             onBlur: () => formHook.trigger('hpa.value')
                           })}
                         />
-                        <Box>%</Box>
+                        <Box> 
+                          {getValues('hpa.target') === 'cpu'
+                            ? t('%')
+                            : getValues('hpa.target') === 'memory'
+                            ? t('%')
+                            : t('Kbps')}
+                        </Box>
                         <Tip
                           ml={4}
                           icon={<InfoOutlineIcon />}
@@ -918,7 +925,9 @@ const Form = ({
           </Box>
           {/* tabs */}
           <Box id={'baseInfo'} {...boxStyles}>
-            <Tabs variant="enclosed" defaultIndex={0}>
+            <Tabs variant="enclosed" defaultIndex={0} onChange={(index) => {
+              setContainerIndex(index);
+            }}>
               <Box {...headerStyles}>
                 <MyIcon name={'formInfo'} mr={'12px'} w={'24px'} color={'grayModern.900'} />
                 {t('Containers')}

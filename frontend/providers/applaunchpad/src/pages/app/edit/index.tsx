@@ -73,7 +73,7 @@ export const formData2Yamls = (
   //       }
   //     ]
   //   : []),
-  ...(data.hpa.use
+  ...( (data.hpa.use && data.hpa.target != 'network')
     ? [
         {
           filename: 'hpa.yaml',
