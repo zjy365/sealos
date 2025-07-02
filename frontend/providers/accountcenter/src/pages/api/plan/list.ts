@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     // }
 
     //@ts-ignore
-    const planList = appMap.map((plan) => ({
+    const planList: TPlanApiResponse[] = appMap.map((plan) => ({
       id: plan.ID,
       name: plan.Name,
       description: plan.Description,
@@ -66,8 +66,10 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       mostPopular: plan.MostPopular,
       nodePort: plan.NodePort,
       podCount: plan.PodCount,
-      logRetention: plan.LogRetention
+      logRetention: plan.LogRetention,
+      annualAmount: plan.AnnualAmount
     }));
+
     return jsonRes(resp, {
       code: 200,
       data: {
