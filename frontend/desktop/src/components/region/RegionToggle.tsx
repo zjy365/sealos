@@ -199,6 +199,62 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                       region.description.isFree ||
                       (notFree && subscription.status === 'NORMAL')
                     );
+                    const buttonElement = (
+                      <Button
+                        variant={'unstyled'}
+                        display={'flex'}
+                        fontSize={'14px'}
+                        justifyContent={'space-between'}
+                        alignItems={'center'}
+                        whiteSpace={'nowrap'}
+                        borderRadius={'8px'}
+                        py={'10px'}
+                        px={'8px'}
+                        onClick={() => {
+                          canUse
+                            ? handleCick(region)
+                            : openDesktopApp({
+                                appKey: 'system-account-center',
+                                query: {
+                                  scene: 'upgrade'
+                                },
+                                messageData: {
+                                  scene: 'upgrade'
+                                },
+                                pathname: '/'
+                              });
+                        }}
+                        bgColor={!canUse ? '#F4F4F5' : ''}
+                        cursor={'pointer'}
+                        _hover={{
+                          bgColor: '#F4F4F5'
+                        }}
+                      >
+                        <Flex alignItems={'center'}>
+                          <Box
+                            bgColor={region.description.color || '#DC2626'}
+                            boxSize={'6px'}
+                            mr={'7px'}
+                            borderRadius={'full'}
+                          ></Box>
+                          <Text color={canUse ? '#18181B' : '#71717A'}>{region?.displayName}</Text>
+                          {!region.description.isFree && (
+                            <Flex
+                              ml={'8px'}
+                              px={'8px'}
+                              borderRadius={'full'}
+                              py={'2px'}
+                              color={'#FFFFFF'}
+                              fontSize={'12px'}
+                              bg={'linear-gradient(270.48deg, #2778FD 3.93%, #829DFE 80.66%)'}
+                            >
+                              Hobby & Pro
+                            </Flex>
+                          )}
+                        </Flex>
+                        {region.uid === curRegionUid && <CheckIcon size={16} color={'#1C4EF5'} />}
+                      </Button>
+                    );
                     return (
                       <MyTooltip
                         key={region.uid}
@@ -212,66 +268,13 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                         isDisabled={canUse}
                         placement="right"
                       >
-                        <Track.Click eventName={Track.events.membersClick(region?.displayName)}>
-                          <Button
-                            variant={'unstyled'}
-                            display={'flex'}
-                            fontSize={'14px'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}
-                            whiteSpace={'nowrap'}
-                            borderRadius={'8px'}
-                            py={'10px'}
-                            px={'8px'}
-                            onClick={() => {
-                              canUse
-                                ? handleCick(region)
-                                : openDesktopApp({
-                                    appKey: 'system-account-center',
-                                    query: {
-                                      scene: 'upgrade'
-                                    },
-                                    messageData: {
-                                      scene: 'upgrade'
-                                    },
-                                    pathname: '/'
-                                  });
-                            }}
-                            bgColor={!canUse ? '#F4F4F5' : ''}
-                            cursor={'pointer'}
-                            _hover={{
-                              bgColor: '#F4F4F5'
-                            }}
-                          >
-                            <Flex alignItems={'center'}>
-                              <Box
-                                bgColor={region.description.color || '#DC2626'}
-                                boxSize={'6px'}
-                                mr={'7px'}
-                                borderRadius={'full'}
-                              ></Box>
-                              <Text color={canUse ? '#18181B' : '#71717A'}>
-                                {region?.displayName}
-                              </Text>
-                              {!region.description.isFree && (
-                                <Flex
-                                  ml={'8px'}
-                                  px={'8px'}
-                                  borderRadius={'full'}
-                                  py={'2px'}
-                                  color={'#FFFFFF'}
-                                  fontSize={'12px'}
-                                  bg={'linear-gradient(270.48deg, #2778FD 3.93%, #829DFE 80.66%)'}
-                                >
-                                  Hobby & Pro
-                                </Flex>
-                              )}
-                            </Flex>
-                            {region.uid === curRegionUid && (
-                              <CheckIcon size={16} color={'#1C4EF5'} />
-                            )}
-                          </Button>
-                        </Track.Click>
+                        {canUse ? (
+                          buttonElement
+                        ) : (
+                          <Track.Click eventName={Track.events.membersClick(region?.displayName)}>
+                            {buttonElement}
+                          </Track.Click>
+                        )}
                       </MyTooltip>
                     );
                   })}
