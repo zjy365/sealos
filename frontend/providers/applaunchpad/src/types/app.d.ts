@@ -45,6 +45,7 @@ export interface AppListItemType {
   name: string;
   modelVersion: string;
   modelName: string;
+  preInspection: string;
   status: AppStatusMapType;
   isPause: boolean;
   isStop: boolean;
@@ -66,6 +67,7 @@ export interface AppEditType {
   nodeName: string;
   modelName: string;
   modelVersion: string;
+  preInspection: string;
   priority: string;
   replicas: number | '';
   gpu?: GpuType;

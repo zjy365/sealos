@@ -101,6 +101,7 @@ export const gpuResourceKey = 'nvidia.com/gpu';
 export const priorityKey = 'deploy.cloud.sealos.io/priority'; // 0-100之间的优先级
 export const modelNameKey = 'cloud.sealos.io/model-name'
 export const modelVersionKey = 'cloud.sealos.io/model-version'
+export const preInspectionKey = 'cloud.sealos.io/pre-inspection'
 
 export enum Coin {
   cny = 'cny',

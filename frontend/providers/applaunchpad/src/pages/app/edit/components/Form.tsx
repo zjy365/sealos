@@ -774,6 +774,19 @@ const Form = ({
                   />
                 </Flex>
               </FormControl>
+              <FormControl mb={7} isInvalid={!!errors.preInspection} w={'500px'}>
+                <Flex alignItems={'center'}>
+                  <Label>{t('预检api')}</Label>
+                  <Input
+                    width={'350px'}
+                    type={'text'}
+                    placeholder={'只支持get请求的api,例如：/preInspection'}
+                    {...register('preInspection', {
+                      required: '预检api不能为空'
+                    })}
+                  />
+                </Flex>
+              </FormControl>
 
               {/* priority */}
               <FormControl mb={7} isInvalid={!!errors.priority} w={'500px'}>
