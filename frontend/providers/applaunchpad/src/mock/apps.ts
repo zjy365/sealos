@@ -352,6 +352,7 @@ export const MOCK_APP_DETAIL: AppDetailType = {
   id: '4bd50c41-149e-4da5-89d5-0308b9dd75c6',
   priority: '1',
   modelName: '',
+  preInspection:'/url',
   createTime: '2022/1/22',
   status: appStatusMap.waiting,
   isPause: false,
