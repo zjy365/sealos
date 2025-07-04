@@ -21,7 +21,7 @@ import threading
 app = Flask(__name__)
 
 # 环境变量：集群域名
-CLUSTER_DOMAIN = os.getenv('CLUSTER_DOMAIN')
+CLUSTER_DOMAIN = os.getenv('CLUSTER_DOMAIN', 'localhost')
 #CLUSTER_DOMAIN = '192.168.0.134'
 # 环境变量：镜像仓库地址
 REGISTRY_URL = os.getenv('REGISTRY_URL')
