@@ -345,6 +345,7 @@ export const adaptAppDetail = (configs: DeployKindsType[]): AppDetailType => {
     appName: appDeploy.metadata?.name || 'app Name',
     modelName: appDeploy.metadata?.annotations?.[modelNameKey] || '',
     modelVersion: appDeploy.metadata?.annotations?.[modelVersionKey] || '',
+    preInspection: appDeploy.metadata?.annotations?.[preInspectionKey] || '',
     createTime: dayjs(appDeploy.metadata?.creationTimestamp).format('YYYY-MM-DD HH:mm'),
     status: appStatusMap.waiting,
     isPause: !!appDeploy?.metadata?.annotations?.[pauseKey],
