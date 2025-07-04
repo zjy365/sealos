@@ -9,6 +9,7 @@ export const MOCK_APPS: AppListItemType[] = [
     name: 'string',
     modelVersion: '',
     modelName: '',
+    preInspection: '',
     priority: '1',
     status: appStatusMap.running,
     createTime: 'string',
