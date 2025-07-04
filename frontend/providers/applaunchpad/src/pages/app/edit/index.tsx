@@ -21,7 +21,7 @@ import {
   json2Service
 } from '@/utils/deployYaml2Json';
 import { serviceSideProps } from '@/utils/i18n';
-import { addConfigMapToYamlList, getErrText, patchYamlList } from '@/utils/tools';
+import { addConfigMapToYamlList, getErrText, getParamValue, patchYamlList } from '@/utils/tools';
 import { Box, Flex } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
@@ -44,45 +44,45 @@ export const formData2Yamls = (
   // handleType: 'edit' | 'create' = 'create',
   // crYamlList?: DeployKindsType[]
 ) => [
-  {
-    filename: 'service.yaml',
-    value: json2Service(data)
-  },
-  !!data.storeList?.length
-    ? {
+    {
+      filename: 'service.yaml',
+      value: json2Service(data)
+    },
+    !!data.storeList?.length
+      ? {
         filename: 'statefulSet.yaml',
         value: json2DeployCr(data, 'statefulset')
       }
-    : {
+      : {
         filename: 'deployment.yaml',
         value: json2DeployCr(data, 'deployment')
       },
-  ...(data.configMapList.length > 0
-    ? [
+    ...(data.configMapList.length > 0
+      ? [
         {
           filename: 'configmap.yaml',
           value: json2ConfigMap(data)
         }
       ]
-    : []),
-  // ...(data.containers.some((container) => container.networks.some((item) => item.openPublicDomain))
-  //   ? [
-  //       {
-  //         filename: 'ingress.yaml',
-  //         value: json2Ingress(data)
-  //       }
-  //     ]
-  //   : []),
-  ...( (data.hpa.use && data.hpa.target != 'network')
-    ? [
+      : []),
+    // ...(data.containers.some((container) => container.networks.some((item) => item.openPublicDomain))
+    //   ? [
+    //       {
+    //         filename: 'ingress.yaml',
+    //         value: json2Ingress(data)
+    //       }
+    //     ]
+    //   : []),
+    ...((data.hpa.use && data.hpa.target != 'network')
+      ? [
         {
           filename: 'hpa.yaml',
           value: json2HPA(data)
         }
       ]
-    : []),
-  ...(data.containers.some((container) => container.secret.use)
-    ? data.containers
+      : []),
+    ...(data.containers.some((container) => container.secret.use)
+      ? data.containers
         .filter((container) => container.secret.use)
         .map((container) => {
           return {
@@ -90,8 +90,8 @@ export const formData2Yamls = (
             value: json2Secret(container)
           };
         })
-    : [])
-];
+      : [])
+  ];
 
 const EditApp = ({
   namespace,
@@ -190,10 +190,16 @@ const EditApp = ({
         } else {
           await postDeployApp(currentNamespace, yamls);
         }
-
-        router.replace(
-          `/app/detail?namespace=${currentNamespace}&&name=${formHook.getValues('appName')}`
-        );
+        const showMenu = getParamValue('showMenu')
+        if (showMenu) {
+          router.replace(
+            `/app/detail?namespace=${currentNamespace}&&name=${formHook.getValues('appName')}&showMenu=true`
+          );
+        } else {
+          router.replace(
+            `/app/detail?namespace=${currentNamespace}&&name=${formHook.getValues('appName')}`
+          );
+        }
         if (!isGuided) {
           updateDesktopGuide({
             activityType: 'beginner-guide',
@@ -315,7 +321,7 @@ const EditApp = ({
     if (tabType === 'yaml') {
       try {
         setYamlList(formData2Yamls(realTimeForm.current));
-      } catch (error) {}
+      } catch (error) { }
     }
   }, [router.query.name, tabType]);
 

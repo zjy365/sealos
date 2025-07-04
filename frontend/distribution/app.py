@@ -15,7 +15,6 @@ from node import add_node_to_cluster, delete_node_from_cluster
 from stress_test import *
 from scheduling import *
 from menu import *
-from bandwidth_autoscaler import run_autoscaler_all
 import threading
 
 
@@ -44,7 +43,6 @@ CONFIG_MAP_NAME = os.getenv('CONFIG_MAP_NAME', '')
 RESOURCE_THRESHOLD = os.getenv('RESOURCE_THRESHOLD') or '70'
 ENABLE_WORKLOAD_SCALING = bool((os.getenv('ENABLE_WORKLOAD_SCALING') or 'false') == 'true')
 ENABLE_NODE_SCALING = bool((os.getenv('ENABLE_NODE_SCALING') or 'false') == 'true')
-ENABLE_BANDWIDTH_AUTOSCALER = bool((os.getenv('ENABLE_BANDWIDTH_AUTOSCALER') or 'true') == 'true')
 NODE_DELETE_THRESHOLD = os.getenv('NODE_DOWN_THRESHOLD') or '15'
 NODE_ADD_THRESHOLD = os.getenv('NODE_UP_THRESHOLD') or '70'
 
@@ -1228,7 +1226,7 @@ def update_role(role_id):
     cursor.execute(query, params)
     conn.commit()
     conn.close()
-    return jsonify({"message":"成功","success": True})
+    return jsonify({"message":"成功","success": True}),200
 
 @app.route('/api/roles/<int:role_id>', methods=['DELETE'])
 def delete_role(role_id):
@@ -1238,7 +1236,7 @@ def delete_role(role_id):
     cursor.execute("DELETE FROM roles WHERE id = ?", (role_id,))
     conn.commit()
     conn.close()
-    return jsonify({"success": True,"message":"成功"})
+    return jsonify({"success": True,"message":"成功"}),200
 
 # 角色菜单关联API
 @app.route('/api/roles/<int:role_id>/menus', methods=['GET'])
@@ -1276,7 +1274,7 @@ def assign_role_menus(role_id):
             )
         
         conn.commit()
-        return jsonify({"success": True,"message":"成功"})
+        return jsonify({"success": True,"message":"成功"}), 200
     except sqlite3.Error as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 400
@@ -1327,6 +1325,71 @@ def update_image_use():
     except Exception as e:
         print(str(e))
         return jsonify({'error':str(e)}), 500
+@app.route('/api/getCpu', methods=['GET'])
+def get_thresholds():
+    """获取当前告警阈值 (GET 请求)"""
+    thresholds = get_alarm_thresholds()
+    if thresholds:
+        cpu, memory = thresholds
+        return jsonify({
+            "status": "success",
+            "message": "设置成功",
+            "data": {
+                "cpu": cpu,
+                "memory": memory
+            }
+        })
+    else:
+        return jsonify({
+            "status": "error",
+            "message": "未找到告警阈值"
+        }), 404
+
+@app.route('/api/saveCpu', methods=['POST'])
+def update_thresholds():
+    """更新告警阈值 (POST 请求)"""
+    data = request.get_json()
+    
+    # 验证输入数据
+    if not data or 'cpu' not in data or 'memory' not in data:
+        return jsonify({
+            "status": "error",
+            "message": "缺少必要参数: cpu 和 memory"
+        }), 400
+    
+    try:
+        cpu = float(data['cpu'])
+        memory = float(data['memory'])
+    except ValueError:
+        return jsonify({
+            "status": "error",
+            "message": "无效的参数类型，应为数字"
+        }), 400
+    
+    # 验证阈值范围 (0-100)
+    if not (0 <= cpu <= 100) or not (0 <= memory <= 100):
+        return jsonify({
+            "status": "error",
+            "message": "阈值必须在 0 到 100 之间"
+        }), 400
+    print(cpu,flush=True) 
+    # 更新数据库
+    if update_alarm_thresholds(cpu, memory):
+        return jsonify({
+            "status": "success",
+            "message": "告警阈值已更新",
+            "data": {
+                "cpu": cpu,
+                "memory": memory
+            }
+        })
+    else:
+        return jsonify({
+            "status": "error",
+            "message": "更新告警阈值失败"
+        }), 500
+
+
 
 if __name__ == '__main__':
     init_db()
@@ -1353,10 +1416,7 @@ if __name__ == '__main__':
     thread3 = threading.Thread(target=cron_job_10)
     thread3.start()
 
-    # 启动带宽自动扩缩容器线程
-    if ENABLE_BANDWIDTH_AUTOSCALER:
-        thread4 = threading.Thread(target=run_autoscaler_all)
-        thread4.start()
+
 
     app.run(debug=True, host='0.0.0.0', port=5002)
         

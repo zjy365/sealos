@@ -228,3 +228,5 @@ export const updateConfigMap = (name: string, data: any) =>
   POST(`/api/updateConfigMap?name=${name}`, { data });
 
 export const syncConfigMap = (name: string) => POST(`/api/syncConfigMap?name=${name}`);
+export const saveCpu = (data: any) => POST(`/api/node/saveCpu`,data);
+export const getCpu = () => GET(`/api/node/getCpu`);

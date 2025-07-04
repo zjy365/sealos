@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { getParamValue } from '@/utils/tools'
 import { getRolesAndMenu } from '@/api/roles';
+import { getResourceQuotas } from '@/api/app'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
@@ -42,6 +43,21 @@ export default function LoginForm() {
     if(user?.name === 'admin'){
      const res = await getRolesAndMenu(1)
      setMenuList(res)
+    }else{
+      debugger
+      const userList = await getResourceQuotas()
+      const userItem = userList.find((item:any)=>{
+        return item.namespace == user.name
+      })
+      if(userItem){
+        const roleId = userItem.roleId
+        if(roleId){
+          const res = await getRolesAndMenu(roleId)
+          setMenuList(res)  
+        }else{
+          throw new Error('未配置角色，请联系管理员')
+        }
+      }
     }
   }
 
@@ -49,7 +65,6 @@ export default function LoginForm() {
     const showMenu = getParamValue('showMenuWithLogin')
     try {
       const session = await login({ username, password });
-      console.log(session)
       const user = session?.state?.session?.user
       if(user){
         await initConfig(user)

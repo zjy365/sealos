@@ -1,6 +1,7 @@
 import sqlite3
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Tuple, Optional
+
 DATABASE = 'rbac.db'
 
 def init_menu_db():
@@ -13,21 +14,43 @@ def init_menu_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         description TEXT,
+        path TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     ''')
 
+	# 创建告警阈值表
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS alarmthreshold (
+        cpu REAL NOT NULL DEFAULT 80,
+        memory REAL NOT NULL DEFAULT 80
+    )
+    ''')
+
+    # 检查是否已存在阈值记录
+    cursor.execute("SELECT COUNT(*) FROM alarmthreshold")
+    count = cursor.fetchone()[0]
+
+    # 如果表为空，插入默认阈值
+    if count == 0:
+        cursor.execute("INSERT INTO alarmthreshold (cpu, memory) VALUES (0, 0)")
+        conn.commit()
+        print("告警阈值表已初始化，默认值: CPU=80%, Memory=80%")
+    else:
+        print("告警阈值表已存在")
+
+
     # 预置菜单数据
     predefined_menus = [
-        ('镜像管理', '管理容器镜像'),
-        ('应用管理', '管理应用程序'),
-        ('节点管理', '管理集群节点'),
-        ('租户管理', '管理租户信息'),
-        ('算力测算', '计算资源测算'),
-        ('节点监控', '监控节点状态'),
-        ('菜单管理', '管理系统菜单'),
-        ('配置管理', '管理系统配置'),
-        ('告警管理', '管理系统告警')
+        ('镜像管理', '管理容器镜像','/imagehub'),
+        ('应用管理', '管理应用程序','/apps'),
+        ('节点管理', '管理集群节点','/nodeManage'),
+        ('租户管理', '管理租户信息','/user'),
+        ('算力测算', '计算资源测算','/computePower'),
+        ('节点监控', '监控节点状态','/monitor'),
+        ('菜单管理', '管理系统菜单','/roles'),
+        ('配置管理', '管理系统配置','/configManage'),
+        ('告警管理', '管理系统告警','/alert')
     ]
 
     # 检查是否已经预置了菜单
@@ -36,7 +59,7 @@ def init_menu_db():
     count = cursor.fetchone()[0]
 
     if count == 0:
-        cursor.executemany("INSERT INTO menus (name, description) VALUES (?, ? )", predefined_menus)
+        cursor.executemany("INSERT INTO menus (name, description,path) VALUES (?, ?, ? )", predefined_menus)
         conn.commit()
         print("预置菜单数据已添加")
 
@@ -83,6 +106,7 @@ def init_menu_db():
     conn.commit()
     conn.close()
 
+	
 # 数据模型
 class MenuItem(BaseModel):
     id: int
@@ -118,6 +142,59 @@ class RoleUpdate(BaseModel):
 class RoleMenuAssign(BaseModel):
     menu_ids: List[int]
 
+
+
+
+def update_alarm_thresholds(cpu: float, memory: float) -> bool:
+    """
+    更新告警阈值
+    :param cpu: CPU告警阈值百分比
+    :param memory: 内存告警阈值百分比
+    :return: 更新是否成功
+    """
+    try:
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        
+        # 更新阈值（假设表中只有一条记录）
+        cursor.execute('''
+            UPDATE alarmthreshold 
+            SET cpu = ?, memory = ?
+        ''', (cpu, memory))
+        
+        conn.commit()
+        print(f"告警阈值已更新: CPU={cpu}%, Memory={memory}%")
+        return True
+    except sqlite3.Error as e:
+        print(f"更新告警阈值失败: {e}")
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+def get_alarm_thresholds() -> Optional[Tuple[float, float]]:
+    """
+    获取当前告警阈值
+    :return: (cpu阈值, memory阈值) 元组，如果没有记录则返回None
+    """
+    try:
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT cpu, memory FROM alarmthreshold LIMIT 1")
+        result = cursor.fetchone()
+        
+        if result:
+            return result
+        else:
+            print("告警阈值表中无记录")
+            return None
+    except sqlite3.Error as e:
+        print(f"查询告警阈值失败: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
 
 def get_all_menus():
     """获取所有菜单"""

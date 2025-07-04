@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResp } from '@/services/kubernet';
-import { authSession } from '@/services/backend/auth';
+import { authSession, getAdminAuthorization } from '@/services/backend/auth';
 import { getK8s } from '@/services/backend/kubernetes';
 import { jsonRes } from '@/services/backend/response';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResp>) {
   try {
-    const kubeconfig = await authSession(req.headers);
+    const kubeconfig = await getAdminAuthorization(req.headers);
     const { k8sCore, kube_user } = await getK8s({ kubeconfig });
     let resourceQuotasList: { namespace: string,roleId:any, username: string, createtime: string, name: string, cpu: string, memory: string, storage: string, services: string, persistentvolumeclaims: string }[] = [];
 

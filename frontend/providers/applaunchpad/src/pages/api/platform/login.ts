@@ -17,6 +17,7 @@ async function getKubeconfigForNamespace(req: NextApiRequest, namespace: string)
   try {
     secret = await k8sCore.readNamespacedSecret(secretName, namespace);
   } catch (err: any) {
+    console.log('err.response:'+(err.response?.statusCode === 404))
     if (err.response?.statusCode === 404) {
       try {
         try {
@@ -100,11 +101,11 @@ subjects:
 
         secret = await k8sCore.readNamespacedSecret(secretName, namespace);
       } catch (err: any) {
-        console.error(err);
+        console.error('104:'+err);
         throw new Error('创建 secret 失败');
       }
     } else {
-      console.error(err);
+      console.error('108:'+err);
       throw new Error('获取 secret 失败');
     }
   }
