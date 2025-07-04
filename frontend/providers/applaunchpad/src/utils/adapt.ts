@@ -34,7 +34,8 @@ import {
   stopKey,
   priorityKey,
   modelNameKey,
-  modelVersionKey
+  modelVersionKey,
+  preInspectionKey
 } from '@/constants/app';
 import {
   cpuFormatToM,
@@ -74,6 +75,7 @@ export const adaptAppListItem = (app: V1Deployment & V1StatefulSet): AppListItem
     id: app.metadata?.uid || ``,
     name: app.metadata?.name || 'app name',
     status: appStatusMap.waiting,
+    preInspection: app.metadata?.annotations?.[preInspectionKey] || '',
     isPause: !!app?.metadata?.annotations?.[pauseKey],
     isStop: !!app?.metadata?.annotations?.[stopKey],
     priority: app.metadata?.labels?.[priorityKey] || '1',
