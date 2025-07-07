@@ -126,7 +126,7 @@ def export_apps():
     
 def export_app_helper(yaml_content, images, appname, namespace):
     """导出应用程序"""
-
+    pre_inspection = ''
     print('exportApp, appname:', appname, 'namespace:', namespace, flush=True)
 
     temp_uuid = str(int(time.time() * 1000))
@@ -142,7 +142,8 @@ def export_app_helper(yaml_content, images, appname, namespace):
             # 去除指定节点的信息
             if 'nodeName' in single_yaml.get('spec', {}).get('template', {}).get('spec', {}):
                 del single_yaml['spec']['template']['spec']['nodeName']
-
+            if 'cloud.sealos.io/pre-inspection' in single_yaml.get('metadata',{}).get('annotations',{}):
+                pre_inspection = single_yaml['metadata']['annotations']['cloud.sealos.io/pre-inspection']
     # 保存yaml文件至本地
     print('write yaml file to:', os.path.join(workdir, 'app.yaml'), flush=True)
     with open(os.path.join(workdir, 'app.yaml'), 'w') as file:
@@ -185,6 +186,7 @@ def export_app_helper(yaml_content, images, appname, namespace):
         'name': appname,
         'namespace': namespace,
         'images': image_pairs,
+        'preInspection': pre_inspection,
         'nodeports': nodeports
     }
     with open(os.path.join(workdir, 'metadata.json'), 'w') as file:
