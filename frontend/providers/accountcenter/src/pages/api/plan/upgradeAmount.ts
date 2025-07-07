@@ -27,13 +27,16 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       });
     }
 
-    const { planName } = upgradeAmountRequestValidation.data;
+    const { planName, period } = upgradeAmountRequestValidation.data;
 
     const region = await getRegionByUid(req.body.regionUid);
     const client = makeAPIClient(region, payload);
     const res = await client.post('/payment/v1alpha1/subscription/upgrade-amount', {
-      planName
+      planName,
+      period
     });
+
+    console.log('payment/v1alpha1/subscription/upgrade-amount', res.data);
 
     // const upgradeAmountResponseValidation = UpgradeAmountResponseSchema.safeParse(res.data);
     // if (!upgradeAmountResponseValidation.success) {
@@ -49,6 +52,7 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       data: res.data
     });
   } catch (error) {
+    console.log(error, 'error');
     if (error instanceof AxiosError) {
       return jsonRes(resp, {
         code: error.status,

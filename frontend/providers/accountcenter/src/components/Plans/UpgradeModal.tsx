@@ -29,7 +29,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<TPlanApiResponse | null>(null);
   const getPlanOrderSummary = useGetPlanOrderSummary();
-  const [periodType, setPeriodType] = useState<'annual' | 'monthly'>('annual');
+  const [periodType, setPeriodType] = useState<'YEARLY' | 'MONTHLY'>('YEARLY');
   const yearlyRef = useRef<HTMLDivElement>(null);
   const monthlyRef = useRef<HTMLDivElement>(null);
   const [sliderStyle, setSliderStyle] = useState({
@@ -43,6 +43,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
       planID: selectedPlan.id,
       planName: selectedPlan.name,
       planType: 'upgrade',
+      period: periodType,
       ...data
     });
   };
@@ -59,9 +60,7 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
       if (yearlyRef.current && monthlyRef.current) {
         const yearlyWidth = yearlyRef.current.offsetWidth;
         const monthlyWidth = monthlyRef.current.offsetWidth;
-        console.log(yearlyWidth, monthlyWidth, 'yearlyWidth, monthlyWidth');
-
-        if (periodType === 'annual') {
+        if (periodType === 'YEARLY') {
           setSliderStyle({
             left: '4px',
             width: `${yearlyWidth}px`
@@ -81,6 +80,8 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
   }, [periodType]);
 
   const handleSelectPlan = (plan: TPlanApiResponse) => {
+    console.log('selectedPlan periodType', plan, periodType);
+
     if (plan) {
       setSelectedPlan(plan);
       setStep(2);
@@ -120,9 +121,13 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
     if (step === 2 && selectedPlan) {
       const getSummary = () => {
         if (rest.currentPlan.amount === 0) {
+          console.log('getSummary', selectedPlan);
           return Promise.resolve(getPlanOrderSummary(selectedPlan));
         }
-        return getUpgradePlanAmount(selectedPlan.name).then((data) => {
+        return getUpgradePlanAmount({
+          planName: selectedPlan.name,
+          period: periodType
+        }).then((data) => {
           if (typeof data.amount === 'number') {
             return getPlanOrderSummary(selectedPlan, data.amount);
           }
@@ -151,80 +156,82 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
       <ModalContent maxW="1112px">
         <ModalCloseButton />
         <ModalBody borderRadius="16px" py="32px" px="40px">
-          <Flex alignItems={'center'} justifyContent={'space-between'}>
+          <Flex alignItems={'center'} justifyContent={step === 1 ? 'space-between' : 'center'}>
             <Text fontSize="24px" fontWeight="600" textAlign="center">
-              {t('UpgradePlan')}
+              {step === 1 ? t('UpgradePlan') : 'Make Payments'}
             </Text>
-            <Flex
-              borderRadius="8px"
-              border="1px solid #E4E4E7"
-              alignItems="center"
-              width="auto"
-              height="40px"
-              p={'4px'}
-              bg={'#0000000D'}
-              position="relative"
-            >
-              <Box
-                position="absolute"
-                left={sliderStyle.left}
-                width={sliderStyle.width}
-                height="32px"
-                bg="#fff"
-                borderRadius="6px"
-                transition="left 0.3s ease, width 0.3s ease"
-                zIndex={1}
-              />
+            {step === 1 && (
               <Flex
-                ref={yearlyRef}
-                position="relative"
-                zIndex={2}
-                p="6px 12px"
-                justifyContent="center"
+                borderRadius="8px"
+                border="1px solid #E4E4E7"
                 alignItems="center"
-                gap="8px"
-                cursor={'pointer'}
-                onClick={() => setPeriodType('annual')}
-              >
-                <Text
-                  color={periodType === 'annual' ? '#18181B' : '#71717A'}
-                  fontWeight={periodType === 'annual' ? '500' : '400'}
-                  transition="color 0.3s ease"
-                >
-                  Yearly
-                </Text>
-                <Text
-                  fontWeight="600"
-                  background="linear-gradient(266deg, #2778FD 48.08%, #829DFE 92.43%)"
-                  backgroundClip="text"
-                  sx={{
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
-                  }}
-                >
-                  Save~50%
-                </Text>
-              </Flex>
-              <Flex
-                ref={monthlyRef}
+                width="auto"
+                height="40px"
+                p={'4px'}
+                bg={'#0000000D'}
                 position="relative"
-                zIndex={2}
-                p="6px 12px"
-                justifyContent="center"
-                alignItems="center"
-                gap="8px"
-                cursor={'pointer'}
-                onClick={() => setPeriodType('monthly')}
               >
-                <Text
-                  color={periodType === 'monthly' ? '#18181B' : '#71717A'}
-                  fontWeight={periodType === 'monthly' ? '500' : '400'}
-                  transition="color 0.3s ease"
+                <Box
+                  position="absolute"
+                  left={sliderStyle.left}
+                  width={sliderStyle.width}
+                  height="32px"
+                  bg="#fff"
+                  borderRadius="6px"
+                  transition="left 0.3s ease, width 0.3s ease"
+                  zIndex={1}
+                />
+                <Flex
+                  ref={yearlyRef}
+                  position="relative"
+                  zIndex={2}
+                  p="6px 12px"
+                  justifyContent="center"
+                  alignItems="center"
+                  gap="8px"
+                  cursor={'pointer'}
+                  onClick={() => setPeriodType('YEARLY')}
                 >
-                  Monthly
-                </Text>
+                  <Text
+                    color={periodType === 'YEARLY' ? '#18181B' : '#71717A'}
+                    fontWeight={periodType === 'YEARLY' ? '500' : '400'}
+                    transition="color 0.3s ease"
+                  >
+                    Yearly
+                  </Text>
+                  <Text
+                    fontWeight="600"
+                    background="linear-gradient(266deg, #2778FD 48.08%, #829DFE 92.43%)"
+                    backgroundClip="text"
+                    sx={{
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}
+                  >
+                    Save~50%
+                  </Text>
+                </Flex>
+                <Flex
+                  ref={monthlyRef}
+                  position="relative"
+                  zIndex={2}
+                  p="6px 12px"
+                  justifyContent="center"
+                  alignItems="center"
+                  gap="8px"
+                  cursor={'pointer'}
+                  onClick={() => setPeriodType('MONTHLY')}
+                >
+                  <Text
+                    color={periodType === 'MONTHLY' ? '#18181B' : '#71717A'}
+                    fontWeight={periodType === 'MONTHLY' ? '500' : '400'}
+                    transition="color 0.3s ease"
+                  >
+                    Monthly
+                  </Text>
+                </Flex>
               </Flex>
-            </Flex>
+            )}
           </Flex>
           {renderStep()}
         </ModalBody>
