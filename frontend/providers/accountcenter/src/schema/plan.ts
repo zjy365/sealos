@@ -13,7 +13,7 @@ export const PlanSchema = z.object({
   Description: z.string(),
   Amount: z.number(),
   GiftAmount: z.number(),
-  Period: z.string(),
+  Period: z.enum(['MONTHLY', 'YEARLY']), // API没有这个字段，但是前端需要，从用户订阅信息中获取 const subscription = subscriptionResponse?.subscription;
   UpgradePlanList: z.union([z.array(z.string()), z.null()]),
   DowngradePlanList: z.union([z.array(z.string()), z.null()]),
   MaxSeats: z.number(),
@@ -43,7 +43,8 @@ export const SubscriptionApiResponse = z.object({
     UpdateAt: z.string(),
     ExpireAt: z.string(),
     CardID: z.string().nullable(),
-    NextCycleDate: z.string()
+    NextCycleDate: z.string(),
+    Period: z.enum(['MONTHLY', 'YEARLY'])
   })
 });
 export type TSubscriptionApiResponse = z.infer<typeof SubscriptionApiResponse>;
@@ -135,7 +136,8 @@ export const updatePlanRequestSchema = z.object({
   cardID: z.string().optional(),
   planName: z.string(),
   planID: z.string(),
-  planType: z.enum(['upgrade', 'downgrade', 'renewal'])
+  planType: z.enum(['upgrade', 'downgrade', 'renewal']),
+  period: z.enum(['MONTHLY', 'YEARLY'])
 });
 export const updatePlanResponseSchema = z.object({
   success: z.boolean(),
@@ -166,7 +168,8 @@ export type TUpdatePlanRequest = z.infer<typeof updatePlanRequestSchema>;
 export type TUpdatePlanResponse = z.infer<typeof updatePlanResponseSchema>;
 
 export const UpgradeAmountRequestSchema = z.object({
-  planName: z.string()
+  planName: z.string(),
+  period: z.enum(['MONTHLY', 'YEARLY'])
 });
 
 // const UpgradeAmountResponseSchema = z.object({

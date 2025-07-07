@@ -41,6 +41,7 @@ interface CurrentPlanProps {
   subscriptionResponse: TSubscriptionApiResponse | undefined;
   refresh: () => void;
   kycInfo: TUserKycApiResponse | undefined;
+  periodType: 'MONTHLY' | 'YEARLY';
 }
 const planStyleConfig = {
   free: {
@@ -117,7 +118,8 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
   freePlan,
   refresh,
   plans,
-  kycInfo
+  kycInfo,
+  periodType
 }) => {
   const { t } = useTranslation();
   const featurTexts = usePlanFeatureTexts(plan);
@@ -181,7 +183,7 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
           {t('NextPaymentDate')}
         </Text>
         <Text color="#09090B" fontSize="16px" fontWeight="600">
-          {formatDate(subscriptionResponse.subscription.NextCycleDate)}
+          {formatDate(subscriptionResponse.subscription.ExpireAt)}
         </Text>
       </GridItem>
     );
@@ -325,6 +327,7 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
         lastTransaction={lastTransaction}
         isOpen={isUpgradeModalOpen}
         onClose={closeUpgradeModal}
+        periodType={periodType}
       />
     </>
   );

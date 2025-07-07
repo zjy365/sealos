@@ -38,9 +38,10 @@ export function checkForCancel() {
 export function updatePlan(data: TUpdatePlanRequest) {
   return POST<TUpdatePlanResponse>('/plan/update', data);
 }
-export function getUpgradePlanAmount(planName: string) {
-  return POST<{ amount: number }>('/plan/upgradeAmount', { planName });
+export function getUpgradePlanAmount(payload: { planName: string; period: 'MONTHLY' | 'YEARLY' }) {
+  return POST<{ amount: number }>('/plan/upgradeAmount', payload);
 }
+
 export function recharge(data: TRechargeRequest) {
   return POST<TRechargeApiResponse>('/payment/recharge', data);
 }

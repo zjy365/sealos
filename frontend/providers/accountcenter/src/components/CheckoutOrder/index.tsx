@@ -119,6 +119,7 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       setLoading((prev) => ({ ...prev, summary: true }));
       propSummary().then(
         (s) => {
+          console.log('s', s);
           setSummary(s);
           setLoadSummaryErrror(null);
           setLoading((prev) => ({ ...prev, summary: false }));
@@ -260,7 +261,7 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
                     {item.amount}
                   </Text>
                 </Flex>
-                {item.subContent ? <Box mt="12px">{item.subContent}</Box> : null}
+                {/* {item.subContent ? <Box mt="12px">{item.subContent}</Box> : null} */}
               </Fragment>
             ))
           : null}

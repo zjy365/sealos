@@ -29,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         message: 'Invalid response format'
       });
     }
+    console.log(validation.data, '/payment/v1alpha1/subscription/user-info');
 
     return jsonRes<TSubscriptionApiResponse>(res, {
       code: 200,
