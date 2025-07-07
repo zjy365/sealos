@@ -478,6 +478,7 @@ export const adaptEditAppData = (app: AppDetailType): AppEditType => {
     'storeList',
     'gpu',
     'nodeName',
+    'preInspection',
     'priority',
     'modelName',
     'modelVersion'
