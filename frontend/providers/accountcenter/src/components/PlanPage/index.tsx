@@ -151,6 +151,7 @@ export default function PlanPage() {
       res.planMaxAmount = Math.max(p.amount, res.planMaxAmount);
       if (p.id === subscription.PlanID) {
         res.currentPlan = p;
+        res.currentPlan.period = subscription.Period;
       }
       if (p.amount === 0) {
         res.freePlan = p;
@@ -158,9 +159,11 @@ export default function PlanPage() {
     });
     return res;
   }, [plans, subscription]);
+
   const { isOpen, onClose } = useDisclosure({
     defaultIsOpen: upgradeSuccess
   });
+
   const renderMain = () => {
     if (!isLoadingEnd) return null;
     if (firstError) {
@@ -178,6 +181,7 @@ export default function PlanPage() {
             currentPlan={currentPlan}
             freePlan={freePlan}
             lastTransaction={lastTransactionResponse?.transcation}
+            periodType={subscription?.Period || 'MONTHLY'}
           />
         ) : null}
         <CreditsAlert
@@ -186,6 +190,7 @@ export default function PlanPage() {
           currentPlan={currentPlan}
           freePlan={freePlan}
           lastTransaction={lastTransactionResponse?.transcation}
+          periodType={subscription?.Period || 'MONTHLY'}
         />
         <PlanAlert
           plans={plans}
@@ -201,6 +206,7 @@ export default function PlanPage() {
           freePlan={freePlan}
           refresh={refresh}
           kycInfo={userKycInfoResponse}
+          periodType={subscription?.Period || 'MONTHLY'}
         />
         {creditsUsage ? (
           <PlanCredits

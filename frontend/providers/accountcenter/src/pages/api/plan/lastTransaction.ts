@@ -26,6 +26,8 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
 
     const transcation = res.data.transaction;
 
+    console.log('payment/v1alpha1/subscription/last-transcation', transcation);
+
     return jsonRes(resp, {
       code: 200,
       data: {

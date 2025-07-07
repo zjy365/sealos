@@ -20,7 +20,7 @@ export interface PlanSelectorItemProps {
   hoverIndex?: number;
   setHoverIndex?: (index: number) => void;
   expanded?: boolean;
-  periodType?: 'monthly' | 'annual';
+  periodType: 'YEARLY' | 'MONTHLY';
 }
 const buttonStyle: ButtonProps = {
   borderRadius: '8px',
@@ -48,11 +48,13 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   hoverIndex = -1,
   setHoverIndex = () => {},
   expanded = false,
-  periodType = 'annual'
+  periodType
 }) => {
   const { t } = useTranslation();
   const period = t(`Per${upperFirst(plan.period)}`, { defaultValue: '' }).toLowerCase();
-  const isCurrent = currentPlan.id === plan.id;
+  const currentPeriod = currentPlan.period;
+  const isCurrent =
+    currentPlan.id === plan.id && (plan.name === 'Free' || currentPeriod === periodType);
   const isFree = plan.amount === 0;
   const isCurrentPro = currentPlan.name === 'Pro';
   const featureTexts = usePlanFeatureTexts(plan, {
@@ -105,7 +107,11 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
   const handlePurchase = () => {
     onSelect?.(plan);
   };
+
+  // console.log(currentPlan, plan, 'currentPlan, plan', periodType);
+
   const renderButton = () => {
+    // 当前计划
     if (isCurrent) {
       return (
         <Button {...buttonStyle} isDisabled>
@@ -113,6 +119,8 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
         </Button>
       );
     }
+
+    // 降级到Free计划
     if (isFree) {
       return (
         <CancelPlanButton
@@ -126,6 +134,41 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
         />
       );
     }
+
+    // 判断是否允许从当前计划切换到目标计划
+    const isEligibleForUpgrade = () => {
+      const targetPeriod = periodType;
+
+      // 如果是相同的计划名称，但周期不同
+      if (plan.name === currentPlan.name && currentPeriod !== targetPeriod) {
+        // 从月付到年付是升级
+        return currentPeriod === 'MONTHLY' && targetPeriod === 'YEARLY';
+      }
+
+      // 不同计划名称的情况
+      const currentLevel = getPlanLevel(currentPlan.name);
+      const targetLevel = getPlanLevel(plan.name);
+
+      // 更高级别的计划
+      if (targetLevel > currentLevel) {
+        if (currentPeriod === 'YEARLY') {
+          return targetPeriod === 'YEARLY';
+        }
+        return true;
+      }
+
+      return false;
+    };
+
+    if (!isEligibleForUpgrade()) {
+      return (
+        <Button {...buttonStyle} isDisabled>
+          {t('IneligibleForDowngrade')}
+        </Button>
+      );
+    }
+
+    // 允许升级的情况
     return (
       <Track.Click eventName={Track.events.purchase(plan.name)}>
         <Button
@@ -142,13 +185,27 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
                 : 'linear-gradient(270deg, #1C4EF5 5.12%, #826FF6 86.56%);'
           }}
           onClick={handlePurchase}
-          isDisabled={isCurrentPro}
         >
           {t('PurchasePlan')}
         </Button>
       </Track.Click>
     );
   };
+
+  // 辅助函数：获取计划等级
+  const getPlanLevel = (planName: string) => {
+    switch (planName) {
+      case 'Free':
+        return 0;
+      case 'Hobby':
+        return 1;
+      case 'Pro':
+        return 2;
+      default:
+        return -1;
+    }
+  };
+
   const renderIcon = () => {
     if (isFree) return null;
     return (
@@ -192,10 +249,11 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
       const savings = monthlyTotal - annualTotal;
       return `$${formatMoneyStr(savings)} billed yearly`;
     };
+
     return (
-      <Flex mt="16px" mb={'40px'} flexDirection={'column'}>
+      <Flex mt="16px" mb={periodType === 'YEARLY' ? '20px' : '40px'} flexDirection={'column'}>
         <Flex alignItems="baseline">
-          {!isFree && periodType === 'annual' && (
+          {!isFree && periodType === 'YEARLY' && (
             <Text mr={'2px'} lineHeight="40px" fontSize="36px" fontWeight="600" color="#71717A">
               ${formatMoneyStr(plan.annualAmount / 12, true)}
             </Text>
@@ -207,8 +265,7 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
             /monthly
           </Text>
         </Flex>
-
-        {periodType === 'annual' && (
+        {periodType === 'YEARLY' && (
           <Text fontSize="14px" fontWeight="400" color="#71717A" height={'20px'}>
             {!isFree ? calculateSavings() : ''}
           </Text>

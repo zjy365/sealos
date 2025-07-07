@@ -12,6 +12,7 @@ export default function useGetPlanOrderSummary() {
   const getPlanFeatureTexts = useGetPlanFeatureTexts();
   const getItemPeriodText = (plan: TPlanApiResponse) => {
     const upperFirstPeriod = upperFirst(plan.period);
+    console.log(`Per${upperFirstPeriod}Short`, upperFirstPeriod, plan, 123123);
     const shortText = t(`Per${upperFirstPeriod}Short`, { defaultValue: '' });
     if (shortText) return shortText.toLowerCase();
     return t(`Per${upperFirstPeriod}`, { defaultValue: plan.period }).toLowerCase();
