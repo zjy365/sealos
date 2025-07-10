@@ -121,15 +121,19 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
     if (step === 2 && selectedPlan) {
       const getSummary = () => {
         if (rest.currentPlan.amount === 0) {
-          console.log('getSummary', selectedPlan);
-          return Promise.resolve(getPlanOrderSummary(selectedPlan));
+          console.log('CheckoutOrder getSummary', selectedPlan);
+          return Promise.resolve(getPlanOrderSummary({ ...selectedPlan, period: periodType }));
         }
         return getUpgradePlanAmount({
           planName: selectedPlan.name,
           period: periodType
         }).then((data) => {
           if (typeof data.amount === 'number') {
-            return getPlanOrderSummary(selectedPlan, data.amount);
+            return getPlanOrderSummary(
+              { ...selectedPlan, period: periodType },
+              data.amount,
+              rest.currentPlan
+            );
           }
           throw new Error(t('GetUpgradeAmountError'));
         });

@@ -41,6 +41,8 @@ export interface Summary {
   period?: string;
   /** 周期支付金额 */
   periodicAmount?: string;
+  /** 提示信息 */
+  tip?: string;
   items: SummaryItems[];
 }
 export enum PayMethod {
@@ -119,7 +121,7 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       setLoading((prev) => ({ ...prev, summary: true }));
       propSummary().then(
         (s) => {
-          console.log('s', s);
+          console.log('s propSummary', s);
           setSummary(s);
           setLoadSummaryErrror(null);
           setLoading((prev) => ({ ...prev, summary: false }));
@@ -171,9 +173,10 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
   };
   const renderPeriodAmountOfSummary = () => {
     if (!summary || !summary.period || !summary.periodicAmount) return null;
-    const periodText = lowerFirst(t(upperFirst(summary.period), { defaultValue: summary.period }));
+    const periodText = summary.period.toLowerCase();
     return renderTotalAmount(t('TotalBilledWithPeriod', { periodText }), summary.periodicAmount);
   };
+
   const handleCheckout = async () => {
     const value = radioValue === RadioValue.existing ? existingPaymentMethod : newPaymentMethod;
     if (!value) {
@@ -228,6 +231,9 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       return Promise.reject(e);
     }
   };
+
+  console.log(summary, 'summary index');
+
   const renderSummary = () => {
     if (loading.summary) return <Loading fixed={false} loading />;
     if (loadSummaryError) {
@@ -250,6 +256,20 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
     }
     return (
       <>
+        {summary?.tip ? (
+          <Box
+            borderRadius="6px"
+            bg="rgba(52, 96, 238, 0.05)"
+            p="8px"
+            mb="24px"
+            mt={'12px'}
+            color="rgb(52, 96, 238)"
+            fontSize={'14px'}
+            fontWeight={400}
+          >
+            {summary.tip}
+          </Box>
+        ) : null}
         {Array.isArray(summary?.items)
           ? summary?.items.map((item) => (
               <Fragment key={item.name}>

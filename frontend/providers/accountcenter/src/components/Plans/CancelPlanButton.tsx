@@ -111,7 +111,8 @@ const CancelPlanButton: FC<CancelPlanButtonProps> = ({
       return updatePlan({
         planID: freePlan?.id,
         planName: freePlan?.name,
-        planType: 'downgrade'
+        planType: 'downgrade',
+        period: 'MONTHLY'
       }).then(
         () => {
           toastSuccess('CancelSuccess');

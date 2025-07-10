@@ -160,7 +160,8 @@ export const lastTransactionApiResponseSchema = z.object({
   Status: z.enum(['completed', 'pending', 'processing', 'failed']), // 交易状态，枚举类型
   PayStatus: z.enum(['pending', 'paid', 'no_need', 'failed']), // 支付状态，枚举类型
   PayID: z.string(), // 支付 ID
-  Amount: z.number().int().positive() // 金额，必须是正整数
+  Amount: z.number().int().positive(), // 金额，必须是正整数
+  PayPeriod: z.enum(['MONTHLY', 'YEARLY']) // 周期，枚举类型
 });
 export type TLastTransactionResponse = z.infer<typeof lastTransactionApiResponseSchema>;
 export type TUpdatePlanApiRequest = z.infer<typeof updatePlanApiRequestSchema>;
