@@ -35,7 +35,8 @@ const RetryRenewPayModal: FC<RetryRenewPayModalProps> = ({
       planID: lastTransaction.NewPlanID,
       planName: lastTransaction.NewPlanName,
       planType: 'renewal',
-      ...data
+      ...data,
+      period: lastTransaction.PayPeriod || 'MONTHLY'
     });
   };
   const handlePaySuccess = () => {
@@ -58,7 +59,7 @@ const RetryRenewPayModal: FC<RetryRenewPayModalProps> = ({
     if (!plan) {
       throw new Error('PlanNotExist');
     }
-    return getPlanOrderSummary(plan);
+    return getPlanOrderSummary({ ...plan, period: lastTransaction.PayPeriod });
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>

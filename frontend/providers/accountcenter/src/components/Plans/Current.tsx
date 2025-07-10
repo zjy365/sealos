@@ -129,7 +129,10 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
     if (isMaxAmountPlan) return { ...planStyleConfig.normal, ...planStyleConfig.maxAmount };
     return planStyleConfig.normal;
   }, [isFree, isMaxAmountPlan]);
-  const isUpgradable = Array.isArray(plan.upgradePlanList) && plan.upgradePlanList.length > 0;
+
+  const isUpgradable = true;
+
+  console.log(plan, 'current plan');
   const isCancelled = isPlanCancelling(lastTransaction);
   const {
     isOpen: isUpgradeModalOpen,

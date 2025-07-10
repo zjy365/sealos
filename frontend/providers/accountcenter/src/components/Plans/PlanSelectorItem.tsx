@@ -162,9 +162,32 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
 
     if (!isEligibleForUpgrade()) {
       return (
-        <Button {...buttonStyle} isDisabled>
-          {t('IneligibleForDowngrade')}
-        </Button>
+        <Tooltip
+          label={'This plan isn’t eligible for downgrading right now.'}
+          hasArrow
+          bg={'#fff'}
+          color={'#09090B'}
+          p={'12px'}
+          borderRadius={'8px'}
+        >
+          <Button
+            {...buttonStyle}
+            isDisabled
+            bg={
+              plan.name === 'Hobby'
+                ? 'linear-gradient(270deg, #116BFF 4.93%, #829DFE 86.35%);'
+                : 'linear-gradient(270deg, #1C4EF5 5.12%, #826FF6 86.56%);'
+            }
+            _hover={{
+              bg:
+                plan.name === 'Hobby'
+                  ? 'linear-gradient(270deg, #116BFF 4.93%, #829DFE 86.35%);'
+                  : 'linear-gradient(270deg, #1C4EF5 5.12%, #826FF6 86.56%);'
+            }}
+          >
+            {t('PurchasePlan')}
+          </Button>
+        </Tooltip>
       );
     }
 
@@ -254,8 +277,15 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
       <Flex mt="16px" mb={periodType === 'YEARLY' ? '20px' : '40px'} flexDirection={'column'}>
         <Flex alignItems="baseline">
           {!isFree && periodType === 'YEARLY' && (
-            <Text mr={'2px'} lineHeight="40px" fontSize="36px" fontWeight="600" color="#71717A">
-              ${formatMoneyStr(plan.annualAmount / 12, true)}
+            <Text
+              mr={'2px'}
+              lineHeight="40px"
+              fontSize="36px"
+              textDecoration="line-through"
+              fontWeight="600"
+              color="#71717A"
+            >
+              ${formatMoneyStr(plan.annualAmount / 12, 'floor')}
             </Text>
           )}
           <Text lineHeight="40px" fontSize="36px" fontWeight="600" color="rgb(24, 24, 27)">
