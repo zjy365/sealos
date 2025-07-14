@@ -44,6 +44,7 @@ export interface Summary {
   /** 提示信息 */
   tip?: string;
   items: SummaryItems[];
+  proratedCredit?: string;
 }
 export enum PayMethod {
   card = 'CARD',
@@ -287,6 +288,9 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
           : null}
         <Divider my="12px" borderColor="#E6EAF4" opacity="1" />
         {renderPeriodAmountOfSummary()}
+        {summary?.proratedCredit
+          ? renderTotalAmount('Prorated credit', summary.proratedCredit)
+          : null}
         {renderTotalAmount(t('DueToday'), summary?.amount)}
       </>
     );

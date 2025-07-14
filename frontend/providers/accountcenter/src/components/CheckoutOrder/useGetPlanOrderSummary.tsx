@@ -35,6 +35,7 @@ export default function useGetPlanOrderSummary() {
     };
 
     const amount = typeof todayDue === 'number' && todayDue > 0 ? todayDue : getPlanAmount();
+
     const featurTexts = getPlanFeatureTexts(plan, {
       inlcudeCredits: true,
       hideFreeMaxResourcesPerRegionText: true
@@ -80,10 +81,16 @@ export default function useGetPlanOrderSummary() {
 
     const planAmount = getPlanAmount();
 
+    // 计算按比例抵扣金额
+    const proratedCreditAmount = planAmount - amount;
+    const proratedCreditStr =
+      proratedCreditAmount !== 0 ? `-$${formatMoneyStr(Math.abs(proratedCreditAmount))}` : '';
+
     return {
       amount: `\$${formatMoneyStr(amount)}`,
       period: plan.period,
       periodicAmount: `\$${formatMoneyStr(planAmount)}`,
+      proratedCredit: proratedCreditStr,
       tip: getTipMessage(),
       items: [
         {
