@@ -205,30 +205,6 @@ export default function Home({ sealos_cloud_domain }: { sealos_cloud_domain: str
       semData.additionalInfo = { semKeyword: k as string };
     }
     setUserSemData(semData);
-    if (
-      sealos_cloud_domain?.startsWith('jp-members-1') ||
-      sealos_cloud_domain?.startsWith('sg-members-1')
-    )
-      return;
-    message({
-      title: (
-        <>
-          <b>{t('free_availability_zone')}</b>
-          {t('scheduled_maintenance')}
-          <a
-            href="https://question.run.claw.cloud/questions/10010000000001421"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: 'underline' }}
-          >
-            {t('details')}
-          </a>
-        </>
-      ),
-      status: 'info',
-      duration: 30000,
-      isClosable: true
-    });
   }, []);
 
   // handle workspaceInvite
