@@ -122,7 +122,6 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       setLoading((prev) => ({ ...prev, summary: true }));
       propSummary().then(
         (s) => {
-          console.log('s propSummary', s);
           setSummary(s);
           setLoadSummaryErrror(null);
           setLoading((prev) => ({ ...prev, summary: false }));
@@ -232,8 +231,6 @@ const CheckoutOrder: FC<CheckoutOrderProps> = ({
       return Promise.reject(e);
     }
   };
-
-  console.log(summary, 'summary index');
 
   const renderSummary = () => {
     if (loading.summary) return <Loading fixed={false} loading />;

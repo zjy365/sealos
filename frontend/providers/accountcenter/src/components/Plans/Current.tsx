@@ -132,7 +132,6 @@ const CurrentPlan: FC<CurrentPlanProps> = ({
 
   const isUpgradable = true;
 
-  console.log(plan, 'current plan');
   const isCancelled = isPlanCancelling(lastTransaction);
   const {
     isOpen: isUpgradeModalOpen,
