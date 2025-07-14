@@ -29,15 +29,6 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
     const region = await getRegionByUid(payload.regionUid);
     const client = makeAPIClient(region, payload);
 
-    console.log({
-      planName,
-      planID,
-      payMethod: payMethod || 'CARD',
-      planType,
-      cardID,
-      period
-    });
-
     const res = await client.post<TUpdatePlanResponse>('payment/v1alpha1/subscription/pay', {
       planName,
       planID,

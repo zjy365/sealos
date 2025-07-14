@@ -27,8 +27,6 @@ export default function useGetPlanOrderSummary() {
     todayDue?: number,
     currentPlan?: TPlanApiResponse
   ): Summary {
-    console.log('getOrderSummaryOfPlan', plan, todayDue, currentPlan);
-
     // 获取正确的套餐价格
     const getPlanAmount = () => {
       return plan.period === 'YEARLY' ? plan.annualAmount : plan.amount;

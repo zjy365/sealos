@@ -80,8 +80,6 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
   }, [periodType]);
 
   const handleSelectPlan = (plan: TPlanApiResponse) => {
-    console.log('selectedPlan periodType', plan, periodType);
-
     if (plan) {
       setSelectedPlan(plan);
       setStep(2);
@@ -121,7 +119,6 @@ const UpgradePlanModal: FC<UpgradePlanModalProps> = ({ isOpen, onClose, ...rest 
     if (step === 2 && selectedPlan) {
       const getSummary = () => {
         if (rest.currentPlan.amount === 0) {
-          console.log('CheckoutOrder getSummary', selectedPlan);
           return Promise.resolve(getPlanOrderSummary({ ...selectedPlan, period: periodType }));
         }
         return getUpgradePlanAmount({
