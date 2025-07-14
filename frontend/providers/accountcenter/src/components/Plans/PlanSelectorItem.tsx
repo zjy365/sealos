@@ -276,21 +276,26 @@ const PlanSelectorItem: FC<PlanSelectorItemProps> = ({
     return (
       <Flex mt="16px" mb={periodType === 'YEARLY' ? '20px' : '40px'} flexDirection={'column'}>
         <Flex alignItems="baseline">
+          <Text
+            lineHeight="40px"
+            textDecoration={!isFree && periodType === 'YEARLY' ? 'line-through' : 'none'}
+            fontSize="36px"
+            fontWeight="600"
+            color={!isFree && periodType === 'YEARLY' ? '#71717A' : 'rgb(24, 24, 27)'}
+          >
+            ${formatMoneyStr(plan.amount)}
+          </Text>
           {!isFree && periodType === 'YEARLY' && (
             <Text
               mr={'2px'}
               lineHeight="40px"
               fontSize="36px"
-              textDecoration="line-through"
               fontWeight="600"
-              color="#71717A"
+              color="rgb(24, 24, 27)"
             >
               ${formatMoneyStr(plan.annualAmount / 12, 'floor')}
             </Text>
           )}
-          <Text lineHeight="40px" fontSize="36px" fontWeight="600" color="rgb(24, 24, 27)">
-            ${formatMoneyStr(plan.amount)}
-          </Text>
           <Text lineHeight="24px" fontSize="16px" fontWeight="400">
             /monthly
           </Text>
