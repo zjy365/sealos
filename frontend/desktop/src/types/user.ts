@@ -164,3 +164,9 @@ export type OAuth2UserInfoType = {
   website: string | null;
   zoneinfo: string | null;
 };
+
+export type UserQuotaItemType = {
+  type: 'cpu' | 'memory' | 'storage' | 'gpu' | 'nodeports' | 'pods';
+  used: number;
+  limit: number;
+};
