@@ -9,6 +9,7 @@ import {
   TNotification
 } from '@/types';
 import { UserTask } from '@/types/task';
+import { UserQuotaItemType } from '@/types/user';
 
 // handle baidu
 export const uploadConvertData = ({ newType, bdVid }: { newType: number[]; bdVid?: string }) => {
@@ -94,6 +95,14 @@ export const getResource = () => {
       runningPodCount: string;
       totalGpuCount: string;
       totalPodCount: string;
+      traffic: {
+        value: string;
+        unit: string;
+        rawBytes: number;
+        status: string;
+        lastUpdated: string;
+      } | null;
+      quota?: UserQuotaItemType[];
     }>
   >('/api/desktop/getResource');
 };

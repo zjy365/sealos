@@ -103,13 +103,13 @@ export default function Cost() {
         value: resourceData?.data?.totalStorage,
         icon: <StorageIcon />,
         unit: 'GB'
+      },
+      {
+        label: t('common:flow'),
+        value: resourceData?.data?.traffic?.value || '~',
+        icon: <FlowIcon />,
+        unit: resourceData?.data?.traffic?.unit
       }
-      // {
-      //   label: t('common:flow'),
-      //   value: `~`,
-      //   icon: <FlowIcon />,
-      //   unit: 'GB'
-      // }
     ],
     [resourceData?.data, t]
   );

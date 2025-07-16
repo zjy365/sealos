@@ -187,7 +187,7 @@ export default function Account() {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                gap="6px"
+                gap="8px"
                 borderRadius="8px"
                 fontSize={'14px'}
                 background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
@@ -208,13 +208,24 @@ export default function Account() {
                   });
                 }}
               >
-                <Sparkles
+                <Center
+                  borderRadius={'4px'}
+                  bg={'linear-gradient(90deg, #FE5CBD 0%, #494BE9 100%)'}
+                  color={'#fff'}
+                  fontSize={'12px'}
+                  fontWeight={'700'}
+                  height={'20px'}
+                  px={'4px'}
+                >
+                  50% OFF
+                </Center>
+                {/* <Sparkles
                   size={16}
                   color={
                     userPlan === 'Free' ? '#1C4EF5' : userPlan === 'Pro' ? '#5856F5' : '#2778FD'
                   }
                   fill={userPlan === 'Free' ? 'none' : userPlan === 'Pro' ? '#5856F5' : '#2778FD'}
-                />
+                /> */}
                 <Text
                   color={
                     userPlan === 'Free' ? '#1C4EF5' : userPlan === 'Pro' ? 'transparent' : '#2778FD'

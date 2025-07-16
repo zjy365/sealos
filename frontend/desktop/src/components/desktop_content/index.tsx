@@ -7,13 +7,13 @@ import { useDesktopConfigStore } from '@/stores/desktopConfig';
 import useSessionStore, { OauthAction } from '@/stores/session';
 import { WindowSize } from '@/types';
 import { OauthProvider } from '@/types/user';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, Text, Button, IconButton, Icon, Center } from '@chakra-ui/react';
 import { useMessage } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createMasterAPP, masterApp } from 'sealos-desktop-sdk/master';
 import NeedToMerge from '../account/AccountCenter/mergeUser/NeedToMergeModal';
 import { useRealNameAuthNotification } from '../account/RealNameModal';
@@ -22,6 +22,8 @@ import Apps from './apps';
 import IframeWindow from './iframe_window';
 import styles from './index.module.scss';
 import SearchBox from './searchBox';
+import { Sparkles, X } from 'lucide-react';
+import { LimitedOfferModal } from './limitedOfferModal';
 
 const AppDock = dynamic(() => import('../AppDock'), { ssr: false });
 const FloatButton = dynamic(() => import('@/components/floating_button'), { ssr: false });
@@ -34,6 +36,8 @@ export const blurBackgroundStyles = {
   border: 'none',
   borderRadius: '12px'
 };
+
+// 添加限时优惠弹窗组件
 
 export default function Desktop(props: any) {
   const { i18n } = useTranslation();
@@ -254,13 +258,13 @@ export default function Desktop(props: any) {
     });
     router.replace('/');
   }, [apps]);
+
   return (
     <Box id="desktop" className={styles.desktop} bg={'#E0E9FF'} position={'relative'}>
       <ChakraIndicator />
       <Flex height={'68px'} px="32px">
         <Account />
       </Flex>
-
       <Flex
         width={'100%'}
         height={'calc(100% - 68px)'}
@@ -268,82 +272,18 @@ export default function Desktop(props: any) {
         pb={'84px'}
         px={'180px'}
         mx={'auto'}
-        // maxW={'1300px'}
-        // maxH={'1000px'}
         position={'relative'}
       >
         <Flex flexDirection={'column'} gap={'8px'} flex={1} position={'relative'}>
-          {/* <Flex zIndex={2} flexShrink={0} height={{ base: '32px', sm: '48px' }} gap={'8px'}>
-            <Box display={{ base: 'block', xl: 'none' }}>
-              {layoutConfig?.common.aiAssistantEnabled && <Assistant />}
-            </Box>
-            <TriggerAccountModule showAccount={showAccount} setShowAccount={setShowAccount} />
-          </Flex> */}
           <SearchBox />
           <Apps />
         </Flex>
-
-        {/* {isClient && (
-          <Box>
-            {desktopGuide && (
-              <>
-                <UserGuide />
-                <Box
-                  position="fixed"
-                  top="0"
-                  left="0"
-                  width="100%"
-                  height="100%"
-                  backgroundColor="rgba(0, 0, 0, 0.7)"
-                  zIndex="11000"
-                />
-              </>
-            )}
-            {taskComponentState === 'modal' && tasks?.length > 0 && (
-              <TaskModal
-                isOpen={taskComponentState === 'modal'}
-                onClose={handleCloseTaskModal}
-                tasks={tasks || []}
-                onTaskClick={(task) => {
-                  switch (task.taskType) {
-                    case 'LAUNCHPAD':
-                      openDesktopApp({
-                        appKey: 'system-applaunchpad',
-                        pathname: '/app/edit',
-                        messageData: {
-                          type: 'InternalAppCall'
-                        }
-                      });
-                      break;
-                    case 'DATABASE':
-                      openDesktopApp({
-                        appKey: 'system-dbprovider',
-                        pathname: '/db/edit',
-                        messageData: { type: 'InternalAppCall' }
-                      });
-                      break;
-                    case 'APPSTORE':
-                      openDesktopApp({
-                        appKey: 'system-template',
-                        pathname: '/',
-                        messageData: {
-                          type: 'InternalAppCall'
-                        }
-                      });
-                      break;
-                    default:
-                      console.log(task.taskType);
-                  }
-                  setTaskComponentState('button');
-                }}
-              />
-            )}
-          </Box>
-        )} */}
       </Flex>
 
-      {isAppBar ? <AppDock /> : <FloatButton />}
+      {/* 限时优惠弹窗 */}
+      <LimitedOfferModal onUpgrade={openUpgradePlan} />
 
+      {isAppBar ? <AppDock /> : <FloatButton />}
       {/* opened apps */}
       {runningInfo.map((process) => {
         return (
@@ -352,7 +292,6 @@ export default function Desktop(props: any) {
           </AppWindow>
         );
       })}
-
       {/* modal */}
       <NeedToMerge />
     </Box>
