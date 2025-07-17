@@ -229,7 +229,7 @@ export default function Cost() {
             alignItems={'center'}
             padding={'4px 8px'}
             gap={'8px'}
-            width={'129px'}
+            width={'fit-content'}
             height={'28px'}
             background={'rgba(30, 58, 138, 0.05)'}
             borderRadius={'100px'}
@@ -238,7 +238,12 @@ export default function Cost() {
               onToggle();
             }}
           >
-            <Box width={'8px'} height={'8px'} background={'#10B981'} borderRadius={'100%'} />
+            <Box
+              width={'8px'}
+              height={'8px'}
+              background={unhealthPod ? '#DC2626' : '#10B981'}
+              borderRadius={'100%'}
+            />
             <Text
               fontFamily={'Geist'}
               fontWeight={400}

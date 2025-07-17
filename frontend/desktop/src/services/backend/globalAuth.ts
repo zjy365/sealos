@@ -664,6 +664,8 @@ export const getGlobalTokenByOauth = async ({
         }
       });
       reSignUp = true;
+    } else {
+      return 'ACCOUNT_LOCKED';
     }
   }
   // console.log('global ', user, email, ProviderType, providerId);
