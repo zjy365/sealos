@@ -19,7 +19,7 @@ import {
   StackProps,
   Button
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import CreateTeam from './CreateTeam';
 import DissolveTeam from './DissolveTeam';
 import { useQuery } from '@tanstack/react-query';
@@ -39,6 +39,7 @@ import RenameTeam from './RenameTeam';
 import { Plus } from 'lucide-react';
 import useAppStore from '@/stores/app';
 import { getUserPlan } from '@/api/platform';
+import { useUsageStore } from '@/stores/usage';
 
 export default function TeamCenter({
   closeWorkspaceToggle,
@@ -128,6 +129,21 @@ export default function TeamCenter({
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
+  const { resourceData, checkResourceLimits } = useUsageStore();
+
+  const isResourceExceeded = checkResourceLimits(
+    plan?.data?.subscription?.subscriptionPlan?.name || 'Free'
+  );
+
+  const shouldShowUpgrade = useMemo(() => {
+    const planName = plan?.data?.subscription?.subscriptionPlan?.name || 'Free';
+    if (planName === 'Pro') return false;
+    if (planName === 'Free') return true;
+    if (planName === 'Hobby') {
+      return isResourceExceeded.length > 0;
+    }
+    return true;
+  }, [plan?.data?.subscription?.subscriptionPlan?.name, isResourceExceeded]);
 
   return (
     <>
@@ -247,7 +263,7 @@ export default function TeamCenter({
                       </Text>
                     </Flex>
                   </CreateTeam>
-                  {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
+                  {shouldShowUpgrade && (
                     <Track.Click eventName={Track.events.clickUpgradeInDesktopWorkspace}>
                       <Button
                         ml={'auto'}
@@ -365,7 +381,7 @@ export default function TeamCenter({
                         canAbdicate={!isPrivate}
                       />
                     </Box>
-                    {plan?.data?.subscription?.subscriptionPlan?.name !== 'Pro' && (
+                    {shouldShowUpgrade && (
                       <Center color={'#71717A'} fontSize={'14px'} cursor={'pointer'}>
                         <Track.Click eventName={Track.events.clickUpgradeInDesktopWorkspace}>
                           <Box

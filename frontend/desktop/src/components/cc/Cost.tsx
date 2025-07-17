@@ -1,24 +1,21 @@
-import { getAmount, UserInfo } from '@/api/auth';
-import { getUserBilling, getResource } from '@/api/platform';
+import { getAmount } from '@/api/auth';
 import useAppStore from '@/stores/app';
 import { useConfigStore } from '@/stores/config';
 import useSessionStore from '@/stores/session';
-import { formatMoney } from '@/utils/format';
+import { useUsageStore } from '@/stores/usage';
 import {
   Box,
   Flex,
   Popover,
-  PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Text,
   useDisclosure
 } from '@chakra-ui/react';
-import { CurrencySymbol, Track } from '@sealos/ui';
+import { Track } from '@sealos/ui';
 import { useQuery } from '@tanstack/react-query';
-import { Decimal } from 'decimal.js';
 import { useTranslation } from 'next-i18next';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { CpuIcon, FlowIcon, MemoryIcon, StorageIcon } from '../icons';
 import { WindowSize } from '@/types';
 import { PLAN_LIMIT } from '@/constants/account';
@@ -35,6 +32,11 @@ export default function Cost() {
   const currencySymbol = useConfigStore(
     (state) => state.layoutConfig?.currencySymbol || 'shellCoin'
   );
+  const {
+    resourceData: storeResourceData,
+    fetchResourceData,
+    getTrafficUsageInGB
+  } = useUsageStore();
 
   const { data } = useQuery({
     queryKey: ['getAmount', { userId: user?.userCrUid }],
@@ -43,24 +45,26 @@ export default function Cost() {
     staleTime: 60 * 1000
   });
 
-  const { data: billing } = useQuery(['getUserBilling'], () => getUserBilling(), {
-    cacheTime: 5 * 60 * 1000,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false
-  });
+  // const { data: billing } = useQuery(['getUserBilling'], () => getUserBilling(), {
+  //   cacheTime: 5 * 60 * 1000,
+  //   staleTime: 5 * 60 * 1000,
+  //   refetchOnWindowFocus: false
+  // });
 
-  const { data: resourceData } = useQuery(['getResource'], getResource, {
+  // 使用 store 的方法获取资源数据
+  useQuery(['getResource'], () => fetchResourceData(), {
     staleTime: 60 * 1000,
-    refetchInterval: 1 * 60 * 1000
+    refetchInterval: 5 * 60 * 1000
   });
+  const resourceData = { data: storeResourceData };
 
-  const balance = useMemo(() => {
-    let realBalance = new Decimal(data?.data?.balance || 0);
-    if (data?.data?.deductionBalance) {
-      realBalance = realBalance.minus(new Decimal(data.data.deductionBalance));
-    }
-    return realBalance.toNumber();
-  }, [data]);
+  // const balance = useMemo(() => {
+  //   let realBalance = new Decimal(data?.data?.balance || 0);
+  //   if (data?.data?.deductionBalance) {
+  //     realBalance = realBalance.minus(new Decimal(data.data.deductionBalance));
+  //   }
+  //   return realBalance.toNumber();
+  // }, [data]);
 
   // const calculations = useMemo(() => {
   //   const prevDayAmount = new Decimal(billing?.data?.prevDayTime || 0);
@@ -151,6 +155,71 @@ export default function Cost() {
     iframe.contentWindow?.postMessage(messageData, app.data.url);
   };
   const planName = session?.user?.subscription?.subscriptionPlan.name || 'Free';
+
+  // Cost 页面的逻辑：必须要溢出才显示，不区分套餐类型
+  const shouldShowAlert = useMemo(() => {
+    if (!storeResourceData) return false;
+
+    const limits = PLAN_LIMIT[planName as keyof typeof PLAN_LIMIT];
+    if (!limits) return false;
+
+    const healthyPods = Number(storeResourceData.runningPodCount || 0);
+    const trafficUsageGB = getTrafficUsageInGB();
+    const totalCpu = Number(storeResourceData.totalCpu || 0);
+    const totalMemory = Number(storeResourceData.totalMemory || 0);
+    const totalStorage = Number(storeResourceData.totalStorage || 0);
+
+    // 检查是否有任何资源超出限制
+    const isPodExceeded = limits.pod > 0 && healthyPods >= limits.pod;
+    const isTrafficExceeded = limits.network > 0 && trafficUsageGB > limits.network;
+    const isCpuExceeded = limits.cpu > 0 && totalCpu > limits.cpu;
+    const isMemoryExceeded = limits.memory > 0 && totalMemory > limits.memory;
+    const isStorageExceeded = limits.storage > 0 && totalStorage > limits.storage;
+
+    return (
+      isPodExceeded || isTrafficExceeded || isCpuExceeded || isMemoryExceeded || isStorageExceeded
+    );
+  }, [storeResourceData, planName, getTrafficUsageInGB]);
+
+  const upgradeAlertMessage = useMemo(() => {
+    if (!shouldShowAlert || !storeResourceData) return null;
+
+    const limits = PLAN_LIMIT[planName as keyof typeof PLAN_LIMIT];
+    if (!limits) return null;
+
+    const healthyPods = Number(storeResourceData.runningPodCount || 0);
+    const trafficUsageGB = getTrafficUsageInGB();
+    const totalCpu = Number(storeResourceData.totalCpu || 0);
+    const totalMemory = Number(storeResourceData.totalMemory || 0);
+    const totalStorage = Number(storeResourceData.totalStorage || 0);
+
+    const messages = [];
+
+    if (limits.pod > 0 && healthyPods >= limits.pod) {
+      messages.push('Pod limit reached');
+    }
+
+    if (limits.network > 0 && trafficUsageGB > limits.network) {
+      messages.push(`Traffic limit exceeded (${trafficUsageGB.toFixed(2)}G/${limits.network}G)`);
+    }
+
+    // if (limits.cpu > 0 && totalCpu > limits.cpu) {
+    //   messages.push(`CPU limit exceeded (${totalCpu}/${limits.cpu} cores)`);
+    // }
+
+    // if (limits.memory > 0 && totalMemory > limits.memory) {
+    //   messages.push(`Memory limit exceeded (${totalMemory}G/${limits.memory}G)`);
+    // }
+
+    // if (limits.storage > 0 && totalStorage > limits.storage) {
+    //   messages.push(`Storage limit exceeded (${totalStorage}G/${limits.storage}G)`);
+    // }
+
+    return messages.length > 0
+      ? messages.join('. ') + '. Upgrade your plan to unlock higher quotas.'
+      : null;
+  }, [shouldShowAlert, storeResourceData, planName, getTrafficUsageInGB]);
+
   return (
     <>
       <Popover onOpen={onOpen} onClose={onClose} placement="bottom-start">
@@ -192,10 +261,8 @@ export default function Cost() {
           boxShadow={'0px 4px 12px rgba(0, 0, 0, 0.08)'}
           borderRadius={'12px'}
         >
-          {/* upgrade section */}
-
           {/* Upgrade Alert Section */}
-          {PLAN_LIMIT[planName as 'Free'].pod <= healthPod && (
+          {shouldShowAlert && (
             <Flex
               direction="column"
               align="flex-start"
@@ -207,14 +274,13 @@ export default function Cost() {
             >
               <Text
                 w="224px"
-                h="40px"
                 fontFamily="Geist"
                 fontWeight={400}
                 fontSize="14px"
                 lineHeight="20px"
                 color="#EA580C"
               >
-                Pod limit reached. Upgrade your plan to scale further.
+                {upgradeAlertMessage}
               </Text>
               <Track.Click eventName={Track.events.podUpgrade}>
                 <Text
@@ -229,7 +295,6 @@ export default function Cost() {
                   alignItems="center"
                   color="#EA580C"
                   onClick={() => {
-                    // Add upgrade plan logic here
                     openDesktopApp({
                       appKey: 'system-account-center',
                       query: {
@@ -258,12 +323,12 @@ export default function Cost() {
                 lineHeight={'100%'}
                 color={'#111824'}
               >
-                Pod in current region
+                Pod in current availability zone
               </Text>
             </Flex>
 
             <Flex alignItems={'center'} gap={'8px'} width={'248px'} height={'72px'}>
-              {/* Balance Card */}
+              {/* Healthy Pod Card */}
               <Box
                 display={'flex'}
                 flexDirection={'column'}
@@ -302,7 +367,7 @@ export default function Cost() {
                 </Text>
               </Box>
 
-              {/* Days Usable Card */}
+              {/* Unhealthy Pod Card */}
               <Box
                 display={'flex'}
                 flexDirection={'column'}

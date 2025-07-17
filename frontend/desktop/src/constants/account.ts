@@ -23,6 +23,7 @@ export enum SwitchRegionType {
   SWITCH = 'SWITCH'
   // VERIFYEMAIL = 'VERIFYEMAIL'
 }
+
 export const PLAN_LIMIT = {
   Hobby: {
     cpu: 16,

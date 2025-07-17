@@ -11,9 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { CubeIcon, DesktopExchangeIcon } from '../icons';
 import { ChevronDown, Plus } from 'lucide-react';
-import { useRef } from 'react';
 import CreateTeam from './CreateTeam';
 
 export default function WorkspaceToggle() {
@@ -68,7 +66,6 @@ export default function WorkspaceToggle() {
       >
         <Text color={'#0A0A0A'} fontSize={'14px'} fontWeight={'500'}>
           {namespace?.teamName}
-          {/* {namespace?.nstype === NSType.Private ? t('common:default_team') : namespace?.teamName} */}
         </Text>
         <Center
           bg={disclosure.isOpen ? '#FFF' : ''}

@@ -52,6 +52,9 @@ import GuideModal from './GuideModal';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
 import { getUserPlan } from '@/api/platform';
 import Cost from '../cc/Cost';
+import { regionList } from '@/api/auth';
+import { jwtDecode } from 'jwt-decode';
+import { AccessTokenPayload } from '@/types/token';
 
 const baseItemStyle = {
   minW: '40px',
@@ -80,6 +83,24 @@ export default function Account() {
   const upgradePlanDisclosure = useDisclosure();
   const guideDisclosure = useDisclosure();
   const { setInitGuide, initGuide } = useInitWorkspaceStore();
+
+  const { data } = useQuery(['regionlist'], regionList, {
+    cacheTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+
+  const token = useSessionStore((s) => s.token);
+
+  const curRegionUid = useMemo(() => {
+    try {
+      const regionUid = jwtDecode<AccessTokenPayload>(token).regionUid;
+      const curRegion = data?.data?.regionList?.find((r) => r.uid === regionUid);
+      return curRegion ? curRegion : undefined;
+    } catch {
+      return undefined;
+    }
+  }, [token, data]);
 
   const logout = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -346,7 +367,8 @@ export default function Account() {
                 </Text>
               </Box>
               {userPlan === 'Free' && <Divider borderColor={'#E4E4E7'} />}
-              {userPlan !== 'Free' && (
+
+              {userPlan !== 'Free' && !curRegionUid?.description?.isFree && (
                 <Box borderTop={'1px solid #E4E4E7'} borderBottom={'1px solid #E4E4E7'}>
                   <Box py="6px" px="16px">
                     <Flex alignItems="center" gap="8px" justifyContent="space-between" width="100%">
@@ -382,6 +404,7 @@ export default function Account() {
                   </Box>
                 </Box>
               )}
+
               <Box p={'8px'}>
                 {layoutConfig?.common.accountSettingEnabled && (
                   <MenuItem
