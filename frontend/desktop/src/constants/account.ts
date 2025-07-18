@@ -23,6 +23,7 @@ export enum SwitchRegionType {
   SWITCH = 'SWITCH'
   // VERIFYEMAIL = 'VERIFYEMAIL'
 }
+
 export const PLAN_LIMIT = {
   Hobby: {
     cpu: 16,
@@ -31,7 +32,8 @@ export const PLAN_LIMIT = {
     network: -1,
     nodePort: 100,
     pod: 100,
-    log: 30
+    log: 30,
+    workspace: 3
   },
   Pro: {
     cpu: 128,
@@ -40,7 +42,8 @@ export const PLAN_LIMIT = {
     network: -1,
     nodePort: 100,
     pod: 100,
-    log: 30
+    log: 30,
+    workspace: -1
   },
   Free: {
     cpu: 4, // vcpu
@@ -49,6 +52,7 @@ export const PLAN_LIMIT = {
     network: 10, // G
     nodePort: 1, // unit
     pod: 4, // unit
-    log: 7 // day
+    log: 7, // day
+    workspace: 1 // workspace amount
   }
 };

@@ -82,6 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       globalData.subscription?.subscriptionPlan.name === 'Free' &&
       regionDescription?.isFree === false
     ) {
+      console.log('user plan is free, but region is not free, logout');
       return jsonRes(res, {
         code: 401,
         message: 'logout'

@@ -125,13 +125,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const client = kc.makeApiClient(k8s.CoreV1Api);
 
     // todo: 获取配额数据
-    // let quota: UserQuotaItemType[] = [];
-    // try {
-    //   quota = await getUserQuota(kc, namespace);
-    // } catch (error) {
-    //   console.error('获取配额数据失败', error);
-    // }
-    // console.log(quota, 'quota');
+    let quota: UserQuotaItemType[] = [];
+    try {
+      quota = await getUserQuota(kc, namespace);
+    } catch (error) {
+      console.error('获取配额数据失败', error);
+    }
 
     const podList = (await client.listNamespacedPod(namespace)).body.items;
 
@@ -189,7 +188,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         totalPodCount,
         totalGpuCount,
         traffic: trafficData,
-        quota: undefined
+        quota: quota
       }
     });
   } catch (err) {

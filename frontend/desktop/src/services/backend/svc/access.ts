@@ -46,6 +46,12 @@ export const getGlobalTokenSvcWithEmail =
         code: HttpStatusCode.Conflict,
         message: 'Email already used by another user'
       });
+    } else if (data === 'ACCOUNT_LOCKED') {
+      return jsonRes(res, {
+        code: HttpStatusCode.Forbidden,
+        message:
+          'The email is already binded with a deleted account. According our policy, it cannot be registered again until 30 days later.'
+      });
     }
     return jsonRes(res, {
       data,
