@@ -40,6 +40,7 @@ import { Plus } from 'lucide-react';
 import useAppStore from '@/stores/app';
 import { getUserPlan } from '@/api/platform';
 import { useUsageStore } from '@/stores/usage';
+import { PLAN_LIMIT } from '@/constants/account';
 
 export default function TeamCenter({
   closeWorkspaceToggle,
@@ -140,10 +141,15 @@ export default function TeamCenter({
     if (planName === 'Pro') return false;
     if (planName === 'Free') return true;
     if (planName === 'Hobby') {
+      if (namespaces.length >= PLAN_LIMIT.Hobby.workspace) return true;
       return isResourceExceeded.length > 0;
     }
     return true;
-  }, [plan?.data?.subscription?.subscriptionPlan?.name, isResourceExceeded]);
+  }, [
+    plan?.data?.subscription?.subscriptionPlan?.name,
+    namespaces.length,
+    isResourceExceeded.length
+  ]);
 
   return (
     <>
