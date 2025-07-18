@@ -57,7 +57,6 @@ export const useUsageStore = create<State>()(
 
         try {
           const response = await getResource();
-          console.log(response, 'response');
           if (response?.data) {
             set((state) => {
               state.resourceData = response.data as ResourceData;
@@ -94,7 +93,6 @@ export const useUsageStore = create<State>()(
 
       checkResourceLimits: (planName: string): ResourceExceeded[] => {
         const data = get().resourceData;
-        console.log(data, 'data');
         if (!data) return [];
 
         const limits = PLAN_LIMIT[planName as keyof typeof PLAN_LIMIT];
