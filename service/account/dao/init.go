@@ -54,7 +54,6 @@ type Region struct {
 
 var (
 	DBClient             Interface
-	EmailTmplMap         map[string]string
 	SMTPConfig           *utils.SMTPConfig
 	ClientIP             string
 	DeviceTokenID        string
@@ -175,12 +174,6 @@ func Init(ctx context.Context) error {
 		FlushQuotaProcessor = &FlushQuotaTask{
 			LocalDomain: Cfg.LocalRegionDomain,
 		}
-	}
-	EmailTmplMap = map[string]string{
-		utils.EnvPaySuccessEmailTmpl: os.Getenv(utils.EnvPaySuccessEmailTmpl),
-		utils.EnvPayFailedEmailTmpl:  os.Getenv(utils.EnvPayFailedEmailTmpl),
-		utils.EnvSubSuccessEmailTmpl: os.Getenv(utils.EnvSubSuccessEmailTmpl),
-		utils.EnvSubFailedEmailTmpl:  os.Getenv(utils.EnvSubFailedEmailTmpl),
 	}
 	SMTPConfig = &utils.SMTPConfig{
 		ServerHost: os.Getenv(utils.EnvSMTPHost),

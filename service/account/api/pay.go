@@ -297,14 +297,14 @@ func newCardPaymentHandler(paymentID string, card types.CardInfo) error {
 		return err
 	}
 	if userUID != uuid.Nil {
-		if err = sendCardPaymentPayEmail(userUID, paymentID, utils.EnvPaySuccessEmailTmpl); err != nil {
+		if err = sendCardPaymentPayEmail(userUID, paymentID, utils.PaySuccess); err != nil {
 			logrus.Errorf("Failed to send PAY_SUCCESS_EMAIL_TMPL email to %s: %v", userUID, err)
 		}
 	}
 	return nil
 }
 
-func sendCardPaymentPayEmail(userUID uuid.UUID, paymentID string, payType string) error {
+func sendCardPaymentPayEmail(userUID uuid.UUID, paymentID string, payType utils.EmailType) error {
 	var order types.PaymentOrder
 	if err := dao.DBClient.GetGlobalDB().Model(&types.PaymentOrder{}).Where(types.PaymentOrder{PaymentRaw: types.PaymentRaw{TradeNO: paymentID, UserUID: userUID}}).Find(&order).Error; err != nil {
 		return fmt.Errorf("failed to get payment order: %v", err)
@@ -358,14 +358,19 @@ func sendUserSubPayEmailWith(userUID uuid.UUID) error {
 	if lastSubTransaction.PayStatus != types.SubscriptionPayStatusPaid && lastSubTransaction.PayStatus != types.SubscriptionPayStatusNoNeed {
 		return fmt.Errorf("last subscription transaction pay status is not paid: %v", lastSubTransaction.PayStatus)
 	}
-
+	emailType := utils.SubMouthlySuccess
+	endDate := lastSubTransaction.StartAt.AddDate(0, 1, 0)
+	if lastSubTransaction.PayPeriod == types.SubscriptionPeriodYearly {
+		emailType = utils.SubYearlySuccess
+		endDate = lastSubTransaction.StartAt.AddDate(1, 0, 0)
+	}
 	if err := sendUserPayEmail(userUID, &utils.EmailSubRender{
-		Type:                 utils.EnvSubSuccessEmailTmpl,
+		Type:                 emailType,
 		Operator:             lastSubTransaction.Operator,
 		Domain:               dao.DBClient.GetLocalRegion().Domain,
 		SubscriptionPlanName: lastSubTransaction.NewPlanName,
 		StartDate:            lastSubTransaction.StartAt,
-		EndDate:              lastSubTransaction.StartAt.AddDate(0, 1, 0),
+		EndDate:              endDate,
 	}); err != nil {
 		return fmt.Errorf("failed to send SUB_SUCCESS_EMAIL_TMPL email to %s: %v", userUID, err)
 	}
@@ -430,7 +435,7 @@ func processPaymentResultWithHandler(c *gin.Context, notifyType string, notifyRe
 		return fmt.Errorf("payment result is not SUCCESS: %#+v", resp.Result)
 	}
 
-	var card types.CardInfo = types.CardInfo{}
+	var card = types.CardInfo{}
 	if (order.Method == helper.ALIPAY_CN || order.Method == helper.ALIPAY_HK) && order.CardUID != nil {
 		if err := dao.DBClient.GetGlobalDB().Model(&types.CardInfo{}).Where(types.CardInfo{ID: *order.CardUID}).Find(&card).Error; err != nil {
 			return fmt.Errorf("failed to get card info: %v", err)

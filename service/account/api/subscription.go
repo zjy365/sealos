@@ -1,13 +1,11 @@
 package api
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"text/template"
 	"time"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -190,7 +188,7 @@ func GetSubscriptionUpgradeAmount(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get subscription info: %v", err)})
 		return
 	}
-	if userSubscription.PlanName == req.PlanName {
+	if userSubscription.PlanName == req.PlanName && userSubscription.Period == req.Period {
 		c.JSON(http.StatusBadRequest, helper.ErrorMessage{Error: "plan name is same as current plan"})
 		return
 	}
@@ -208,15 +206,72 @@ func GetSubscriptionUpgradeAmount(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, helper.ErrorMessage{Error: fmt.Sprintf("failed to get describe plan: %v", err)})
 		return
 	}
-	if describeSubPlan.Amount <= currentSubPlan.Amount {
+	desAmount, curAmount := describeSubPlan.Amount, currentSubPlan.Amount
+	if req.Period == types.SubscriptionPeriodYearly {
+		desAmount = describeSubPlan.AnnualAmount
+	}
+	if userSubscription.Period == types.SubscriptionPeriodYearly {
+		curAmount = currentSubPlan.AnnualAmount
+	}
+	if desAmount <= curAmount {
 		c.JSON(http.StatusBadRequest, helper.ErrorMessage{Error: "describe plan amount is less than current plan amount"})
 		return
 	}
-	alreadyUsedDays := time.Since(userSubscription.StartAt).Hours() / 24
-	usedAmount := (30 - alreadyUsedDays) / 30 * float64(currentSubPlan.Amount)
-	value := float64(describeSubPlan.Amount) - usedAmount
+	if userSubscription.PlanName == req.PlanName {
+		c.JSON(http.StatusOK, gin.H{
+			"amount": desAmount,
+		})
+		return
+	}
+	/*
+			remainingDays := userSubscription.ExpireAt.Sub(time.Now().UTC()).Hours() / 24
+
+		// 未使用总额
+		var unUsedAmount float64
+		value := userDescribePlan.Amount
+		if subTransaction.PayPeriod == types.SubscriptionPeriodYearly {
+			value = userDescribePlan.AnnualAmount
+		}
+		if userSubscription.Period == types.SubscriptionPeriodYearly {
+			if remainingDays > 31*12 {
+				unUsedAmount = float64(userCurrentPlan.AnnualAmount)
+			} else if remainingDays < 0 {
+				unUsedAmount = 0
+			} else {
+				unUsedAmount = (remainingDays / (12 * 31)) * float64(userCurrentPlan.AnnualAmount)
+			}
+		} else {
+			if remainingDays > 31 {
+				unUsedAmount = float64(userCurrentPlan.Amount)
+			} else if remainingDays < 0 {
+				unUsedAmount = 0
+			} else {
+				unUsedAmount = remainingDays / 31 * float64(userCurrentPlan.Amount)
+			}
+		}
+		subTransaction.Amount = int64(float64(value) - unUsedAmount)
+	*/
+	remainingDays := userSubscription.ExpireAt.Sub(time.Now().UTC()).Hours() / 24
+	var unUsedAmount float64
+	if userSubscription.Period == types.SubscriptionPeriodYearly {
+		if remainingDays > 31*12 {
+			unUsedAmount = float64(curAmount)
+		} else if remainingDays < 0 {
+			unUsedAmount = 0
+		} else {
+			unUsedAmount = (remainingDays / (12 * 31)) * float64(curAmount)
+		}
+	} else {
+		if remainingDays > 31 {
+			unUsedAmount = float64(curAmount)
+		} else if remainingDays < 0 {
+			unUsedAmount = 0
+		} else {
+			unUsedAmount = remainingDays / 31 * float64(curAmount)
+		}
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"amount": int64(value),
+		"amount": int64(float64(desAmount) - unUsedAmount),
 	})
 }
 
@@ -360,7 +415,7 @@ func CreateSubscriptionPay(c *gin.Context) {
 		SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to get subscription info: %v", err)})
 		return
 	}
-	if userSubscription.PlanName == req.PlanName && req.PlanType != helper.Renewal {
+	if userSubscription.PlanName == req.PlanName && req.PlanType != helper.Renewal && req.Period == userSubscription.Period {
 		SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "plan name is same as current plan"})
 		return
 	}
@@ -390,6 +445,7 @@ func CreateSubscriptionPay(c *gin.Context) {
 		OldPlanID:      userCurrentPlan.ID,
 		OldPlanName:    userCurrentPlan.Name,
 		OldPlanStatus:  userSubscription.Status,
+		PayPeriod:      req.Period,
 		StartAt:        time.Now().UTC(),
 		NewPlanID:      userDescribePlan.ID,
 		NewPlanName:    userDescribePlan.Name,
@@ -400,34 +456,61 @@ func CreateSubscriptionPay(c *gin.Context) {
 
 	switch req.PlanType {
 	case helper.Upgrade:
-		// TODO implement subscription upgrade
-		if !contain(userCurrentPlan.UpgradePlanList, req.PlanName) {
+		if !contain(userCurrentPlan.UpgradePlanList, req.PlanName) && req.Period == userSubscription.Period {
 			SetErrorResp(c, http.StatusBadRequest, gin.H{"error": fmt.Sprintf("plan name is not in upgrade plan list: %v", userCurrentPlan.UpgradePlanList)})
 			return
 		}
-
-		// TODO implement subscription pay
-		if userCurrentPlan.Amount <= 0 {
+		if userCurrentPlan.Amount <= 0 || userSubscription.Status == types.SubscriptionStatusDebt {
 			subTransaction.Operator = types.SubscriptionTransactionTypeCreated
-			//TODO 新订阅
-			subTransaction.Amount = userDescribePlan.Amount
+			switch subTransaction.PayPeriod {
+			case types.SubscriptionPeriodMonthly:
+				subTransaction.Amount = userDescribePlan.Amount
+			case types.SubscriptionPeriodYearly:
+				subTransaction.Amount = userDescribePlan.AnnualAmount
+			default:
+				SetErrorResp(c, http.StatusBadRequest, gin.H{"error": fmt.Sprintf("plan amount is not valid: %v", userCurrentPlan.Amount)})
+				return
+			}
 		} else {
-			//TODO 升级订阅
 			subTransaction.Operator = types.SubscriptionTransactionTypeUpgraded
-			//  TODO free->hobby：直接购买
-			//hobby->pro：按照hobby未使用天数补充差价。补充差价为a，hobby已使用天数为d，计算公式：a = 5*(d/30) + 15
-			// userSubscription.StartAt 到 now的天数
-			alreadyUsedDays := time.Since(userSubscription.StartAt).Hours() / 24
-			usedAmount := (30 - alreadyUsedDays) / 30 * float64(userCurrentPlan.Amount)
-			value := float64(userDescribePlan.Amount) - usedAmount
+			if userSubscription.Period != req.Period {
+				if req.Period == types.SubscriptionPeriodMonthly && userSubscription.Period == types.SubscriptionPeriodYearly {
+					SetErrorResp(c, http.StatusBadRequest, gin.H{"error": fmt.Sprintf("cannot be upgraded from the annual payment cycle to the monthly payment cycle")})
+					return
+				}
+			}
+			if req.PlanName == userSubscription.PlanName {
+				subTransaction.Amount = userDescribePlan.AnnualAmount
+			} else {
+				//  TODO free->hobby：直接购买
+				//hobby->pro：按照hobby未使用天数补充差价。补充差价为a，hobby已使用天数为d，计算公式：a = 5*(d/30) + 15
+				remainingDays := userSubscription.ExpireAt.Sub(time.Now().UTC()).Hours() / 24
 
-			//remainingDays := float64(30) - alreadyUsedDays
-			//currentPlanSurplusValue := math.Ceil(float64(userCurrentPlan.Amount) * math.Ceil(remainingDays/30))
-			//describePlanSurplusValue := math.Ceil(float64(userDescribePlan.Amount) * math.Ceil(remainingDays/30))
-			//// amount
-			subTransaction.Amount = int64(value)
-
-			//TODO 临近到期的情况处理
+				// 未使用总额
+				var unUsedAmount float64
+				value := userDescribePlan.Amount
+				if subTransaction.PayPeriod == types.SubscriptionPeriodYearly {
+					value = userDescribePlan.AnnualAmount
+				}
+				if userSubscription.Period == types.SubscriptionPeriodYearly {
+					if remainingDays > 31*12 {
+						unUsedAmount = float64(userCurrentPlan.AnnualAmount)
+					} else if remainingDays < 0 {
+						unUsedAmount = 0
+					} else {
+						unUsedAmount = (remainingDays / (12 * 31)) * float64(userCurrentPlan.AnnualAmount)
+					}
+				} else {
+					if remainingDays > 31 {
+						unUsedAmount = float64(userCurrentPlan.Amount)
+					} else if remainingDays < 0 {
+						unUsedAmount = 0
+					} else {
+						unUsedAmount = remainingDays / 31 * float64(userCurrentPlan.Amount)
+					}
+				}
+				subTransaction.Amount = int64(float64(value) - unUsedAmount)
+			}
 		}
 
 	case helper.Downgrade:
@@ -447,9 +530,18 @@ func CreateSubscriptionPay(c *gin.Context) {
 			SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "plan name is not same as current plan"})
 			return
 		}
-		// TODO 只变更到期时间
-		subTransaction.Amount = userDescribePlan.Amount
+		if req.Period == types.SubscriptionPeriodYearly {
+			subTransaction.Amount = userDescribePlan.AnnualAmount
+		} else {
+			subTransaction.Amount = userDescribePlan.Amount
+		}
 		subTransaction.Operator = types.SubscriptionTransactionTypeRenewed
+	case helper.Created:
+		if req.Period == types.SubscriptionPeriodYearly {
+			subTransaction.Amount = userDescribePlan.AnnualAmount
+		} else {
+			subTransaction.Amount = userDescribePlan.Amount
+		}
 	}
 	if subTransaction.Amount > 0 {
 		PayForSubscription(c, req, subTransaction)
@@ -550,7 +642,7 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 		switch payQueryResp.PaymentStatus {
 		case "SUCCESS":
 			if req.CardID != nil {
-				cardInfo, err := dao.DBClient.GetCardInfo(req.UserUID, req.UserUID)
+				cardInfo, err := dao.DBClient.GetCardInfo(*req.CardID, req.UserUID)
 				if err != nil {
 					SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to get card info: ", err)})
 					return
@@ -566,6 +658,27 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 			SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "payment success"})
 			return
 		case "PROCESSING":
+			// 判断上次transaction和本次req是否一致
+			if lastSubTransaction.NewPlanName != req.PlanName || lastSubTransaction.PayPeriod != req.Period {
+				// 不一致则删除上次transaction
+				_, err = dao.PaymentService.CancelPayment(payment.TradeNO, "")
+				if err != nil {
+					SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to cancel payment: ", err)})
+					return
+				}
+				err = dao.DBClient.GetGlobalDB().Model(&payment).Update("status", types.PaymentOrderStatusFailed).Error
+				if err != nil {
+					SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to update payment status: ", err)})
+					return
+				}
+				err = dao.DBClient.GetGlobalDB().Model(&lastSubTransaction).Update("status", types.SubscriptionTransactionStatusFailed).Error
+				if err != nil {
+					SetErrorResp(c, http.StatusInternalServerError, gin.H{"error": fmt.Sprint("failed to update subscription transaction status: ", err)})
+					return
+				}
+				PayForSubscription(c, req, subTransaction)
+				return
+			}
 			if payment.CodeURL == "" {
 				SetErrorResp(c, http.StatusBadRequest, gin.H{"error": "payment code url is empty"})
 				return
@@ -675,6 +788,9 @@ func PayForSubscription(c *gin.Context, req *helper.SubscriptionOperatorReq, sub
 			paySvcResp, hErr = dao.PaymentService.CreateNewSubscriptionPay(paymentReq)
 			if err != nil {
 				return fmt.Errorf("failed to create payment: %w", hErr)
+			}
+			if paySvcResp == nil {
+				return fmt.Errorf("payment result is nil")
 			}
 			if paySvcResp.Result.ResultCode != "PAYMENT_IN_PROCESS" || paySvcResp.Result.ResultStatus != "U" {
 				return fmt.Errorf("payment result is not PAYMENT_IN_PROCESS: %#+v", paySvcResp.Result)
@@ -854,9 +970,6 @@ func SubscriptionPayForBindCard(paymentReq services.PaymentRequest, req *helper.
 }
 
 func sendUserPayEmail(userUID uuid.UUID, emailRender utils.EmailRenderBuilder) error {
-	if dao.EmailTmplMap[emailRender.GetType()] == "" {
-		return fmt.Errorf("email type %s is invalid", emailRender.GetType())
-	}
 	tx := dao.DBClient.GetGlobalDB()
 	var emailProvider types.OauthProvider
 	var userInfo types.UserInfo
@@ -875,58 +988,16 @@ func sendUserPayEmail(userUID uuid.UUID, emailRender utils.EmailRenderBuilder) e
 			return fmt.Errorf("failed to get user info: %w", err)
 		}
 		emailRender.SetUserInfo(&userInfo)
-		funcMap := template.FuncMap{
-			"sub": func(a, b int) int {
-				return a - b
-			},
-		}
-		tmp, err := template.New("subscription-success").Funcs(funcMap).Parse(dao.EmailTmplMap[emailRender.GetType()])
+		emailBody, err := emailRender.Render()
 		if err != nil {
-			return fmt.Errorf("failed to parse email template: %w", err)
-		}
-		var rendered bytes.Buffer
-		if err = tmp.Execute(&rendered, emailRender.Build()); err != nil {
 			return fmt.Errorf("failed to render email template: %w", err)
 		}
-		if err := dao.SMTPConfig.SendEmailWithSubject(emailRender.GetSubject(), rendered.String(), emailProvider.ProviderID); err != nil {
+		if err := dao.SMTPConfig.SendEmailWithSubject(emailRender.GetSubject(), emailBody, emailProvider.ProviderID); err != nil {
 			return fmt.Errorf("failed to send email: %w", err)
 		}
 		return nil
 	}
 	return fmt.Errorf("email provider is empty")
-}
-
-func SendUserPayEmail(userUID uuid.UUID, payType string) error {
-	tx := dao.DBClient.GetGlobalDB()
-	var emailProvider types.OauthProvider
-	var userInfo types.UserInfo
-	err := dao.DBClient.GetGlobalDB().Where(&types.OauthProvider{UserUID: userUID, ProviderType: types.OauthProviderTypeEmail}).First(&emailProvider).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return fmt.Errorf("failed to get email provider: %w", err)
-	}
-
-	if emailProvider.ProviderID != "" {
-		err = tx.Where(types.UserInfo{UserUID: userUID}).Find(&userInfo).Error
-		if err != nil {
-			return fmt.Errorf("failed to get user info: %w", err)
-		}
-		tmp, err := template.New("subscription-success").Parse(dao.EmailTmplMap[payType])
-		if err != nil {
-			return fmt.Errorf("failed to parse email template: %w", err)
-		}
-		var rendered bytes.Buffer
-		if err = tmp.Execute(&rendered, map[string]string{
-			"FirstName": userInfo.FirstName,
-			"LastName":  userInfo.LastName,
-			"Domain":    dao.DBClient.GetLocalRegion().Domain,
-		}); err != nil {
-			return fmt.Errorf("failed to render email template: %w", err)
-		}
-		if err := dao.SMTPConfig.SendEmail(rendered.String(), emailProvider.ProviderID); err != nil {
-			return fmt.Errorf("failed to send email: %w", err)
-		}
-	}
-	return nil
 }
 
 func SubscriptionPayByBalance(req *helper.SubscriptionOperatorReq, subTransaction *types.SubscriptionTransaction) error {
@@ -992,6 +1063,11 @@ func NewSubscriptionPayNotifyHandler(c *gin.Context) {
 		ClientID:     c.GetHeader("client-id"),
 		Signature:    c.GetHeader("signature"),
 	}
+	for k, v := range c.Request.Header {
+		fmt.Fprintf(os.Stdout, "Header[%s] = %v\n", k, v)
+	}
+	fmt.Printf("c.GetHeader(\"signature\"): %s", c.GetHeader("signature"))
+	fmt.Printf("c.GetHeader(\"Signature\"): %s", c.GetHeader("Signature"))
 
 	var err error
 	requestInfo.Body, err = c.GetRawData()

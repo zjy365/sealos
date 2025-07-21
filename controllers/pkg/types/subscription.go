@@ -18,8 +18,16 @@ type Subscription struct {
 	UpdateAt      time.Time          `gorm:"column:update_at;autoCreateTime"`                          // 更新时间
 	ExpireAt      time.Time          `gorm:"column:expire_at;autoCreateTime"`                          // 过期时间
 	CardID        *uuid.UUID         `gorm:"type:uuid;column:card_id"`                                 // 银行卡 ID
+	Period        SubscriptionPeriod `gorm:"type:varchar(50);column:period;default:MONTHLY"`           // 周期 [年度｜月度] （默认为月度）
 	NextCycleDate time.Time          `gorm:"column:next_cycle_date"`                                   // 下一个周期的日期
 }
+
+type SubscriptionPeriod string
+
+const (
+	SubscriptionPeriodMonthly SubscriptionPeriod = "MONTHLY"
+	SubscriptionPeriodYearly  SubscriptionPeriod = "YEARLY"
+)
 
 type SubscriptionStatus string
 
@@ -45,6 +53,7 @@ type SubscriptionTransaction struct {
 	UpdatedAt      time.Time                     `gorm:"column:updated_at;autoUpdateTime"`                         // 更新时间
 	Status         SubscriptionTransactionStatus `gorm:"type:varchar(50);column:status"`                           // 状态
 	PayStatus      SubscriptionPayStatus         `gorm:"type:varchar(50);column:pay_status"`                       // 支付状态
+	PayPeriod      SubscriptionPeriod            `gorm:"type:varchar(50);column:pay_period"`                       // 支付周期
 	PayID          string                        `gorm:"type:text;column:pay_id"`                                  // 支付订单号
 	Amount         int64                         `gorm:"type:bigint;column:amount"`                                // 金额
 }
@@ -81,9 +90,9 @@ type SubscriptionPlan struct {
 	ID                uuid.UUID      `gorm:"type:uuid;default:gen_random_uuid();primaryKey;column:id"` // 计划 ID
 	Name              string         `gorm:"unique;not null;column:name;type:text"`                    // 计划名称
 	Description       string         `gorm:"type:text;column:description"`                             // 描述
-	Amount            int64          `gorm:"type:bigint;column:amount"`                                // 金额
-	GiftAmount        int64          `gorm:"type:bigint;column:gift_amount"`                           // 赠送金额
-	Period            string         `gorm:"type:varchar(50);column:period"`                           // 周期
+	AnnualAmount      int64          `gorm:"type:bigint;column:annual_amount"`                         // 年度费用
+	Amount            int64          `gorm:"type:bigint;column:amount"`                                // 月度费用
+	GiftAmount        int64          `gorm:"type:bigint;column:gift_amount"`                           // 周期赠送费用
 	UpgradePlanList   pq.StringArray `gorm:"type:text[];column:upgrade_plan_list"`                     // 可升级的计划列表
 	DowngradePlanList pq.StringArray `gorm:"type:text[];column:downgrade_plan_list"`                   // 可降级的计划列表
 	// <0 Unrestricted

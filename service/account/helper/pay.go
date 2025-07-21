@@ -3,6 +3,7 @@ package helper
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/labring/sealos/controllers/pkg/types"
 )
 
 type CreatePayReq struct {
@@ -104,6 +105,10 @@ type SubscriptionOperatorReq struct {
 	// @Description PayMethod
 	PayMethod string `json:"payMethod" bson:"payMethod" example:"CARD"`
 
+	// @Summary Period
+	// @Description Period
+	Period types.SubscriptionPeriod `json:"period" bson:"period" example:"MONTHLY"`
+
 	// @Summary CardID
 	// @Description CardID
 	CardID *uuid.UUID `json:"cardID" bson:"cardID" example:"123e4567-e89b-12d3-a456-426614174000"`
@@ -116,6 +121,7 @@ type SubscriptionOperatorReq struct {
 type PlanType string
 
 const (
+	Created   PlanType = "created"
 	Upgrade   PlanType = "upgrade"
 	Downgrade PlanType = "downgrade"
 	Renewal   PlanType = "renewal"
@@ -130,6 +136,9 @@ func ParseSubscriptionOperatorReq(c *gin.Context) (*SubscriptionOperatorReq, err
 	req := &SubscriptionOperatorReq{}
 	if err := c.ShouldBindJSON(req); err != nil {
 		return nil, err
+	}
+	if req.Period == "" {
+		req.Period = types.SubscriptionPeriodMonthly
 	}
 	return req, nil
 }

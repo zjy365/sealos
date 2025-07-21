@@ -1289,6 +1289,9 @@ func (c *Cockroach) GetSubscription(ops *types.UserQueryOpts) (*types.Subscripti
 	).Find(&subscription).Error; err != nil {
 		return nil, err
 	}
+	if subscription.Period == "" {
+		subscription.Period = types.SubscriptionPeriodMonthly
+	}
 	return &subscription, nil
 }
 
@@ -1833,6 +1836,50 @@ func (c *Cockroach) InitTables() error {
 			err := c.DB.Exec(sql).Error
 			if err != nil {
 				return fmt.Errorf("failed to add column credit_id_list: %v", err)
+			}
+		}
+	}
+	if !c.DB.Migrator().HasColumn(&types.SubscriptionPlan{}, "annual_amount") {
+		sqls := []string{
+			`ALTER TABLE "SubscriptionPlan" ADD COLUMN IF NOT EXISTS "annual_amount" bigint;`,
+		}
+		for _, sql := range sqls {
+			err := c.DB.Exec(sql).Error
+			if err != nil {
+				return fmt.Errorf("failed to add column SubscriptionPlan annual_amount: %v", err)
+			}
+		}
+	}
+	if !c.Localdb.Migrator().HasColumn(&types.SubscriptionPlan{}, "annual_amount") {
+		sqls := []string{
+			`ALTER TABLE "SubscriptionPlan" ADD COLUMN IF NOT EXISTS "annual_amount" bigint;`,
+		}
+		for _, sql := range sqls {
+			err := c.Localdb.Exec(sql).Error
+			if err != nil {
+				return fmt.Errorf("failed to add column SubscriptionPlan annual_amount: %v", err)
+			}
+		}
+	}
+	if !c.DB.Migrator().HasColumn(&types.Subscription{}, "period") {
+		sqls := []string{
+			`ALTER TABLE "Subscription" ADD COLUMN IF NOT EXISTS "period" text;`,
+		}
+		for _, sql := range sqls {
+			err := c.DB.Exec(sql).Error
+			if err != nil {
+				return fmt.Errorf("failed to add column Subscription period: %v", err)
+			}
+		}
+	}
+	if !c.DB.Migrator().HasColumn(&types.SubscriptionTransaction{}, "pay_period") {
+		sqls := []string{
+			`ALTER TABLE "SubscriptionTransaction" ADD COLUMN IF NOT EXISTS "pay_period" text;`,
+		}
+		for _, sql := range sqls {
+			err := c.DB.Exec(sql).Error
+			if err != nil {
+				return fmt.Errorf("failed to add column SubscriptionTransaction pay_period: %v", err)
 			}
 		}
 	}

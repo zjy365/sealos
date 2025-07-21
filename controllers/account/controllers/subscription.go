@@ -361,7 +361,11 @@ func (sp *SubscriptionProcessor) handleCreated(ctx context.Context, dbTx *gorm.D
 	sub.StartAt = now
 	sub.UpdateAt = now
 	sub.ExpireAt = now.AddDate(0, 1, 0)
-	sub.NextCycleDate = sub.ExpireAt
+	sub.NextCycleDate = now.AddDate(0, 1, 0)
+	sub.Period = tx.PayPeriod
+	if tx.PayPeriod == types.SubscriptionPeriodYearly {
+		sub.ExpireAt = now.AddDate(1, 0, 0)
+	}
 	if err := dbTx.Save(&sub).Error; err != nil {
 		return fmt.Errorf("failed to update subscription: %w", err)
 	}
@@ -381,7 +385,7 @@ func (sp *SubscriptionProcessor) handleCreated(ctx context.Context, dbTx *gorm.D
 		Amount:    plan.GiftAmount,
 		FromID:    sub.PlanID.String(),
 		FromType:  types.CreditsFromTypeSubscription,
-		ExpireAt:  sub.ExpireAt,
+		ExpireAt:  sub.NextCycleDate,
 		CreatedAt: now,
 		StartAt:   now,
 		Status:    types.CreditsStatusActive,
@@ -406,17 +410,27 @@ func (sp *SubscriptionProcessor) handleUpgrade(ctx context.Context, dbTx *gorm.D
 	sub.PlanID = tx.NewPlanID
 	sub.PlanName = tx.NewPlanName
 	sub.Status = types.SubscriptionStatusNormal
-	sub.StartAt = now
+	if tx.OldPlanName == tx.NewPlanName && tx.PayPeriod == types.SubscriptionPeriodYearly {
+		sub.ExpireAt = sub.ExpireAt.AddDate(1, 0, 0)
+	} else {
+		sub.StartAt = now
+		sub.ExpireAt = now.AddDate(0, 1, 0)
+		if tx.PayPeriod == types.SubscriptionPeriodYearly {
+			sub.ExpireAt = now.AddDate(1, 0, 0)
+		}
+		sub.NextCycleDate = now.AddDate(0, 1, 0)
+	}
 	sub.UpdateAt = now
-	sub.ExpireAt = now.AddDate(0, 1, 0)
-	sub.NextCycleDate = sub.ExpireAt
+	sub.Period = tx.PayPeriod
 	if err := dbTx.Save(&sub).Error; err != nil {
 		return fmt.Errorf("failed to update subscription: %w", err)
 	}
 
 	// 更新配额
-	if err := sp.updateQuota(ctx, sub.UserUID, tx.NewPlanID, tx.NewPlanName); err != nil {
-		return err
+	if tx.OldPlanName != tx.NewPlanName {
+		if err := sp.updateQuota(ctx, sub.UserUID, tx.NewPlanID, tx.NewPlanName); err != nil {
+			return err
+		}
 	}
 
 	err := dbTx.Model(&types.Credits{}).Where(&types.Credits{
@@ -503,7 +517,11 @@ func (sp *SubscriptionProcessor) handleRenewal(ctx context.Context, dbTx *gorm.D
 	sub.StartAt = now
 	sub.UpdateAt = now
 	sub.ExpireAt = now.AddDate(0, 1, 0)
-	sub.NextCycleDate = sub.ExpireAt
+	sub.NextCycleDate = now.AddDate(0, 1, 0)
+	sub.Period = tx.PayPeriod
+	if tx.PayPeriod == types.SubscriptionPeriodYearly {
+		sub.ExpireAt = now.AddDate(1, 0, 0)
+	}
 	if err := dbTx.Save(&sub).Error; err != nil {
 		return fmt.Errorf("failed to update subscription: %w", err)
 	}
