@@ -30,6 +30,7 @@ import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template
 import TemplateDrawer from './TemplateDrawer';
 import { useGuideStore } from '@/stores/guide';
 import { startDriver, startGuide6, startguideRelease } from '@/hooks/driver';
+import { AppEditType } from '@/types/launchpad';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -94,37 +95,62 @@ const Version = () => {
       const releaseArgs = config.releaseArgs.join(' ');
       const releaseCommand = config.releaseCommand.join(' ');
       const { cpu, memory, networks, name } = devbox;
-      const newNetworks = networks.map((network) => {
+      const newNetworks: AppEditType['networks'] = networks.map((network) => {
         return {
+          networkName: network.networkName || '',
+          portName: network.portName || 'http',
           port: network.port,
-          protocol: network.protocol,
+          protocol: 'TCP',
+          appProtocol: network.protocol || 'HTTP',
           openPublicDomain: network.openPublicDomain,
-          domain: env.ingressDomain
+          publicDomain: network.publicDomain || '',
+          customDomain: network.customDomain || '',
+          domain: env.ingressDomain,
+          openNodePort: false
         };
       });
       const imageName = `${env.registryAddr}/${env.namespace}/${devbox.name}:${version.tag}`;
 
-      const transformData = {
+      const transformData: AppEditType = {
         appName: `${name}-release-${nanoid()}`,
         cpu: cpu,
         memory: memory,
         imageName: imageName,
+        replicas: 1,
         networks:
           newNetworks.length > 0
             ? newNetworks
             : [
                 {
+                  networkName: '',
+                  portName: 'http',
                   port: 80,
-                  protocol: 'http',
+                  protocol: 'TCP',
+                  appProtocol: 'HTTP',
                   openPublicDomain: false,
-                  domain: env.ingressDomain
+                  publicDomain: '',
+                  customDomain: '',
+                  domain: env.ingressDomain,
+                  openNodePort: false
                 }
               ],
         runCMD: releaseCommand,
         cmdParam: releaseArgs,
+        envs: [],
+        secret: {
+          use: false,
+          username: '',
+          password: '',
+          serverAddress: ''
+        },
+        configMapList: [],
+        storeList: [],
         labels: {
           [devboxIdKey]: devbox.id
-        }
+        },
+        volumes: [],
+        volumeMounts: [],
+        kind: 'deployment'
       };
       setDeployData(transformData);
       const apps = await getAppsByDevboxId(devbox.id);

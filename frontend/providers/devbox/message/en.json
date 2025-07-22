@@ -2,7 +2,7 @@
   "Accessible": "Available",
   "Add Port": "Add Port",
   "Amount": "Amount",
-  "CNAME Tips": "To set up a custom domain, please add a `CNAME` record for your domain pointing to {domain} at your domain registrar. You can bind your custom domain once the DNS resolution takes effect.",
+  "CNAME Tips": "To set up a custom domain, please add a `CNAME` record for your domain pointing to {domain} at your domain registrar. You can bind your custom domain once the DNS resolution takes effect. Note: Proxied mode cannot be selected on Cloudflare.",
   "CPU_with_Memory": "CPU、Memory",
   "Card": "cards",
   "Container Port": "Container Port",

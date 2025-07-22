@@ -176,7 +176,6 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
           </Box>
         </Flex>
       </Box>
-
       <Box
         mt={'16px'}
         py={'20px'}
@@ -281,9 +280,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                 offset={[0, 0]}
                                 color="#09090B"
                                 label={
-                                  planName === 'Free'
-                                    ? 'Upgrade your plan for faster deployment'
-                                    : t('ReadyTip')
+                                  'Switch to members-only availability zone for faster deployment.'
                                 }
                                 placement={'bottom'}
                               >
@@ -297,7 +294,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                   gap={'8px'}
                                   minW={'63px'}
                                 >
-                                  {/* <MyIcon
+                                  <MyIcon
                                     name={'loading'}
                                     w={'12px'}
                                     h={'12px'}
@@ -312,14 +309,7 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                         }
                                       }
                                     }}
-                                  /> */}
-                                  <Center
-                                    w={'6px'}
-                                    h={'6px'}
-                                    borderRadius={'full'}
-                                    bg={'#71717A'}
-                                    flexShrink={0}
-                                  ></Center>
+                                  />
                                   {t('Ready')}
                                 </Center>
                               </MyTooltip>

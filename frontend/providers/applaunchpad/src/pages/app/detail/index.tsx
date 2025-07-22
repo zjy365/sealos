@@ -66,7 +66,7 @@ const AppDetail = ({ appName }: { appName: string }) => {
       >
         <AppBaseInfo app={appDetail} />
 
-        <Box flex="1" bg={'white'} borderRadius={'8px'}>
+        <Box flex="1" maxH={'fit-content'} bg={'white'} borderRadius={'8px'}>
           {appDetail ? <AppMainInfo app={appDetail} /> : <Loading loading={true} fixed={false} />}
         </Box>
 
