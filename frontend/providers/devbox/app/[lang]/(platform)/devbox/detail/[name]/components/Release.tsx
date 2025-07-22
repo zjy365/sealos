@@ -95,63 +95,41 @@ const Version = () => {
       const releaseArgs = config.releaseArgs.join(' ');
       const releaseCommand = config.releaseCommand.join(' ');
       const { cpu, memory, networks, name } = devbox;
-      const newNetworks: AppEditType['networks'] = networks.map((network) => {
+      const newNetworks = networks.map((network) => {
         return {
-          networkName: network.networkName || '',
-          portName: network.portName || 'http',
           port: network.port,
+          appProtocol: network.protocol,
           protocol: 'TCP',
-          appProtocol: network.protocol || 'HTTP',
           openPublicDomain: network.openPublicDomain,
-          publicDomain: network.publicDomain || '',
-          customDomain: network.customDomain || '',
-          domain: env.ingressDomain,
-          openNodePort: false
+          domain: env.ingressDomain
         };
       });
       const imageName = `${env.registryAddr}/${env.namespace}/${devbox.name}:${version.tag}`;
 
-      const transformData: AppEditType = {
+      const transformData = {
         appName: `${name}-release-${nanoid()}`,
         cpu: cpu,
         memory: memory,
         imageName: imageName,
-        replicas: 1,
         networks:
           newNetworks.length > 0
             ? newNetworks
             : [
                 {
-                  networkName: '',
-                  portName: 'http',
                   port: 80,
                   protocol: 'TCP',
                   appProtocol: 'HTTP',
                   openPublicDomain: false,
-                  publicDomain: '',
-                  customDomain: '',
-                  domain: env.ingressDomain,
-                  openNodePort: false
+                  domain: env.ingressDomain
                 }
               ],
         runCMD: releaseCommand,
         cmdParam: releaseArgs,
-        envs: [],
-        secret: {
-          use: false,
-          username: '',
-          password: '',
-          serverAddress: ''
-        },
-        configMapList: [],
-        storeList: [],
         labels: {
           [devboxIdKey]: devbox.id
-        },
-        volumes: [],
-        volumeMounts: [],
-        kind: 'deployment'
+        }
       };
+
       setDeployData(transformData);
       const apps = await getAppsByDevboxId(devbox.id);
 
