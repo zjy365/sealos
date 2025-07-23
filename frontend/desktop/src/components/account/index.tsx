@@ -366,9 +366,8 @@ export default function Account() {
                   NS:{user?.nsid}
                 </Text>
               </Box>
-              {userPlan === 'Free' && <Divider borderColor={'#E4E4E7'} />}
 
-              {userPlan !== 'Free' && !curRegionUid?.description?.isFree && (
+              {userPlan !== 'Free' && !curRegionUid?.description?.isFree ? (
                 <Box borderTop={'1px solid #E4E4E7'} borderBottom={'1px solid #E4E4E7'}>
                   <Box py="6px" px="16px">
                     <Flex alignItems="center" gap="8px" justifyContent="space-between" width="100%">
@@ -403,6 +402,8 @@ export default function Account() {
                     </Flex>
                   </Box>
                 </Box>
+              ) : (
+                <Divider borderColor={'#E4E4E7'} />
               )}
 
               <Box p={'8px'}>
