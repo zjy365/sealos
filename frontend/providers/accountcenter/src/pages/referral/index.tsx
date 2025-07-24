@@ -49,7 +49,8 @@ const ReferralPage: FC<ReferralPageProps> = () => {
     ? statsResponse?.data
     : ({
         total: 0,
-        reward: []
+        // reward: []
+        reward_count: 0
       } as ReferralStats);
   const copyLink = () => {
     if (link) {
@@ -239,8 +240,8 @@ const ReferralPage: FC<ReferralPageProps> = () => {
               <GridItem>
                 {renderStat(
                   t('ReferralStatsInvitedUsers'),
-                  typeof stats?.total === 'number'
-                    ? cloneElement(countTransComponents.Strong, {}, stats.total)
+                  typeof stats?.reward_count === 'number'
+                    ? cloneElement(countTransComponents.Strong, {}, stats.reward_count)
                     : null
                 )}
               </GridItem>
@@ -250,7 +251,7 @@ const ReferralPage: FC<ReferralPageProps> = () => {
                   <Trans
                     i18nKey="ReferralRewardsCount"
                     components={countTransComponents}
-                    values={{ count: stats?.reward.length }}
+                    values={{ count: stats?.reward_count }}
                   />
                 )}
               </GridItem>

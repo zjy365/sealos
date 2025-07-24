@@ -208,16 +208,16 @@
   "Redeem": "Redeem",
   "Referral": "Referral",
   "ReferralBonus": [
-    "Invite 5 new users to register and get: A 1-month Hobby plan (if on Free plan), OR a 1-month extension (if already on Hobby plan)",
-    "You can share the link unlimited times.\nInvite 300 new users and earn up to 60 months of the Hobby plan (Redeem time: UTC 0:00)."
+    "Invite 1 new Hobby/Pro user to get a 1-month Hobby plan (if on Free or Hobby plan), OR invite 1 new Pro user to get a 1-month Pro plan (if on Pro plan).",
+    "You can share the link unlimited times.\nInvite 60 new Hobby/Pro users and earn up to 60 months of the corresponding plan (Redeem time: UTC 0: 00)."
   ],
   "ReferralLink": "Referral Link",
-  "ReferralRewardsCount": "<Strong>{{count}}</Strong> month of hobby plan",
-  "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of hobby plan",
+  "ReferralRewardsCount": "<Strong>{{count}}</Strong> months of corresponding plan",
+  "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of corresponding plan",
   "ReferralShareLinkDesc": "The referral link will be generated after creating apps from one of the following: Devbox, App store, App launchpad, Database.",
   "ReferralShareLinkTitle": "Share your link to others",
   "ReferralStats": "Referral stats",
-  "ReferralStatsInvitedUsers": "Invited Users",
+  "ReferralStatsInvitedUsers": "Invited New Hobby/Pro Users",
   "ReferralStatsRewards": "Bonus Gained",
   "Region": "Region",
   "Reload": "Reload",

@@ -159,8 +159,7 @@ const DevboxCreatePage = () => {
   // get user quota
   const { userQuota, loadUserQuota } = useUserStore();
   useQuery(['getUserQuota'], loadUserQuota);
-
-  console.log(userQuota, 'userQuota');
+  // console.log(userQuota, 'userQuota');
 
   useQuery(
     ['initDevboxCreateData'],

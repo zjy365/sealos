@@ -30,6 +30,7 @@ import { getTemplateConfig, listPrivateTemplateRepository } from '@/api/template
 import TemplateDrawer from './TemplateDrawer';
 import { useGuideStore } from '@/stores/guide';
 import { startDriver, startGuide6, startguideRelease } from '@/hooks/driver';
+import { AppEditType } from '@/types/launchpad';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
@@ -97,7 +98,8 @@ const Version = () => {
       const newNetworks = networks.map((network) => {
         return {
           port: network.port,
-          protocol: network.protocol,
+          appProtocol: network.protocol,
+          protocol: 'TCP',
           openPublicDomain: network.openPublicDomain,
           domain: env.ingressDomain
         };
@@ -115,7 +117,8 @@ const Version = () => {
             : [
                 {
                   port: 80,
-                  protocol: 'http',
+                  protocol: 'TCP',
+                  appProtocol: 'HTTP',
                   openPublicDomain: false,
                   domain: env.ingressDomain
                 }
@@ -126,6 +129,7 @@ const Version = () => {
           [devboxIdKey]: devbox.id
         }
       };
+
       setDeployData(transformData);
       const apps = await getAppsByDevboxId(devbox.id);
 

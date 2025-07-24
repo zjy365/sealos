@@ -42,18 +42,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const inviteCount = await globalPrisma.referral.count({
       where: { referrer_id: referral.id, verify: true }
     });
+    // const pendingCount = await globalPrisma.referral.count({
+    //   where: { referrer_id: referral.id, used: false, verify: true }
+    // });
+    // const reward = await calculateReward(referral.id);
 
-    const pendingCount = await globalPrisma.referral.count({
-      where: { referrer_id: referral.id, used: false, verify: true }
+    const reward_count = await globalPrisma.referralReward.count({
+      where: { referral_id: referral.id }
     });
-
-    const reward = await calculateReward(referral.id);
 
     return jsonRes(res, {
       data: {
         total: inviteCount,
-        pending: pendingCount,
-        reward
+        // pending: pendingCount,
+        // reward: reward,
+        reward_count: reward_count
       }
     });
   } catch (error) {

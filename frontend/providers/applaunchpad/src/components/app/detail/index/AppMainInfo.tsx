@@ -8,7 +8,21 @@ import { DOMAIN_PORT } from '@/store/static';
 import type { AppDetailType } from '@/types/app';
 import { useCopyData } from '@/utils/tools';
 import { getUserNamespace, getUserSession } from '@/utils/user';
-import { Box, Button, Center, Circle, Flex, Grid, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Circle,
+  Flex,
+  Grid,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
+  useDisclosure
+} from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'next-i18next';
 import { useEffect, useMemo, useRef } from 'react';
@@ -176,7 +190,6 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
           </Box>
         </Flex>
       </Box>
-
       <Box
         mt={'16px'}
         py={'20px'}
@@ -271,58 +284,53 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                 {t('Accessible')}
                               </Center>
                             ) : (
-                              <MyTooltip
-                                isDisabled={planName === 'Pro'}
-                                fontWeight="400"
-                                fontSize="14px"
-                                lineHeight="20px"
-                                textAlign="center"
-                                width={'220px'}
-                                offset={[0, 0]}
-                                color="#09090B"
-                                label={
-                                  planName === 'Free'
-                                    ? 'Upgrade your plan for faster deployment'
-                                    : t('ReadyTip')
-                                }
-                                placement={'bottom'}
-                              >
-                                <Center
-                                  fontSize={'12px'}
-                                  fontWeight={400}
-                                  bg={'rgba(17, 24, 36, 0.05)'}
-                                  color={'#485264'}
-                                  borderRadius={'full'}
-                                  p={'6px 9px'}
-                                  gap={'8px'}
-                                  minW={'63px'}
-                                >
-                                  {/* <MyIcon
-                                    name={'loading'}
-                                    w={'12px'}
-                                    h={'12px'}
-                                    animation={'spin 1s linear infinite'}
-                                    sx={{
-                                      '@keyframes spin': {
-                                        '0%': {
-                                          transform: 'rotate(0deg)'
-                                        },
-                                        '100%': {
-                                          transform: 'rotate(360deg)'
-                                        }
-                                      }
-                                    }}
-                                  /> */}
+                              <Popover trigger="hover">
+                                <PopoverTrigger>
                                   <Center
-                                    w={'6px'}
-                                    h={'6px'}
+                                    fontSize={'12px'}
+                                    fontWeight={400}
+                                    bg={'rgba(17, 24, 36, 0.05)'}
+                                    color={'#485264'}
                                     borderRadius={'full'}
-                                    bg={'#71717A'}
-                                    flexShrink={0}
-                                  ></Center>
-                                  {t('Ready')}
-                                </Center>
-                              </MyTooltip>
+                                    p={'2px 8px 2px 4px'}
+                                    gap={'2px'}
+                                    minW={'63px'}
+                                    cursor={'pointer'}
+                                  >
+                                    <MyIcon
+                                      name={'loading'}
+                                      w={'12px'}
+                                      h={'12px'}
+                                      animation={'spin 1s linear infinite'}
+                                      sx={{
+                                        '@keyframes spin': {
+                                          '0%': {
+                                            transform: 'rotate(0deg)'
+                                          },
+                                          '100%': {
+                                            transform: 'rotate(360deg)'
+                                          }
+                                        }
+                                      }}
+                                    />
+                                    {t('Ready')}
+                                  </Center>
+                                </PopoverTrigger>
+                                <PopoverContent w={'254px'} borderRadius={'10px'}>
+                                  <PopoverArrow />
+                                  <PopoverBody p={'10px'}>
+                                    <Box
+                                      color={'grayModern.900'}
+                                      fontSize={'12px'}
+                                      fontWeight={'400'}
+                                      lineHeight={'16px'}
+                                    >
+                                      Switch to members-only availability zone for faster
+                                      deployment.
+                                    </Box>
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Popover>
                             )}
                           </>
                         )}

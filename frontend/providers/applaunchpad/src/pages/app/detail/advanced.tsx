@@ -13,10 +13,6 @@ import Pods from '@/components/app/detail/index/Pods';
 import DetailLayout from '@/components/layouts/DetailLayout';
 import AdvancedInfo from '@/components/app/detail/index/AdvancedInfo';
 
-const AppMainInfo = dynamic(() => import('@/components/app/detail/index/AppMainInfo'), {
-  ssr: false
-});
-
 const AppDetail = ({ appName }: { appName: string }) => {
   const theme = useTheme();
   const { toast } = useToast();
