@@ -213,7 +213,7 @@
   ],
   "ReferralLink": "Referral Link",
   "ReferralRewardsCount": "<Strong>{{count}}</Strong> months of corresponding plan",
-  "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of hobby plan",
+  "ReferralRewardsCount_other": "<Strong>{{count}}</Strong> months of corresponding plan",
   "ReferralShareLinkDesc": "The referral link will be generated after creating apps from one of the following: Devbox, App store, App launchpad, Database.",
   "ReferralShareLinkTitle": "Share your link to others",
   "ReferralStats": "Referral stats",
