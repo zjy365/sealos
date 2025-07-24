@@ -2,8 +2,9 @@ import { ApiResp } from '@/service/kubernetes';
 import { GET } from '@/service/request';
 
 export interface ReferralStats {
-  total: number;
-  reward: Array<{ redeem_at: string }>;
+  // total: number;
+  // reward: Array<{ redeem_at: string }>;
+  reward_count: number;
 }
 export interface ReferralLinkData {
   code: string;

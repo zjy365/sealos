@@ -38,7 +38,9 @@ export default function Develop() {
   const [errorMessage, setErrorMessage] = useState('');
   const { applySuccess, applyError } = editModeMap(false);
   const SuccessfulDryRun = useRef(false);
-  const { data: platformEnvs } = useQuery(['getPlatformEnvs'], getPlatformEnv) as {
+  const { data: platformEnvs } = useQuery(['getPlatformEnvs'], getPlatformEnv, {
+    retry: 3
+  }) as {
     data: EnvResponse;
   };
 

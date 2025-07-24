@@ -99,7 +99,9 @@ export default function EditApp({
     return usage;
   }, [yamlList]);
 
-  const { data: platformEnvs } = useQuery(['getPlatformEnvs'], getPlatformEnv);
+  const { data: platformEnvs } = useQuery(['getPlatformEnvs'], () => getPlatformEnv(), {
+    retry: 3
+  });
 
   const { openConfirm, ConfirmChild } = useConfirm({
     content: insideCloud ? 'Confirm Deploy Application?' : 'Heading to ClawCloud soon'
