@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -544,11 +545,29 @@ func CreateSubscriptionPay(c *gin.Context) {
 		}
 	}
 	if subTransaction.Amount > 0 {
+		if err = getUserSupportSubPay(req.UserUID); err != nil {
+			SetErrorResp(c, http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		PayForSubscription(c, req, subTransaction)
 		return
 	} else {
 		SubscriptionWithOutPay(c, req, subTransaction)
 	}
+}
+
+func getUserSupportSubPay(userUID uuid.UUID) error {
+	lastCompletedTransaction, err := dao.GetLastCompletedSubscriptionTransaction(dao.DBClient.GetGlobalDB(), userUID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return fmt.Errorf("failed to get last completed subscription transaction: %w", err)
+	}
+	if lastCompletedTransaction.PayStatus == types.SubscriptionPayStatusNoNeed && lastCompletedTransaction.Operator != types.SubscriptionTransactionTypeDowngraded {
+		return fmt.Errorf("the complimentary subscription does not cover the renewal fee for the time being")
+	}
+	return nil
 }
 
 func SetSuccessResp(c *gin.Context) {

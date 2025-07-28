@@ -258,6 +258,15 @@ func GetLastSubscriptionTransaction(db *gorm.DB, userUID uuid.UUID) (*types.Subs
 	return transaction, nil
 }
 
+func GetLastCompletedSubscriptionTransaction(db *gorm.DB, userUID uuid.UUID) (*types.SubscriptionTransaction, error) {
+	transaction := &types.SubscriptionTransaction{}
+	err := db.Where("user_uid = ? AND status = ?", userUID, types.SubscriptionTransactionStatusCompleted).Order("created_at desc").First(transaction).Error
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
+}
+
 func (g *Cockroach) NewCardPaymentHandler(paymentRequestID string, card types.CardInfo) (uuid.UUID, error) {
 	order, err := g.ck.GetPaymentOrderWithTradeNo(paymentRequestID)
 	if err != nil {
@@ -309,6 +318,11 @@ func (g *Cockroach) NewCardPaymentFailureHandler(paymentRequestID string) (uuid.
 
 var ErrPaymentOrderAlreadyHandle = fmt.Errorf("payment order already handle")
 
+// 1. set payment order status with tradeNo
+// 2. save success payment
+// 3. set subscription transaction pay status to paid
+// 4. save card info (set subscription auto pay card_id)
+// 5. referral reward
 func (g *Cockroach) NewCardSubscriptionPaymentHandler(paymentRequestID string, card types.CardInfo) (uuid.UUID, error) {
 	if paymentRequestID == "" {
 		return uuid.Nil, fmt.Errorf("payment request id is empty")
@@ -332,11 +346,11 @@ func (g *Cockroach) NewCardSubscriptionPaymentHandler(paymentRequestID string, c
 		}
 		order.PaymentRaw.CardUID = &card.ID
 		order.PaymentRaw.ChargeSource = types.ChargeSourceNewCard
-		// TODO List
-		// 1. set payment order status with tradeNo
-		// 2. save success payment
-		// 3. set transaction pay status to paid
-		// 4. save card info
+		// 查询是否首冲用户, 用于Referrer邀请新用户充值赠送活动
+		isFirstRecharge, err := g.ck.IsNullRecharge(&types.UserQueryOpts{UID: userUID})
+		if err != nil {
+			return fmt.Errorf("failed to get recharge info: %v", err)
+		}
 		err = cockroach.SetPaymentOrderStatusWithTradeNo(tx, types.PaymentOrderStatusSuccess, order.TradeNO)
 		if err != nil {
 			return fmt.Errorf("failed to set payment order status: %v", err)
@@ -352,6 +366,18 @@ func (g *Cockroach) NewCardSubscriptionPaymentHandler(paymentRequestID string, c
 		}
 		if err = tx.Model(&types.Subscription{}).Where(&types.Subscription{UserUID: order.UserUID}).Update("card_id", card.ID).Error; err != nil {
 			return fmt.Errorf("failed to update subscription card id: %v", err)
+		}
+		// referrer 赠送用户订阅周期
+		if isFirstRecharge {
+			referrerUserUid, referrerID, err := cockroach.GetReferrerUID(context.Background(), tx, order.UserUID)
+			if err != nil {
+				return fmt.Errorf("failed to get referrer uid: %v", err)
+			}
+			if referrerUserUid != uuid.Nil {
+				if err = g.ck.ReferrerUserSubscription(tx, referrerUserUid, referrerID, order.Amount); err != nil {
+					return fmt.Errorf("failed to referrer user subscription: %v", err)
+				}
+			}
 		}
 		return nil
 	})

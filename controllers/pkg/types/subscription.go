@@ -83,7 +83,9 @@ const (
 )
 
 const (
-	FreeSubscriptionPlanName = "Free"
+	FreeSubscriptionPlanName  = "Free"
+	HobbySubscriptionPlanName = "Hobby"
+	ProSubscriptionPlanName   = "Pro"
 )
 
 type SubscriptionPlan struct {
