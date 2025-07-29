@@ -16,14 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   console.log(yamlList);
   console.log(namespace);
 
-   
   const MOUNT_PATH = process.env.GLOBAL_CONFIGMAP_PATH || '';
   const CONFIG_MAP_NAME = process.env.GLOBAL_CONFIGMAP_NAME || '';
-  
+
   let new_yamlList = addConfigMapToYamlList(yamlList, CONFIG_MAP_NAME, MOUNT_PATH);
 
   // let new_yamlList: any[] = [];
-
 
   // if (MOUNT_PATH && CONFIG_MAP_NAME) {
 
@@ -38,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   //       // check if the volume already exists
   //       if (yamlobj.spec.template.spec.volumes.find((v: any) => v.name === CONFIG_MAP_NAME)) {
   //       } else {
-    
+
   //         // Add the ConfigMap volume
   //         yamlobj.spec.template.spec.volumes.push({
   //           name: CONFIG_MAP_NAME,
@@ -47,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   //           },
   //         });
   //       }
-    
+
   //       // Ensure containers array exists
   //       if (yamlobj.spec.template.spec.containers) {
   //         yamlobj.spec.template.spec.containers.forEach((container: any) => {
@@ -59,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   //           // check if the volumeMount already exists
   //           if (container.volumeMounts.find((vm: any) => vm.name === CONFIG_MAP_NAME)) {
   //           } else {
-              
+
   //             // Add the volumeMount
   //             container.volumeMounts.push({
   //               name: CONFIG_MAP_NAME,

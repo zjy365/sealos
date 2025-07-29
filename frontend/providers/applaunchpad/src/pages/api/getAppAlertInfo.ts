@@ -12,29 +12,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       kubeconfig: await authSession(req.headers)
     });
 
-    const temp = await fetch(
-      `${SERVER_BASE_URL}/api/get_pod_exception`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+    const temp = await fetch(`${SERVER_BASE_URL}/api/get_pod_exception`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
       }
-    );
+    });
 
     let alertData = await temp.json();
 
     alertData = alertData.map((item: any) => {
-        if (typeof item.alertMessage === 'object' && item.alertMessage !== null) {
-          return {
-            ...item,
-            alertMessage: JSON.stringify(item.alertMessage) // 将对象转换为字符串
-          };
-        }
-        return item;
-      });
-      
-    console.log('getAppAlertInfo result:', alertData );
+      if (typeof item.alertMessage === 'object' && item.alertMessage !== null) {
+        return {
+          ...item,
+          alertMessage: JSON.stringify(item.alertMessage) // 将对象转换为字符串
+        };
+      }
+      return item;
+    });
+
+    console.log('getAppAlertInfo result:', alertData);
 
     jsonRes(res, {
       data: alertData

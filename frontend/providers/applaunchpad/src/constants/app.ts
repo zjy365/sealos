@@ -81,9 +81,11 @@ export const podStatusMap = {
 };
 
 export const ProtocolList = [
-  { value: 'HTTP', label: 'https://' },
-  { value: 'GRPC', label: 'grpcs://' },
-  { value: 'WS', label: 'wss://' }
+  // { value: 'HTTP', label: 'https://' },
+  // { value: 'GRPC', label: 'grpcs://' },
+  // { value: 'WS', label: 'wss://' },
+  { value: 'TCP', label: 'tcp://', inline: 'tcp://' },
+  { value: 'UDP', label: 'udp://', inline: 'udp://' }
 ];
 
 export const noGpuSliderKey = 'NoGpu';
@@ -99,9 +101,9 @@ export const publicDomainKey = `cloud.sealos.io/app-deploy-manager-domain`;
 export const gpuNodeSelectorKey = 'nvidia.com/gpu.product';
 export const gpuResourceKey = 'nvidia.com/gpu';
 export const priorityKey = 'deploy.cloud.sealos.io/priority'; // 0-100之间的优先级
-export const modelNameKey = 'cloud.sealos.io/model-name'
-export const modelVersionKey = 'cloud.sealos.io/model-version'
-export const preInspectionKey = 'cloud.sealos.io/pre-inspection'
+export const modelNameKey = 'cloud.sealos.io/model-name';
+export const modelVersionKey = 'cloud.sealos.io/model-version';
+export const preInspectionKey = 'cloud.sealos.io/pre-inspection';
 
 export enum Coin {
   cny = 'cny',

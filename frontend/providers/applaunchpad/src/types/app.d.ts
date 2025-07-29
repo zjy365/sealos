@@ -110,7 +110,7 @@ export interface AppEditContainerType {
     portName: string;
     port: number;
     nodePort?: number;
-    protocol: 'HTTP' | 'GRPC' | 'WS';
+    protocol: 'HTTP' | 'GRPC' | 'WS' | 'TCP' | 'UDP';
     openPublicDomain: boolean;
     publicDomain: string; // default domain
     customDomain: string; // custom domain
@@ -180,4 +180,4 @@ export type AppPatchPropsType = (
   | { type: 'create'; kind: `${YamlKindEnum}`; value: string }
 )[];
 
-declare module 'uuid'
+declare module 'uuid';

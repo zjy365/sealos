@@ -10,7 +10,7 @@ import {
   modelNameKey,
   modelVersionKey,
   preInspectionKey,
-  networkHpa,
+  networkHpa
 } from '@/constants/app';
 import { INGRESS_SECRET, SEALOS_DOMAIN } from '@/store/static';
 import type { AppEditContainerType, AppEditType } from '@/types/app';
@@ -23,25 +23,26 @@ export const json2DeployCr = (data: AppEditType, type: 'deployment' | 'statefuls
 
   const metadata = {
     name: data.appName,
-    
-    annotations: data.hpa.target === 'network' ?
-    {
-      [networkHpa]: `${data.hpa.value}`,
-      [minReplicasKey]: `${data.hpa.use ? data.hpa.minReplicas : data.replicas}`,
-      [maxReplicasKey]: `${data.hpa.use ? data.hpa.maxReplicas : data.replicas}`,
-      [modelNameKey]: `${data.modelName || ''}`,
-      [modelVersionKey]: `${data.modelVersion || ''}`,
-      [preInspectionKey]: `${data.preInspection || ''}`,
-      [deployPVCResizeKey]: `${totalStorage}Gi`
-    }:
-    {
-      [minReplicasKey]: `${data.hpa.use ? data.hpa.minReplicas : data.replicas}`,
-      [maxReplicasKey]: `${data.hpa.use ? data.hpa.maxReplicas : data.replicas}`,
-      [modelNameKey]: `${data.modelName || ''}`,
-      [modelVersionKey]: `${data.modelVersion || ''}`,
-      [preInspectionKey]: `${data.preInspection || ''}`,
-      [deployPVCResizeKey]: `${totalStorage}Gi`
-    },
+
+    annotations:
+      data.hpa.target === 'network'
+        ? {
+            [networkHpa]: `${data.hpa.value}`,
+            [minReplicasKey]: `${data.hpa.use ? data.hpa.minReplicas : data.replicas}`,
+            [maxReplicasKey]: `${data.hpa.use ? data.hpa.maxReplicas : data.replicas}`,
+            [modelNameKey]: `${data.modelName || ''}`,
+            [modelVersionKey]: `${data.modelVersion || ''}`,
+            [preInspectionKey]: `${data.preInspection || ''}`,
+            [deployPVCResizeKey]: `${totalStorage}Gi`
+          }
+        : {
+            [minReplicasKey]: `${data.hpa.use ? data.hpa.minReplicas : data.replicas}`,
+            [maxReplicasKey]: `${data.hpa.use ? data.hpa.maxReplicas : data.replicas}`,
+            [modelNameKey]: `${data.modelName || ''}`,
+            [modelVersionKey]: `${data.modelVersion || ''}`,
+            [preInspectionKey]: `${data.preInspection || ''}`,
+            [deployPVCResizeKey]: `${totalStorage}Gi`
+          },
     labels: {
       [appDeployKey]: data.appName,
       [priorityKey]: data.priority || '1',
@@ -261,7 +262,7 @@ export const json2Service = (data: AppEditType, selectorName?: string) => {
           }
         : {}),
       name: network.portName,
-      protocol: 'TCP'
+      protocol: network.protocol === 'UDP' ? 'UDP' : 'TCP'
     }))
   );
 
@@ -356,7 +357,11 @@ export const json2Ingress = (data: AppEditType) => {
           annotations: {
             'kubernetes.io/ingress.class': 'nginx',
             'nginx.ingress.kubernetes.io/proxy-body-size': '32m',
-            ...map[network.protocol]
+            ...map[
+              (['HTTP', 'GRPC', 'WS'].includes(network.protocol)
+                ? network.protocol
+                : 'HTTP') as keyof typeof map
+            ]
           }
         },
         spec: {

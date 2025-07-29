@@ -48,7 +48,7 @@ export const setUserIsLogin = (isLogin: boolean, session: string) => {
 };
 
 export const setMenuList = (menuList: any) => {
-  localStorage.setItem('user-menu',JSON.stringify(menuList));
+  localStorage.setItem('user-menu', JSON.stringify(menuList));
 };
 
 export const getMenuList = () => {

@@ -227,7 +227,7 @@ const Networks = ({
                           networkName: '',
                           portName: nanoid(),
                           port: 80,
-                          protocol: 'HTTP',
+                          protocol: 'TCP',
                           openPublicDomain: false,
                           publicDomain: '',
                           customDomain: ''
@@ -264,6 +264,25 @@ const Networks = ({
               </Box>
               {network.openPublicDomain && (
                 <>
+                  <Box ml={'6px'}>
+                    <Box mb={'8px'} h={'20px'}>
+                      协议
+                    </Box>
+                    <Flex alignItems={'center'} h={'35px'}>
+                      <MySelect
+                        width={'120px'}
+                        height={'32px'}
+                        value={network.protocol}
+                        list={ProtocolList}
+                        onchange={(val: any) => {
+                          updateNetwork(i, {
+                            ...getValues(`containers.${containerIndex}.networks`)[i],
+                            protocol: val
+                          });
+                        }}
+                      />
+                    </Flex>
+                  </Box>
                   <Box>
                     <Box mb={'10px'} h={'20px'} fontSize={'base'} color={'grayModern.900'}>
                       {t('Node Port')}
@@ -288,56 +307,6 @@ const Networks = ({
                       })}
                     />
                   </Box>
-                  {/* <Box ml={'6px'}>
-                    <Box mb={'8px'} h={'20px'}></Box>
-                    <Flex alignItems={'center'} h={'35px'}>
-                      <MySelect
-                        width={'120px'}
-                        height={'32px'}
-                        borderTopRightRadius={0}
-                        borderBottomRightRadius={0}
-                        value={network.protocol}
-                        list={ProtocolList}
-                        onchange={(val: any) => {
-                          updateNetwork(i, {
-                            ...getValues(`containers.${containerIndex}.networks`)[i],
-                            protocol: val
-                          });
-                        }}
-                      />
-                      <Flex
-                        maxW={'350px'}
-                        flex={'1 0 0'}
-                        alignItems={'center'}
-                        h={'32px'}
-                        bg={'grayModern.50'}
-                        px={4}
-                        border={theme.borders.base}
-                        borderLeft={0}
-                        borderTopRightRadius={'md'}
-                        borderBottomRightRadius={'md'}
-                      >
-                        <Box flex={1} userSelect={'all'} className="textEllipsis">
-                          {network.customDomain
-                            ? network.customDomain
-                            : `${network.publicDomain}.${SEALOS_DOMAIN}`}
-                        </Box>
-                        <Box
-                          fontSize={'11px'}
-                          color={'brightBlue.600'}
-                          cursor={'pointer'}
-                          onClick={() =>
-                            setCustomAccessModalData({
-                              publicDomain: network.publicDomain,
-                              customDomain: network.customDomain
-                            })
-                          }
-                        >
-                          {t('Custom Domain')}
-                        </Box>
-                      </Flex>
-                    </Flex>
-                  </Box> */}
                 </>
               )}
               {networks.length > 1 && (
@@ -605,7 +574,7 @@ const Form = ({
       enabled: !!getValues(`containers.${containerIndex}.imageRepo`)
     }
   );
-  
+
   return (
     <>
       <Grid
@@ -741,9 +710,11 @@ const Form = ({
                 </Flex>
               </FormControl>
 
-              <FormControl mb={7} 
-              // isInvalid={!!errors.modelName} 
-              w={'500px'}>
+              <FormControl
+                mb={7}
+                // isInvalid={!!errors.modelName}
+                w={'500px'}
+              >
                 <Flex alignItems={'center'}>
                   <Label>{'模型名称'}</Label>
                   <Input
@@ -758,9 +729,11 @@ const Form = ({
                 </Flex>
               </FormControl>
 
-              <FormControl mb={7} 
-              // isInvalid={!!errors.modelVersion} 
-              w={'500px'}>
+              <FormControl
+                mb={7}
+                // isInvalid={!!errors.modelVersion}
+                w={'500px'}
+              >
                 <Flex alignItems={'center'}>
                   <Label>{'模型版本'}</Label>
                   <Input
@@ -868,7 +841,7 @@ const Form = ({
                             onBlur: () => formHook.trigger('hpa.value')
                           })}
                         />
-                        <Box> 
+                        <Box>
                           {getValues('hpa.target') === 'cpu'
                             ? t('%')
                             : getValues('hpa.target') === 'memory'
@@ -938,9 +911,13 @@ const Form = ({
           </Box>
           {/* tabs */}
           <Box id={'baseInfo'} {...boxStyles}>
-            <Tabs variant="enclosed" defaultIndex={0} onChange={(index) => {
-              setContainerIndex(index);
-            }}>
+            <Tabs
+              variant="enclosed"
+              defaultIndex={0}
+              onChange={(index) => {
+                setContainerIndex(index);
+              }}
+            >
               <Box {...headerStyles}>
                 <MyIcon name={'formInfo'} mr={'12px'} w={'24px'} color={'grayModern.900'} />
                 {t('Containers')}
