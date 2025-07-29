@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -282,7 +283,10 @@ func (g *Cockroach) NewCardPaymentHandler(paymentRequestID string, card types.Ca
 	}
 	card.UserUID = order.UserUID
 	order.PaymentRaw.ChargeSource = types.ChargeSourceNewCard
-	// TODO
+	// TODO 活动赠送 pay > 100 => amount = amount + amount * 0.5
+	if order.PaymentRaw.Amount >= 100*1_000_000 {
+		order.PaymentRaw.Gift = int64(math.Ceil(float64(order.PaymentRaw.Amount) * 0.5))
+	}
 	err = g.ck.PaymentWithFunc(&types.Payment{
 		ID:         order.ID,
 		PaymentRaw: order.PaymentRaw,
