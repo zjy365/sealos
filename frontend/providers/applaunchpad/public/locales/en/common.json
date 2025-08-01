@@ -73,7 +73,7 @@
   "Creation Time": "Created At",
   "Custom Domain": "Custom Domain",
   "Custom Domain Error": "Failed to add custom domain. Please verify CNAME configuration.",
-  "Data cannot be communicated between multiple instances": "Data cannot be shared between instances",
+  "Data cannot be communicated between multiple instances": "Remember to add local storage to prevent data loss on pod restarts.",
   "Day": "Day",
   "Delete": "Delete",
   "Deletion warning": "Deletion warning",

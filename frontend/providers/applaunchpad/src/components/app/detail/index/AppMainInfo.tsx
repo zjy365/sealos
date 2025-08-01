@@ -325,8 +325,8 @@ const AppMainInfo = ({ app = MOCK_APP_DETAIL }: { app: AppDetailType }) => {
                                       fontWeight={'400'}
                                       lineHeight={'16px'}
                                     >
-                                      Switch to members-only availability zone for faster
-                                      deployment.
+                                      Switch to members-only availability zone for faster and more
+                                      stable deployment.
                                     </Box>
                                   </PopoverBody>
                                 </PopoverContent>
