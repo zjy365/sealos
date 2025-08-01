@@ -35,11 +35,12 @@ import { sealosApp } from 'sealos-desktop-sdk/app';
 import { jwtDecode } from 'jwt-decode';
 import { getRawRegionList } from '@/api/usage';
 import { RawRegion } from '@/types/region';
-import { getToken, getUserSession } from '@/utils/user';
+import { getToken } from '@/utils/user';
 import { ArrowRightIcon } from 'lucide-react';
 import RegionToggle from './RegionToggle';
 import { useGlobalStore } from '@/store/global';
 import { Track } from '@sealos/ui';
+import useUpgradeModalInTranslation from '@/hooks/useUpgradeModalInTranslation';
 
 export default function PlanPage() {
   const [initialized, setInitialized] = useState({
@@ -163,6 +164,14 @@ export default function PlanPage() {
     defaultIsOpen: upgradeSuccess
   });
 
+  const upgradeModalData = useUpgradeModalInTranslation({
+    plans: plans || [],
+    currentPlan: currentPlan || ({ amount: 0 } as TPlanApiResponse),
+    freePlan: freePlan || ({ amount: 0 } as TPlanApiResponse),
+    lastTransaction: lastTransactionResponse?.transcation,
+    periodType: subscription?.Period || 'MONTHLY'
+  });
+
   const renderMain = () => {
     if (!isLoadingEnd) return null;
     if (firstError) {
@@ -214,6 +223,10 @@ export default function PlanPage() {
             plan={currentPlan}
             creditsUsage={creditsUsage}
             onPaySuccess={refresh}
+            onUpgrade={
+              currentPlan && plans && subscription ? upgradeModalData.openUpgradeModal : undefined
+            }
+            showUpgradeButton={true}
           />
         ) : null}
       </Flex>
@@ -287,6 +300,8 @@ export default function PlanPage() {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {currentPlan && plans && subscription ? upgradeModalData.upgradeModal : null}
     </>
   );
 }
