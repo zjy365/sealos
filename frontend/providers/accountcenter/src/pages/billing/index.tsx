@@ -23,7 +23,14 @@ function Billing() {
         setCardList(res?.cardList || []);
       });
       const invoice = getInvoiceList().then((res) => {
-        setInvoiceList(res?.payments || []);
+        setInvoiceList(
+          (res?.payments || []).map((item) => ({
+            ...item,
+            InvoiceAt: item.InvoicedAt,
+            CardUID: { value: item.CardUID }, // 用对象包裹字符串
+            CreatedAt: new Date(item.CreatedAt)
+          }))
+        );
       });
       Promise.all([card, invoice]).finally(() => setInitialized(true));
     }

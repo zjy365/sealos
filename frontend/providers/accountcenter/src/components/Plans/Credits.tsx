@@ -20,6 +20,8 @@ import { CSSProperties, FC, ReactNode } from 'react';
 import { sealosApp } from 'sealos-desktop-sdk/app';
 import Recharge from '../Recharge';
 import BonusDetail from './BonusDetail';
+import { getInvoiceList } from '@/api/invoice';
+import React from 'react';
 
 interface CreditsProps {
   plan: TPlanApiResponse;
@@ -27,13 +29,17 @@ interface CreditsProps {
   userInfo: TUserInfoResponse | undefined;
   isLoadingUserInfo?: boolean;
   onPaySuccess?: () => void;
+  onUpgrade?: () => void;
+  showUpgradeButton?: boolean;
 }
 const PlanCredits: FC<CreditsProps> = ({
   plan,
   creditsUsage,
   onPaySuccess,
   isLoadingUserInfo: loadingUserInfo,
-  userInfo
+  userInfo,
+  onUpgrade,
+  showUpgradeButton = false
 }) => {
   const { t } = useTranslation();
   const renderLabel = (text: string, ballColor: string | null) => {
@@ -162,6 +168,21 @@ const PlanCredits: FC<CreditsProps> = ({
       </>
     );
   };
+  const [invoiceGiftSum, setInvoiceGiftSum] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (userInfo?.user?.agency === false) {
+      getInvoiceList()
+        .then((res) => {
+          const sum = (res.payments || []).reduce((acc, cur) => acc + (cur.Gift || 0), 0);
+          setInvoiceGiftSum(sum);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [userInfo]);
+
   const renderBody = () => {
     const gridDivider = (
       <Box
@@ -180,7 +201,7 @@ const PlanCredits: FC<CreditsProps> = ({
           <Flex flexDirection="column">
             {renderLabel(t('PlanRechargedCreditsLabel'), '#14B8A6')}
             <Text mt="12px" fontSize="30px" fontWeight="600">
-              ${formatMoneyStr(restCharged, 'floor')}
+              ${formatMoneyStr(showBonus ? restCharged : restCharged - invoiceGiftSum, 'floor')}
             </Text>
             {typeof chargedCredit.total === 'number' && renderExpireDate(chargedCredit.time)}
           </Flex>
@@ -194,10 +215,12 @@ const PlanCredits: FC<CreditsProps> = ({
           <Flex flexDirection="column">
             {renderLabel(t('PlanBonusCreditsLabel'), '#8B5CF6')}
             <Text mt="12px" fontSize="30px" fontWeight="600">
-              ${formatMoneyStr(restBonus, 'floor')}
+              {userInfo?.user?.agency === false
+                ? `$${formatMoneyStr(invoiceGiftSum, 'floor')}`
+                : `$${formatMoneyStr(restBonus, 'floor')}`}
             </Text>
             {bonusExp}
-            <BonusDetail></BonusDetail>
+            <BonusDetail userInfo={userInfo}></BonusDetail>
           </Flex>
         </GridItem>
       );
@@ -226,6 +249,20 @@ const PlanCredits: FC<CreditsProps> = ({
             }
           />
           {renderLabel(t('PlanGiftCreditsLabel'), '#1C4EF5')}
+          <Flex
+            justifyContent={'space-between'}
+            alignItems={'center'}
+            p="12px 16px"
+            borderRadius="8px"
+            bg="linear-gradient(270deg, rgba(39, 120, 253, 0.10) 3.93%, rgba(39, 120, 253, 0.10) 18.25%, rgba(135, 161, 255, 0.10) 80.66%)"
+          >
+            <Box color={'#18181B'} fontSize={'14px'} fontWeight={400}>
+              To get top-up bonus, please upgrade your plan to hobby or pro.
+            </Box>
+            <Button color="#1C4EF5" size="14px" fontWeight={500} variant="link" onClick={onUpgrade}>
+              Upgrade Now
+            </Button>
+          </Flex>
         </Flex>
       );
       if (!isNaN(restCharged) && restCharged <= 0) {
@@ -243,7 +280,7 @@ const PlanCredits: FC<CreditsProps> = ({
     const bonusExp = renderExpireDate(bonusCredit.time);
     return (
       <>
-        <Grid templateColumns={showBonus ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'} columnGap="48px">
+        <Grid templateColumns={'1fr 1fr 1fr 1fr'} columnGap="48px">
           <GridItem>
             <Flex flexDirection="column">
               {renderLabel(t('PlanGiftCreditsLabel'), '#1C4EF5')}
@@ -273,7 +310,7 @@ const PlanCredits: FC<CreditsProps> = ({
             </Flex>
           </GridItem>
           {renderChargedGridItem()}
-          {showBonus ? renderBonusGridItem(bonusExp) : null}
+          {renderBonusGridItem(bonusExp)}
         </Grid>
         <Box mt="48px">
           <Recharge showBonus={showBonus} onPaySuccess={onPaySuccess} />

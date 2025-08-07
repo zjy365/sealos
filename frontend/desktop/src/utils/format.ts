@@ -20,17 +20,48 @@ export function formatUrl(url: string, query: Record<string, string>) {
   }
   return urlObj.toString();
 }
+
+/**
+ * 解析 openapp 参数，提取应用名称和查询参数
+ *
+ * 支持以下几种格式：
+ * 1. system-account-center - 只有应用名称
+ * 2. system-account-center?page=plan - 应用名称 + 查询参数
+ * 3. system-account-center/redirect?page=plan - 应用名称 + 路径 + 查询参数
+ *
+ * @param openapp openapp 参数值
+ * @returns 解析后的应用名称和查询参数
+ */
 export const parseOpenappQuery = (openapp: string) => {
+  if (!openapp) return { appkey: '', appQuery: '' };
+
   let param = decodeURIComponent(openapp);
-  const firstQuestionMarkIndex = param.indexOf('?');
+
+  // 处理应用名称中可能包含的路径
+  const slashIndex = param.indexOf('/');
+  const questionMarkIndex = param.indexOf('?');
+
   let appkey = '';
   let appQuery = '';
-  if (firstQuestionMarkIndex === -1) {
+
+  // 情况1: 如果没有 / 和 ?，整个字符串就是 appkey
+  // 例如: system-account-center
+  if (slashIndex === -1 && questionMarkIndex === -1) {
     appkey = param;
-  } else {
-    appkey = param.substring(0, firstQuestionMarkIndex);
-    appQuery = param.substring(firstQuestionMarkIndex + 1);
   }
+  // 情况2: 如果有 / 但没有 ?，或者 / 在 ? 之前
+  // 例如: system-account-center/redirect 或 system-account-center/redirect?page=plan
+  else if (slashIndex !== -1 && (questionMarkIndex === -1 || slashIndex < questionMarkIndex)) {
+    appkey = param.substring(0, slashIndex);
+    appQuery = param.substring(slashIndex);
+  }
+  // 情况3: 如果有 ? 但没有 /，或者 ? 在 / 之前
+  // 例如: system-account-center?page=plan
+  else {
+    appkey = param.substring(0, questionMarkIndex);
+    appQuery = param.substring(questionMarkIndex + 1);
+  }
+
   return {
     appkey,
     appQuery

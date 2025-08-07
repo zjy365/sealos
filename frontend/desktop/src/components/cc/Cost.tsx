@@ -328,7 +328,7 @@ export default function Cost() {
                 lineHeight={'100%'}
                 color={'#111824'}
               >
-                Pod in current availability zone
+                Pod in current workspace
               </Text>
             </Flex>
 

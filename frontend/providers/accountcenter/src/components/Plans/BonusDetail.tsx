@@ -22,8 +22,13 @@ import { CircleAlert } from 'lucide-react';
 import { MyTooltip } from '@sealos/ui';
 import { add } from 'date-fns';
 import { getBonusDetails } from '@/api/plan';
+import { getInvoiceList } from '@/api/invoice';
 
-const BonusDetail = () => {
+interface BonusDetailProps {
+  userInfo: any;
+}
+
+const BonusDetail = ({ userInfo }: BonusDetailProps) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [bonusDetails, setBonusDetails] = useState<TBonusItem[]>([]);
@@ -34,9 +39,15 @@ const BonusDetail = () => {
         header: `${t('available')} ($)`,
         cell: ({ row }) => (
           <Flex alignItems={'center'} cursor={'pointer'} gap={'4px'}>
-            <Text>{((row.original.amount - row.original.usedAmount) / 10 ** 6).toFixed(2)}</Text>
-            <Text color={'#71717A'}>/</Text>
-            <Text color={'#71717A'}>{(row.original.amount / 10 ** 6).toFixed(2)}</Text>
+            <Text>
+              {((row.original.amount - (row.original.usedAmount || 0)) / 10 ** 6).toFixed(2)}
+            </Text>
+            {userInfo?.user?.agency ?? false ? (
+              <>
+                <Text color={'#71717A'}>/</Text>
+                <Text color={'#71717A'}>{(row.original.amount / 10 ** 6).toFixed(2)}</Text>
+              </>
+            ) : null}
           </Flex>
         )
       },
@@ -69,19 +80,39 @@ const BonusDetail = () => {
   useEffect(() => {
     const fetchBonusDetails = async () => {
       try {
-        const res = await getBonusDetails();
-        setBonusDetails(
-          res.bonusItems.sort(
-            (a, b) => new Date(b.expiredAt).getTime() - new Date(a.expiredAt).getTime()
-          )
-        );
+        if (userInfo?.user?.agency ?? false) {
+          const res = await getBonusDetails();
+          setBonusDetails(
+            res.bonusItems.sort(
+              (a, b) => new Date(b.expiredAt).getTime() - new Date(a.expiredAt).getTime()
+            )
+          );
+        } else {
+          const res = await getInvoiceList();
+          // 适配 payments 数据为 TBonusItem[]
+          const items = (res.payments || []).map((item: any) => ({
+            id: String(item.ID),
+            amount: Number(item.Gift),
+            usedAmount: 0, // 没有已用金额字段，默认 0
+            createdAt: String(item.CreatedAt),
+            expiredAt: add(new Date(item.CreatedAt), { years: 1 }).toISOString(),
+            status: 'active' as const
+          }));
+          setBonusDetails(items);
+        }
       } catch (error) {}
     };
     fetchBonusDetails();
-  }, []);
+  }, [userInfo]);
+
+  const filteredBonusDetails = React.useMemo(
+    () => bonusDetails.filter((item) => item.amount - (item.usedAmount || 0) > 0),
+    [bonusDetails]
+  );
+
   const table = useReactTable<TBonusItem>({
     columns,
-    data: bonusDetails,
+    data: filteredBonusDetails, // 使用过滤后的数据
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -92,6 +123,7 @@ const BonusDetail = () => {
       }
     }
   });
+
   return (
     <>
       <Text

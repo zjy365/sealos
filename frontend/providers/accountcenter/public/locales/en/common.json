@@ -200,7 +200,7 @@
   "RechargeCustomAmountHint": "Please input numbers greater than or equal to 5.",
   "RechargeCustomAmountModalTitle": "Custom credit amount",
   "RechargeCustomAmountPlaceholder": "between 5 and 10,000",
-  "RechargeHint": "Recharge from $100 to get credit expansion",
+  "RechargeHint": "Recharge from $100 gets 50% top-up bonus. The deal ends on Aug 31st.",
   "RechargeHint2": "View bonus metrics",
   "Recipient": "Recipient",
   "Recipient ID": "Recipient ID",

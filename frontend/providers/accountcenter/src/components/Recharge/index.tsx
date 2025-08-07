@@ -97,39 +97,23 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
     }
     setInputErrorKey('');
   };
-  const [bonusMetrics, setBonusMetrics] = useState<ExpansionRule[]>([
-    // {
-    //   min_range: 5,
-    //   expansion_pct: 5
-    // },
-    // {
-    //   min_range: 100,
-    //   expansion_pct: 10
-    // },
-    // {
-    //   min_range: 500,
-    //   expansion_pct: 15
-    // },
-    // {
-    //   min_range: 1000,
-    //   expansion_pct: 20
-    // },
-    // {
-    //   min_range: 5000,
-    //   expansion_pct: 25
-    // },
-    // {
-    //   min_range: 10000,
-    //   expansion_pct: 30
-    // }
-  ]);
+  const [bonusMetrics, setBonusMetrics] = useState<any[]>([]);
+
   useEffect(() => {
     async function fetchBonusMetrics() {
       const res = await getExpansionRule();
       setBonusMetrics(res.sort((a, b) => a.min_range - b.min_range));
     }
-    fetchBonusMetrics();
-  }, []);
+    if (showBonus) {
+      fetchBonusMetrics();
+    } else {
+      setBonusMetrics([
+        { min_range: 5, expansion_pct: 0 },
+        { min_range: 100, expansion_pct: 50 }
+      ]);
+    }
+  }, [showBonus]);
+
   const [bonusCount, setBonusCount] = useState('0');
   useEffect(() => {
     let cancel = false;
@@ -159,30 +143,31 @@ const Recharge: FC<RechargeProps> = ({ showBonus, onPaySuccess }) => {
       <Text lineHeight="28px" fontSize="18px" fontWeight="600" mb="16px">
         {t('Recharge')}
       </Text>
-      {showBonus ? (
-        <Flex
-          p={'18px 24px'}
-          background={
-            'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
-          }
-          rounded={'8px'}
-          mb={'16px'}
+
+      <Flex
+        p={'18px 24px'}
+        background={
+          'linear-gradient(270.48deg, rgba(39, 120, 253, 0.1) 3.93%, rgba(39, 120, 253, 0.1) 18.25%, rgba(135, 161, 255, 0.1) 80.66%)'
+        }
+        rounded={'8px'}
+        mb={'16px'}
+        justifyContent={'space-between'}
+      >
+        <Text fontSize="14px" lineHeight={'20px'} fontWeight="400" color="#18181B" mr={'12px'}>
+          {t('RechargeHint')}
+        </Text>
+        <Text
+          fontSize="14px"
+          lineHeight={'20px'}
+          fontWeight="500"
+          color="#1C4EF5"
+          cursor={'pointer'}
+          onClick={openBonusMetricsOpen}
         >
-          <Text fontSize="14px" lineHeight={'20px'} fontWeight="400" color="#18181B" mr={'12px'}>
-            {t('RechargeHint')}
-          </Text>
-          <Text
-            fontSize="14px"
-            lineHeight={'20px'}
-            fontWeight="500"
-            color="#1C4EF5"
-            cursor={'pointer'}
-            onClick={openBonusMetricsOpen}
-          >
-            {t('RechargeHint2')}
-          </Text>
-        </Flex>
-      ) : null}
+          {t('RechargeHint2')}
+        </Text>
+      </Flex>
+
       <Grid templateColumns="repeat(4,1fr)" gap="12px">
         {amounts.map((amount) => (
           <GridItem key={amount} {...gridItemStyle} onClick={() => recharge(amount)}>
