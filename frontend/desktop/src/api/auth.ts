@@ -223,6 +223,19 @@ export const _enterpriseRealNameAuthCancelRequest = (request: AxiosInstance) => 
 
 export const _getAmount = (request: AxiosInstance) => () =>
   request<never, ApiResp<{ balance: number; deductionBalance: number }>>('/api/account/getAmount');
+
+export const _getCreditsUsage = (request: AxiosInstance) => () =>
+  request<
+    never,
+    ApiResp<{
+      gift: { total: number; used: number };
+      charged: { total: number; used: number };
+      github: { total: number; used: number };
+      currentPlan: { total: number; used: number };
+      bonus: { total: number; used: number };
+    }>
+  >('/api/accountcenter/creditsUsage');
+
 export const _verifyToken = (request: AxiosInstance) => () =>
   request<never, ApiResp<null>>('/api/auth/verify');
 
@@ -280,3 +293,4 @@ export const faceAuthGenerateQRcodeUriRequest = _faceAuthGenerateQRcodeUriReques
 export const getFaceAuthStatusRequest = _getFaceAuthStatusRequest(request);
 
 export const getAmount = _getAmount(request);
+export const getCreditsUsage = _getCreditsUsage(request);
