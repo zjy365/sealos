@@ -228,7 +228,7 @@ export const _getCreditsUsage = (request: AxiosInstance) => () =>
   request<
     never,
     ApiResp<{
-      gift: { total: number; used: number };
+      // gift: { total: number; used: number };
       charged: { total: number; used: number };
       github: { total: number; used: number };
       currentPlan: { total: number; used: number };

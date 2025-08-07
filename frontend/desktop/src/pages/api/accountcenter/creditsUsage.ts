@@ -4,7 +4,7 @@ import { ApiResp } from '@/types';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type ConsumptionResult = {
-  gift: { total: number; used: number };
+  // gift: { total: number; used: number };
   charged: { total: number; used: number };
   github: { total: number; used: number };
   currentPlan: { total: number; used: number };

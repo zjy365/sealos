@@ -157,10 +157,29 @@ export default function Account() {
     staleTime: 60 * 1000
   });
 
-  const balance = useMemo(() => {
-    if (!creditsUsage?.data) return 0;
-    const charged = creditsUsage.data.charged;
-    return formatMoney(charged.total - charged.used);
+  const creditBalances = useMemo(() => {
+    if (!creditsUsage?.data) {
+      return {
+        charged: 0,
+        github: 0,
+        currentPlan: 0,
+        bonus: 0,
+        total: 0
+      };
+    }
+    const { charged, github, currentPlan, bonus } = creditsUsage.data;
+    const chargedBalance = formatMoney(charged.total - charged.used);
+    const githubBalance = formatMoney(github.total - github.used);
+    const currentPlanBalance = formatMoney(currentPlan.total - currentPlan.used);
+    const bonusBalance = formatMoney(bonus.total - bonus.used);
+
+    return {
+      charged: chargedBalance,
+      github: githubBalance,
+      currentPlan: currentPlanBalance,
+      bonus: bonusBalance,
+      total: chargedBalance + githubBalance + currentPlanBalance + bonusBalance
+    };
   }, [creditsUsage]);
 
   useEffect(() => {
@@ -284,7 +303,7 @@ export default function Account() {
                   </Text>
                   <Divider orientation="vertical" height="16px" borderColor={'#2778FD'} />
                   <Text color={'#2778FD'} fontSize={'14px'} fontWeight={'500'}>
-                    ${balance.toFixed(2)}
+                    ${creditBalances.total.toFixed(2)}
                   </Text>
                 </Box>
               </PopoverTrigger>
@@ -344,7 +363,7 @@ export default function Account() {
                           boxShadow={'0 1px 2px 0 rgba(0, 0, 0, 0.05)'}
                         >
                           <Text fontSize="24px" fontWeight="600" color="#18181B" mb="16px">
-                            ${balance.toFixed(2)}
+                            ${creditBalances.total.toFixed(2)}
                           </Text>
 
                           <Box
@@ -361,7 +380,7 @@ export default function Account() {
                               </Text>
                             </Flex>
                             <Text fontSize="16px" fontWeight="600" color="#18181B" mt="4px">
-                              ${formatMoney(creditsUsage?.data?.gift?.total || 0).toFixed(2)}
+                              ${creditBalances.github.toFixed(2)}
                             </Text>
                           </Box>
                         </Box>
@@ -387,7 +406,7 @@ export default function Account() {
                           mb="12px"
                         >
                           <Text fontSize="24px" fontWeight="600" color="#18181B" mb="16px">
-                            ${balance.toFixed(2)}
+                            ${creditBalances.total.toFixed(2)}
                           </Text>
 
                           <Box
@@ -412,7 +431,7 @@ export default function Account() {
                                 </Text>
                               </Flex>
                               <Text fontSize="16px" fontWeight="600" color="#18181B">
-                                ${formatMoney(creditsUsage?.data?.gift?.total || 0).toFixed(2)}
+                                ${creditBalances.github.toFixed(2)}
                               </Text>
                             </Flex>
 
@@ -433,10 +452,7 @@ export default function Account() {
                                 </Text>
                               </Flex>
                               <Text fontSize="16px" fontWeight="600" color="#18181B">
-                                $
-                                {formatMoney(creditsUsage?.data?.currentPlan?.total || 0).toFixed(
-                                  2
-                                )}
+                                ${creditBalances.currentPlan.toFixed(2)}
                               </Text>
                             </Flex>
 
@@ -457,7 +473,7 @@ export default function Account() {
                                 </Text>
                               </Flex>
                               <Text fontSize="16px" fontWeight="600" color="#18181B">
-                                ${formatMoney(creditsUsage?.data?.charged?.total || 0).toFixed(2)}
+                                ${creditBalances.charged.toFixed(2)}
                               </Text>
                             </Flex>
 
@@ -478,7 +494,7 @@ export default function Account() {
                                 </Text>
                               </Flex>
                               <Text fontSize="16px" fontWeight="600" color="#18181B">
-                                ${formatMoney(creditsUsage?.data?.bonus?.total || 0).toFixed(2)}
+                                ${creditBalances.bonus.toFixed(2)}
                               </Text>
                             </Flex>
                           </Box>
