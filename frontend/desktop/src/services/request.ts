@@ -13,8 +13,13 @@ request.interceptors.request.use(
     let _headers: AxiosHeaders = config.headers || {};
 
     const token = useSessionStore.getState().token;
+    const internalToken = useSessionStore.getState().session?.token;
+
     if (token && config.url && config.url?.startsWith('/api/')) {
       _headers['Authorization'] = encodeURIComponent(token);
+      if (internalToken && config.url?.startsWith('/api/accountcenter/')) {
+        _headers['Authorization'] = encodeURIComponent(internalToken);
+      }
     }
 
     if (!config.headers || config.headers['Content-Type'] === '') {

@@ -84,6 +84,7 @@ export type AuthConfigType = {
   hasBaiduToken?: boolean;
   jwt: JwtConfigType;
   billingUrl?: string;
+  accountCenterUrl?: string;
   workorderUrl?: string;
   cloudVitrualMachineUrl: string;
   invite?: {
@@ -170,6 +171,7 @@ export type AuthClientConfigType = DeepRequired<
       'idp.oauth2.clientSecret',
       'jwt',
       'billingUrl',
+      'accountCenterUrl',
       'workorderUrl',
       'cloudVitrualMachineUrl',
       //captcha

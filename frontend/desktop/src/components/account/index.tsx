@@ -15,6 +15,11 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
   Text,
   useDisclosure
 } from '@chakra-ui/react';
@@ -52,9 +57,10 @@ import GuideModal from './GuideModal';
 import { useInitWorkspaceStore } from '@/stores/initWorkspace';
 import { getUserPlan } from '@/api/platform';
 import Cost from '../cc/Cost';
-import { regionList } from '@/api/auth';
+import { getCreditsUsage, regionList } from '@/api/auth';
 import { jwtDecode } from 'jwt-decode';
 import { AccessTokenPayload } from '@/types/token';
+import { formatMoney } from '@/utils/format';
 
 const baseItemStyle = {
   minW: '40px',
@@ -143,6 +149,48 @@ export default function Account() {
     // return 'Pro';
     return plan?.data?.subscription?.subscriptionPlan?.name || 'Free';
   }, [plan]);
+
+  const { data: creditsUsage } = useQuery({
+    queryKey: ['getCreditsUsage', { userId: user?.userCrUid }],
+    queryFn: getCreditsUsage,
+    enabled: !!user,
+    staleTime: 60 * 1000
+  });
+
+  const creditBalances = useMemo(() => {
+    if (!creditsUsage?.data) {
+      return {
+        charged: 0,
+        github: 0,
+        currentPlan: 0,
+        bonus: 0,
+        total: 0
+      };
+    }
+    const { charged, github, currentPlan, bonus } = creditsUsage.data.creditsUsage;
+    const isAgency = creditsUsage.data.isAgency;
+    const githubBalance = formatMoney(github.total - github.used);
+    const currentPlanBalance = formatMoney(currentPlan.total - currentPlan.used);
+    const bonusBalance = formatMoney(bonus.total - bonus.used);
+    const chargedBalance =
+      isAgency === false
+        ? formatMoney(charged.total - charged.used) - bonusBalance
+        : formatMoney(charged.total - charged.used);
+
+    const totalBalance =
+      userPlan === 'Free'
+        ? githubBalance
+        : chargedBalance + githubBalance + currentPlanBalance + bonusBalance;
+
+    return {
+      charged: chargedBalance,
+      github: githubBalance,
+      currentPlan: currentPlanBalance,
+      bonus: bonusBalance,
+      total: totalBalance
+    };
+  }, [creditsUsage, userPlan]);
+
   useEffect(() => {
     if (plan?.data?.subscription) updateSubscription(plan?.data?.subscription);
   }, [plan?.data?.subscription?.subscriptionPlan?.name]);
@@ -199,70 +247,300 @@ export default function Account() {
               />
             </Flex>
           )} */}
+
           {
-            <Track.Click eventName={Track.events.clickUpgradeInDesktop}>
-              <Box
-                cursor={'pointer'}
-                height="36px"
-                padding="8px 12px"
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                gap="8px"
-                borderRadius="8px"
-                fontSize={'14px'}
-                background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
-                _hover={{
-                  background:
-                    'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
-                }}
-                onClick={() => {
-                  openDesktopApp({
-                    appKey: 'system-account-center',
-                    query: {
-                      scene: 'upgrade'
-                    },
-                    messageData: {
-                      scene: 'upgrade'
-                    },
-                    pathname: '/'
-                  });
-                }}
+            <Popover trigger="hover" placement="bottom-end" gutter={8}>
+              <PopoverTrigger>
+                <Box
+                  cursor={'pointer'}
+                  height="36px"
+                  padding="8px 12px"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  gap="8px"
+                  borderRadius="8px"
+                  fontSize={'14px'}
+                  background="linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)"
+                  _hover={{
+                    background:
+                      'linear-gradient(95deg, rgba(73, 116, 255, 0.15) 3.77%, rgba(38, 53, 255, 0.15) 67.5%)'
+                  }}
+                  onClick={() => {
+                    Track.send(Track.events.clickUpgradeInDesktop);
+                    openDesktopApp({
+                      appKey: 'system-account-center',
+                      query: {
+                        scene: 'upgrade'
+                      },
+                      messageData: {
+                        scene: 'upgrade'
+                      },
+                      pathname: '/'
+                    });
+                  }}
+                >
+                  <Center
+                    borderRadius={'4px'}
+                    bg={'linear-gradient(90deg, #FE5CBD 0%, #494BE9 100%)'}
+                    color={'#fff'}
+                    fontSize={'12px'}
+                    fontWeight={'700'}
+                    height={'20px'}
+                    px={'4px'}
+                  >
+                    50% OFF
+                  </Center>
+
+                  <Text
+                    color={
+                      userPlan === 'Free'
+                        ? '#1C4EF5'
+                        : userPlan === 'Pro'
+                        ? 'transparent'
+                        : '#2778FD'
+                    }
+                    bg={
+                      userPlan === 'Pro'
+                        ? 'linear-gradient(270.48deg, #1C4EF5 3.93%, #6F59F5 80.66%)'
+                        : ''
+                    }
+                    bgClip={userPlan === 'Pro' ? 'text' : ''}
+                    fontWeight="medium"
+                  >
+                    {userPlan === 'Free' ? t('cc:upgrade_plan') : userPlan}
+                  </Text>
+                  <Divider orientation="vertical" height="16px" borderColor={'#2778FD'} />
+                  <Text color={'#2778FD'} fontSize={'14px'} fontWeight={'500'}>
+                    ${creditBalances.total.toFixed(2)}
+                  </Text>
+                </Box>
+              </PopoverTrigger>
+              <PopoverContent
+                bg="white"
+                borderColor="rgba(0,0,0,0.1)"
+                boxShadow="0px 4px 20px rgba(0, 0, 0, 0.1)"
+                maxW="300px"
+                borderRadius="12px"
+                border="1px solid #E4E4E7"
               >
-                <Center
-                  borderRadius={'4px'}
-                  bg={'linear-gradient(90deg, #FE5CBD 0%, #494BE9 100%)'}
-                  color={'#fff'}
-                  fontSize={'12px'}
-                  fontWeight={'700'}
-                  height={'20px'}
-                  px={'4px'}
-                >
-                  50% OFF
-                </Center>
-                {/* <Sparkles
-                  size={16}
-                  color={
-                    userPlan === 'Free' ? '#1C4EF5' : userPlan === 'Pro' ? '#5856F5' : '#2778FD'
-                  }
-                  fill={userPlan === 'Free' ? 'none' : userPlan === 'Pro' ? '#5856F5' : '#2778FD'}
-                /> */}
-                <Text
-                  color={
-                    userPlan === 'Free' ? '#1C4EF5' : userPlan === 'Pro' ? 'transparent' : '#2778FD'
-                  }
-                  bg={
-                    userPlan === 'Pro'
-                      ? 'linear-gradient(270.48deg, #1C4EF5 3.93%, #6F59F5 80.66%)'
-                      : ''
-                  }
-                  bgClip={userPlan === 'Pro' ? 'text' : ''}
-                  fontWeight="medium"
-                >
-                  {userPlan === 'Free' ? t('cc:upgrade_plan') : userPlan}
-                </Text>
-              </Box>
-            </Track.Click>
+                <PopoverBody p="16px" cursor={'default'}>
+                  <Box>
+                    {userPlan === 'Free' ? (
+                      <>
+                        <Box
+                          bg="linear-gradient(270deg, rgba(39, 120, 253, 0.10) 3.93%, rgba(39, 120, 253, 0.10) 18.25%, rgba(135, 161, 255, 0.10) 80.66%)"
+                          borderRadius="8px"
+                          p="12px"
+                          mb="12px"
+                        >
+                          <Text fontSize="14px" fontWeight="400" color="#1C4EF5" mb="12px">
+                            To get 50% top-up bonus, please upgrade your plan to hobby or pro.
+                          </Text>
+                          <Button
+                            height={'20px'}
+                            variant={'unstyled'}
+                            color={'#1C4EF5'}
+                            fontSize="14px"
+                            fontWeight="600"
+                            onClick={() => {
+                              Track.send(Track.events.clickUpgradeInDesktop);
+                              openDesktopApp({
+                                appKey: 'system-account-center',
+                                query: {
+                                  scene: 'upgrade'
+                                },
+                                messageData: {
+                                  scene: 'upgrade'
+                                },
+                                pathname: '/'
+                              });
+                            }}
+                          >
+                            Upgrade Now
+                          </Button>
+                        </Box>
+
+                        <Text fontSize="14px" fontWeight="600" color="#111824" mb="12px">
+                          Your Credits
+                        </Text>
+
+                        <Box
+                          borderRadius="8px"
+                          p="12px"
+                          border="1px solid #E4E4E7"
+                          boxShadow={'0 1px 2px 0 rgba(0, 0, 0, 0.05)'}
+                        >
+                          <Text fontSize="24px" fontWeight="600" color="#18181B" mb="16px">
+                            ${creditBalances.total.toFixed(2)}
+                          </Text>
+
+                          <Box
+                            borderRadius={'8px'}
+                            bg={
+                              'linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%),  #F4F4F5'
+                            }
+                            p={'8px 12px 12px 12px'}
+                          >
+                            <Flex alignItems="center" gap="8px">
+                              <Box w="8px" h="8px" bg="#1C4EF5" borderRadius="full" />
+                              <Text fontSize="14px" fontWeight="400" color="#18181B">
+                                Gift
+                              </Text>
+                            </Flex>
+                            <Text fontSize="16px" fontWeight="600" color="#18181B" mt="4px">
+                              ${creditBalances.github.toFixed(2)}
+                            </Text>
+                          </Box>
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          fontSize="16px"
+                          fontWeight="600"
+                          color="#18181B"
+                          mb="12px"
+                          lineHeight={'14px'}
+                        >
+                          Your Credits
+                        </Text>
+
+                        <Box
+                          bg="#fff"
+                          borderRadius="8px"
+                          p="12px"
+                          border="1px solid #E4E4E7"
+                          boxShadow={'0 1px 2px 0 rgba(0, 0, 0, 0.05)'}
+                          mb="12px"
+                        >
+                          <Text fontSize="24px" fontWeight="600" color="#18181B" mb="16px">
+                            ${creditBalances.total.toFixed(2)}
+                          </Text>
+
+                          <Box
+                            display="grid"
+                            gridTemplateColumns="repeat(2, minmax(0, 1fr))"
+                            gap="16px"
+                          >
+                            <Flex
+                              flexDirection={'column'}
+                              justifyContent={'space-between'}
+                              p={'8px 12px 12px 12px'}
+                              bg={
+                                'linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%),  #F4F4F5'
+                              }
+                              borderRadius="8px"
+                              minHeight="72px"
+                            >
+                              <Flex alignItems="center" gap="8px">
+                                <Box w="8px" h="8px" bg="#1C4EF5" borderRadius="full" />
+                                <Text fontSize="14px" fontWeight="400" color="#18181B">
+                                  Gift
+                                </Text>
+                              </Flex>
+                              <Text fontSize="16px" fontWeight="600" color="#18181B">
+                                ${creditBalances.github.toFixed(2)}
+                              </Text>
+                            </Flex>
+
+                            <Flex
+                              flexDirection={'column'}
+                              justifyContent={'space-between'}
+                              p={'8px 12px 12px 12px'}
+                              bg={
+                                'linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%),  #F4F4F5'
+                              }
+                              borderRadius="8px"
+                              minHeight="72px"
+                            >
+                              <Flex alignItems="center" gap="8px">
+                                <Box w="8px" h="8px" bg="#D1D5DB" borderRadius="full" />
+                                <Text fontSize="14px" fontWeight="400" color="#18181B">
+                                  Plan
+                                </Text>
+                              </Flex>
+                              <Text fontSize="16px" fontWeight="600" color="#18181B">
+                                ${creditBalances.currentPlan.toFixed(2)}
+                              </Text>
+                            </Flex>
+
+                            <Flex
+                              flexDirection={'column'}
+                              justifyContent={'space-between'}
+                              p={'8px 12px 12px 12px'}
+                              bg={
+                                'linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%),  #F4F4F5'
+                              }
+                              borderRadius="8px"
+                              minHeight="72px"
+                            >
+                              <Flex alignItems="center" gap="8px">
+                                <Box w="8px" h="8px" bg="#10B981" borderRadius="full" />
+                                <Text fontSize="14px" fontWeight="400" color="#18181B">
+                                  Recharged
+                                </Text>
+                              </Flex>
+                              <Text fontSize="16px" fontWeight="600" color="#18181B">
+                                ${creditBalances.charged.toFixed(2)}
+                              </Text>
+                            </Flex>
+
+                            <Flex
+                              flexDirection={'column'}
+                              justifyContent={'space-between'}
+                              p={'8px 12px 12px 12px'}
+                              bg={
+                                'linear-gradient(0deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.20) 100%),  #F4F4F5'
+                              }
+                              borderRadius="8px"
+                              minHeight="72px"
+                            >
+                              <Flex alignItems="center" gap="8px">
+                                <Box w="8px" h="8px" bg="#8B5CF6" borderRadius="full" />
+                                <Text fontSize="14px" fontWeight="400" color="#18181B">
+                                  Bonus
+                                </Text>
+                              </Flex>
+                              <Text fontSize="16px" fontWeight="600" color="#18181B">
+                                ${creditBalances.bonus.toFixed(2)}
+                              </Text>
+                            </Flex>
+                          </Box>
+                        </Box>
+                        <Box
+                          borderRadius={'8px'}
+                          bg={
+                            'linear-gradient(270deg, rgba(39, 120, 253, 0.10) 3.93%, rgba(39, 120, 253, 0.10) 18.25%, rgba(135, 161, 255, 0.10) 80.66%)'
+                          }
+                          p={'12px'}
+                        >
+                          <Text fontSize="14px" color="#1C4EF5" mb="12px">
+                            Recharge from $100 gets 50% top-up bonus. The deal ends on Aug 31st.
+                          </Text>
+                          <Button
+                            width="100%"
+                            bg="linear-gradient(269deg, #2778FD 22.57%, #829DFE 99.42%)"
+                            color="white"
+                            fontSize="14px"
+                            fontWeight="600"
+                            borderRadius="8px"
+                            _hover={{
+                              bg: 'linear-gradient(269deg, #2778FD 22.57%, #829DFE 99.42%)'
+                            }}
+                            onClick={() => {
+                              openAccountCenterApp('plan');
+                            }}
+                          >
+                            Recharge Credit
+                          </Button>
+                        </Box>
+                      </>
+                    )}
+                  </Box>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
           }
           <Center
             className="guide-button"
