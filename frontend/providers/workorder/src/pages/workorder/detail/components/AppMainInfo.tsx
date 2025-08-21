@@ -422,20 +422,28 @@ const AppMainInfo = ({
                       'drop-shadow(0px 0px 1px rgba(121, 141, 159, 0.25)) drop-shadow(0px 2px 4px rgba(161, 167, 179, 0.25))'
                     }
                   >
-                    <MyIcon
-                      width={'24px'}
-                      name={
-                        item.isAdmin ? 'sealosAvator' : item.isAIBot ? 'robot' : 'defaultAvator'
-                      }
-                      color={'#219BF4'}
-                    />
+                    {item.isAdmin ? (
+                      <Image
+                        src={'/icons/logo.svg'}
+                        alt="adminLogo"
+                        w={'24px'}
+                        h={'24px'}
+                        objectFit={'contain'}
+                      />
+                    ) : (
+                      <MyIcon
+                        width={'24px'}
+                        name={item.isAIBot ? 'robot' : 'defaultAvator'}
+                        color={'#219BF4'}
+                      />
+                    )}
                   </Center>
 
                   <Box flex={1} fontSize={'12px'} color={'#24282C'}>
                     <Box fontSize={'12px'} fontWeight={500}>
                       {item.isAdmin ? (
                         <Flex gap={'4px'}>
-                          <Text>Sealos 支持</Text>
+                          <Text>ClawCloud Run Support</Text>
                           <Text color={'#7B838B'}>ID:{item.userId}</Text>
                         </Flex>
                       ) : item.isAIBot && isChatLoading ? (
