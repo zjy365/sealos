@@ -66,6 +66,10 @@ export type LayoutConfigType = {
   forcedLanguage?: string;
   currencySymbol?: 'shellCoin' | 'cny' | 'usd';
   protocol?: ProtocolConfigType;
+  posthog?: {
+    key: string;
+    host?: string;
+  };
   common: {
     githubStarEnabled: boolean;
     workorderEnabled: boolean;
