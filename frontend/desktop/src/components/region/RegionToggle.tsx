@@ -3,7 +3,17 @@ import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { ApiResp, Region, WindowSize } from '@/types';
 import { AccessTokenPayload } from '@/types/token';
-import { Box, Button, Center, Flex, HStack, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Flex,
+  HStack,
+  Text,
+  useDisclosure,
+  VStack
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'next-i18next';
@@ -278,6 +288,11 @@ export default function RegionToggle({ userPlan }: { userPlan: string }) {
                       </MyTooltip>
                     );
                   })}
+                  <Divider borderStyle="dashed" />
+                  <Box color={'#6390FE'} fontSize={'12px'} fontWeight={400}>
+                    Upgrade and switch to members-only availability zone for faster and more stable
+                    deployment
+                  </Box>
                 </VStack>
               </Box>
             </Box>

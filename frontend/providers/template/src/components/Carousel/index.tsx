@@ -7,35 +7,35 @@ import { useRouter } from 'next/router';
 
 const data = [
   {
-    title: 'Affine',
+    title: 'n8n',
     content:
-      'A collaborative workspace integrating documents, whiteboards, and databases for seamless team productivity.',
-    icon: <Icon w={'48px'} h={'48px'} name="affine"></Icon>,
-    image: '/images/Affine.png',
-    url: 'affine'
+      'A workflow automation platform that gives technical teams the flexibility of code with the speed of no-code.',
+    icon: <Image src="/images/n8n-logo.png" alt="n8n" width={48} height={48} />,
+    image: '/images/n8n-bg.png',
+    url: 'n8n'
   },
   {
-    title: 'Dify',
+    title: 'OpenList',
     content:
-      'A no-code/low-code platform for building and deploying AI-powered applications like chatbots and automations.',
-    icon: <Icon color={'white'} w={'48px'} h={'48px'} name="dify"></Icon>,
-    image: '/images/Dify.png',
-    url: 'dify'
+      'A community-driven fork of AList — built to defend open source against trust-based attacks.',
+    icon: <Image src="/images/openlist-logo.png" alt="openlist" width={48} height={48} />,
+    image: '/images/openlist-bg.png',
+    url: 'openlist'
   },
   {
     title: 'WordPress',
     content:
       'A versatile open-source CMS powering websites and blogs with customizable themes, plugins, and scalability.',
-    icon: <Icon w={'48px'} h={'48px'} name="wordPress"></Icon>,
+    icon: <Image src="/images/wordpress-logo.png" alt="wordpress" width={48} height={48} />,
     image: '/images/WordPress.png',
     url: 'wordpress'
   }
 ];
 
 const bgcolor = [
-  'linear-gradient(95.29deg, #242492 0%, #524FCF 100%)',
-  'linear-gradient(98.82deg, #123CC0 0%, #5A7BE6 74.64%)',
-  'linear-gradient(98.82deg, #09BAD6 0%, #20C19E 74.64%)'
+  'linear-gradient(97deg, #621EEC 0%, #845CD6 59.76%)',
+  'linear-gradient(97deg, #0BB8D3 0%, #5ADDE2 59.76%)',
+  'linear-gradient(97deg, #476FEB 0%, #6C80DA 59.76%)'
 ];
 
 const breakpoints = {
@@ -94,8 +94,9 @@ export default function Carousel({}: {}) {
             background={bgcolor[index]}
           >
             <Box w={'297px'}>
-              {/* <Box w={'48px'} h={'48px'} bg={'white'} borderRadius={'50%'}></Box> */}
-              {item.icon}
+              <Box w={'48px'} h={'48px'} bg={'white'} borderRadius={'12px'} overflow={'hidden'}>
+                {item.icon}
+              </Box>
               <Text mt={'16px'} mb={'8px'} fontSize={'18px'} fontWeight={600} lineHeight={'28px'}>
                 {item.title}
               </Text>
@@ -109,20 +110,26 @@ export default function Carousel({}: {}) {
                 {item.content}
               </Text>
             </Box>
-            <Image
-              className={style.left}
-              src={item.image}
-              alt=""
-              style={{
-                position: 'absolute',
-                transition: 'all 0.5s',
-                left: activeIndex === index ? '332px' : '160px',
-                top: '33px',
-                borderRadius: '16px'
-              }}
-              width={352}
-              height={220}
-            ></Image>
+            <Box
+              position="absolute"
+              left={activeIndex === index ? '332px' : '160px'}
+              top="33px"
+              width="352px"
+              height="220px"
+              borderRadius="16px"
+              overflow="hidden"
+              transition="all 0.5s"
+            >
+              <Image
+                className={style.left}
+                src={item.image}
+                alt=""
+                fill
+                style={{
+                  objectFit: 'cover'
+                }}
+              />
+            </Box>
           </Box>
         ))}
         <Icon
