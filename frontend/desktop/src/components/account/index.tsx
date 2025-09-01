@@ -516,7 +516,7 @@ export default function Account() {
                           p={'12px'}
                         >
                           <Text fontSize="14px" color="#1C4EF5" mb="12px">
-                            Recharge from $100 gets 50% top-up bonus. The deal ends on Aug 31st.
+                            Recharge from $100 gets 50% top-up bonus.
                           </Text>
                           <Button
                             width="100%"
