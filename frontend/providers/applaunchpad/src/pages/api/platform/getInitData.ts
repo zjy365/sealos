@@ -47,8 +47,7 @@ export const defaultAppConfig: AppConfigType = {
         url: 'http://launchpad-monitor.sealos.svc.cluster.local:8428'
       },
       billing: {
-        url: 'http://account-service.account-system.svc:2333',
-        secret: ''
+        url: 'http://account-service.account-system.svc:2333'
       },
       log: {
         url: 'http://localhost:8080'
