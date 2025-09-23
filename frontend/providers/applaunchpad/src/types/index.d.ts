@@ -67,7 +67,6 @@ export type AppConfigType = {
       };
       billing: {
         url: string;
-        secret: string;
       };
       log: {
         url: string;
