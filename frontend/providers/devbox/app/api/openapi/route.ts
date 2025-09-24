@@ -106,6 +106,12 @@ import {
 } from '../v1/devbox/[name]/delete/schema';
 
 import {
+  AutostartRequestSchema,
+  AutostartSuccessResponseSchema,
+  AutostartErrorResponseSchema
+} from '../v1/devbox/[name]/autostart/schema';
+
+import {
   SuccessResponseSchema as DeleteReleaseSuccessResponseSchema,
   ErrorResponseSchema as DeleteReleaseErrorResponseSchema
 } from '../v1/devbox/[name]/release/[tag]/schema';
@@ -113,6 +119,11 @@ import {
 import { NextResponse } from 'next/server';
 import { getToolsList } from 'sealos-mcp-sdk';
 import path from 'path';
+
+import {
+  SuccessResponseSchema as GetDevboxConfigSuccessResponseSchema,
+  ErrorResponseSchema as GetDevboxConfigErrorResponseSchema
+} from '../v1/devbox/templates/schema';
 
 const ErrorResponseSchema = z.object({
   code: z.number(),
@@ -459,6 +470,68 @@ const tmpOpenApiDocument = (sealosDomain: string, mcpTool: string) =>
             content: {
               'application/json': {
                 schema: DeleteDevboxByNameErrorResponseSchema
+              }
+            }
+          }
+        }
+      }
+    },
+    '/api/v1/devbox/{name}/autostart': {
+      post: {
+        tags: ['Lifecycle'],
+        summary: 'Configure autostart for a devbox',
+        description: 'Create RBAC and Job resources for autostart functionality. This will create ServiceAccount, Role, RoleBinding, and Job resources to enable automatic execution of commands in the devbox.',
+        parameters: [
+          {
+            name: 'name',
+            in: 'path',
+            required: true,
+            description: 'Devbox name',
+            schema: {
+              type: 'string',
+              pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$',
+              minLength: 1,
+              maxLength: 63
+            }
+          }
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: AutostartRequestSchema
+            }
+          }
+        },
+        responses: {
+          '200': {
+            description: 'Autostart resources created successfully',
+            content: {
+              'application/json': {
+                schema: AutostartSuccessResponseSchema
+              }
+            }
+          },
+          '400': {
+            description: 'Invalid request body or devbox name',
+            content: {
+              'application/json': {
+                schema: AutostartErrorResponseSchema
+              }
+            }
+          },
+          '404': {
+            description: 'Devbox not found',
+            content: {
+              'application/json': {
+                schema: AutostartErrorResponseSchema
+              }
+            }
+          },
+          '500': {
+            description: 'Internal server error',
+            content: {
+              'application/json': {
+                schema: AutostartErrorResponseSchema
               }
             }
           }
@@ -1310,6 +1383,31 @@ const tmpOpenApiDocument = (sealosDomain: string, mcpTool: string) =>
               content: {
                 'application/json': {
                   schema: GetDevboxByNameErrorResponseSchema
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/devbox/templates': {
+        get: {
+          tags: ['Query'],
+          summary: 'Get devbox configuration and runtime information',
+          description: 'Retrieve available runtimes and template configurations for creating devboxes. Returns a list of accessible template repositories and their associated template configurations.',
+          responses: {
+            '200': {
+              description: 'Successfully retrieved devbox configuration',
+              content: {
+                'application/json': {
+                  schema: GetDevboxConfigSuccessResponseSchema
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: GetDevboxConfigErrorResponseSchema
                 }
               }
             }

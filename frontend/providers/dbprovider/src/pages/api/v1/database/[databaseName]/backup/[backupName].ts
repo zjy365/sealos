@@ -4,13 +4,13 @@ import { getK8s } from '@/services/backend/kubernetes';
 import { handleK8sError, jsonRes } from '@/services/backend/response';
 import { ResponseCode, ResponseMessages } from '@/types/response';
 import { json2CreateCluster, json2Account } from '@/utils/json2Yaml';
-import { DBTypeEnum, defaultDBEditValue } from '@/constants/db';
+import { DBTypeEnum, defaultDBEditValue, templateDeployKey } from '@/constants/db';
 import type { DBEditType } from '@/types/db';
 import { cpuFormatToM, memoryFormatToMi, storageFormatToGi } from '@/utils/tools';
+import { customAlphabet } from 'nanoid';
 import z from 'zod';
-
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
 const restoreBodySchema = z.object({
-  newDbName: z.string().min(1, 'New database name is required'),
   replicas: z.number().min(1).optional()
 });
 
@@ -81,7 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      const { newDbName, replicas } = bodyParseResult.data;
+      const { replicas } = bodyParseResult.data;
+      const newDbName = `${databaseName}-${nanoid(8).toLowerCase()}`;
 
       const group = 'dataprotection.kubeblocks.io';
       const version = 'v1alpha1';
@@ -108,6 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let dbVersion =
         backupInfo.metadata?.labels?.['clusterversion.kubeblocks.io/name'] || 'postgresql-14.8.2';
       let originalResource = { ...defaultDBEditValue };
+      let originalLabels = {};
       const clusterGroup = 'apps.kubeblocks.io';
       const clusterVersion = 'v1alpha1';
       const clusterPlural = 'clusters';
@@ -122,6 +124,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         )) as any;
 
         if (clusterInfo) {
+          const filteredLabels = { ...clusterInfo.metadata?.labels };
+          delete filteredLabels['clusterdefinition.kubeblocks.io/name'];
+          delete filteredLabels['clusterversion.kubeblocks.io/name'];
+          delete filteredLabels['app.kubernetes.io/instance'];
+          originalLabels = filteredLabels;
+
           if (!backupInfo.metadata?.labels?.['clusterdefinition.kubeblocks.io/name']) {
             dbType =
               clusterInfo.metadata?.labels?.['clusterdefinition.kubeblocks.io/name'] || dbType;
@@ -188,7 +196,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         dbType: dbType as DBTypeEnum,
         dbVersion,
         terminationPolicy: 'WipeOut',
-        labels: {}
+        labels: originalLabels
       };
 
       const clusterYaml = json2CreateCluster(dbEditData, backupData, {
@@ -235,7 +243,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  // Handle DELETE request
   if (req.method === 'DELETE') {
     try {
       const group = 'dataprotection.kubeblocks.io';
