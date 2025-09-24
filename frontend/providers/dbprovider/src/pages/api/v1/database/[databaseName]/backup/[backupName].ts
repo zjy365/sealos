@@ -7,9 +7,9 @@ import { json2CreateCluster, json2Account } from '@/utils/json2Yaml';
 import { DBTypeEnum, defaultDBEditValue } from '@/constants/db';
 import type { DBEditType } from '@/types/db';
 import { cpuFormatToM, memoryFormatToMi, storageFormatToGi } from '@/utils/tools';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import z from 'zod';
-
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
 const restoreBodySchema = z.object({
   replicas: z.number().min(1).optional()
 });
