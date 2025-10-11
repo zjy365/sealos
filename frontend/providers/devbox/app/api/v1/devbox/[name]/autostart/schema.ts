@@ -18,6 +18,9 @@ const AutostartSuccessResponseSchema = z.object({
     autostartCreated: z.boolean().openapi({
       description: 'Whether autostart resources were created successfully'
     }),
+    jobRecreated: z.boolean().openapi({
+      description: 'Whether the job was deleted and recreated'
+    }),
     resources: z.array(z.string()).openapi({
       description: 'List of created Kubernetes resources'
     })
