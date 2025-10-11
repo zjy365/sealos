@@ -10,13 +10,6 @@ export async function GET(req: NextRequest) {
   try {
     const regionUid = getRegionUid();
 
-    const organization = await devboxDB.organization.findUnique({
-      where: {
-        id: 'labring'
-      }
-    });
-    if (!organization) throw Error('organization not found');
-
     const templates = await devboxDB.template.findMany({
       where: {
         isDeleted: false,
@@ -24,7 +17,13 @@ export async function GET(req: NextRequest) {
           isDeleted: false,
           regionUid,
           isPublic: true,
-          organizationUid: organization.uid 
+          templateRepositoryTags: {
+            some: {
+              tag: {
+                type: 'OFFICIAL_CONTENT'
+              }
+            }
+          }
         }
       },
       select: {
@@ -43,6 +42,7 @@ export async function GET(req: NextRequest) {
         }
       }
     });
+    console.log('templates', templates);
 
     const configArray = templates.map((template) => ({
       runtime: template.templateRepository.iconId || template.templateRepository.uid,
