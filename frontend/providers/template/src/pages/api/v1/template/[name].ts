@@ -4,13 +4,8 @@ import fs from 'fs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 import { getResourceUsage, ResourceUsage } from '@/utils/usage';
-import { readTemplates } from './index';
+import { readTemplates } from '../../listTemplate';
 import { GetTemplateByName } from '../../getTemplateSource';
-
-const DEFAULT_LANGUAGE = 'en';
-const RESOURCE_TYPE = 'template';
-const HTTP_OK = 200;
-const HTTP_ERROR = 500;
 
 function simplifyResourceValue(
   resource: { min: number; max: number },
@@ -33,7 +28,7 @@ function simplifyResourceUsage(resource: ResourceUsage) {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { name: templateName } = req.query as { name: string };
-  const language = (req.query.language as string) || DEFAULT_LANGUAGE;
+  const language = (req.query.language as string) || 'en';
 
   if (!templateName) {
     return jsonRes(res, {
@@ -64,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const locale = language || DEFAULT_LANGUAGE;
+    const locale = language || 'en';
     const i18nData = template.spec?.i18n?.[locale];
 
     let simplifiedResource = null;
@@ -116,7 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const result = {
       name: template.metadata.name,
       uid: template.metadata.uid,
-      resourceType: RESOURCE_TYPE,
+      resourceType: 'template',
       resource: simplifiedResource,
       readme: i18nData?.readme || template.spec.readme || '',
       icon: i18nData?.icon || template.spec.icon || '',
@@ -129,12 +124,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     jsonRes(res, {
       data: result,
-      code: HTTP_OK
+      code: 200
     });
   } catch (error) {
     console.error('Error in template detail API:', error);
     jsonRes(res, {
-      code: HTTP_ERROR,
+      code: 500,
       message: 'Failed to get template details',
       error: error
     });
