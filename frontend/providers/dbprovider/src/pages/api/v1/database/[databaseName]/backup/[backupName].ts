@@ -14,7 +14,6 @@ const restoreBodySchema = z.object({
   replicas: z.number().min(1).optional()
 });
 
-// Filter out system-managed labels, keeping only user-defined labels
 function filterUserLabels(labels: Record<string, string> = {}): Record<string, string> {
   const {
     'clusterdefinition.kubeblocks.io/name': _dbType,
