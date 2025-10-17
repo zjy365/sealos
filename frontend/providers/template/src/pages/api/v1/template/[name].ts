@@ -95,9 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const resourceUsage = getResourceUsage(renderedYaml.map((item) => item.value));
         simplifiedResource = simplifyResourceUsage(resourceUsage);
       }
-    } catch (error) {
-      console.error(`Failed to calculate requirements for ${templateName}:`, error);
-    }
+    } catch (error) {}
 
     if (!simplifiedResource && template.spec.requirements) {
       const staticReq = template.spec.requirements as any;
