@@ -14,6 +14,17 @@ const restoreBodySchema = z.object({
   replicas: z.number().min(1).optional()
 });
 
+// Filter out system-managed labels, keeping only user-defined labels
+function filterUserLabels(labels: Record<string, string> = {}): Record<string, string> {
+  const {
+    'clusterdefinition.kubeblocks.io/name': _dbType,
+    'clusterversion.kubeblocks.io/name': _dbVersion,
+    'app.kubernetes.io/instance': _instance,
+    ...userLabels
+  } = labels;
+  return userLabels;
+}
+
 function parseKubernetesResource(
   value: string | undefined,
   resourceType: 'cpu' | 'memory' | 'storage',
@@ -124,11 +135,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         )) as any;
 
         if (clusterInfo) {
-          const filteredLabels = { ...clusterInfo.metadata?.labels };
-          delete filteredLabels['clusterdefinition.kubeblocks.io/name'];
-          delete filteredLabels['clusterversion.kubeblocks.io/name'];
-          delete filteredLabels['app.kubernetes.io/instance'];
-          originalLabels = filteredLabels;
+          originalLabels = filterUserLabels(clusterInfo.metadata?.labels);
 
           if (!backupInfo.metadata?.labels?.['clusterdefinition.kubeblocks.io/name']) {
             dbType =
