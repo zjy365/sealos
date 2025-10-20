@@ -776,13 +776,6 @@ export default function Apps() {
     }
   };
 
-  const openReferralApp = () => {
-    openDesktopApp({
-      appKey: 'system-invite',
-      pathname: '/'
-    });
-  };
-
   const openCostCenterApp = () => {
     openDesktopApp({
       appKey: 'system-costcenter',
@@ -926,7 +919,7 @@ export default function Apps() {
                 >
                   {t('v2:promotion_highlight')}
                 </Text>
-                <Text>{t('v2:promotion_extra')}</Text>
+                {t('v2:promotion_extra') && <Text>{t('v2:promotion_extra')}</Text>}
               </Flex>
             )}
 
