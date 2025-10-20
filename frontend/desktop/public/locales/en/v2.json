@@ -57,6 +57,11 @@
   "invite_friend": "Invite friends to register Sealos and get 10 yuan balance",
   "invite_id": "Invitation Code",
   "invite_link_copied": "Invitation link copied!",
+  "promotion_title": "10.24 Programmer Festival is coming!",
+  "promotion_desc": "Now join the campaign to get the top-up discount",
+  "promotion_highlight": "and win the Sealos gifts",
+  "promotion_extra": "",
+  "promotion_badge": "Event",
   "join_discord_prompt": {
     "cancel": "Maybe Later",
     "description": "Got questions or feedback? Join our official Discord community to get real-time help from our team and other users.",
