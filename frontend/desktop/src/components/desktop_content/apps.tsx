@@ -783,6 +783,16 @@ export default function Apps() {
     });
   };
 
+  const openCostCenterApp = () => {
+    openDesktopApp({
+      appKey: 'system-costcenter',
+      pathname: '/',
+      query: {
+        openRecharge: 'true'
+      }
+    });
+  };
+
   return (
     <Flex
       flexDirection={'column'}
@@ -819,11 +829,11 @@ export default function Apps() {
             onClick={
               layoutConfig?.version === 'cn'
                 ? () => {
-                    track('announcement_click', {
-                      module: 'dashboard',
-                      announcement_id: 'invitation_referral_prompt'
-                    });
-                    openReferralApp();
+                    // track('announcement_click', {
+                    //   module: 'dashboard',
+                    //   announcement_id: 'invitation_referral_prompt'
+                    // });
+                    openCostCenterApp();
                   }
                 : () => {
                     track('announcement_click', {
@@ -834,9 +844,59 @@ export default function Apps() {
                   }
             }
           >
-            <Box position="relative" className="gradient-icon">
-              <Volume2 width={16} height={16} />
-            </Box>
+            {layoutConfig?.version === 'cn' ? (
+              <Flex
+                borderRadius={'9999px'}
+                border={'1px solid rgba(255, 255, 255, 0.00)'}
+                background={
+                  'linear-gradient(90deg, rgba(214, 217, 223, 0.16) 0%, rgba(175, 178, 195, 0.16) 100%)'
+                }
+                px={'8px'}
+                py={'4px'}
+                alignItems={'center'}
+                gap={'4px'}
+                fontSize={'12px'}
+                fontWeight={600}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="6"
+                  height="6"
+                  viewBox="0 0 6 6"
+                  fill="none"
+                >
+                  <circle cx="3" cy="3" r="3" fill="url(#paint0_linear_14270_24095)" />
+                  <defs>
+                    <linearGradient
+                      id="paint0_linear_14270_24095"
+                      x1="0"
+                      y1="3"
+                      x2="6"
+                      y2="3"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stopColor="#4F8DFF" />
+                      <stop offset="1" stopColor="#1268FB" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <Text
+                  background="linear-gradient(90deg, #4F8DFF 0%, #1268FB 100%)"
+                  backgroundClip="text"
+                  sx={{
+                    '-webkit-background-clip': 'text',
+                    '-webkit-text-fill-color': 'transparent'
+                  }}
+                >
+                  {t('v2:promotion_badge')}
+                </Text>
+              </Flex>
+            ) : (
+              <Box position="relative" className="gradient-icon">
+                <Volume2 width={16} height={16} />
+              </Box>
+            )}
+
             <Text
               fontSize={'14px'}
               fontWeight={'500'}
@@ -847,8 +907,29 @@ export default function Apps() {
                 WebkitTextFillColor: 'transparent'
               }}
             >
-              {layoutConfig?.version === 'cn' ? t('v2:invite_friend') : t('v2:onboard_guide')}
+              {layoutConfig?.version === 'cn' ? t('v2:promotion_title') : t('v2:onboard_guide')}
             </Text>
+            {layoutConfig?.version === 'cn' && (
+              <Text fontSize={'14px'} fontWeight={'500'}>
+                {t('v2:promotion_desc')}，
+              </Text>
+            )}
+            {layoutConfig?.version === 'cn' && (
+              <Flex fontSize={'14px'} fontWeight={'500'}>
+                <Text
+                  background="linear-gradient(90deg, #4F8DFF 0%, #1268FB 100%)"
+                  backgroundClip="text"
+                  sx={{
+                    '-webkit-background-clip': 'text',
+                    '-webkit-text-fill-color': 'transparent'
+                  }}
+                >
+                  {t('v2:promotion_highlight')}
+                </Text>
+                <Text>{t('v2:promotion_extra')}</Text>
+              </Flex>
+            )}
+
             <Box position="relative" className="gradient-icon">
               <ArrowRight width={16} height={16} />
             </Box>

@@ -234,9 +234,7 @@ export default function Desktop() {
 
       {isClient && layoutConfig?.customerServiceURL && <OnlineServiceButton />}
       <ChakraIndicator />
-      {layoutConfig?.common?.bannerEnabled && (
-        <SaleBanner isBannerVisible={isBannerVisible} setIsBannerVisible={setIsBannerVisible} />
-      )}
+
       <Flex height={'68px'} px={{ base: '16px', md: '32px' }}>
         <Account />
       </Flex>
