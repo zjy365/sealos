@@ -32,7 +32,7 @@ import {
 } from '@chakra-ui/react';
 import { MyTooltip } from '@sealos/ui';
 import { Stripe } from '@stripe/stripe-js';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AxiosInstance } from 'axios';
 import { isNumber } from 'lodash';
 import { useTranslation } from 'next-i18next';
@@ -350,6 +350,7 @@ const RechargeModal = forwardRef(
 
     const { session } = useSessionStore();
     const { toast } = useCustomToast();
+    const queryClient = useQueryClient();
     const { data: bonuses, isSuccess } = useQuery(
       ['bonus', session.user.id],
       () =>
@@ -458,6 +459,8 @@ const RechargeModal = forwardRef(
             if ((data?.data?.status || '').toUpperCase() === 'SUCCESS') {
               createPaymentRes.reset();
               setComplete(3);
+              // Refetch bonus data after successful payment
+              queryClient.invalidateQueries(['bonus', session.user.id]);
               props.onPaySuccess?.();
               onClose();
               setComplete(0);
