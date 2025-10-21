@@ -250,6 +250,27 @@ const BonusBox = (props: {
             </Flex>
           </Flex>
         </Flex>
+      ) : props.isFirst ? (
+        <Flex
+          position={'absolute'}
+          minW={'max-content'}
+          left="78px"
+          top="4px"
+          px={'9.5px'}
+          py={'2.5px'}
+          color={'#2B5FD9'}
+          background="#E1EAFF"
+          alignItems={'center'}
+          borderRadius="10px 10px 10px 0px"
+          zIndex={'99'}
+          fontStyle="normal"
+          fontWeight="500"
+          fontSize="12px"
+        >
+          <Text mr="4px">+</Text>
+          <CurrencySymbol boxSize={'10px'} mr={'2px'} type={currency} />
+          <Text>{props.bouns}</Text>
+        </Flex>
       ) : props.bouns !== 0 ? (
         <Flex
           position={'absolute'}
@@ -647,7 +668,10 @@ const RechargeModal = forwardRef(
                     alignSelf={'flex-start'}
                     align={'center'}
                     mt={'24px'}
-                    onClick={() => setDetail(true)}
+                    // onClick={() => setDetail(true)}
+                    onClick={() => {
+                      window.open('https://mp.weixin.qq.com/s/hQ5IAynIQNrzNZA3FTLA_A', '_blank');
+                    }}
                   >
                     <OuterLink text={t('View Discount Rules')}></OuterLink>
                   </Flex>
