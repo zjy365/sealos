@@ -42,11 +42,14 @@ import { getWorkspacesPlans } from '@/api/auth';
 import { Badge } from '@sealos/shadcn-ui/badge';
 import { cn } from '@sealos/shadcn-ui';
 import { getPlanBackgroundClass } from '@/utils/styling';
+import { useConfigStore } from '@/stores/config';
 
 export default function TeamCenter({
   isOpen,
   onClose
 }: { isOpen: boolean; onClose: () => void } & StackProps) {
+  const { layoutConfig } = useConfigStore();
+
   const createTeamDisclosure = useDisclosure();
   const session = useSessionStore((s) => s.session);
   const { installedApps, openApp, openDesktopApp } = useAppStore();
@@ -146,6 +149,14 @@ export default function TeamCenter({
     });
   };
 
+  const handleCreateWorkspace = () => {
+    if (layoutConfig?.common.subscriptionEnabled) {
+      openCostCenterApp();
+    } else {
+      createTeamDisclosure.onOpen();
+    }
+  };
+
   return (
     <>
       <Modal
@@ -239,7 +250,7 @@ export default function TeamCenter({
                   cursor={'pointer'}
                   onClick={() => {
                     console.log('create workspace');
-                    openCostCenterApp();
+                    handleCreateWorkspace();
                     onClose();
                   }}
                 >
@@ -373,7 +384,7 @@ export default function TeamCenter({
                     </Text>
                     <Button
                       onClick={() => {
-                        createTeamDisclosure.onOpen();
+                        handleCreateWorkspace();
                       }}
                       variant={'primary'}
                       leftIcon={<AddIcon boxSize={'20px'} color={'white'} />}
