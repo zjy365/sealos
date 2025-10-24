@@ -68,6 +68,7 @@ const NsListItem = ({
           textOverflow={'ellipsis'}
           whiteSpace={'nowrap'}
           overflow={'hidden'}
+          width={'full'}
         >
           {/* {isPrivate ? t('common:default_team') : teamName} */}
           {teamName}
