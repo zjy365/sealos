@@ -267,25 +267,7 @@ export default function TeamCenter({
                     <Box mx="10px">
                       <Flex align={'center'} justifyContent={'space-between'}>
                         <Text fontSize={'24px'} fontWeight={'600'} mr="8px">
-                          {isPrivate
-                            ? `${t('common:default_team')} - ${namespace.teamName}`
-                            : namespace.teamName}
-
-                          {selectedNsPlan && (
-                            <Badge
-                              variant={'subscription'}
-                              className={cn(
-                                'ml-4',
-                                getPlanBackgroundClass(
-                                  selectedNsPlan,
-                                  selectedNsPlan === 'PAYG',
-                                  false
-                                )
-                              )}
-                            >
-                              {selectedNsPlan}
-                            </Badge>
-                          )}
+                          {namespace.teamName}
                         </Text>
 
                         {curTeamUser?.role === UserRole.Owner && (
@@ -312,6 +294,28 @@ export default function TeamCenter({
                         )}
                       </Flex>
                       <Flex align={'center'} mt={'7px'} fontSize={'12px'}>
+                        {isPrivate && (
+                          <Badge variant="secondary" className="mr-2">
+                            {t('common:default_team')}
+                          </Badge>
+                        )}
+
+                        {selectedNsPlan && (
+                          <Badge
+                            variant={'subscription'}
+                            className={cn(
+                              'mr-2',
+                              getPlanBackgroundClass(
+                                selectedNsPlan,
+                                selectedNsPlan === 'PAYG',
+                                false
+                              )
+                            )}
+                          >
+                            {selectedNsPlan}
+                          </Badge>
+                        )}
+
                         <Text color={'grayModern.600'}>
                           {t('common:team')} ID: {nsid}
                         </Text>
