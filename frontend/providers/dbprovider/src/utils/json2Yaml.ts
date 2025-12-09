@@ -1244,7 +1244,7 @@ export const json2NetworkService = ({
       name: `${dbDetail.dbName}-export`,
       labels: {
         'app.kubernetes.io/instance': dbDetail.dbName,
-        'app.kubernetes.io/managed-by': 'kubeblocks',
+        // 'app.kubernetes.io/managed-by': 'kubeblocks',
         'apps.kubeblocks.io/component-name': dbDetail.dbType,
         ...labelMap[dbDetail.dbType]
       },
@@ -1284,7 +1284,7 @@ export const json2NetworkService = ({
       ],
       selector: {
         'app.kubernetes.io/instance': dbDetail.dbName,
-        'app.kubernetes.io/managed-by': 'kubeblocks',
+        // 'app.kubernetes.io/managed-by': 'kubeblocks',
         ...labelMap[dbDetail.dbType]
       },
       type: 'NodePort'
