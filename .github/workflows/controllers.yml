@@ -84,7 +84,8 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE_REF="${{ github.event.pull_request.base.sha }}"
           else
-            BASE_REF="origin/${{ github.event.repository.default_branch }}"
+            # For push events, compare with previous commit
+            BASE_REF="${{ github.event.before }}"
           fi
 
           # Check if force_all is true (for release builds) or workflow_dispatch (manual builds)
