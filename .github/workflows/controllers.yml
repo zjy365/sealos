@@ -66,42 +66,10 @@ env:
 
 jobs:
   detect-changes:
-    runs-on: ubuntu-24.04
-    outputs:
-      modules: ${{ steps.detect.outputs.modules }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Detect changed modules
-        id: detect
-        run: |
-          set -x
-
-          # Determine base ref
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BASE_REF="${{ github.event.pull_request.base.sha }}"
-          else
-            # For push events, compare with previous commit
-            BASE_REF="${{ github.event.before }}"
-          fi
-
-          # Check if force_all is true (for release builds) or workflow_dispatch (manual builds)
-          FORCE_ALL="false"
-          if [[ "${{ inputs.force_all }}" == "true" ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            FORCE_ALL="true"
-          fi
-
-          echo "Base ref: $BASE_REF"
-          echo "Force all: $FORCE_ALL"
-
-          # Run detection script
-          MODULES=$(bash scripts/detect-build-modules.sh controllers "$BASE_REF" "$FORCE_ALL")
-
-          echo "Detected modules: $MODULES"
-          echo "modules=$MODULES" >> $GITHUB_OUTPUT
+    uses: ./.github/workflows/detect-changes.yml
+    with:
+      type: controllers
+      force_all: ${{ inputs.force_all }}
 
   build-controllers:
     if: ${{ needs.detect-changes.outputs.modules != '[]' }}

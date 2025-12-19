@@ -218,9 +218,15 @@ get_module_path() {
     local module="$2"
 
     if [[ "$type" == "controllers" ]]; then
-        echo "${CONTROLLER_MODULES[$module]}"
+        # Check if module exists in array
+        if [[ -v "CONTROLLER_MODULES[$module]" ]]; then
+            echo "${CONTROLLER_MODULES[$module]}"
+        fi
     else
-        echo "${SERVICE_MODULES[$module]}"
+        # Check if module exists in array
+        if [[ -v "SERVICE_MODULES[$module]" ]]; then
+            echo "${SERVICE_MODULES[$module]}"
+        fi
     fi
 }
 
@@ -230,6 +236,11 @@ module_has_changes() {
     local module="$2"
     local module_path
     module_path=$(get_module_path "$type" "$module")
+
+    # If module path is empty (module not found), return false
+    if [[ -z "$module_path" ]]; then
+        return 1
+    fi
 
     # Check if any files in the module directory have changed
     if git diff --name-only "$BASE_REF" HEAD | grep -q "^${type}/${module_path}/"; then
