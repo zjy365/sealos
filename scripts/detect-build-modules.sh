@@ -13,15 +13,8 @@ BASE_REF="${2:-origin/main}"
 FORCE_ALL="${3:-false}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [[ -z "$TYPE" ]]; then
-    echo "Error: TYPE argument required (controllers or service)" >&2
-    exit 1
-fi
-
-if [[ "$TYPE" != "controllers" && "$TYPE" != "service" ]]; then
-    echo "Error: TYPE must be 'controllers' or 'service'" >&2
-    exit 1
-fi
+# Source generate-dependencies.sh for generate_dependencies function
+source "${REPO_ROOT}/scripts/generate-dependencies.sh"
 
 # Module definitions
 declare -A CONTROLLER_MODULES=(
@@ -51,6 +44,25 @@ declare -A SERVICE_MODULES=(
     ["sshgate"]="sshgate"
 )
 
+# Function to get all modules for a type
+get_all_modules() {
+    local type="$1"
+    local modules=()
+
+    if [[ "$type" == "controllers" ]]; then
+        for name in "${!CONTROLLER_MODULES[@]}"; do
+            modules+=("$name")
+        done
+    else
+        for name in "${!SERVICE_MODULES[@]}"; do
+            modules+=("$name")
+        done
+    fi
+
+    # Sort for consistent output
+    printf '%s\n' "${modules[@]}" | sort
+}
+
 # Manual dependency definitions (for non-Go dependencies or special cases)
 # Format: "module:dependency1,dependency2,..."
 # These will be merged with auto-detected dependencies from go.mod
@@ -62,6 +74,9 @@ declare -A MANUAL_DEPENDENCIES=(
 # Cache for auto-detected dependencies
 declare -A AUTO_DEPENDENCIES=()
 
+# Dependencies cache file
+DEPS_CACHE_FILE="${REPO_ROOT}/scripts/dependencies.txt"
+
 # Function to normalize module path to key format
 normalize_module_key() {
     local type="$1"
@@ -69,105 +84,29 @@ normalize_module_key() {
     echo "${type}/${module}"
 }
 
-# Function to parse go.mod and extract dependencies
-parse_go_mod_dependencies() {
-    local type="$1"
-    local module="$2"
-    local module_path
-    module_path=$(get_module_path "$type" "$module")
+load_dependencies() {
 
-    local go_mod_file="${REPO_ROOT}/${type}/${module_path}/go.mod"
+    while IFS='=' read -r key deps; do
+        [[ -z "$key" ]] && continue
+        [[ "$key" == \#* ]] && continue # Skip comments
+        AUTO_DEPENDENCIES["$key"]="$deps"
+    done <"$DEPS_CACHE_FILE"
 
-    if [[ ! -f "$go_mod_file" ]]; then
-        return
-    fi
-
-    local deps=""
-
-    # Parse require section for sealos dependencies
-    while IFS= read -r line; do
-        # Match lines like: github.com/labring/sealos/controllers/account v0.0.0...
-        if [[ "$line" =~ github\.com/labring/sealos/(controllers|service)/([a-zA-Z0-9_-]+) ]]; then
-            local dep_type="${BASH_REMATCH[1]}"
-            local dep_module="${BASH_REMATCH[2]}"
-
-            # Normalize "service" to "service" (not "services")
-            if [[ "$dep_type" == "service" ]]; then
-                dep_type="service"
-            fi
-
-            if [[ -n "$deps" ]]; then
-                deps="${deps},${dep_type}/${dep_module}"
-            else
-                deps="${dep_type}/${dep_module}"
-            fi
-        fi
-    done < "$go_mod_file"
-
-    # Also check replace directives in go.mod
-    while IFS= read -r line; do
-        # Match lines like: github.com/labring/sealos/controllers/pkg => ../../controllers/pkg
-        if [[ "$line" =~ github\.com/labring/sealos/(controllers|service)/([a-zA-Z0-9_/-]+)[[:space:]]=\> ]]; then
-            local dep_type="${BASH_REMATCH[1]}"
-            local dep_module="${BASH_REMATCH[2]}"
-
-            # Handle nested paths like "job/init" -> "job-init"
-            # For dependencies, we need to find the actual module name
-            # Check if this path exists in our module definitions
-            local found_module=""
-            if [[ "$dep_type" == "controllers" ]]; then
-                for mod_name in "${!CONTROLLER_MODULES[@]}"; do
-                    if [[ "${CONTROLLER_MODULES[$mod_name]}" == "$dep_module" ]]; then
-                        found_module="$mod_name"
-                        break
-                    fi
-                done
-            else
-                for mod_name in "${!SERVICE_MODULES[@]}"; do
-                    if [[ "${SERVICE_MODULES[$mod_name]}" == "$dep_module" ]]; then
-                        found_module="$mod_name"
-                        break
-                    fi
-                done
-            fi
-
-            if [[ -n "$found_module" ]]; then
-                if [[ -n "$deps" ]]; then
-                    deps="${deps},${dep_type}/${found_module}"
-                else
-                    deps="${dep_type}/${found_module}"
-                fi
-            fi
-        fi
-    done < "$go_mod_file"
-
-    if [[ -n "$deps" ]]; then
-        # Remove duplicates
-        deps=$(echo "$deps" | tr ',' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
-    fi
-
-    echo "$deps"
+    echo "Loaded ${#AUTO_DEPENDENCIES[@]} module dependencies" >&2
 }
 
-# Function to get all dependencies (manual + auto-detected)
+# Function to get all dependencies (from cache + manual)
 get_all_dependencies() {
     local type="$1"
     local module="$2"
     local key
     key=$(normalize_module_key "$type" "$module")
 
-    # Check if we already computed dependencies for this module
-    if [[ -n "${AUTO_DEPENDENCIES[$key]:-}" ]]; then
-        echo "${AUTO_DEPENDENCIES[$key]}"
-        return
-    fi
+    # Get cached dependencies
+    local auto_deps="${AUTO_DEPENDENCIES[$key]:-}"
 
     # Get manual dependencies
     local manual_deps="${MANUAL_DEPENDENCIES[$key]:-}"
-
-    # Get auto-detected dependencies
-    local auto_deps
-    auto_deps=$(parse_go_mod_dependencies "$type" "$module")
 
     # Merge dependencies
     local all_deps=""
@@ -187,29 +126,7 @@ get_all_dependencies() {
         all_deps=$(echo "$all_deps" | tr ',' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
     fi
 
-    # Cache the result
-    AUTO_DEPENDENCIES[$key]="$all_deps"
-
     echo "$all_deps"
-}
-
-# Function to get all modules for a type
-get_all_modules() {
-    local type="$1"
-    local modules=()
-
-    if [[ "$type" == "controllers" ]]; then
-        for name in "${!CONTROLLER_MODULES[@]}"; do
-            modules+=("$name")
-        done
-    else
-        for name in "${!SERVICE_MODULES[@]}"; do
-            modules+=("$name")
-        done
-    fi
-
-    # Sort for consistent output
-    printf '%s\n' "${modules[@]}" | sort
 }
 
 # Function to get module path
@@ -274,7 +191,7 @@ find_dependent_modules() {
             fi
 
             # Split dependencies by comma
-            IFS=',' read -ra dep_array <<< "$deps"
+            IFS=',' read -ra dep_array <<<"$deps"
             for dep in "${dep_array[@]}"; do
                 # Remove leading/trailing whitespace
                 dep=$(echo "$dep" | xargs)
@@ -287,7 +204,7 @@ find_dependent_modules() {
                     fi
                 fi
             done
-        done <<< "$modules"
+        done <<<"$modules"
     done
 
     printf '%s\n' "${dependent_modules[@]}" | sort -u
@@ -327,7 +244,7 @@ find_affected_modules() {
                     affected["$dep"]=1
                     to_process+=("$dep")
                 fi
-            done <<< "$dependents"
+            done <<<"$dependents"
         fi
     done
 
@@ -412,7 +329,7 @@ check_infrastructure_changes() {
 # Adds affected modules to the provided array
 check_cross_project_dependencies() {
     local type="$1"
-    local -n affected_modules="$2"  # nameref to modify the array
+    local -n affected_modules="$2" # nameref to modify the array
 
     # Currently only check when building services
     # (services may depend on controllers)
@@ -431,7 +348,7 @@ check_cross_project_dependencies() {
         fi
 
         # Check if any dependency has changes
-        IFS=',' read -ra dep_array <<< "$deps"
+        IFS=',' read -ra dep_array <<<"$deps"
         for dep in "${dep_array[@]}"; do
             dep=$(echo "$dep" | xargs)
 
@@ -457,6 +374,22 @@ check_cross_project_dependencies() {
 # Main logic
 main() {
     local -a modules_to_build=()
+
+    # Generate dependencies
+    generate_dependencies
+
+    if [[ ! -f "$DEPS_CACHE_FILE" ]]; then
+        echo "Error: Failed to generate dependencies" >&2
+        return 1
+    fi
+
+    if [[ "$TYPE" != "controllers" && "$TYPE" != "service" ]]; then
+        echo "Error: TYPE must be 'controllers' or 'service'" >&2
+        exit 1
+    fi
+
+    # Generate and load dependencies
+    load_dependencies
 
     # If force-all is true, build all modules (for release)
     if [[ "$FORCE_ALL" == "true" ]]; then
