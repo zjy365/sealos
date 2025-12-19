@@ -94,21 +94,6 @@ jobs:
             FORCE_ALL="true"
           fi
 
-          # Check if controller dependencies changed (cross-project dependency)
-          # If only controller dependencies changed (no service code changes),
-          # we need to force rebuild of all services that depend on those controllers
-          if [[ "$FORCE_ALL" != "true" ]]; then
-            SERVICE_CHANGES=$(git diff --name-only "$BASE_REF" HEAD | grep -c "^service/" || true)
-
-            # If no service code changes but controller dependencies changed, force all
-            if [[ "$SERVICE_CHANGES" -eq 0 ]]; then
-              if git diff --name-only "$BASE_REF" HEAD | grep -qE "^controllers/(pkg|account)/"; then
-                echo "Controller dependencies changed without service changes, forcing rebuild of dependent services"
-                FORCE_ALL="true"
-              fi
-            fi
-          fi
-
           echo "Base ref: $BASE_REF"
           echo "Force all: $FORCE_ALL"
 
