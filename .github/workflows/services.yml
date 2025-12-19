@@ -70,7 +70,7 @@ jobs:
     uses: ./.github/workflows/detect-changes.yml
     with:
       type: service
-      force_all: ${{ inputs.force_all }}
+      force_all: ${{ inputs.force_all || false }}
 
   build-services:
     if: ${{ needs.detect-changes.outputs.modules != '[]' }}

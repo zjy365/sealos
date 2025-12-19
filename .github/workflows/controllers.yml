@@ -69,7 +69,7 @@ jobs:
     uses: ./.github/workflows/detect-changes.yml
     with:
       type: controllers
-      force_all: ${{ inputs.force_all }}
+      force_all: ${{ inputs.force_all || false }}
 
   build-controllers:
     if: ${{ needs.detect-changes.outputs.modules != '[]' }}
