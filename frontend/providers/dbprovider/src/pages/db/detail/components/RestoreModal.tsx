@@ -1,6 +1,6 @@
 import { restoreBackup } from '@/api/db';
 import Tip from '@/components/Tip';
-import { BackupItemType, DBDetailType } from '@/types/db';
+import { BackupItemType } from '@/types/db';
 import { getErrText } from '@/utils/tools';
 import { InfoOutlineIcon } from '@chakra-ui/icons';
 import {
@@ -26,24 +26,21 @@ import { useForm } from 'react-hook-form';
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 6);
 
 const RestoreModal = ({
-  db,
   backupInfo,
   onClose,
   onSuccess
 }: {
-  db: DBDetailType;
   backupInfo: BackupItemType;
   onClose: () => void;
   onSuccess?: () => void;
 }) => {
-  if (!db) return <></>;
   const router = useRouter();
   const { t } = useTranslation();
   const { message: toast } = useMessage();
 
   // Limit name length.
   const generateDefaultDatabaseName = () => {
-    const baseName = `${db.dbName}-${nanoid()}`;
+    const baseName = `${backupInfo.dbName}-${nanoid()}`;
     return baseName.length > 50 ? baseName.substring(0, 50) : baseName;
   };
 
