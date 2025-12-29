@@ -425,6 +425,7 @@ export const adaptBackup = (backup: BackupCRItemType): BackupItemType => {
     failureReason: backup.status?.failureReason,
     connectionPassword: backup.metadata?.annotations?.[passwordLabel],
     dbName: backup.metadata.labels[DBNameLabel],
+    // [FIXME] We can not infer the real dbType from labels
     dbType: dbType === 'mysql' ? 'apecloud-mysql' : dbType
   };
 };
