@@ -1,6 +1,5 @@
-import { createDB } from '@/api/db';
+import { restoreBackup } from '@/api/db';
 import Tip from '@/components/Tip';
-import { DBTypeEnum } from '@/constants/db';
 import { BackupItemType, DBDetailType } from '@/types/db';
 import { getErrText } from '@/utils/tools';
 import { InfoOutlineIcon } from '@chakra-ui/icons';
@@ -18,12 +17,11 @@ import {
   ModalHeader,
   ModalOverlay
 } from '@chakra-ui/react';
-import { RangeInput, useMessage } from '@sealos/ui';
+import { useMessage } from '@sealos/ui';
 import { useMutation } from '@tanstack/react-query';
 import { customAlphabet } from 'nanoid';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 6);
 
@@ -42,7 +40,6 @@ const RestoreModal = ({
   const router = useRouter();
   const { t } = useTranslation();
   const { message: toast } = useMessage();
-  const [forceUpdate, setForceUpdate] = useState(false);
 
   // Limit name length.
   const generateDefaultDatabaseName = () => {
@@ -53,29 +50,19 @@ const RestoreModal = ({
   const {
     register,
     handleSubmit,
-    getValues,
-    setValue,
     formState: { errors }
   } = useForm({
     mode: 'onBlur',
     defaultValues: {
-      databaseName: generateDefaultDatabaseName(),
-      replicas: 1
+      databaseName: generateDefaultDatabaseName()
     }
   });
 
   const { mutate: onclickRestore, isLoading } = useMutation({
-    mutationFn: ({ databaseName, replicas }: { databaseName: string; replicas: number }) => {
-      const dbData = {
-        ...db,
-        replicas: replicas,
-        dbName: databaseName
-      };
-
-      return createDB({
-        dbForm: dbData,
-        isEdit: false,
-        backupInfo: backupInfo
+    mutationFn: ({ databaseName }: { databaseName: string }) => {
+      return restoreBackup({
+        databaseName,
+        backupName: backupInfo.name
       });
     },
     onSuccess() {
@@ -132,53 +119,12 @@ const RestoreModal = ({
                   </FormControl>
                 </Flex>
               </Box>
-              <Box>
-                <Flex mt={8} alignItems={'center'}>
-                  <Box flex={'0 0 120px'}>{t('Replicas')}</Box>
-                  <RangeInput
-                    w={180}
-                    value={getValues('replicas')}
-                    min={1}
-                    max={20}
-                    step={
-                      db.dbType === DBTypeEnum.mongodb ||
-                      db.dbType === DBTypeEnum.mysql ||
-                      db.dbType === DBTypeEnum.notapemysql
-                        ? 2
-                        : 1
-                    }
-                    setVal={(val) => {
-                      register('replicas', {
-                        required: t('replicas_cannot_empty'),
-                        min: {
-                          value: 1,
-                          message: `${t('min_replicas')}1`
-                        },
-                        max: {
-                          value: 20,
-                          message: `${t('max_replicas')}20`
-                        }
-                      });
-                      const oddVal = val % 2 === 0 ? val + 1 : val;
-                      const replicasValue =
-                        db.dbType === DBTypeEnum.mongodb ||
-                        db.dbType === DBTypeEnum.mysql ||
-                        db.dbType === DBTypeEnum.notapemysql
-                          ? oddVal
-                          : val;
-                      setValue('replicas', isNaN(replicasValue) ? 1 : replicasValue);
-                      setForceUpdate(!forceUpdate);
-                    }}
-                  />
-                </Flex>
-              </Box>
-
               <Box mt={10} textAlign={'end'}>
                 <Button
                   isLoading={isLoading}
                   variant={'solid'}
                   onClick={handleSubmit((data) =>
-                    onclickRestore({ databaseName: data.databaseName, replicas: data.replicas })
+                    onclickRestore({ databaseName: data.databaseName })
                   )}
                 >
                   {t('Start')}

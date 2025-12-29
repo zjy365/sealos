@@ -1548,6 +1548,40 @@ export function json2SwitchMsNode(data: SwitchMsData) {
   return yaml.dump(template);
 }
 
+export function json2RestoreOpsRequest(params: {
+  clusterName: string;
+  namespace: string;
+  backupName: string;
+}) {
+  const { clusterName, namespace, backupName } = params;
+
+  const template = {
+    apiVersion: 'apps.kubeblocks.io/v1alpha1',
+    kind: 'OpsRequest',
+    metadata: {
+      labels: {
+        'app.kubernetes.io/instance': clusterName,
+        'ops.kubeblocks.io/ops-type': 'Restore'
+      },
+      name: `${clusterName}-${nanoid(4)}`,
+      namespace
+    },
+    spec: {
+      clusterName,
+      enqueueOnForce: false,
+      preConditionDeadlineSeconds: 0,
+      restore: {
+        backupName,
+        volumeRestorePolicy: 'Parallel'
+      },
+      ttlSecondsAfterSucceed: 30,
+      type: 'Restore'
+    }
+  };
+
+  return yaml.dump(template);
+}
+
 export const json2ParameterConfig = (
   dbName: string,
   dbType: string,

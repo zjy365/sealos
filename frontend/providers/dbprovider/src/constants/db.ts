@@ -332,7 +332,6 @@ export const RedisHAConfig = (ha = true) => {
 
 export const defaultDBDetail: DBDetailType = {
   ...defaultDBEditValue,
-  rawDbType: DBTypeEnum.postgresql,
   id: '',
   createTime: '2022/1/22',
   status: dbStatusMap.Creating,
