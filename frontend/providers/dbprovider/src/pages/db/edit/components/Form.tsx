@@ -73,6 +73,7 @@ function ResourcesDistributeTable({ data }: { data: Parameters<typeof distribute
     [DBTypeEnum.postgresql, t('occupy', { comp: 'PostgreSQL', num: '100%' })],
     [DBTypeEnum.mongodb, t('occupy', { comp: 'MongoDB', num: '100%' })],
     [DBTypeEnum.mysql, t('occupy', { comp: 'MySQL', num: '100%' })],
+    [DBTypeEnum.notapemysql, t('occupy', { comp: 'MySQL', num: '100%' })],
     [DBTypeEnum.redis, `${t('occupy', { comp: 'Redis', num: '100%' })}, ${t('ha_desc')}`],
     [
       DBTypeEnum.kafka,
@@ -273,11 +274,11 @@ const Form = ({
 
   const [dbType, dbVersion] = watch(['dbType', 'dbVersion']);
   const supportParameterConfig = useMemo(() => {
-    if (dbType === 'apecloud-mysql' && dbVersion === 'mysql-5.7.42') {
+    if (dbType === 'mysql' && dbVersion === 'mysql-5.7.42') {
       return false;
     }
 
-    return ['postgresql', 'apecloud-mysql', 'mongodb', 'redis'].includes(dbType);
+    return ['postgresql', 'apecloud-mysql', 'mysql', 'mongodb', 'redis'].includes(dbType);
   }, [dbType, dbVersion]);
 
   const navList: { id: string; label: I18nCommonKey; icon: string; isConfig?: boolean }[] =
@@ -461,7 +462,8 @@ const Form = ({
     if (
       dbType === DBTypeEnum.postgresql ||
       dbType === DBTypeEnum.mongodb ||
-      dbType === DBTypeEnum.mysql
+      dbType === DBTypeEnum.mysql ||
+      dbType === DBTypeEnum.notapemysql
     ) {
       score = Math.min(cpuCores * 400 + memoryGB * 300, 100000);
     } else if (dbType === DBTypeEnum.redis) {
@@ -471,7 +473,11 @@ const Form = ({
   };
 
   const getParaName = (dbType: DBType) => {
-    if (dbType === DBTypeEnum.postgresql || dbType === DBTypeEnum.mysql) {
+    if (
+      dbType === DBTypeEnum.postgresql ||
+      dbType === DBTypeEnum.mysql ||
+      dbType === DBTypeEnum.notapemysql
+    ) {
       return 'max_connections';
     } else if (dbType === DBTypeEnum.mongodb) {
       return 'maxIncomingConnections';
@@ -847,7 +853,8 @@ const Form = ({
                   max={20}
                   step={
                     getValues('dbType') === DBTypeEnum.mongodb ||
-                    getValues('dbType') === DBTypeEnum.mysql
+                    getValues('dbType') === DBTypeEnum.mysql ||
+                    getValues('dbType') === DBTypeEnum.notapemysql
                       ? 2
                       : 1
                   }
@@ -866,7 +873,11 @@ const Form = ({
                     const dbType = getValues('dbType');
                     const oddVal = val % 2 === 0 ? val + 1 : val;
                     const replicasValue =
-                      dbType === DBTypeEnum.mongodb || dbType === DBTypeEnum.mysql ? oddVal : val;
+                      dbType === DBTypeEnum.mongodb ||
+                      dbType === DBTypeEnum.mysql ||
+                      dbType === DBTypeEnum.notapemysql
+                        ? oddVal
+                        : val;
                     setValue('replicas', isNaN(replicasValue) ? 1 : replicasValue);
                   }}
                 />
@@ -891,7 +902,8 @@ const Form = ({
                 )}
 
                 {(getValues('dbType') === DBTypeEnum.mongodb ||
-                  getValues('dbType') === DBTypeEnum.mysql) &&
+                  getValues('dbType') === DBTypeEnum.mysql ||
+                  dbType === DBTypeEnum.notapemysql) &&
                   getValues('replicas') > 1 && (
                     <Tip
                       ml={4}
@@ -1216,11 +1228,13 @@ const Form = ({
 
                         {/* Timezone parameter for MySQL and PostgreSQL */}
                         {(getValues('dbType') === DBTypeEnum.mysql ||
+                          getValues('dbType') === DBTypeEnum.notapemysql ||
                           getValues('dbType') === DBTypeEnum.postgresql) && (
                           <Tr>
                             <Td w="350px">
                               <Text fontSize={'14px'} color={'grayModern.900'}>
-                                {getValues('dbType') === DBTypeEnum.mysql
+                                {getValues('dbType') === DBTypeEnum.mysql ||
+                                getValues('dbType') === DBTypeEnum.notapemysql
                                   ? 'default-time-zone'
                                   : 'time_zone'}
                               </Text>
@@ -1267,61 +1281,63 @@ const Form = ({
                         )}
 
                         {/* lower_case_table_names parameter for MySQL only */}
-                        {getValues('dbType') === DBTypeEnum.mysql && !isEdit && (
-                          <Tr>
-                            <Td w="350px">
-                              <Text fontSize={'14px'} color={'grayModern.900'}>
-                                lower_case_table_names
-                              </Text>
-                            </Td>
-                            <Td>
-                              <Flex alignItems={'center'} gap={'8px'}>
-                                {editingParam === 'lowerCaseTableNames' ? (
-                                  <MySelect
-                                    width={'140px'}
-                                    value={lowerCaseTableNames}
-                                    list={[
-                                      { value: '0', label: '0 (' + t('case_sensitive') + ')' },
-                                      { value: '1', label: '1 (' + t('case_insensitive') + ')' }
-                                    ]}
-                                    onchange={(val: string) => {
-                                      setValue('parameterConfig', {
-                                        ...getValues('parameterConfig'),
-                                        lowerCaseTableNames: val
-                                      });
-                                      setEditingParam(null);
+                        {(getValues('dbType') === DBTypeEnum.mysql ||
+                          getValues('dbType') === DBTypeEnum.notapemysql) &&
+                          !isEdit && (
+                            <Tr>
+                              <Td w="350px">
+                                <Text fontSize={'14px'} color={'grayModern.900'}>
+                                  lower_case_table_names
+                                </Text>
+                              </Td>
+                              <Td>
+                                <Flex alignItems={'center'} gap={'8px'}>
+                                  {editingParam === 'lowerCaseTableNames' ? (
+                                    <MySelect
+                                      width={'140px'}
+                                      value={lowerCaseTableNames}
+                                      list={[
+                                        { value: '0', label: '0 (' + t('case_sensitive') + ')' },
+                                        { value: '1', label: '1 (' + t('case_insensitive') + ')' }
+                                      ]}
+                                      onchange={(val: string) => {
+                                        setValue('parameterConfig', {
+                                          ...getValues('parameterConfig'),
+                                          lowerCaseTableNames: val
+                                        });
+                                        setEditingParam(null);
+                                      }}
+                                    />
+                                  ) : (
+                                    <Text fontSize={'12px'} color={'grayModern.600'}>
+                                      {lowerCaseTableNames === '0'
+                                        ? `0 (${t('case_sensitive')})`
+                                        : lowerCaseTableNames === '1'
+                                          ? `1 (${t('case_insensitive')})`
+                                          : t('param_unset')}
+                                    </Text>
+                                  )}
+                                  <MyIcon
+                                    name="edit"
+                                    w={'16px'}
+                                    h={'16px'}
+                                    color={'grayModern.500'}
+                                    cursor={'pointer'}
+                                    _hover={{
+                                      color: 'brightBlue.500'
                                     }}
+                                    onClick={() =>
+                                      setEditingParam(
+                                        editingParam === 'lowerCaseTableNames'
+                                          ? null
+                                          : 'lowerCaseTableNames'
+                                      )
+                                    }
                                   />
-                                ) : (
-                                  <Text fontSize={'12px'} color={'grayModern.600'}>
-                                    {lowerCaseTableNames === '0'
-                                      ? `0 (${t('case_sensitive')})`
-                                      : lowerCaseTableNames === '1'
-                                        ? `1 (${t('case_insensitive')})`
-                                        : t('param_unset')}
-                                  </Text>
-                                )}
-                                <MyIcon
-                                  name="edit"
-                                  w={'16px'}
-                                  h={'16px'}
-                                  color={'grayModern.500'}
-                                  cursor={'pointer'}
-                                  _hover={{
-                                    color: 'brightBlue.500'
-                                  }}
-                                  onClick={() =>
-                                    setEditingParam(
-                                      editingParam === 'lowerCaseTableNames'
-                                        ? null
-                                        : 'lowerCaseTableNames'
-                                    )
-                                  }
-                                />
-                              </Flex>
-                            </Td>
-                          </Tr>
-                        )}
+                                </Flex>
+                              </Td>
+                            </Tr>
+                          )}
                       </Tbody>
                     </Table>
                   </TableContainer>

@@ -141,7 +141,11 @@ const RestoreModal = ({
                     min={1}
                     max={20}
                     step={
-                      db.dbType === DBTypeEnum.mongodb || db.dbType === DBTypeEnum.mysql ? 2 : 1
+                      db.dbType === DBTypeEnum.mongodb ||
+                      db.dbType === DBTypeEnum.mysql ||
+                      db.dbType === DBTypeEnum.notapemysql
+                        ? 2
+                        : 1
                     }
                     setVal={(val) => {
                       register('replicas', {
@@ -157,7 +161,9 @@ const RestoreModal = ({
                       });
                       const oddVal = val % 2 === 0 ? val + 1 : val;
                       const replicasValue =
-                        db.dbType === DBTypeEnum.mongodb || db.dbType === DBTypeEnum.mysql
+                        db.dbType === DBTypeEnum.mongodb ||
+                        db.dbType === DBTypeEnum.mysql ||
+                        db.dbType === DBTypeEnum.notapemysql
                           ? oddVal
                           : val;
                       setValue('replicas', isNaN(replicasValue) ? 1 : replicasValue);
