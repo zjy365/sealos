@@ -439,9 +439,9 @@ export const DBReconfigureMap: {
   },
   mysql: {
     type: 'ini',
-    configMapName: '-mysql-mysql-consensusset-config',
+    configMapName: '-mysql-mysql-replication-config',
     configMapKey: 'my.cnf',
-    reconfigureName: 'mysql-consensusset-config',
+    reconfigureName: 'mysql-replication-config',
     reconfigureKey: 'my.cnf'
   },
   redis: {
