@@ -313,6 +313,8 @@ const Form = ({
 
   const [activeNav, setActiveNav] = useState(navList[0].id);
   const [editingParam, setEditingParam] = useState<string | null>(null);
+  const prevDbTypeRef = useRef<string | undefined>(dbType);
+
   // Fetch addon list using useQuery
   const { data: addonList = [], isLoading: addonLoading } = useQuery(
     ['addonList'],
@@ -496,7 +498,8 @@ const Form = ({
 
   const availableDBTypes = useMemo(() => {
     if (addonLoading) {
-      return DBTypeList;
+      // Only show one mysql.
+      return DBTypeList.filter((db) => db.id !== DBTypeEnum.notapemysql);
     }
 
     const addonStatusMap = new Map<string, string>();
@@ -512,26 +515,42 @@ const Form = ({
 
       const addonName = dbType.id;
       const addonStatus = addonStatusMap.get(addonName);
-      const shouldInclude = addonStatus !== 'Disabled';
+      // Only show one mysql.
+      const shouldInclude = addonStatus !== 'Disabled' && addonName !== DBTypeEnum.notapemysql;
       return shouldInclude;
     });
 
     return filtered;
   }, [addonList, addonLoading]);
 
-  const handleOpenCostcenter = () => {
-    sealosApp.runEvents('openDesktopApp', {
-      appKey: 'system-costcenter',
-      pathname: '/',
-      query: {
-        mode: 'upgrade'
-      },
-      messageData: {
-        type: 'InternalAppCall',
-        mode: 'upgrade'
+  const availableDBVersions = useMemo(() => {
+    // Only show one mysql type, so we merge here.
+    if (dbType === DBTypeEnum.mysql || dbType === DBTypeEnum.notapemysql) {
+      return [...DBVersionMap[DBTypeEnum.mysql], ...DBVersionMap[DBTypeEnum.notapemysql]];
+    }
+
+    const ownVersions = DBVersionMap[getValues('dbType')];
+    return ownVersions;
+  }, [dbType, getValues]);
+
+  // Set dbVersion to first available option when dbType changes
+  useEffect(() => {
+    if (prevDbTypeRef.current !== dbType) {
+      prevDbTypeRef.current = dbType;
+      if (!isEdit && availableDBVersions.length > 0) {
+        const currentVersion = getValues('dbVersion');
+
+        // Prevent overriding user intent
+        const isCurrentVersionValid = availableDBVersions.some(
+          (version) => version.id === currentVersion
+        );
+        if (!isCurrentVersionValid) {
+          setValue('dbVersion', availableDBVersions[0].id);
+        }
       }
-    });
-  };
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbType, availableDBVersions.length, availableDBVersions[0]?.id, isEdit]);
 
   return (
     <>
@@ -668,7 +687,10 @@ const Form = ({
                           opacity={isEdit && getValues('dbType') !== item.id ? '0.4' : '1'}
                           fontWeight={'bold'}
                           color={'grayModern.900'}
-                          {...(getValues('dbType') === item.id
+                          {...(getValues('dbType') === item.id ||
+                          // We only have one mysql option
+                          (item.id === DBTypeEnum.mysql &&
+                            getValues('dbType') === DBTypeEnum.notapemysql)
                             ? {
                                 bg: '#F9FDFE',
                                 borderColor: 'brightBlue.500',
@@ -683,11 +705,8 @@ const Form = ({
                               })}
                           onClick={() => {
                             if (isEdit) return;
+
                             setValue('dbType', item.id);
-                            const versions = DBVersionMap[item.id] || [];
-                            if (versions.length > 0) {
-                              setValue('dbVersion', versions[0].id);
-                            }
                           }}
                         >
                           <Image
@@ -718,11 +737,22 @@ const Form = ({
                   width={'200px'}
                   placeholder={`${t('DataBase')} ${t('version')}`}
                   value={getValues('dbVersion')}
-                  list={(DBVersionMap[getValues('dbType')] || []).map((i) => ({
+                  list={availableDBVersions.map((i) => ({
                     label: i.label,
                     value: i.id
                   }))}
-                  onchange={(val: any) => setValue('dbVersion', val)}
+                  onchange={(val) => {
+                    setValue('dbVersion', val);
+
+                    // Select correct dbType for mysql versions.
+                    if (dbType === DBTypeEnum.mysql || dbType === DBTypeEnum.notapemysql) {
+                      if (DBVersionMap[DBTypeEnum.mysql].find((i) => i.id === val)) {
+                        setValue('dbType', DBTypeEnum.mysql);
+                      } else {
+                        setValue('dbType', DBTypeEnum.notapemysql);
+                      }
+                    }
+                  }}
                 />
               </Flex>
               <FormControl mb={7} isInvalid={!!errors.dbName} w={'500px'}>
