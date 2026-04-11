@@ -29,7 +29,7 @@ spec:
     spec:
       {{- $globalPrismaSchema := "/app/desktop/prisma/global/schema.prisma" }}
       {{- $regionPrismaSchema := "/app/desktop/prisma/region/schema.prisma" }}
-      {{- if eq .Values.databaseType "postgresql" }}
+      {{- if eq .Values.global.featureConfigs.database.type "postgresql" }}
       {{- $globalPrismaSchema = "/app/desktop/prisma/providers/postgresql/global/schema.prisma" }}
       {{- $regionPrismaSchema = "/app/desktop/prisma/providers/postgresql/region/schema.prisma" }}
       {{- end }}
