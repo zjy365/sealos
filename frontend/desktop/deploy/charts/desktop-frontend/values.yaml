@@ -29,6 +29,10 @@ service:
 # Auto configure from sealos-system configmap
 autoConfigEnabled: true
 
+# Database backend for Prisma migrations.
+# Supported values: cockroachdb, postgresql
+databaseType: cockroachdb
+
 # ============================================================================
 # Auto-configured values (from sealos-system/sealos-config ConfigMap)
 # ============================================================================
