@@ -14,6 +14,11 @@
     "test:ci": "jest --runInBand",
     "gen:global": "prisma generate --schema ./prisma/global/schema.prisma",
     "gen:region": "prisma generate --schema ./prisma/region/schema.prisma",
+    "gen:global:postgresql": "prisma generate --schema ./prisma/providers/postgresql/global/schema.prisma",
+    "gen:region:postgresql": "prisma generate --schema ./prisma/providers/postgresql/region/schema.prisma",
+    "gen:postgresql": "pnpm gen:global:postgresql && pnpm gen:region:postgresql",
+    "migrate:deploy:global:postgresql": "prisma migrate deploy --schema ./prisma/providers/postgresql/global/schema.prisma",
+    "migrate:deploy:region:postgresql": "prisma migrate deploy --schema ./prisma/providers/postgresql/region/schema.prisma",
     "postinstall": "pnpm gen:global && pnpm gen:region"
   },
   "dependencies": {
