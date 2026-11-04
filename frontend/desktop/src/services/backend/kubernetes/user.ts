@@ -1,31 +1,15 @@
+import { getInlineKubeconfigOptions } from 'sealos-desktop-sdk/service';
 import * as k8s from '@kubernetes/client-node';
 import http from 'http';
 import * as yaml from 'js-yaml';
 
 export function K8sApi(config: string): k8s.KubeConfig {
+  const options = getInlineKubeconfigOptions(config);
   const kc = new k8s.KubeConfig();
-  kc.loadFromString(config);
-
-  const cluster = kc.getCurrentCluster();
-
-  if (cluster && process.env.NODE_ENV !== 'development') {
-    const [inCluster, hosts] = CheckIsInCluster();
-    const server = {
-      name: cluster.name,
-      caData: cluster.caData,
-      caFile: cluster.caFile,
-      server: inCluster && hosts ? hosts : 'https://apiserver.cluster.local:6443',
-      skipTLSVerify: cluster.skipTLSVerify
-    };
-    kc.clusters.forEach((item, i) => {
-      if (item.name === cluster.name) {
-        kc.clusters[i] = server;
-      }
-    });
-  }
-
+  kc.loadFromOptions(options);
   return kc;
 }
+
 export async function ListPods(
   kc: k8s.KubeConfig,
   ns: string

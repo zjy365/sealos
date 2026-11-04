@@ -1,3 +1,4 @@
+import { InvalidKubeconfigError } from 'sealos-desktop-sdk/service';
 import { Config } from '@/config';
 import { IncomingHttpHeaders } from 'http';
 import { K8sApi } from '@/service/backend/kubernetes';
@@ -5,7 +6,7 @@ import * as yaml from 'js-yaml';
 export const authSession = async (header: IncomingHttpHeaders) => {
   try {
     if (!header?.authorization) {
-      return Promise.reject('缺少凭证');
+      throw new InvalidKubeconfigError();
     }
 
     const kubeconfig = decodeURIComponent(header.authorization);
@@ -24,6 +25,6 @@ export const authSession = async (header: IncomingHttpHeaders) => {
     };
     return Promise.resolve(kc);
   } catch (err) {
-    return Promise.reject('凭证错误');
+    throw new InvalidKubeconfigError();
   }
 };

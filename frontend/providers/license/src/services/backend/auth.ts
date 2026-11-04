@@ -1,15 +1,15 @@
+import { InvalidKubeconfigError } from 'sealos-desktop-sdk/service';
 import type { NextApiRequest } from 'next';
-import { ERROR_ENUM } from '../error';
 
 export const authSession = async (req: NextApiRequest) => {
-  if (!req.headers) return Promise.reject(ERROR_ENUM.unAuthorization);
+  if (!req.headers) throw new InvalidKubeconfigError();
   const { authorization } = req.headers;
-  if (!authorization) return Promise.reject(ERROR_ENUM.unAuthorization);
+  if (!authorization) throw new InvalidKubeconfigError();
 
   try {
     const kubeConfig = decodeURIComponent(authorization);
     return Promise.resolve(kubeConfig);
   } catch (err) {
-    return Promise.reject(ERROR_ENUM.unAuthorization);
+    throw new InvalidKubeconfigError();
   }
 };

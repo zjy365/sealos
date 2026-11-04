@@ -1,3 +1,4 @@
+import { InvalidKubeconfigError } from 'sealos-desktop-sdk/service';
 import { Config } from '@/config';
 import { generatePaymentCrd, PaymentForm } from '@/constants/payment';
 import { authSession } from '@/service/backend/auth';
@@ -73,6 +74,10 @@ export default async function handler(req: NextApiRequest, resp: NextApiResponse
       }
     });
   } catch (error) {
+    if (error instanceof InvalidKubeconfigError) {
+      resp.status(401);
+      return jsonRes(resp, { code: 401, message: error.message });
+    }
     console.log(error);
     jsonRes(resp, { code: 500, message: 'pay error' });
   }

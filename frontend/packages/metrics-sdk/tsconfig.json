@@ -9,6 +9,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "test/*.test.ts"],
+  "include": ["src/**/*.ts", "test/*.test.ts", "../shared/src-server/kubernetes/kubeconfig.ts"],
   "exclude": ["node_modules", "dist"]
 }

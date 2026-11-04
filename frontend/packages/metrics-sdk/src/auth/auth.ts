@@ -2,6 +2,11 @@ import * as k8s from '@kubernetes/client-node';
 import * as http from 'http';
 import * as https from 'https';
 import * as net from 'net';
+import { load } from 'js-yaml';
+import {
+  inlineKubeconfigOptions,
+  parseInlineKubeconfig
+} from '../../../shared/src-server/kubernetes/kubeconfig';
 
 export class AuthService {
   private kubeconfig: string;
@@ -57,28 +62,27 @@ export class AuthService {
       return this.kubeConfig;
     }
 
+    const config = parseInlineKubeconfig(this.kubeconfig, load);
+    const defaults = new k8s.KubeConfig();
+    let cluster: k8s.Cluster;
+    if (this.isWhitelistKubernetesHost(config.server)) {
+      // Only operator-approved endpoints may override the in-cluster endpoint.
+      // Their CA must come from server configuration or the system trust store.
+      defaults.loadFromDefault();
+      const trusted = defaults.getCurrentCluster();
+      cluster =
+        trusted?.server === config.server
+          ? trusted
+          : { name: 'metrics', server: config.server, skipTLSVerify: false };
+    } else {
+      if (!this.getKubernetesHostFromEnv()) throw new Error('unable to get the sealos host');
+      defaults.loadFromCluster();
+      const trusted = defaults.getCurrentCluster();
+      if (!trusted) throw new Error('No trusted Kubernetes cluster configured');
+      cluster = trusted;
+    }
     const kc = new k8s.KubeConfig();
-    kc.loadFromString(this.kubeconfig);
-    const cluster = kc.getCurrentCluster();
-    if (!cluster) {
-      throw new Error('No active cluster');
-    }
-
-    if (!this.isWhitelistKubernetesHost(cluster.server)) {
-      const k8sHost = this.getKubernetesHostFromEnv();
-      if (!k8sHost) {
-        throw new Error('unable to get the sealos host');
-      }
-      const clusters = kc
-        .getClusters()
-        .map((item) => (item.name === cluster.name ? { ...item, server: k8sHost } : item));
-      kc.loadFromOptions({
-        clusters,
-        users: kc.getUsers(),
-        contexts: kc.getContexts(),
-        currentContext: kc.getCurrentContext()
-      });
-    }
+    kc.loadFromOptions(inlineKubeconfigOptions(config, cluster));
 
     this.kubeConfig = kc;
     return kc;

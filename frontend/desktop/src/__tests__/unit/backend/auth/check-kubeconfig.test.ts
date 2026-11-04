@@ -12,7 +12,12 @@ vi.mock('@/services/backend/kubernetes/admin', async () => {
     K8sApiDefault: () => {
       const kc = new KubeConfig();
       kc.loadFromClusterAndUser(
-        { name: 'admin', server: 'https://apiserver.cluster.local:6443', skipTLSVerify: false },
+        {
+          name: 'admin',
+          server: 'https://apiserver.cluster.local:6443',
+          caData: 'dHJ1c3RlZC1jYQ==',
+          skipTLSVerify: false
+        },
         { name: 'admin', token: 'admin-token' }
       );
       return kc;
@@ -34,8 +39,7 @@ const kubeconfig = (user: Record<string, unknown> = { token: 'old-token' }, ca =
         cluster: {
           server: 'https://untrusted.example.com',
           'certificate-authority-data': ca,
-          'insecure-skip-tls-verify': true,
-          'certificate-authority': '/server-private-ca'
+          'insecure-skip-tls-verify': true
         }
       }
     ],
@@ -83,25 +87,14 @@ describe('SelfSubjectReview using the browser kubeconfig', () => {
 
   it('uses only inline browser credentials against the trusted cluster with TLS verification', async () => {
     respond(201, identity());
-    await checkKubeconfig(
-      kubeconfig({
-        token: 'old-token',
-        'token-file': '/server-secret',
-        'client-certificate': '/server-cert',
-        'client-key': '/server-key',
-        exec: { command: 'must-never-run' },
-        'auth-provider': { name: 'must-never-run' },
-        impersonate: 'admin'
-      }),
-      'alice'
-    );
+    await checkKubeconfig(kubeconfig(), 'alice');
     const [url, options] = httpsRequest.mock.calls[0];
     expect(String(url)).toBe(
       'https://apiserver.cluster.local:6443/apis/authentication.k8s.io/v1/selfsubjectreviews'
     );
     expect(options.rejectUnauthorized).toBe(true);
     expect(options.headers.Authorization).toBe('Bearer old-token');
-    expect(options.ca).toEqual(Buffer.from('old-ca'));
+    expect(options.ca).toEqual(Buffer.from('trusted-ca'));
     expect(options.cert).toBeUndefined();
     expect(options.key).toBeUndefined();
     expect(httpsRequest).toHaveBeenCalledTimes(1);
@@ -201,13 +194,15 @@ describe('SelfSubjectReview using the browser kubeconfig', () => {
     expect(httpsRequest.mock.calls[0][1].headers.Authorization).toBe('Bearer old-token');
   });
 
-  it.each([{ 'token-file': '/server-secret' }, { exec: { command: 'must-never-run' } }])(
-    'rejects configs without inline credentials',
-    async (user) => {
-      expect((await checkKubeconfig(kubeconfig(user), 'alice')).code).toBe(401);
-      expect(httpsRequest).not.toHaveBeenCalled();
-    }
-  );
+  it.each([
+    { 'token-file': '/server-secret' },
+    { exec: { command: 'must-never-run' } },
+    { token: 'valid-inline-token', exec: { command: 'must-never-run' } },
+    { token: 'valid-inline-token', 'auth-provider': { name: 'gcp' } }
+  ])('rejects configs without inline credentials', async (user) => {
+    expect((await checkKubeconfig(kubeconfig(user), 'alice')).code).toBe(401);
+    expect(httpsRequest).not.toHaveBeenCalled();
+  });
 
   it('rejects malformed config without making a request', async () => {
     expect((await checkKubeconfig('invalid: [', 'alice')).code).toBe(401);

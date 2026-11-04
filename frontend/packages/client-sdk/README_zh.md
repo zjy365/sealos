@@ -15,13 +15,13 @@
 
 ```bash
 # 使用 npm
-npm install @zjy365/sealos-desktop-sdk
+npm install @labring/sealos-desktop-sdk
 
 # 使用 pnpm
-pnpm add @zjy365/sealos-desktop-sdk
+pnpm add @labring/sealos-desktop-sdk
 
 # 使用 yarn
-yarn add @zjy365/sealos-desktop-sdk
+yarn add @labring/sealos-desktop-sdk
 ```
 
 ## 🚀 快速开始
@@ -29,7 +29,7 @@ yarn add @zjy365/sealos-desktop-sdk
 ### Desktop 端（主应用）
 
 ```typescript
-import { createMasterAPP } from '@zjy365/sealos-desktop-sdk/master';
+import { createMasterAPP } from '@labring/sealos-desktop-sdk/master';
 
 useEffect(() => {
   // 配置允许的域名（生产环境建议使用具体域名）
@@ -42,7 +42,7 @@ useEffect(() => {
 ### App 端（子应用）
 
 ```typescript
-import { createSealosApp, sealosApp } from '@zjy365/sealos-desktop-sdk';
+import { createSealosApp, sealosApp } from '@labring/sealos-desktop-sdk';
 
 useEffect(() => {
   // 初始化 SDK
@@ -199,3 +199,7 @@ createMasterAPP(allowedOrigins);
 SDK 不缓存宿主配置，字段仅表示展示符号，不进行汇率换算。
 
 源码、候选包名及发布步骤见 [RELEASING.md](./RELEASING.md)。本地候选版本不表示已经发布。
+
+## 服务端 kubeconfig 处理
+
+`/service` 入口只接受内联 token 或内联客户端证书，在创建客户端前拒绝认证插件、本地文件路径、代理及身份冒充字段。API endpoint 和 CA 来自服务端 kubeconfig 或集群内配置；忽略调用方提供的 server、CA 及跳过 TLS 校验设置。`initK8s` 只解析凭证，不证明 `user.name` 的身份：使用管理员客户端的路由必须先认证调用方，并将资源归属绑定到已验证的身份。

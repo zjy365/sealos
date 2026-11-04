@@ -1,3 +1,4 @@
+import { InvalidKubeconfigError } from 'sealos-desktop-sdk/service';
 import { authSession } from '@/services/backend/auth';
 import { getK8s } from '@/services/backend/kubernetes';
 import { jsonRes } from '@/services/backend/response';
@@ -28,6 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     jsonRes(res);
   } catch (err: any) {
+    if (err instanceof InvalidKubeconfigError) {
+      res.status(401);
+      return jsonRes(res, { code: 401, message: err.message });
+    }
     console.log(err, '------');
     jsonRes(res, {
       code: 500,

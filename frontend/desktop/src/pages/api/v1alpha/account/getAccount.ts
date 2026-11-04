@@ -1,7 +1,7 @@
 import { jsonRes } from '@/services/backend/response';
 import { AccountMeta } from '@/types';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { initK8s } from 'sealos-desktop-sdk/service';
+import { initK8s, InvalidKubeconfigError } from 'sealos-desktop-sdk/service';
 
 // req header is kubeconfig
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,6 +20,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     jsonRes(res, { data: body });
   } catch (error) {
+    if (error instanceof InvalidKubeconfigError) {
+      res.status(401);
+      return jsonRes(res, { code: 401, message: error.message });
+    }
     console.log(error);
     jsonRes(res, { code: 500, data: error });
   }

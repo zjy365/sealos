@@ -67,10 +67,12 @@ Run the SDK on a Node.js server, for example in a Next.js API route. Install wit
 
 `whitelistKubernetesHosts` overrides comma-separated `WHITELIST_KUBERNETES_HOSTS`. API servers outside that list are rewritten to `KUBERNETES_SERVICE_HOST` / `KUBERNETES_SERVICE_PORT`. Explicitly allow a test API server for local development.
 
+Only inline tokens or inline client certificates are accepted. Authentication plugins, local file paths, proxies and impersonation are rejected before any Kubernetes request. Caller-supplied CA and TLS bypass settings are ignored: the in-cluster CA is used for the in-cluster endpoint; allowlisted external endpoints use the matching server-side kubeconfig CA or system trust store.
+
 Authentication checks `/readyz`, then `get pods` through `SelfSubjectAccessReview`. `authCacheTTL` defaults to 300000 milliseconds; `0` disables caching. Cache and in-flight checks belong to a single credential-bound client; permission changes take effect after expiry. Readiness and Metrics requests have 30-second timeouts. Prometheus errors returned with HTTP 200 also reject the query.
 
 Time values are in seconds; `start` selects `/api/v1/query_range`, otherwise `/api/v1/query` is used. Results are returned without extra multiplication or unit conversion. `toSeconds`, `getTimeRange`, `formatTimestamp` remain exported.
 
 ## Packaging
 
-ESM imports and CommonJS require are supported. Build independently with `npm run build`. `npm pack` builds first and includes only `dist`, documentation and package metadata. Publishing is a separate maintainer action. Source: `labring/sealos/frontend/packages/metrics-sdk`.
+ESM imports and CommonJS require are supported. Build from its directory in the workspace with `npm run build`; the shared kubeconfig policy is bundled into `dist`. `npm pack` builds first and includes only `dist`, documentation and package metadata. Publishing is a separate maintainer action. Source: `labring/sealos/frontend/packages/metrics-sdk`.

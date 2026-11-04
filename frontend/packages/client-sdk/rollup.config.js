@@ -6,7 +6,8 @@ const bundleFile = ({ input, output }) => {
   return {
     plugins: [
       typescript({
-        tsconfig: './tsconfig.json'
+        tsconfig: './tsconfig.json',
+        include: ['src/**/*', '../shared/src-server/kubernetes/kubeconfig.ts']
       })
     ],
     input,

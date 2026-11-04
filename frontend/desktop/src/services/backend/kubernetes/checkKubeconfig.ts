@@ -1,32 +1,8 @@
 import { userSystemNamespace } from '@/constants/account';
 import { KubeConfig } from '@kubernetes/client-node';
 import { request, RequestOptions } from 'node:https';
-import { load } from 'js-yaml';
-import { z } from 'zod';
+import { createKubeConfig } from 'sealos-desktop-sdk/service';
 import { K8sApiDefault } from './admin';
-
-const kubeconfigSchema = z.object({
-  'current-context': z.string(),
-  contexts: z.array(
-    z.object({ name: z.string(), context: z.object({ cluster: z.string(), user: z.string() }) })
-  ),
-  clusters: z.array(
-    z.object({
-      name: z.string(),
-      cluster: z.object({ 'certificate-authority-data': z.string().optional() })
-    })
-  ),
-  users: z.array(
-    z.object({
-      name: z.string(),
-      user: z.object({
-        token: z.string().optional(),
-        'client-certificate-data': z.string().optional(),
-        'client-key-data': z.string().optional()
-      })
-    })
-  )
-});
 
 type CheckResult = { code: number; message: string };
 const unavailable = (): CheckResult => ({
@@ -50,37 +26,6 @@ const invalidKubeconfigErrors = new Set([
   'ERR_OSSL_PEM_NO_START_LINE',
   'ERR_INVALID_CHAR'
 ]);
-
-function inlineConfig(raw: string, server: string, tlsServerName?: string) {
-  const config = kubeconfigSchema.parse(load(raw));
-  const context = config.contexts.find((item) => item.name === config['current-context'])?.context;
-  const cluster = config.clusters.find((item) => item.name === context?.cluster)?.cluster;
-  const user = config.users.find((item) => item.name === context?.user)?.user;
-  if (!context || !cluster || !user) throw new Error('Invalid kubeconfig context');
-  if (!user.token && !(user['client-certificate-data'] && user['client-key-data'])) {
-    throw new Error('Missing inline credentials');
-  }
-
-  // Never load an untrusted config with loadFromString: token-file, exec and
-  // auth-provider can read local files or run commands. Whitelist inline data.
-  const kc = new KubeConfig();
-  kc.loadFromClusterAndUser(
-    {
-      name: 'session-check',
-      server,
-      tlsServerName,
-      caData: cluster['certificate-authority-data'],
-      skipTLSVerify: false
-    },
-    {
-      name: 'session-check',
-      token: user.token,
-      certData: user['client-certificate-data'],
-      keyData: user['client-key-data']
-    }
-  );
-  return kc;
-}
 
 async function requestJson(
   kc: KubeConfig,
@@ -161,7 +106,7 @@ export async function checkKubeconfig(raw: string, expectedUser: string): Promis
 
   let kc: KubeConfig;
   try {
-    kc = inlineConfig(raw, trustedCluster.server, trustedCluster.tlsServerName);
+    kc = createKubeConfig(raw, trustedCluster);
   } catch {
     return invalid();
   }

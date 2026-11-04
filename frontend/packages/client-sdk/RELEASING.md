@@ -8,10 +8,12 @@ The workspace manifest uses `sealos-desktop-sdk` for internal workspace links;
 the public release uses `@labring/sealos-desktop-sdk`. No separate repository is
 needed. No automated SDK publish workflow was found in this checkout.
 
-The candidate is **@labring/sealos-desktop-sdk@0.1.24**. It adds the shared
-`HostConfig` type with optional `currencySymbol` and `features.analytics`.
-AppSDK and MasterOptions use the same definition. Runtime protocol names and SDK
-request behavior are unchanged. Do not manually edit generated declarations.
+The security patch candidate is **@labring/sealos-desktop-sdk@0.1.25**.
+It rejects executable authentication plugins, local credential files, proxy and
+impersonation settings in caller-supplied kubeconfigs. Only inline credentials
+are copied into a client with server-controlled endpoint and CA settings.
+The existing 0.1.24 HostConfig additions remain included. Do not manually edit
+generated declarations.
 
 Build with the workspace's pnpm 8.9.0 and Node 20.20.2:
 
@@ -33,24 +35,23 @@ npm pack
 Only the staging manifest is renamed, preserving the monorepo's internal links.
 Package contents are `dist/`, both READMEs, this release guide and package metadata.
 Before publishing, obtain user confirmation of the exact name, version and
-contents. The npm authentication check on 2026-10-15 returned E401; an authorized
-maintainer must authenticate. Only after confirmation:
+contents. Check npm authentication with `npm whoami` before publishing. Only after confirmation:
 
 ```sh
-npm publish ./labring-sealos-desktop-sdk-0.1.24.tgz --access public
+npm publish ./labring-sealos-desktop-sdk-0.1.25.tgz --access public
 ```
 
 Template can install the local candidate before publication:
 
 ```sh
-pnpm add @labring/sealos-desktop-sdk@file:/absolute/path/labring-sealos-desktop-sdk-0.1.24.tgz
+pnpm add @labring/sealos-desktop-sdk@file:/absolute/path/labring-sealos-desktop-sdk-0.1.25.tgz
 ```
 
 After publication, upgrade with:
 
 ```sh
-pnpm add @labring/sealos-desktop-sdk@0.1.24
+pnpm add @labring/sealos-desktop-sdk@0.1.25
 ```
 
 Existing imports from `@labring/sealos-desktop-sdk/app` stay unchanged.
-Version 0.1.24 is a local candidate until npm publication is confirmed.
+Version 0.1.25 is a local candidate until npm publication is confirmed.

@@ -3,48 +3,7 @@ import * as yaml from 'js-yaml';
 import type { V1Deployment, V1StatefulSet } from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 import { errLog, infoLog } from './logger';
-
-function CheckIsInCluster(): [boolean, string] {
-  if (
-    process.env.KUBERNETES_SERVICE_HOST !== undefined &&
-    process.env.KUBERNETES_SERVICE_HOST !== '' &&
-    process.env.KUBERNETES_SERVICE_PORT !== undefined &&
-    process.env.KUBERNETES_SERVICE_PORT !== ''
-  ) {
-    return [
-      true,
-      'https://' + process.env.KUBERNETES_SERVICE_HOST + ':' + process.env.KUBERNETES_SERVICE_PORT
-    ];
-  }
-  return [false, ''];
-}
-
-/* init api */
-function K8sApi(config: string): k8s.KubeConfig {
-  const kc = new k8s.KubeConfig();
-  kc.loadFromString(config);
-
-  const cluster = kc.getCurrentCluster();
-
-  if (cluster) {
-    const [inCluster, hosts] = CheckIsInCluster();
-
-    const server: k8s.Cluster = {
-      name: cluster.name,
-      caData: cluster.caData,
-      caFile: cluster.caFile,
-      server: inCluster && hosts ? hosts : cluster.server,
-      skipTLSVerify: cluster.skipTLSVerify
-    };
-
-    kc.clusters.forEach((item, i) => {
-      if (item.name === cluster.name) {
-        kc.clusters[i] = server;
-      }
-    });
-  }
-  return kc;
-}
+import { createKubeConfig, InvalidKubeconfigError } from './kubeconfig';
 
 async function CreateYaml(
   kc: k8s.KubeConfig,
@@ -181,15 +140,15 @@ async function getUserBalance(kc: k8s.KubeConfig) {
 }
 
 async function authSession(header: IncomingHttpHeaders) {
-  if (!header) return Promise.reject('unAuthorization');
+  if (!header) throw new InvalidKubeconfigError();
   const { authorization } = header;
-  if (!authorization) return Promise.reject('unAuthorization');
+  if (!authorization) throw new InvalidKubeconfigError();
 
   try {
     const kubeConfig = decodeURIComponent(authorization);
     return Promise.resolve(kubeConfig);
   } catch (err) {
-    return Promise.reject('unAuthorization');
+    throw new InvalidKubeconfigError();
   }
 }
 
@@ -225,7 +184,7 @@ async function getDeployApp({
 
 export async function initK8s({ req }: { req: { headers: IncomingHttpHeaders } }) {
   const kubeconfig = await authSession(req.headers);
-  const kc = K8sApi(kubeconfig);
+  const kc = createKubeConfig(kubeconfig);
   const kube_user = kc.getCurrentUser();
   const client = k8s.KubernetesObjectApi.makeApiClient(kc);
 
@@ -233,7 +192,8 @@ export async function initK8s({ req }: { req: { headers: IncomingHttpHeaders } }
     return Promise.reject('User is null');
   }
 
-  const namespace = kc.contexts[0].namespace || `ns-${kube_user.name}`;
+  const namespace =
+    kc.getContextObject(kc.getCurrentContext())?.namespace || `ns-${kube_user.name}`;
 
   return Promise.resolve({
     kc,

@@ -451,6 +451,9 @@ importers:
       dayjs:
         specifier: ^1.11.10
         version: 1.11.10
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
     devDependencies:
       '@kubernetes/client-node':
         specifier: ^0.21.0
@@ -458,6 +461,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: 12.3.0
         version: 12.3.0(rollup@4.53.3)(tslib@2.6.2)(typescript@5.9.3)
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: ^20.7.1
         version: 20.17.32
@@ -898,6 +904,9 @@ importers:
       sealos-desktop-sdk:
         specifier: workspace:*
         version: link:../../packages/client-sdk
+      sharp:
+        specifier: ^0.32.6
+        version: 0.32.6
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@18.3.1)(react@18.3.1)

@@ -5,5 +5,11 @@
     "noImplicitAny": true,
     "removeComments": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "dist/**/*.d.ts", "dist/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "dist/**/*.d.ts",
+    "dist/**/*.ts",
+    "../shared/src-server/kubernetes/kubeconfig.ts"
+  ]
 }

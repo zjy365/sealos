@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Reject executable authentication providers, local credential files, proxy and impersonation settings in caller-supplied kubeconfigs. Rebuild clients from inline credentials and server-controlled cluster trust.
+
 ## 0.2.0
 
 - Restore the SDK from the source commit of npm 0.1.0 (`382cef7f7bf3c134f08e637e36310f33562699a7`).

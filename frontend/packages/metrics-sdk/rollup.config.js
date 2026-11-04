@@ -5,6 +5,7 @@ import { builtinModules } from 'node:module';
 const external = [
   'axios',
   'dayjs',
+  'js-yaml',
   '@kubernetes/client-node',
   ...builtinModules,
   ...builtinModules.map((name) => `node:${name}`)
@@ -29,7 +30,7 @@ export default [
     plugins: [
       typescript({
         tsconfig: './tsconfig.json',
-        include: ['src/**/*.ts'],
+        include: ['src/**/*.ts', '../shared/src-server/kubernetes/kubeconfig.ts'],
         declaration: false
       })
     ]

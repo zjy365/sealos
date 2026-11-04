@@ -11,7 +11,8 @@
     "postinstall": "pnpm run gen:theme-typings && pnpm run build-packages",
     "prepare": "cd .. && husky frontend/.husky",
     "build-packages": "pnpm -r --filter './packages/*' run build",
-    "build-providers": "pnpm -r --filter './providers/*' --workspace-concurrency=2 run build"
+    "build-providers": "pnpm -r --filter './providers/*' --workspace-concurrency=2 run build",
+    "test:kubeconfig": "pnpm --filter sealos-desktop-sdk build && pnpm --filter @labring/sealos-metrics-sdk exec tsx --test ../../tests/kubeconfig-security.test.ts ../../tests/legacy-account-security.test.ts"
   },
   "workspaces": [
     "./packages/*",

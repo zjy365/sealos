@@ -66,10 +66,12 @@ await client.database.query({
 
 `whitelistKubernetesHosts` 参数优先于逗号分隔的 `WHITELIST_KUBERNETES_HOSTS`。不在白名单的 API Server 被改写为 `KUBERNETES_SERVICE_HOST` / `KUBERNETES_SERVICE_PORT`。本地开发应显式允许测试 API Server。
 
+只接受内联 token 或内联客户端证书，在任何 Kubernetes 请求之前拒绝认证插件、本地文件路径、代理和身份冒充字段。忽略调用方提供的 CA 和跳过 TLS 校验设置：集群内 endpoint 使用集群 CA；白名单内的外部 endpoint 使用匹配的服务端 kubeconfig CA 或系统信任库。
+
 先检查 `/readyz`，再通过 `SelfSubjectAccessReview` 确认 namespace 的 `get pods` 权限。`authCacheTTL` 默认 300000 毫秒，`0` 关闭缓存。缓存及并发鉴权合并只属于绑定同一用户凭证的 client，权限变更在缓存过期后生效。readiness 与指标请求的超时均为 30 秒；HTTP 200 中的 Prometheus 错误响应也会报错。
 
 时间单位为秒；传 `start` 时调用 `/api/v1/query_range`，否则调用 `/api/v1/query`。SDK 原样返回指标，不额外乘以 100 或转换单位。保留导出的 `toSeconds`、`getTimeRange`、`formatTimestamp` 工具。
 
 ## 构建与发布
 
-同时支持 ESM import 和 CommonJS require，可独立执行 `npm run build`。`npm pack` 自动先构建，仅打包 `dist`、文档和 package 元数据，发布需单独执行。源码位于 `labring/sealos/frontend/packages/metrics-sdk`。
+同时支持 ESM import 和 CommonJS require，在工作区中的该包目录执行 `npm run build`，共享 kubeconfig 策略会打包进 `dist`。`npm pack` 自动先构建，仅打包 `dist`、文档和 package 元数据，发布需单独执行。源码位于 `labring/sealos/frontend/packages/metrics-sdk`。
