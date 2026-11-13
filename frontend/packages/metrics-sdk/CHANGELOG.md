@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Route Metrics API requests through `http://vmauth-auth.vm.svc:8427/prometheus` and require caller-supplied `metricsAuth` credentials for every metrics service. Callers must load these from server-side configuration; no credentials are bundled in the SDK. Direct service constructors require credentials as their third argument (`MinioService` moves `minioInstance` to the fourth).
+
 ## 0.2.1
 
 - Reject executable authentication providers, local credential files, proxy and impersonation settings in caller-supplied kubeconfigs. Rebuild clients from inline credentials and server-controlled cluster trust.
